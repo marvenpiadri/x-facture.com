@@ -1,1 +1,26 @@
-/* Calculator styling is centralized in src/styles/calculator-system.css. */
+/* Stripe & PayPal calculator-specific spacing refinements. */
+
+#calculator-page-root .calculator-main-pane[mainContent] { gap: 24px; }
+#calculator-page-root .input-card { gap: 20px; }
+#calculator-page-root .input-card .presets-section { gap: 10px; }
+#calculator-page-root .input-card .preset-pill-grid { margin-bottom: 4px; }
+#calculator-page-root .input-card .custom-rates-grid { margin-top: 4px; }
+#calculator-page-root .results-card { gap: 20px; }
+#calculator-page-root .calculator-inner-split { gap: 24px; }
+#calculator-page-root .metrics-breakdown-box,
+#calculator-page-root .chart-visual-panel { min-width: 0; }
+#calculator-page-root .metrics-breakdown-box { display: flex; flex-direction: column; gap: 18px; }
+#calculator-page-root .input-amount-field { gap: 8px; }
+#calculator-page-root .input-amount-field .field-micro-hint { margin-top: 0; }
+#calculator-page-root .breakdown-list { gap: 10px; margin: 0; }
+#calculator-page-root .breakdown-item.divider { margin: 6px 0; }
+#calculator-page-root .merchant-advice-box { margin-top: 0; }
+#calculator-page-root .chart-visual-panel { gap: 14px; }
+
+@media (max-width: 767px) {
+  #calculator-page-root .calculator-main-pane[mainContent] { gap: 16px; }
+  #calculator-page-root .input-card,
+  #calculator-page-root .results-card { gap: 16px; }
+  #calculator-page-root .calculator-inner-split { gap: 20px; }
+  #calculator-page-root .metrics-breakdown-box { gap: 16px; }
+}
