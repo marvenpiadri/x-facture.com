@@ -1,0 +1,41 @@
+<app-calculator-layout [title]="definition().name" [subtitle]="definition().description" icon="calculate" [currentToolName]="definition().name">
+  <div mainContent class="simple-finance-pane">
+    <section class="fintech-card input-card">
+      <header class="card-header"><span class="material-icons card-icon">tune</span><h2 class="card-title">Calculator inputs</h2></header>
+      <div class="simple-input-grid">
+        @for (input of inputConfig(); track input[0]) {
+          <label class="simple-field">
+            <span>{{ input[1] }}</span>
+            <div class="simple-input-wrap">
+              @if (slug !== 'roas-calculator' && slug !== 'customer-acquisition-cost-calculator' && slug !== 'cagr-calculator') { <b>$</b> }
+              <input type="number" min="0" step="any" [value]="value(input[0])" (input)="set(input[0], $any($event.target).value)" />
+              @if (slug === 'cagr-calculator' && input[0] === 'c') { <b>years</b> }
+              @if (slug === 'customer-acquisition-cost-calculator' && input[0] === 'b') { <b>customers</b> }
+              @if (slug === 'roas-calculator' && input[0] === 'a') { <b>$</b> }
+              @if (slug === 'customer-lifetime-value-calculator' && input[0] === 'b') { <b>/ yr</b> }
+              @if (slug === 'customer-lifetime-value-calculator' && input[0] === 'c') { <b>years</b> }
+              @if (slug === 'customer-lifetime-value-calculator' && input[0] === 'd') { <b>%</b> }
+              @if (slug === 'discount-calculator' && input[0] === 'd') { <b>%</b> }
+            </div>
+          </label>
+        }
+      </div>
+    </section>
+
+    <section class="fintech-card result-card">
+      <header class="card-header"><span class="material-icons card-icon">insights</span><h2 class="card-title">Your result</h2></header>
+      <div class="result-hero">
+        <span>{{ result().label }}</span>
+        <strong>{{ result().prefix }}{{ display(result().primary) }}{{ result().unit ? ' ' + result().unit : '' }}</strong>
+      </div>
+      <div class="secondary-result"><span>{{ result().secondaryLabel }}</span><strong>{{ result().prefix }}{{ display(result().secondary) }}</strong></div>
+    </section>
+
+    <section class="fintech-card knowledge-card">
+      <header class="card-header"><span class="material-icons card-icon">menu_book</span><h2 class="card-title">How it works</h2></header>
+      <p>{{ definition().howItWorks }}</p>
+      <div class="formula"><span>Formula</span><code>{{ definition().formula }}</code></div>
+      @if (definition().notes?.length) { <ul>@for (note of definition().notes; track note) { <li>{{ note }}</li> }</ul> }
+    </section>
+  </div>
+</app-calculator-layout>
