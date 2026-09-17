@@ -10,8 +10,7 @@ import { DocumentListPage } from './features/documents/pages/document-list/docum
 import { DocumentEditPage } from './features/documents/pages/document-edit/document-edit';
 import { DocumentPreviewPage } from './features/documents/pages/document-preview/document-preview';
 import { CalculatorsHubPage } from './calculators/calculators-hub';
-
-// Standalone SEO-Optimized Financial Calculators
+import { SimpleFinanceCalculatorComponent } from './calculators/simple-finance-calculator/simple-finance-calculator';
 import { StripePaypalFeeCalculatorComponent } from './calculators/stripe-paypal-fee-calculator/stripe-paypal-fee-calculator.component';
 import { CashBurnRunwayCalculatorComponent } from './calculators/cash-burn-runway-calculator/cash-burn-runway-calculator.component';
 import { GrossMarginMarkupCalculatorComponent } from './calculators/gross-margin-markup-calculator/gross-margin-markup-calculator.component';
@@ -35,7 +34,6 @@ export const routes: Routes = [
   { path: 'products', component: ProductsHubPage },
   { path: 'settings', component: SettingsHubPage },
 
-  // Calculator SEO hub — must precede the generic document route.
   { path: 'calculators', component: CalculatorsHubPage },
   { path: 'calculators/stripe-paypal-fee-calculator', component: StripePaypalFeeCalculatorComponent },
   { path: 'calculators/cash-burn-runway-calculator', component: CashBurnRunwayCalculatorComponent },
@@ -49,6 +47,14 @@ export const routes: Routes = [
   { path: 'calculators/currency-exchange-fee-calculator', component: CurrencyExchangeFeeCalculatorComponent },
   { path: 'calculators/cash-register-change-calculator', component: CashRegisterChangeCalculatorComponent },
   { path: 'calculators/compound-working-capital-calculator', component: CompoundWorkingCapitalCalculatorComponent },
+
+  // New calculator pages share one reusable calculator implementation.
+  { path: 'calculators/roi-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/roas-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/customer-acquisition-cost-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/customer-lifetime-value-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/cagr-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/discount-calculator', component: SimpleFinanceCalculatorComponent },
 
   { path: ':docType', component: DocumentListPage },
   { path: ':docType/new', component: DocumentEditPage },
