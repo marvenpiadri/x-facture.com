@@ -9,6 +9,7 @@ import { SettingsHubPage } from './features/settings/pages/settings-hub/settings
 import { DocumentListPage } from './features/documents/pages/document-list/document-list';
 import { DocumentEditPage } from './features/documents/pages/document-edit/document-edit';
 import { DocumentPreviewPage } from './features/documents/pages/document-preview/document-preview';
+import { CalculatorsHubPage } from './calculators/calculators-hub';
 
 // Standalone SEO-Optimized Financial Calculators
 import { StripePaypalFeeCalculatorComponent } from './calculators/stripe-paypal-fee-calculator/stripe-paypal-fee-calculator.component';
@@ -25,21 +26,17 @@ import { CashRegisterChangeCalculatorComponent } from './calculators/cash-regist
 import { CompoundWorkingCapitalCalculatorComponent } from './calculators/compound-working-capital-calculator/compound-working-capital-calculator.component';
 
 export const routes: Routes = [
-  // Home Landing Page (Public presentation & SEO landing)
   { path: '', component: LandingHomePage, pathMatch: 'full' },
   { path: 'home', component: LandingHomePage },
-
-  // Business Command Center Dashboard
   { path: 'dashboard', component: DashboardHomePage },
-
-  // Store POS & Operations
   { path: 'store/pos', component: PosTerminalPage },
   { path: 'ledger', component: LedgerViewPage },
   { path: 'clients', component: ClientsHubPage },
   { path: 'products', component: ProductsHubPage },
   { path: 'settings', component: SettingsHubPage },
 
-  // Dedicated SEO-Rich Calculator URLs:
+  // Calculator SEO hub — must precede the generic document route.
+  { path: 'calculators', component: CalculatorsHubPage },
   { path: 'calculators/stripe-paypal-fee-calculator', component: StripePaypalFeeCalculatorComponent },
   { path: 'calculators/cash-burn-runway-calculator', component: CashBurnRunwayCalculatorComponent },
   { path: 'calculators/gross-margin-markup-calculator', component: GrossMarginMarkupCalculatorComponent },
@@ -53,13 +50,10 @@ export const routes: Routes = [
   { path: 'calculators/cash-register-change-calculator', component: CashRegisterChangeCalculatorComponent },
   { path: 'calculators/compound-working-capital-calculator', component: CompoundWorkingCapitalCalculatorComponent },
 
-  // Generic Document Routes:
-  // /:docType (e.g. /invoices, /quotes, /delivery-notes, /receipts, /credit-notes, /timesheet-invoices, etc.)
   { path: ':docType', component: DocumentListPage },
   { path: ':docType/new', component: DocumentEditPage },
   { path: ':docType/:docNumber/edit', component: DocumentEditPage },
   { path: ':docType/:docNumber/preview', component: DocumentPreviewPage },
   { path: ':docType/:docNumber', redirectTo: ':docType/:docNumber/preview', pathMatch: 'full' },
-
   { path: '**', redirectTo: 'dashboard' }
 ];
