@@ -66,7 +66,7 @@
           <span class="knowledge-icon material-icons">functions</span>
           <div>
             <h3>Formula</h3>
-            <p>{{ current.formula }}</p>
+            <p>{{ current.formula || 'This calculator uses the assumptions shown in the inputs and results above.' }}</p>
           </div>
         </article>
 
@@ -74,7 +74,7 @@
           <span class="knowledge-icon material-icons">play_circle</span>
           <div>
             <h3>How it works</h3>
-            <p>{{ current.howItWorks }}</p>
+            <p>{{ current.howItWorks || current.description }}</p>
           </div>
         </article>
       </div>
@@ -85,7 +85,7 @@
           <div>
             <h3>Assumptions & notes</h3>
             <ul>
-              @for (note of current.notes; track note) {
+              @for (note of (current.notes ?? []); track note) {
                 <li>{{ note }}</li>
               }
             </ul>
