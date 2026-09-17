@@ -19,9 +19,7 @@ type CalculatorInput = readonly [key: string, label: string, defaultValue: numbe
 export class SimpleFinanceCalculatorComponent {
   private readonly route = inject(ActivatedRoute);
   readonly slug = this.route.snapshot.routeConfig?.path ?? '';
-  readonly definition = computed<CalculatorDefinition>(
-    () => getCalculatorBySlug(this.slug) ?? ADDITIONAL_CALCULATORS[0]
-  );
+  readonly definition = computed<CalculatorDefinition>(() => getCalculatorBySlug(this.slug) ?? ADDITIONAL_CALCULATORS[0]);
   readonly values = signal<Record<string, number>>({ a: 1000, b: 1200, c: 10, d: 0.2 });
 
   set(key: string, value: string | number): void {
@@ -29,9 +27,7 @@ export class SimpleFinanceCalculatorComponent {
     this.values.update(v => ({ ...v, [key]: Number.isFinite(n) ? n : 0 }));
   }
 
-  value(key: string): number {
-    return this.values()[key] ?? 0;
-  }
+  value(key: string): number { return this.values()[key] ?? 0; }
 
   readonly result = computed(() => {
     const v = this.values();
@@ -41,25 +37,20 @@ export class SimpleFinanceCalculatorComponent {
     const c = Number(v['c']) || 0;
     const d = Number(v['d']) || 0;
 
-    if (s === 'roi-calculator') {
-      return { primary: a ? ((b - a) / a) * 100 : 0, label: 'Return on investment', unit: '%', secondary: b - a, secondaryLabel: 'Net gain', prefix: '$' };
-    }
-
-    if (s === 'roas-calculator') {
-      return { primary: a ? b / a : 0, label: 'ROAS', unit: 'x', secondary: a ? (b / a) * 100 : 0, secondaryLabel: 'ROAS percentage', prefix: '' };
-    }
-
-    if (s === 'customer-acquisition-cost-calculator') {
-      return { primary: b ? a / b : 0, label: 'Customer acquisition cost', unit: '', secondary: b, secondaryLabel: 'New customers', prefix: '$' };
-    }
-
-    if (s === 'customer-lifetime-value-calculator') {
-      const revenue = a * b * c;
-      return { primary: revenue, label: 'Customer lifetime value', unit: '', secondary: revenue * d, secondaryLabel: 'Gross-profit LTV', prefix: '$' };
-    }
-
-    if (s === 'cagr-calculator') {
-      return { primary: a > 0 && c > 0 ? ((b / a) ** (1 / c) - 1) * 100 : 0, label: 'Compound annual growth rate', unit: '%', secondary: b - a, secondaryLabel: 'Total change', prefix: '$' };
+    if (s === 'roi-calculator') return { primary: a ? ((b - a) / a) * 100 : 0, label: 'Return on investment', unit: '%', secondary: b - a, secondaryLabel: 'Net gain', prefix: '$' };
+    if (s === 'roas-calculator') return { primary: a ? b / a : 0, label: 'ROAS', unit: 'x', secondary: a ? (b / a) * 100 : 0, secondaryLabel: 'ROAS percentage', prefix: '' };
+    if (s === 'customer-acquisition-cost-calculator') return { primary: b ? a / b : 0, label: 'Customer acquisition cost', unit: '', secondary: b, secondaryLabel: 'New customers', prefix: '$' };
+    if (s === 'customer-lifetime-value-calculator') { const revenue = a * b * c; return { primary: revenue, label: 'Customer lifetime value', unit: '', secondary: revenue * d, secondaryLabel: 'Gross-profit LTV', prefix: '$' }; }
+    if (s === 'cagr-calculator') return { primary: a > 0 && c > 0 ? ((b / a) ** (1 / c) - 1) * 100 : 0, label: 'Compound annual growth rate', unit: '%', secondary: b - a, secondaryLabel: 'Total change', prefix: '$' };
+    if (s === 'net-profit-margin-calculator') return { primary: a ? (b / a) * 100 : 0, label: 'Net profit margin', unit: '%', secondary: b, secondaryLabel: 'Net profit', prefix: '$' };
+    if (s === 'contribution-margin-calculator') { const contribution = a - b; return { primary: a ? (contribution / a) * 100 : 0, label: 'Contribution margin ratio', unit: '%', secondary: contribution, secondaryLabel: 'Contribution margin', prefix: '$' }; }
+    if (s === 'percentage-change-calculator') return { primary: a ? ((b - a) / a) * 100 : 0, label: 'Percentage change', unit: '%', secondary: b - a, secondaryLabel: 'Absolute change', prefix: '' };
+    if (s === 'price-increase-calculator') { const increase = a * (b / 100); return { primary: a + increase, label: 'New price', unit: '', secondary: increase, secondaryLabel: 'Increase amount', prefix: '$' }; }
+    if (s === 'debt-to-income-calculator') return { primary: b ? (a / b) * 100 : 0, label: 'Debt-to-income ratio', unit: '%', secondary: a, secondaryLabel: 'Monthly debt', prefix: '$' };
+    if (s === 'loan-payoff-calculator') {
+      const monthlyRate = b / 100 / 12;
+      const months = monthlyRate > 0 && c > a * monthlyRate ? -Math.log(1 - (a * monthlyRate) / c) / Math.log(1 + monthlyRate) : monthlyRate === 0 && c > 0 ? a / c : 0;
+      return { primary: months, label: 'Estimated payoff time', unit: ' months', secondary: months / 12, secondaryLabel: 'Approx. years', prefix: '' };
     }
 
     const discount = a * d;
@@ -72,10 +63,14 @@ export class SimpleFinanceCalculatorComponent {
     if (this.slug === 'customer-acquisition-cost-calculator') return [['a', 'Sales & marketing cost', 5000], ['b', 'New customers', 50]];
     if (this.slug === 'customer-lifetime-value-calculator') return [['a', 'Average order value', 100], ['b', 'Purchases per year', 6], ['c', 'Customer lifespan (years)', 3], ['d', 'Gross margin', 0.2]];
     if (this.slug === 'cagr-calculator') return [['a', 'Starting value', 10000], ['b', 'Ending value', 15000], ['c', 'Years', 5]];
+    if (this.slug === 'net-profit-margin-calculator') return [['a', 'Revenue', 100000], ['b', 'Net profit', 12000]];
+    if (this.slug === 'contribution-margin-calculator') return [['a', 'Sales', 100000], ['b', 'Variable costs', 60000]];
+    if (this.slug === 'percentage-change-calculator') return [['a', 'Original value', 100], ['b', 'New value', 125]];
+    if (this.slug === 'price-increase-calculator') return [['a', 'Current price', 100], ['b', 'Increase rate (%)', 10]];
+    if (this.slug === 'debt-to-income-calculator') return [['a', 'Monthly debt payments', 1500], ['b', 'Gross monthly income', 5000]];
+    if (this.slug === 'loan-payoff-calculator') return [['a', 'Outstanding balance', 10000], ['b', 'Annual interest rate (%)', 8], ['c', 'Monthly payment', 300]];
     return [['a', 'Original price', 100], ['d', 'Discount rate', 0.2]];
   });
 
-  display(value: number): string {
-    return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
-  }
+  display(value: number): string { return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value); }
 }
