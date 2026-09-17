@@ -21,7 +21,14 @@ export class SimpleFinanceCalculatorComponent {
   set(key:string,value:string|number){const n=Number(value);this.values.update(v=>({...v,[key]:Number.isFinite(n)?n:0}));}
   value(key:string){return this.values()[key] ?? 0;}
 
-  readonly result=computed(()=>{const v=this.values(),s=this.slug;const a=Number(v.a)||0,b=Number(v.b)||0,c=Number(v.c)||0,d=Number(v.d)||0;
+  readonly result=computed(()=>{
+    const v=this.values();
+    const s=this.slug;
+    const a=Number(v['a'])||0;
+    const b=Number(v['b'])||0;
+    const c=Number(v['c'])||0;
+    const d=Number(v['d'])||0;
+
     if(s==='roi-calculator') return {primary: a ? ((b-a)/a)*100 : 0, label:'Return on investment', unit:'%', secondary:(b-a), secondaryLabel:'Net gain', prefix:'$'};
     if(s==='roas-calculator') return {primary:a?b/a:0,label:'ROAS',unit:'x',secondary:a?b/a*100:0,secondaryLabel:'ROAS percentage',prefix:''};
     if(s==='customer-acquisition-cost-calculator') return {primary:b? a/b:0,label:'Customer acquisition cost',unit:'',secondary:b,secondaryLabel:'New customers',prefix:'$'};
