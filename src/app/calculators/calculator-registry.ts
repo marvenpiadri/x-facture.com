@@ -13,10 +13,11 @@ export interface CalculatorDefinition {
   title: string;
   description: string;
   keywords: string[];
-  formula: string;
-  howItWorks: string;
-  notes: string[];
-  related: string[];
+  /** Optional for legacy callers; production registry entries should define all content fields. */
+  formula?: string;
+  howItWorks?: string;
+  notes?: string[];
+  related?: string[];
 }
 
 /**
