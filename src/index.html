@@ -8,6 +8,22 @@
     <meta name="description" content="X-Facture provides free business tools, financial calculators, invoicing and practical tools for entrepreneurs, freelancers and businesses worldwide." />
     <meta name="google-adsense-account" content="ca-pub-3794489054591299" />
 
+    <!-- Restore an Angular route after a GitHub Pages 404 fallback. -->
+    <script>
+      (function () {
+        var params = new URLSearchParams(window.location.search);
+        var route = params.get('x-facture-route');
+        if (!route) return;
+
+        try {
+          var decodedRoute = decodeURIComponent(route);
+          window.history.replaceState(null, '', decodedRoute || '/');
+        } catch (_) {
+          window.history.replaceState(null, '', '/');
+        }
+      })();
+    </script>
+
     <!-- OpenGraph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="X-Facture — Free Business Tools, Financial Calculators & Invoicing" />
