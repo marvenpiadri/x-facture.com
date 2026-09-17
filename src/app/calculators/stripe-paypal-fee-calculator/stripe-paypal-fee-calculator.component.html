@@ -35,23 +35,13 @@
       </div>
     </app-fintech-card>
 
-    <section class="fintech-card results-card transaction-breakdown-card">
-      <header class="transaction-breakdown-header">
-        <div class="transaction-breakdown-heading">
-          <div class="transaction-breakdown-icon"><span class="material-icons">receipt_long</span></div>
-          <div>
-            <span class="section-eyebrow">Payment flow</span>
-            <h2 class="card-title">Transaction Breakdown</h2>
-            <p class="transaction-breakdown-subtitle">A clear view of what the customer pays, what the processor keeps, and what your business receives.</p>
-          </div>
-        </div>
-        <div class="effective-rate-badge">
-          <span>Effective fee rate</span>
-          <strong>{{ displayMetrics().effectiveRate | number:'1.2-2' }}%</strong>
-        </div>
+    <section class="fintech-card transaction-breakdown-card" style="background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-sm);overflow:visible">
+      <header class="card-header">
+        <span class="material-icons card-icon">receipt_long</span>
+        <h2 class="card-title">Transaction Breakdown</h2>
       </header>
 
-      <div class="transaction-summary-strip" aria-label="Transaction summary">
+      <div class="transaction-summary-strip" aria-label="Transaction summary" style="margin:0">
         <div class="transaction-summary-cell gross-summary-cell">
           <span class="summary-index">01</span>
           <span class="summary-label">{{ calcMode() === 'from-gross' ? 'Gross charged' : 'Required gross' }}</span>
@@ -71,7 +61,7 @@
         </div>
       </div>
 
-      <div class="calculator-inner-split">
+      <div class="calculator-inner-split" style="padding:0">
         <div class="metrics-breakdown-box">
           <div class="transaction-amount-block">
             <div class="transaction-section-label">
@@ -100,7 +90,7 @@
             </div>
             <div class="breakdown-item fee-detail-row">
               <div class="breakdown-item-label">
-                <span class="fee-row-icon fixed-icon material-icons">payments</span>
+                <span class="fee-row-icon fixed-icon material-icons">paid</span>
                 <span><strong>Fixed gateway fee</strong><small>${{ feeFixed() | number:'1.2-2' }} per transaction</small></span>
               </div>
               <span class="item-value fee-value">-${{ (calcMode() === 'from-gross' ? fromGrossResults().fixedFee : toNetResults().fixedFee) | number:'1.2-2' }}</span>
