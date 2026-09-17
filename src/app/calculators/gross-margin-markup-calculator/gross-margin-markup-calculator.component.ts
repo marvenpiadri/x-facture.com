@@ -14,7 +14,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { SeoService } from '../../core/services/seo.service';
 import { Chart, registerables } from 'chart.js';
 import { CalculatorLayoutComponent } from '../../shared/components/calculator-layout/calculator-layout';
@@ -30,8 +29,6 @@ Chart.register(...registerables);
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewInit, OnDestroy {
-  private titleService = inject(Title);
-  private metaService = inject(Meta);
   private seoService = inject(SeoService);
 
   @ViewChild('calcChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -39,38 +36,36 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
 
   ngOnInit(): void {
     this.seoService.updateMetadata({
-      title: 'Gross Margin vs. Markup Calculator | Profit Formula & Price Multiplier Pro',
-      description: 'Convert between gross margin % and markup %, compute selling prices from COGS, and calculate product profit margins with interactive business modeling.',
-      keywords: 'gross margin calculator, markup calculator, margin vs markup formula, cost of goods sold calculator, retail price calculator'
+      title: 'Gross Margin vs. Markup Calculator | Profit Formula & Pricing | X-Facture',
+      description: 'Convert between gross margin and markup, calculate selling prices from COGS, and estimate product profit with an interactive business pricing calculator.',
+      keywords: 'gross margin calculator, markup calculator, margin vs markup formula, COGS calculator, retail price calculator',
+      url: 'https://x-facture.com/calculators/gross-margin-markup-calculator',
+      image: 'https://x-facture.com/x-facture-LOGO-PFP.png'
     });
 
     this.seoService.setJsonLd({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Gross Margin & Markup Calculator",
-      "url": "https://ais-pre-7or4nnyzenrdo3iukkuhfv-534075635055.europe-west3.run.app/calculators/gross-margin-markup-calculator",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "All",
-      "description": "Business pricing tool to compute profit margins and markups.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Gross Margin & Markup Calculator',
+      url: 'https://x-facture.com/calculators/gross-margin-markup-calculator',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'All',
+      isAccessibleForFree: true,
+      description: 'Business pricing tool to compute gross profit margins, markups, selling prices, and product profit.',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
       }
     });
   }
 
-  // Mode: 'target-margin' (input COGS + Margin % -> calculates Price & Markup)
-  // vs 'price-analysis' (input COGS + Selling Price -> calculates Margin % & Markup %)
   mode = signal<'target-margin' | 'price-analysis'>('target-margin');
-
-  // Primary Inputs
-  cogs = signal<number>(45); // Wholesale cost of goods
-  targetMargin = signal<number>(40); // % Gross margin
-  sellingPriceInput = signal<number>(75); // Used when mode is 'price-analysis'
+  cogs = signal<number>(45);
+  targetMargin = signal<number>(40);
+  sellingPriceInput = signal<number>(75);
   quantityUnits = signal<number>(100);
 
-  // Computations
   results = computed(() => {
     const cost = Math.max(0.01, this.cogs());
     const qty = Math.max(1, this.quantityUnits());
@@ -82,7 +77,6 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
 
     if (this.mode() === 'target-margin') {
       const m = Math.min(99.9, Math.max(0, this.targetMargin()));
-      // Price = Cost / (1 - Margin/100)
       finalPrice = cost / (1 - m / 100);
       profitPerUnit = finalPrice - cost;
       marginPct = m;
@@ -98,17 +92,7 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     const totalCost = cost * qty;
     const totalProfit = profitPerUnit * qty;
 
-    return {
-      cogs: cost,
-      sellingPrice: finalPrice,
-      profitPerUnit,
-      marginPct,
-      markupPct,
-      quantity: qty,
-      totalRevenue,
-      totalCost,
-      totalProfit,
-    };
+    return { cogs: cost, sellingPrice: finalPrice, profitPerUnit, marginPct, markupPct, quantity: qty, totalRevenue, totalCost, totalProfit };
   });
 
   constructor() {
@@ -118,9 +102,7 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     });
   }
 
-  ngAfterViewInit(): void {
-    this.initChart();
-  }
+  ngAfterViewInit(): void { this.initChart(); }
 
   ngOnDestroy(): void {
     if (this.chartInstance) {
@@ -138,7 +120,6 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     if (!this.chartCanvas?.nativeElement) return;
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
-
     const res = this.results();
 
     this.chartInstance = new Chart(ctx, {
@@ -146,59 +127,21 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
       data: {
         labels: ['Selling Price Composition'],
         datasets: [
-          {
-            label: 'Cost of Goods (COGS)',
-            data: [res.cogs],
-            backgroundColor: '#f85149',
-            borderColor: '#0d1117',
-            borderWidth: 2,
-          },
-          {
-            label: 'Gross Profit Margin',
-            data: [res.profitPerUnit],
-            backgroundColor: '#00e676',
-            borderColor: '#0d1117',
-            borderWidth: 2,
-          },
-        ],
+          { label: 'Cost of Goods (COGS)', data: [res.cogs], backgroundColor: '#f85149', borderColor: '#0d1117', borderWidth: 2 },
+          { label: 'Gross Profit Margin', data: [res.profitPerUnit], backgroundColor: '#00e676', borderColor: '#0d1117', borderWidth: 2 }
+        ]
       },
       options: {
-        indexAxis: 'y',
-        responsive: true,
-        maintainAspectRatio: false,
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
         scales: {
-          x: {
-            stacked: true,
-            grid: { color: '#21262d' },
-            ticks: {
-              color: '#8b949e',
-              font: { size: 11 },
-              callback: (val) => `$${Number(val).toFixed(2)}`,
-            },
-          },
-          y: {
-            stacked: true,
-            grid: { display: false },
-            ticks: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } },
-          },
+          x: { stacked: true, grid: { color: '#21262d' }, ticks: { color: '#8b949e', font: { size: 11 }, callback: (val) => `$${Number(val).toFixed(2)}` } },
+          y: { stacked: true, grid: { display: false }, ticks: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } }
         },
         plugins: {
-          legend: {
-            position: 'top',
-            labels: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } },
-          },
-          tooltip: {
-            backgroundColor: '#161b22',
-            titleColor: '#ffffff',
-            bodyColor: '#c9d1d9',
-            borderColor: '#30363d',
-            borderWidth: 1,
-            callbacks: {
-              label: (context) => ` ${context.dataset.label}: $${Number(context.raw).toFixed(2)}`,
-            },
-          },
-        },
-      },
+          legend: { position: 'top', labels: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } },
+          tooltip: { backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9', borderColor: '#30363d', borderWidth: 1, callbacks: { label: (context) => ` ${context.dataset.label}: $${Number(context.raw).toFixed(2)}` } }
+        }
+      }
     });
   }
 
