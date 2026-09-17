@@ -11,8 +11,15 @@ section.fintech-card>.card-header,div.fintech-card>.card-header{display:flex;ali
 /* Stripe / PayPal calculator dashboard. */
 .stripe-paypal-calculator #calculator-page-root .calculator-main-pane[mainContent]{gap:20px}
 .stripe-paypal-calculator #calculator-page-root .input-card{gap:20px}
-.stripe-paypal-calculator #calculator-page-root .input-card .presets-section{gap:10px}
+.stripe-paypal-calculator #calculator-page-root .input-card .presets-section{display:flex;flex-direction:column;gap:10px}
 .stripe-paypal-calculator #calculator-page-root .input-card .custom-rates-grid{margin-top:2px}
+.stripe-paypal-calculator #calculator-page-root .preset-pill-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.stripe-paypal-calculator #calculator-page-root .preset-pill{min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:5px;min-height:58px;padding:10px 11px;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface-subtle);color:var(--color-text-secondary);font:inherit;text-align:left;cursor:pointer;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease,color .15s ease}
+.stripe-paypal-calculator #calculator-page-root .preset-pill:hover{border-color:var(--color-money-green);color:var(--color-text-main);background:var(--color-surface-hover)}
+.stripe-paypal-calculator #calculator-page-root .preset-pill.active{border-color:var(--color-money-green);background:var(--color-money-green-light);color:var(--color-text-main);box-shadow:0 0 0 1px color-mix(in srgb,var(--color-money-green) 20%,transparent)}
+.stripe-paypal-calculator #calculator-page-root .preset-name{display:block;overflow:hidden;width:100%;color:inherit;font-size:10.5px;font-weight:800;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+.stripe-paypal-calculator #calculator-page-root .preset-rates{display:block;color:var(--color-text-muted);font:700 9px/1.2 var(--font-mono);white-space:nowrap}
+.stripe-paypal-calculator #calculator-page-root .preset-pill.active .preset-rates{color:var(--color-money-green)}
 .stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card{overflow:hidden;padding:20px;gap:16px;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface);box-shadow:var(--shadow-sm)}
 .stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card>.card-header{display:flex;align-items:center;gap:10px;min-width:0;border-bottom:1px solid var(--color-border);padding-bottom:12px}
 .stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card>.card-header .card-icon{font-size:20px;color:var(--color-money-green)}
@@ -45,7 +52,8 @@ section.fintech-card>.card-header,div.fintech-card>.card-header{display:flex;ali
 .stripe-paypal-calculator #calculator-page-root .breakdown-item-label strong{color:var(--color-text-main);font-size:11.5px;font-weight:750;line-height:1.3}
 .stripe-paypal-calculator #calculator-page-root .breakdown-item-label small{color:var(--color-text-muted);font-size:9.5px;line-height:1.35}
 .stripe-paypal-calculator #calculator-page-root .fee-row-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface-subtle);color:var(--color-text-secondary);font:800 10px/1 var(--font-mono)}
-.stripe-paypal-calculator #calculator-page-root .fixed-icon{font-size:13px}
+.stripe-paypal-calculator #calculator-page-root .fixed-icon{font-size:0}
+.stripe-paypal-calculator #calculator-page-root .fixed-icon::after{content:'$';font:800 13px/1 var(--font-mono);color:var(--color-text-secondary)}
 .stripe-paypal-calculator #calculator-page-root .breakdown-statement .item-value{flex:0 0 auto;font:800 12px/1 var(--font-mono);white-space:nowrap}
 .stripe-paypal-calculator #calculator-page-root .fee-value{color:#dc2626}
 .stripe-paypal-calculator #calculator-page-root .breakdown-statement .total-fee-row{background:rgba(220,38,38,.035)}
@@ -82,5 +90,5 @@ section.fintech-card>.card-header,div.fintech-card>.card-header{display:flex;ali
 .mode-switch-btn.active .material-icons{color:var(--color-money-green)}
 .mode-switch-btn .material-icons{font-size:17px}
 
-@media (max-width:900px){.stripe-paypal-calculator #calculator-page-root .calculator-inner-split{grid-template-columns:1fr}}
-@media (max-width:600px){.stripe-paypal-calculator #calculator-page-root .transaction-summary-strip{grid-template-columns:1fr}.stripe-paypal-calculator #calculator-page-root .summary-operator{display:none}.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell{min-height:78px}.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card{padding:16px}}
+@media(max-width:900px){.stripe-paypal-calculator #calculator-page-root .calculator-inner-split{grid-template-columns:1fr}.stripe-paypal-calculator #calculator-page-root .preset-pill-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.stripe-paypal-calculator #calculator-page-root .transaction-summary-strip{grid-template-columns:1fr}.stripe-paypal-calculator #calculator-page-root .summary-operator{display:none}.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell{min-height:78px}.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card{padding:16px}.stripe-paypal-calculator #calculator-page-root .preset-pill-grid{grid-template-columns:1fr}.stripe-paypal-calculator #calculator-page-root .preset-pill{min-height:52px}}
