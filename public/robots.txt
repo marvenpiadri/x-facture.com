@@ -1,6 +1,5 @@
-# https://www.robotstxt.org/robotstxt.html
+# X-Facture crawler policy
 User-agent: *
 Allow: /
 
-# Sitemap
-Sitemap: https://ais-pre-7or4nnyzenrdo3iukkuhfv-534075635055.europe-west3.run.app/sitemap.xml
+Sitemap: https://x-facture.com/sitemap.xml
