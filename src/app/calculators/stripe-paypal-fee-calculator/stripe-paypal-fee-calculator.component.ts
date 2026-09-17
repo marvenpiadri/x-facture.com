@@ -50,16 +50,7 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
       category: 'payments',
       title: 'Stripe & PayPal Fee Calculator (2026) | Merchant Fee Calculator',
       description: 'Calculate payment processing fees, net payouts, effective rates, and the gross amount needed to cover Stripe or PayPal transaction fees.',
-      keywords: [
-        'stripe fee calculator',
-        'paypal fee calculator',
-        'merchant fee calculator',
-        'payment processing fee calculator',
-        'credit card processing fee calculator',
-        'payment gateway fee calculator',
-        'transaction fee calculator',
-        'invoice surcharge calculator'
-      ]
+      keywords: ['stripe fee calculator', 'paypal fee calculator', 'merchant fee calculator', 'payment processing fee calculator', 'credit card processing fee calculator', 'payment gateway fee calculator', 'transaction fee calculator', 'invoice surcharge calculator']
     });
   }
 
@@ -79,47 +70,42 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
   feeFixed = signal<number>(0.30);
   inputAmount = signal<number>(1000);
 
-  activePreset = computed(() => {
-    return this.feePresets.find(p => p.id === this.selectedPresetId()) ?? this.feePresets[0];
-  });
+  activePreset = computed(() => this.feePresets.find(p => p.id === this.selectedPresetId()) ?? this.feePresets[0]);
+
+  private applyFeeCap(gross: number, percentage: number, fixed: number): number {
+    const rawFee = gross * percentage / 100 + fixed;
+    return this.selectedPresetId() === 'stripe-ach' ? Math.min(rawFee, 5) : rawFee;
+  }
 
   fromGrossResults = computed(() => {
-    const gross = Math.max(0, this.inputAmount());
-    const pct = Math.max(0, this.feePercent());
-    const fixed = Math.max(0, this.feeFixed());
-
-    const percentageFee = (gross * pct) / 100;
-    let totalFee = percentageFee + fixed;
-
-    if (this.selectedPresetId() === 'stripe-ach' && totalFee > 5) {
-      totalFee = 5;
-    }
-
-    totalFee = Math.min(totalFee, gross);
+    const gross = Math.max(0, Number(this.inputAmount()) || 0);
+    const pct = Math.max(0, Number(this.feePercent()) || 0);
+    const fixed = Math.max(0, Number(this.feeFixed()) || 0);
+    const totalFee = Math.min(this.applyFeeCap(gross, pct, fixed), gross);
+    const percentageFee = Math.max(0, totalFee - Math.min(fixed, totalFee));
     const net = Math.max(0, gross - totalFee);
     const effectiveRate = gross > 0 ? (totalFee / gross) * 100 : 0;
-
-    return { gross, percentageFee, fixedFee: fixed, totalFee, netPayout: net, effectiveRate };
+    return { gross, percentageFee, fixedFee: Math.min(fixed, totalFee), totalFee, netPayout: net, effectiveRate };
   });
 
   toNetResults = computed(() => {
-    const targetNet = Math.max(0, this.inputAmount());
-    const pct = Math.max(0, this.feePercent());
-    const fixed = Math.max(0, this.feeFixed());
+    const targetNet = Math.max(0, Number(this.inputAmount()) || 0);
+    const pct = Math.max(0, Number(this.feePercent()) || 0);
+    const fixed = Math.max(0, Number(this.feeFixed()) || 0);
     const rateDecimal = pct / 100;
+    const cap = this.selectedPresetId() === 'stripe-ach' ? 5 : null;
 
     let requiredGross = rateDecimal < 1 ? (targetNet + fixed) / (1 - rateDecimal) : targetNet + fixed;
     let totalFee = requiredGross - targetNet;
 
-    if (this.selectedPresetId() === 'stripe-ach' && requiredGross * 0.008 > 5) {
-      requiredGross = targetNet + 5;
-      totalFee = 5;
+    if (cap !== null && totalFee > cap) {
+      requiredGross = targetNet + cap;
+      totalFee = cap;
     }
 
-    const percentageFee = (requiredGross * pct) / 100;
+    const percentageFee = Math.max(0, totalFee - Math.min(fixed, totalFee));
     const effectiveRate = requiredGross > 0 ? (totalFee / requiredGross) * 100 : 0;
-
-    return { requiredGross, targetNet, totalFee, percentageFee, fixedFee: fixed, effectiveRate };
+    return { requiredGross, targetNet, totalFee, percentageFee, fixedFee: Math.min(fixed, totalFee), effectiveRate };
   });
 
   displayMetrics = computed(() => {
@@ -127,7 +113,6 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
       const res = this.fromGrossResults();
       return { gross: res.gross, fee: res.totalFee, net: res.netPayout, effectiveRate: res.effectiveRate, labelMain: 'Net Payout Received', labelSub: 'Amount reaching your bank account' };
     }
-
     const res = this.toNetResults();
     return { gross: res.requiredGross, fee: res.totalFee, net: res.targetNet, effectiveRate: res.effectiveRate, labelMain: 'Required Invoice Total', labelSub: 'Amount to bill client to net target' };
   });
@@ -140,11 +125,7 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
   }
 
   ngAfterViewInit(): void { this.initChart(); }
-
-  ngOnDestroy(): void {
-    this.chartInstance?.destroy();
-    this.chartInstance = null;
-  }
+  ngOnDestroy(): void { this.chartInstance?.destroy(); this.chartInstance = null; }
 
   onSelectPreset(presetId: string): void {
     this.selectedPresetId.set(presetId);
@@ -161,24 +142,17 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
     if (!this.chartCanvas?.nativeElement) return;
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
-
     const metrics = this.displayMetrics();
     this.chartInstance = new Chart(ctx, {
       type: 'doughnut',
-      data: {
-        labels: ['Net Revenue Kept', 'Processor Fees'],
-        datasets: [{ data: [metrics.net, metrics.fee], backgroundColor: ['#00e676', '#f85149'], borderColor: ['#0d1117', '#0d1117'], borderWidth: 3, hoverOffset: 6 }],
-      },
+      data: { labels: ['Net Revenue Kept', 'Processor Fees'], datasets: [{ data: [metrics.net, metrics.fee], backgroundColor: ['#00e676', '#f85149'], borderColor: ['#0d1117', '#0d1117'], borderWidth: 3, hoverOffset: 6 }] },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         cutout: '72%',
         plugins: {
           legend: { position: 'bottom', labels: { color: '#c9d1d9', font: { family: 'system-ui, -apple-system, sans-serif', size: 12, weight: 'bold' }, padding: 16, usePointStyle: true } },
-          tooltip: {
-            backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9', borderColor: '#30363d', borderWidth: 1, padding: 10,
-            callbacks: { label: (context) => ` ${context.label}: $${(Number(context.raw) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` }
-          }
+          tooltip: { backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9', borderColor: '#30363d', borderWidth: 1, padding: 10, callbacks: { label: (context) => ` ${context.label}: $${(Number(context.raw) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } }
         }
       }
     });
@@ -187,6 +161,6 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
   private updateChart(net: number, fee: number): void {
     if (!this.chartInstance) return;
     this.chartInstance.data.datasets[0].data = [net, fee];
-    this.chartInstance.update();
+    this.chartInstance.update('none');
   }
 }
