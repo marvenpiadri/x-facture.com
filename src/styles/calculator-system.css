@@ -2,11 +2,79 @@
 
 .calculator-main-pane[mainContent]{display:flex;flex-direction:column;gap:20px;min-width:0}
 
-.aging-presets-bar,.scenario-presets-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 14px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:10px}
-.aging-lbl,.preset-label,.aging-presets-bar .preset-label,.scenario-presets-bar .preset-label{font-size:11px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em}
-.aging-btn,.scenario-btn{min-height:32px;padding:6px 12px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:7px;color:var(--color-text-main);font-size:11.5px;font-weight:700;line-height:1.2;cursor:pointer;transition:all .15s ease}
-.aging-btn:hover,.scenario-btn:hover,.aging-btn.active{border-color:var(--color-money-green);background:var(--color-money-green-light);color:var(--color-money-green)}
+/* Standard fintech cards */
+section.fintech-card,div.fintech-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-sm)}
+section.fintech-card>.card-header,div.fintech-card>.card-header{display:flex;align-items:center;gap:10px;min-width:0;border-bottom:1px solid var(--color-border);padding-bottom:12px}
+.card-header .card-icon,.card-icon{flex:0 0 auto;font-size:20px;color:var(--color-money-green)}
+.card-title{min-width:0;font-size:14px;font-weight:700;color:var(--color-text-main);margin:0;line-height:1.35}
 
+/* Stripe / PayPal calculator dashboard. */
+.stripe-paypal-calculator #calculator-page-root .calculator-main-pane[mainContent]{gap:20px}
+.stripe-paypal-calculator #calculator-page-root .input-card{gap:20px}
+.stripe-paypal-calculator #calculator-page-root .input-card .presets-section{gap:10px}
+.stripe-paypal-calculator #calculator-page-root .input-card .custom-rates-grid{margin-top:2px}
+.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card{overflow:hidden;padding:20px;gap:16px;border:1px solid var(--color-border);border-radius:14px;background:var(--color-surface);box-shadow:var(--shadow-sm)}
+.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card>.card-header{display:flex;align-items:center;gap:10px;min-width:0;border-bottom:1px solid var(--color-border);padding-bottom:12px}
+.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card>.card-header .card-icon{font-size:20px;color:var(--color-money-green)}
+.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card>.card-header .card-title{font-size:14px;font-weight:700;color:var(--color-text-main);margin:0;line-height:1.35}
+.stripe-paypal-calculator #calculator-page-root .transaction-summary-strip{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr) 42px minmax(0,1fr);overflow:hidden;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
+.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell{position:relative;min-width:0;min-height:104px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:18px}
+.stripe-paypal-calculator #calculator-page-root .summary-index{position:absolute;top:12px;right:14px;color:var(--color-text-muted);font:700 9px/1 var(--font-mono);opacity:.65}
+.stripe-paypal-calculator #calculator-page-root .summary-label{color:var(--color-text-secondary);font-size:9px;font-weight:800;letter-spacing:.055em;text-transform:uppercase}
+.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell strong{overflow:hidden;color:var(--color-text-main);font:850 clamp(20px,2.4vw,26px)/1.05 var(--font-mono);letter-spacing:-.045em;text-overflow:ellipsis;white-space:nowrap}
+.stripe-paypal-calculator #calculator-page-root .fee-summary-cell{background:rgba(220,38,38,.045)}
+.stripe-paypal-calculator #calculator-page-root .fee-summary-cell strong{color:#dc2626}
+.stripe-paypal-calculator #calculator-page-root .net-summary-cell{background:var(--color-money-green-light)}
+.stripe-paypal-calculator #calculator-page-root .net-summary-cell strong{color:var(--color-money-green)}
+.stripe-paypal-calculator #calculator-page-root .summary-operator{display:grid;place-items:center;border-inline:1px solid var(--color-border);color:var(--color-text-muted);background:var(--color-surface)}
+.stripe-paypal-calculator #calculator-page-root .summary-operator .material-icons{font-size:18px}
+.stripe-paypal-calculator #calculator-page-root .calculator-inner-split{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:16px}
+.stripe-paypal-calculator #calculator-page-root .metrics-breakdown-box{display:flex;flex-direction:column;gap:14px;min-width:0}
+.stripe-paypal-calculator #calculator-page-root .transaction-amount-block{padding:18px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
+.stripe-paypal-calculator #calculator-page-root .transaction-section-label{display:flex;align-items:center;gap:7px;margin-bottom:12px;color:var(--color-text-main);font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.stripe-paypal-calculator #calculator-page-root .transaction-section-label .material-icons{color:var(--color-money-green);font-size:17px}
+.stripe-paypal-calculator #calculator-page-root .transaction-amount-block .input-symbol-wrap.large{height:56px}
+.stripe-paypal-calculator #calculator-page-root .transaction-amount-block .input-symbol-wrap.large .input-affix{left:14px;color:var(--color-money-green);font-size:17px}
+.stripe-paypal-calculator #calculator-page-root .transaction-amount-block .input-symbol-wrap.large .fintech-input{height:56px;padding-left:38px;border-radius:10px;background:var(--color-input-bg);font-size:22px;font-weight:850;letter-spacing:-.04em}
+.stripe-paypal-calculator #calculator-page-root .field-micro-hint{display:block;margin-top:7px;color:var(--color-text-muted);font-size:10px;line-height:1.4}
+.stripe-paypal-calculator #calculator-page-root .breakdown-statement{overflow:hidden;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface)}
+.stripe-paypal-calculator #calculator-page-root .breakdown-statement-heading{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--color-border);background:var(--color-surface-subtle);color:var(--color-text-muted);font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.stripe-paypal-calculator #calculator-page-root .breakdown-statement .breakdown-item{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0;padding:14px 15px;border-bottom:1px solid var(--color-border)}
+.stripe-paypal-calculator #calculator-page-root .breakdown-item-label{display:flex;align-items:center;gap:10px;min-width:0}
+.stripe-paypal-calculator #calculator-page-root .breakdown-item-label>span:last-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.stripe-paypal-calculator #calculator-page-root .breakdown-item-label strong{color:var(--color-text-main);font-size:11.5px;font-weight:750;line-height:1.3}
+.stripe-paypal-calculator #calculator-page-root .breakdown-item-label small{color:var(--color-text-muted);font-size:9.5px;line-height:1.35}
+.stripe-paypal-calculator #calculator-page-root .fee-row-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface-subtle);color:var(--color-text-secondary);font:800 10px/1 var(--font-mono)}
+.stripe-paypal-calculator #calculator-page-root .fixed-icon{font-size:13px}
+.stripe-paypal-calculator #calculator-page-root .breakdown-statement .item-value{flex:0 0 auto;font:800 12px/1 var(--font-mono);white-space:nowrap}
+.stripe-paypal-calculator #calculator-page-root .fee-value{color:#dc2626}
+.stripe-paypal-calculator #calculator-page-root .breakdown-statement .total-fee-row{background:rgba(220,38,38,.035)}
+.stripe-paypal-calculator #calculator-page-root .breakdown-total-icon{flex:0 0 auto;color:#dc2626;font-size:18px}
+.stripe-paypal-calculator #calculator-page-root .total-fee-value{font-size:13px!important}
+.stripe-paypal-calculator #calculator-page-root .statement-divider{height:8px;background:var(--color-canvas);border-bottom:1px solid var(--color-border)}
+.stripe-paypal-calculator #calculator-page-root .breakdown-statement .net-payout-row{border-bottom:0;background:var(--color-money-green-light)}
+.stripe-paypal-calculator #calculator-page-root .breakdown-net-icon{flex:0 0 auto;color:var(--color-money-green);font-size:20px}
+.stripe-paypal-calculator #calculator-page-root .net-payout-row .breakdown-item-label strong{font-size:12px}
+.stripe-paypal-calculator #calculator-page-root .net-payout-value{flex:0 0 auto;color:var(--color-money-green);font:900 18px/1 var(--font-mono);letter-spacing:-.035em;white-space:nowrap}
+.stripe-paypal-calculator #calculator-page-root .merchant-advice-box{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle);color:var(--color-text-secondary)}
+.stripe-paypal-calculator #calculator-page-root .advice-icon{flex:0 0 auto;color:var(--color-money-green);font-size:18px}
+.stripe-paypal-calculator #calculator-page-root .advice-text{margin:0;color:var(--color-text-secondary);font-size:10.5px;line-height:1.55}
+.stripe-paypal-calculator #calculator-page-root .advice-text strong,.stripe-paypal-calculator #calculator-page-root .advice-text em{color:var(--color-text-main)}
+.stripe-paypal-calculator #calculator-page-root .advice-text em{font-style:normal;font-weight:750}
+.stripe-paypal-calculator #calculator-page-root .chart-visual-panel{display:flex;flex-direction:column;gap:14px;min-width:0;padding:18px;border:1px solid var(--color-border);border-radius:10px;background:var(--color-surface-subtle)}
+.stripe-paypal-calculator #calculator-page-root .chart-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.stripe-paypal-calculator #calculator-page-root .chart-title{margin:0;color:var(--color-text-main);font-size:14px;font-weight:850;letter-spacing:-.02em;text-transform:none}
+.stripe-paypal-calculator #calculator-page-root .chart-rate{flex:0 0 auto;padding:5px 8px;border:1px solid var(--color-border);border-radius:7px;background:var(--color-surface);color:var(--color-text-secondary);font:800 9px/1 var(--font-mono)}
+.stripe-paypal-calculator #calculator-page-root .chart-canvas-wrapper{position:relative;width:100%;height:250px;min-height:220px;padding:8px;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface)}
+.stripe-paypal-calculator #calculator-page-root .chart-canvas-wrapper canvas{width:100%!important;height:100%!important}
+.stripe-paypal-calculator #calculator-page-root .chart-legend-summary{display:grid;gap:7px;padding-top:2px}
+.stripe-paypal-calculator #calculator-page-root .chart-legend-summary>div{display:grid;grid-template-columns:9px 1fr auto;align-items:center;gap:8px;padding:8px 9px;border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface);color:var(--color-text-secondary);font-size:10px}
+.stripe-paypal-calculator #calculator-page-root .chart-legend-summary strong{color:var(--color-text-main);font:850 10.5px/1 var(--font-mono)}
+.stripe-paypal-calculator #calculator-page-root .legend-dot{width:8px;height:8px;border-radius:50%}.stripe-paypal-calculator #calculator-page-root .revenue-dot{background:#188038}.stripe-paypal-calculator #calculator-page-root .fee-dot{background:#dc2626}
+.stripe-paypal-calculator #calculator-page-root .chart-context-note{display:flex;align-items:flex-start;gap:7px;padding:10px;border:1px dashed var(--color-border);border-radius:8px;color:var(--color-text-muted);font-size:9.5px;line-height:1.45;background:var(--color-surface)}
+.stripe-paypal-calculator #calculator-page-root .chart-context-note .material-icons{font-size:15px;flex:0 0 auto}
+
+/* Existing shared calculator controls */
 .calc-mode-switcher{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:5px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:10px}
 .mode-switch-btn{min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border:1px solid transparent;border-radius:8px;background:transparent;color:var(--color-text-secondary);font-size:12px;font-weight:700;text-align:center;cursor:pointer;transition:all .15s ease}
 .mode-switch-btn:hover{color:var(--color-text-main)}
@@ -14,121 +82,5 @@
 .mode-switch-btn.active .material-icons{color:var(--color-money-green)}
 .mode-switch-btn .material-icons{font-size:17px}
 
-section.fintech-card,div.fintech-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:16px;box-shadow:var(--shadow-sm)}
-section.fintech-card>.card-header,div.fintech-card>.card-header{display:flex;align-items:center;gap:10px;min-width:0;border-bottom:1px solid var(--color-border);padding-bottom:12px}
-.card-header .card-icon,.card-icon{flex:0 0 auto;font-size:20px;color:var(--color-money-green)}
-.card-title{min-width:0;font-size:14px;font-weight:700;color:var(--color-text-main);margin:0;line-height:1.35}
-
-.inputs-two-col-grid,.custom-rates-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.field-group{min-width:0;display:flex;flex-direction:column;gap:6px}
-.input-label{font-size:11.5px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.03em;line-height:1.35}
-.field-micro-hint,.field-hint{font-size:10.5px;color:var(--color-text-muted);line-height:1.4}
-.input-symbol-wrap{position:relative;display:flex;align-items:center;min-width:0}
-.input-affix{position:absolute;z-index:1;color:var(--color-text-muted);font-size:12px;font-weight:700;pointer-events:none;white-space:nowrap}
-.input-symbol-wrap.prefix .input-affix{left:12px}.input-symbol-wrap.suffix .input-affix{right:12px}
-input.fintech-input,.fintech-input{width:100%;min-width:0;height:40px;padding:0 12px;background:var(--color-input-bg);border:1px solid var(--color-input-border);border-radius:8px;color:var(--color-input-text);font-family:var(--font-mono);font-size:14px;font-weight:600;transition:all .15s ease}
-.input-symbol-wrap.prefix .fintech-input{padding-left:30px}.input-symbol-wrap.suffix .fintech-input{padding-right:48px}
-.fintech-input:focus{outline:none;border-color:var(--color-border-focus);box-shadow:0 0 0 3px var(--color-money-green-light)}
-
-.presets-section{display:flex;flex-direction:column;gap:8px}.preset-pill-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-.preset-pill{min-height:48px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:8px 11px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:8px;color:var(--color-text-main);text-align:left;cursor:pointer;transition:all .15s ease}
-.preset-pill:hover,.preset-pill.active{border-color:var(--color-money-green);background:var(--color-money-green-light)}.preset-name{font-size:11.5px;font-weight:700}.preset-rates{font-size:10.5px;color:var(--color-text-secondary);font-family:var(--font-mono)}.preset-pill.active .preset-rates{color:var(--color-money-green)}
-
-.results-hero-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.hero-metric-cell{min-width:0;display:flex;flex-direction:column;gap:4px;padding:16px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:10px}.hero-metric-cell.main-highlight{border-color:var(--color-money-green);background:var(--color-money-green-light)}.hero-metric-cell.fee-highlight{border-color:rgba(220,38,38,.28);background:rgba(220,38,38,.04)}
-.hero-lbl{font-size:10.5px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.04em;line-height:1.35}.hero-num{font-size:28px;font-weight:900;letter-spacing:-.02em;line-height:1.15;overflow-wrap:anywhere}.hero-subtext{font-size:11.5px;color:var(--color-text-muted);line-height:1.35}
-
-.chart-section,.chart-visual-panel{display:flex;flex-direction:column;gap:12px;min-width:0}.chart-header-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.chart-title{margin:0;font-size:12px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em;line-height:1.4}.chart-legend-badge{font-size:10.5px;color:var(--color-text-muted);text-align:right}.chart-canvas-wrapper{position:relative;width:100%;height:260px;min-height:220px;padding:16px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:9px;overflow:hidden}.chart-canvas-wrapper canvas{width:100%!important;height:100%!important}
-
-.results-split-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:20px;align-items:start}.breakdown-details-panel{display:flex;flex-direction:column;gap:12px;min-width:0}.breakdown-list{display:flex;flex-direction:column;gap:8px;padding:12px 16px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:8px}.breakdown-item{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0;font-size:12.5px;line-height:1.4}.breakdown-item.divider{border-bottom:1px solid var(--color-border);margin:4px 0}.breakdown-item.total{font-size:14px;font-weight:800}.item-name{color:var(--color-text-secondary);min-width:0}.item-value{color:var(--color-text-main);font-weight:700;text-align:right;white-space:nowrap}
-
-.batch-summary-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:12px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:8px}.batch-col{min-width:0;display:flex;flex-direction:column;gap:2px}.batch-lbl{font-size:10.5px;color:var(--color-text-muted);line-height:1.3}.batch-val{font-size:13.5px;font-weight:800;color:var(--color-text-main);overflow-wrap:anywhere}
-
-.insight-summary-card,.insight-box,.merchant-advice-box,.tax-formula-badge,.error-toast-inline,.empty-state-notice{border:1px solid var(--color-border);border-radius:8px;background:var(--color-surface-subtle)}.insight-summary-card{display:flex;flex-direction:column;gap:4px;padding:14px}.insight-lbl{font-size:10.5px;font-weight:700;color:var(--color-text-muted);text-transform:uppercase}.insight-val{font-size:24px;font-weight:900;font-family:var(--font-mono);color:var(--color-money-green)}.insight-desc{margin:0;font-size:11.5px;line-height:1.45;color:var(--color-text-secondary)}
-.merchant-advice-box{display:flex;align-items:flex-start;gap:10px;padding:12px}.advice-icon{flex:0 0 auto;font-size:18px;color:var(--color-money-green)}.advice-text{margin:0;font-size:12px;line-height:1.45;color:var(--color-text-secondary)}.advice-text strong{color:var(--color-text-main)}
-.error-toast-inline{display:flex;align-items:center;gap:8px;padding:10px 12px;border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.05);color:#dc2626;font-size:12px}.error-toast-inline .material-icons{font-size:18px}.empty-state-notice{display:flex;align-items:center;justify-content:center;gap:8px;min-height:80px;padding:16px;color:var(--color-text-secondary);font-size:12px;text-align:center}.empty-state-notice .material-icons{color:var(--color-money-green)}
-
-.denomination-grid-layout{display:flex;flex-direction:column;gap:16px}.section-title-label{margin:0;font-size:12px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase;letter-spacing:.05em}.denom-cards-wrap{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.denom-card{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:9px}.denom-card.is-note{border-color:var(--color-money-green);background:var(--color-money-green-light)}.denom-icon-wrap{width:32px;height:32px;flex:0 0 auto;display:grid;place-items:center;border-radius:7px;background:var(--color-surface);color:var(--color-money-green)}.denom-icon-wrap .material-icons{font-size:18px}.denom-info{display:flex;flex-direction:column;gap:2px;min-width:0}.denom-count{font-family:var(--font-mono);font-size:14px;font-weight:900;color:var(--color-text-main)}.denom-name{font-size:11px;color:var(--color-text-secondary);overflow-wrap:anywhere}
-
-.btn-copy-summary{width:100%;min-height:42px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:8px 12px;border-radius:8px;border:1px solid var(--color-border);background:var(--color-surface-hover);color:var(--color-text-main);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s ease}.btn-copy-summary:hover{border-color:var(--color-money-green);color:var(--color-money-green)}
-
-/* Legacy markup normalization */
-.calc-workspace-grid{display:grid;grid-template-columns:minmax(280px,420px) minmax(0,1fr);gap:20px}.inputs-panel-card,.results-panel-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:14px;padding:20px;box-shadow:var(--shadow-sm)}.form-fields-stack{display:flex;flex-direction:column;gap:16px}.form-row-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.form-group{display:flex;flex-direction:column;gap:6px}.form-label{font-size:11.5px;font-weight:700;color:var(--color-text-main)}.calc-input{width:100%;height:40px;padding:0 12px;background:var(--color-input-bg);border:1px solid var(--color-input-border);border-radius:8px;color:var(--color-input-text);font-family:var(--font-mono)}.hero-kpis-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.kpi-card{padding:16px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:10px;display:flex;flex-direction:column;gap:4px}.kpi-card.highlight{border-color:var(--color-money-green);background:var(--color-money-green-light)}.kpi-label{font-size:10.5px;font-weight:700;color:var(--color-text-secondary);text-transform:uppercase}.kpi-value{font-size:28px;font-weight:900;color:var(--color-text-main)}.kpi-subtext{font-size:11px;color:var(--color-text-muted)}.chart-box{display:flex;flex-direction:column;gap:12px;padding:12px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:9px}.canvas-container-bar,.canvas-container-doughnut{position:relative;width:100%;height:260px}.denomination-list{display:flex;flex-direction:column;gap:12px}.denoms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}.denom-item{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--color-surface-subtle);border:1px solid var(--color-border);border-radius:8px}.denom-ico{font-size:18px;color:var(--color-money-green)}.denom-qty{font-family:var(--font-mono);font-weight:800;color:var(--color-money-green)}.empty-state{padding:20px;text-align:center;color:var(--color-text-muted)}
-.text-neon,.text-money{color:var(--color-money-green)}.text-crimson{color:#dc2626}.text-amber{color:#d97706}.font-mono{font-family:var(--font-mono)}
-
-/* Stripe / PayPal calculator dashboard. This lives in the global design system because the calculator content is projected through app-calculator-layout. */
-.stripe-paypal-calculator #calculator-page-root .calculator-main-pane[mainContent]{gap:20px}
-.stripe-paypal-calculator #calculator-page-root .input-card{gap:20px}
-.stripe-paypal-calculator #calculator-page-root .input-card .presets-section{gap:10px}
-.stripe-paypal-calculator #calculator-page-root .input-card .custom-rates-grid{margin-top:2px}
-.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card{overflow:hidden;padding:0;gap:0;border:1px solid var(--color-border,#d8dee4);border-radius:18px;background:var(--color-surface,#fff);box-shadow:0 12px 32px rgba(31,35,40,.08)}
-.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-header{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:22px 24px;border-bottom:1px solid var(--color-border,#d8dee4);background:linear-gradient(180deg,var(--color-surface,#fff),var(--color-surface-subtle,#f6f8fa))}
-.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-heading{display:flex;align-items:center;gap:14px;min-width:0}
-.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-icon{width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;border:1px solid var(--color-border,#d8dee4);border-radius:12px;background:var(--color-surface,#fff);color:var(--color-money-green,#188038);box-shadow:0 2px 7px rgba(31,35,40,.06)}
-.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-icon .material-icons{font-size:22px}
-.stripe-paypal-calculator #calculator-page-root .section-eyebrow{display:block;margin-bottom:4px;color:var(--color-money-green,#188038);font-size:9px;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
-.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-heading .card-title{margin:0;color:var(--color-text-main,#24292f);font-size:18px;font-weight:850;letter-spacing:-.025em;line-height:1.2}
-.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-subtitle{max-width:680px;margin:5px 0 0;color:var(--color-text-secondary,#57606a);font-size:11.5px;line-height:1.5}
-.stripe-paypal-calculator #calculator-page-root .effective-rate-badge{min-width:118px;display:flex;flex-direction:column;align-items:flex-end;gap:3px;padding:10px 13px;border:1px solid var(--color-border,#d8dee4);border-radius:11px;background:var(--color-surface,#fff)}
-.stripe-paypal-calculator #calculator-page-root .effective-rate-badge span{color:var(--color-text-muted,#8c959f);font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
-.stripe-paypal-calculator #calculator-page-root .effective-rate-badge strong{color:var(--color-text-main,#24292f);font:850 16px/1 var(--font-mono,ui-monospace);letter-spacing:-.03em}
-.stripe-paypal-calculator #calculator-page-root .transaction-summary-strip{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr) 42px minmax(0,1fr);margin:20px 24px 22px;overflow:hidden;border:1px solid var(--color-border,#d8dee4);border-radius:14px;background:var(--color-surface-subtle,#f6f8fa)}
-.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell{position:relative;min-width:0;min-height:104px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:18px}
-.stripe-paypal-calculator #calculator-page-root .summary-index{position:absolute;top:12px;right:14px;color:var(--color-text-muted,#8c959f);font:700 9px/1 var(--font-mono,ui-monospace);opacity:.65}
-.stripe-paypal-calculator #calculator-page-root .summary-label{color:var(--color-text-secondary,#57606a);font-size:9px;font-weight:800;letter-spacing:.055em;text-transform:uppercase}
-.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell strong{overflow:hidden;color:var(--color-text-main,#24292f);font:850 clamp(20px,2.4vw,26px)/1.05 var(--font-mono,ui-monospace);letter-spacing:-.045em;text-overflow:ellipsis;white-space:nowrap}
-.stripe-paypal-calculator #calculator-page-root .fee-summary-cell{background:rgba(220,38,38,.045)}
-.stripe-paypal-calculator #calculator-page-root .fee-summary-cell strong{color:#dc2626}
-.stripe-paypal-calculator #calculator-page-root .net-summary-cell{background:var(--color-money-green-light,#eaf8ef)}
-.stripe-paypal-calculator #calculator-page-root .net-summary-cell strong{color:var(--color-money-green,#188038)}
-.stripe-paypal-calculator #calculator-page-root .summary-operator{display:grid;place-items:center;border-inline:1px solid var(--color-border,#d8dee4);color:var(--color-text-muted,#8c959f);background:var(--color-surface,#fff)}
-.stripe-paypal-calculator #calculator-page-root .summary-operator .material-icons{font-size:18px}
-.stripe-paypal-calculator #calculator-page-root .calculator-inner-split{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:16px;padding:0 24px 24px}
-.stripe-paypal-calculator #calculator-page-root .metrics-breakdown-box{display:flex;flex-direction:column;gap:14px;min-width:0}
-.stripe-paypal-calculator #calculator-page-root .transaction-amount-block{padding:18px;border:1px solid var(--color-border,#d8dee4);border-radius:14px;background:var(--color-surface-subtle,#f6f8fa)}
-.stripe-paypal-calculator #calculator-page-root .transaction-section-label{display:flex;align-items:center;gap:7px;margin-bottom:12px;color:var(--color-text-main,#24292f);font-size:10px;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
-.stripe-paypal-calculator #calculator-page-root .transaction-section-label .material-icons{color:var(--color-money-green,#188038);font-size:17px}
-.stripe-paypal-calculator #calculator-page-root .transaction-amount-block .input-label{margin-bottom:5px}
-.stripe-paypal-calculator #calculator-page-root .transaction-amount-block .input-symbol-wrap.large{height:56px}
-.stripe-paypal-calculator #calculator-page-root .transaction-amount-block .input-symbol-wrap.large .input-affix{left:14px;color:var(--color-money-green,#188038);font-size:17px}
-.stripe-paypal-calculator #calculator-page-root .transaction-amount-block .input-symbol-wrap.large .fintech-input{height:56px;padding-left:38px;border-radius:11px;background:var(--color-surface,#fff);font-size:22px;font-weight:850;letter-spacing:-.04em}
-.stripe-paypal-calculator #calculator-page-root .field-micro-hint{display:block;margin-top:7px;color:var(--color-text-muted,#8c959f);font-size:10px;line-height:1.4}
-.stripe-paypal-calculator #calculator-page-root .breakdown-statement{overflow:hidden;border:1px solid var(--color-border,#d8dee4);border-radius:14px;background:var(--color-surface,#fff)}
-.stripe-paypal-calculator #calculator-page-root .breakdown-statement-heading{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--color-border,#d8dee4);background:var(--color-surface-subtle,#f6f8fa);color:var(--color-text-muted,#8c959f);font-size:9px;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
-.stripe-paypal-calculator #calculator-page-root .breakdown-statement .breakdown-item{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0;padding:14px 15px;border-bottom:1px solid var(--color-border,#d8dee4)}
-.stripe-paypal-calculator #calculator-page-root .breakdown-item-label{display:flex;align-items:center;gap:10px;min-width:0}
-.stripe-paypal-calculator #calculator-page-root .breakdown-item-label>span:last-child{display:flex;flex-direction:column;gap:2px;min-width:0}
-.stripe-paypal-calculator #calculator-page-root .breakdown-item-label strong{color:var(--color-text-main,#24292f);font-size:11.5px;font-weight:750;line-height:1.3}
-.stripe-paypal-calculator #calculator-page-root .breakdown-item-label small{color:var(--color-text-muted,#8c959f);font-size:9.5px;line-height:1.35}
-.stripe-paypal-calculator #calculator-page-root .fee-row-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid var(--color-border,#d8dee4);border-radius:9px;background:var(--color-surface-subtle,#f6f8fa);color:var(--color-text-secondary,#57606a);font:800 10px/1 var(--font-mono,ui-monospace)}
-.stripe-paypal-calculator #calculator-page-root .fixed-icon{font-size:15px}
-.stripe-paypal-calculator #calculator-page-root .breakdown-statement .item-value{flex:0 0 auto;font:800 12px/1 var(--font-mono,ui-monospace);white-space:nowrap}
-.stripe-paypal-calculator #calculator-page-root .fee-value{color:#dc2626}
-.stripe-paypal-calculator #calculator-page-root .breakdown-statement .total-fee-row{background:rgba(220,38,38,.035)}
-.stripe-paypal-calculator #calculator-page-root .breakdown-total-icon{flex:0 0 auto;color:#dc2626;font-size:18px}
-.stripe-paypal-calculator #calculator-page-root .total-fee-value{font-size:13px!important}
-.stripe-paypal-calculator #calculator-page-root .statement-divider{height:8px;background:var(--color-canvas,#f6f8fa);border-bottom:1px solid var(--color-border,#d8dee4)}
-.stripe-paypal-calculator #calculator-page-root .breakdown-statement .net-payout-row{border-bottom:0;background:linear-gradient(90deg,var(--color-money-green-light,#eaf8ef),var(--color-surface,#fff))}
-.stripe-paypal-calculator #calculator-page-root .breakdown-net-icon{flex:0 0 auto;color:var(--color-money-green,#188038);font-size:20px}
-.stripe-paypal-calculator #calculator-page-root .net-payout-row .breakdown-item-label strong{font-size:12px}
-.stripe-paypal-calculator #calculator-page-root .net-payout-value{flex:0 0 auto;color:var(--color-money-green,#188038);font:900 18px/1 var(--font-mono,ui-monospace);letter-spacing:-.035em;white-space:nowrap}
-.stripe-paypal-calculator #calculator-page-root .merchant-advice-box{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;border:1px solid #ead8a1;border-radius:12px;background:#fffaf0}
-.stripe-paypal-calculator #calculator-page-root .advice-icon{flex:0 0 auto;color:#b7791f;font-size:18px}
-.stripe-paypal-calculator #calculator-page-root .advice-text{margin:0;color:#66583d;font-size:10.5px;line-height:1.55}
-.stripe-paypal-calculator #calculator-page-root .advice-text strong{color:var(--color-text-main,#24292f);font:800 10.5px/1.4 var(--font-mono,ui-monospace)}
-.stripe-paypal-calculator #calculator-page-root .advice-text em{color:var(--color-text-main,#24292f);font-style:normal;font-weight:750}
-.stripe-paypal-calculator #calculator-page-root .chart-visual-panel{display:flex;flex-direction:column;gap:14px;min-width:0;padding:18px;border:1px solid var(--color-border,#d8dee4);border-radius:14px;background:var(--color-surface-subtle,#f6f8fa)}
-.stripe-paypal-calculator #calculator-page-root .chart-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.stripe-paypal-calculator #calculator-page-root .chart-title{margin:0;color:var(--color-text-main,#24292f);font-size:14px;font-weight:850;letter-spacing:-.02em;text-transform:none}
-.stripe-paypal-calculator #calculator-page-root .chart-rate{flex:0 0 auto;padding:5px 8px;border:1px solid var(--color-border,#d8dee4);border-radius:7px;background:var(--color-surface,#fff);color:var(--color-text-secondary,#57606a);font:800 9px/1 var(--font-mono,ui-monospace)}
-.stripe-paypal-calculator #calculator-page-root .chart-canvas-wrapper{position:relative;width:100%;height:250px;min-height:220px;padding:8px;border:1px solid var(--color-border,#d8dee4);border-radius:12px;background:var(--color-surface,#fff)}
-.stripe-paypal-calculator #calculator-page-root .chart-canvas-wrapper canvas{width:100%!important;height:100%!important}
-.stripe-paypal-calculator #calculator-page-root .chart-legend-summary{display:grid;gap:7px;padding-top:2px}
-.stripe-paypal-calculator #calculator-page-root .chart-legend-summary>div{display:grid;grid-template-columns:9px 1fr auto;align-items:center;gap:8px;padding:8px 9px;border:1px solid var(--color-border,#d8dee4);border-radius:9px;background:var(--color-surface,#fff);color:var(--color-text-secondary,#57606a);font-size:10px}
-.stripe-paypal-calculator #calculator-page-root .chart-legend-summary strong{color:var(--color-text-main,#24292f);font:850 10.5px/1 var(--font-mono,ui-monospace)}
-.stripe-paypal-calculator #calculator-page-root .legend-dot{width:8px;height:8px;border-radius:50%}.stripe-paypal-calculator #calculator-page-root .revenue-dot{background:#188038}.stripe-paypal-calculator #calculator-page-root .fee-dot{background:#dc2626}
-.stripe-paypal-calculator #calculator-page-root .chart-context-note{display:flex;align-items:flex-start;gap:7px;padding:10px;border:1px dashed var(--color-border,#d8dee4);border-radius:9px;color:var(--color-text-muted,#8c959f);font-size:9.5px;line-height:1.45;background:var(--color-surface,#fff)}
-.stripe-paypal-calculator #calculator-page-root .chart-context-note .material-icons{font-size:15px;flex:0 0 auto}
-
-@media(max-width:900px){.stripe-paypal-calculator #calculator-page-root .calculator-inner-split{grid-template-columns:1fr}.stripe-paypal-calculator #calculator-page-root .chart-visual-panel{min-height:0}}
-@media(max-width:767px){.calc-mode-switcher{grid-template-columns:1fr}.inputs-two-col-grid,.custom-rates-grid,.results-hero-strip,.results-split-layout,.hero-kpis-grid{grid-template-columns:1fr}.batch-summary-strip{grid-template-columns:1fr 1fr}.chart-header-row{align-items:flex-start;flex-direction:column}.chart-legend-badge{text-align:left}.chart-canvas-wrapper{height:240px;min-height:200px;padding:10px}.item-value{white-space:normal}.calc-workspace-grid{grid-template-columns:1fr}.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-header{align-items:flex-start;flex-direction:column;padding:18px 16px}.stripe-paypal-calculator #calculator-page-root .effective-rate-badge{align-items:flex-start;min-width:0;width:100%}.stripe-paypal-calculator #calculator-page-root .transaction-summary-strip{grid-template-columns:1fr;margin:14px 16px 16px}.stripe-paypal-calculator #calculator-page-root .summary-operator{min-height:24px;border-inline:0;border-block:1px solid var(--color-border,#d8dee4)}.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell{min-height:82px}.stripe-paypal-calculator #calculator-page-root .calculator-inner-split{padding:0 16px 16px;gap:12px}.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-heading .card-title{font-size:16px}.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-subtitle{font-size:10.5px}}
-@media(max-width:480px){.calculator-main-pane[mainContent]{gap:14px}section.fintech-card,div.fintech-card{padding:14px;border-radius:12px}.batch-summary-strip{grid-template-columns:1fr}.hero-num{font-size:24px}.preset-pill-grid,.denom-cards-wrap,.denoms-grid{grid-template-columns:1fr 1fr}.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-icon{width:40px;height:40px;flex-basis:40px}.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell strong{font-size:21px}.stripe-paypal-calculator #calculator-page-root .transaction-amount-block{padding:14px}.stripe-paypal-calculator #calculator-page-root .breakdown-statement .breakdown-item{padding:12px}.stripe-paypal-calculator #calculator-page-root .chart-visual-panel{padding:14px}.stripe-paypal-calculator #calculator-page-root .chart-canvas-wrapper{height:220px}}
+@media (max-width:900px){.stripe-paypal-calculator #calculator-page-root .calculator-inner-split{grid-template-columns:1fr}}
+@media (max-width:600px){.stripe-paypal-calculator #calculator-page-root .transaction-summary-strip{grid-template-columns:1fr}.stripe-paypal-calculator #calculator-page-root .summary-operator{display:none}.stripe-paypal-calculator #calculator-page-root .transaction-summary-cell{min-height:78px}.stripe-paypal-calculator #calculator-page-root .transaction-breakdown-card{padding:16px}}
