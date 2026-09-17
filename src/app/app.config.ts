@@ -12,6 +12,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideAppInitializer(() => inject(SeoService)),
+    provideAppInitializer(() => {
+      inject(SeoService);
+    }),
   ],
 };
