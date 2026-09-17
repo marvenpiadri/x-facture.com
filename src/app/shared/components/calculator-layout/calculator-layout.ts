@@ -14,8 +14,11 @@ import { CALCULATOR_REGISTRY, getCalculatorBySlug } from '../../../calculators/c
 })
 export class CalculatorLayoutComponent {
   private readonly router = inject(Router);
-  // Instantiates the route-driven SEO service for every calculator page.
-  private readonly seoService = inject(SeoService);
+
+  constructor() {
+    // Instantiate the route-driven SEO service for every calculator page.
+    inject(SeoService);
+  }
 
   title = input<string>('');
   subtitle = input<string>('');
