@@ -5,7 +5,6 @@
   currentToolName="Stripe & PayPal Fee Optimizer"
 >
   <div mainContent class="calculator-main-pane">
-    <!-- Mode Toggle Switcher -->
     <div class="calc-mode-switcher">
       <button
         type="button"
@@ -27,9 +26,7 @@
       </button>
     </div>
 
-    <!-- Controls & Input Card -->
     <app-fintech-card title="Transaction & Processor Settings" icon="tune" class="input-card">
-      <!-- Preset Selectors -->
       <div class="presets-section">
         <label class="input-label">Select Merchant Gateway & Region</label>
         <div class="preset-pill-grid">
@@ -47,7 +44,6 @@
         </div>
       </div>
 
-      <!-- Custom Rate Overrides -->
       <div class="custom-rates-grid">
         <app-fintech-input
           id="feePercentInput"
@@ -72,17 +68,45 @@
       </div>
     </app-fintech-card>
 
-    <!-- Calculation Engine Main Output -->
-    <section class="fintech-card results-card">
-      <div class="card-header">
-        <span class="material-icons card-icon font-semibold">analytics</span>
-        <h2 class="card-title">Transaction Breakdown</h2>
+    <section class="fintech-card results-card transaction-breakdown-card">
+      <div class="card-header transaction-breakdown-header">
+        <div class="transaction-breakdown-heading">
+          <span class="material-icons card-icon font-semibold">receipt_long</span>
+          <div>
+            <h2 class="card-title">Transaction Breakdown</h2>
+            <p class="transaction-breakdown-subtitle">See exactly how the payment is split between processor fees and your business.</p>
+          </div>
+        </div>
+        <div class="effective-rate-badge">
+          <span>Effective rate</span>
+          <strong>{{ displayMetrics().effectiveRate | number:'1.2-2' }}%</strong>
+        </div>
+      </div>
+
+      <div class="transaction-summary-strip">
+        <div class="transaction-summary-cell">
+          <span class="summary-label">{{ calcMode() === 'from-gross' ? 'Gross charged' : 'Required gross' }}</span>
+          <strong>${{ displayMetrics().gross | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-operator" aria-hidden="true">−</div>
+        <div class="transaction-summary-cell fee-summary-cell">
+          <span class="summary-label">Processor fees</span>
+          <strong>-${{ displayMetrics().fee | number:'1.2-2' }}</strong>
+        </div>
+        <div class="summary-operator" aria-hidden="true">=</div>
+        <div class="transaction-summary-cell net-summary-cell">
+          <span class="summary-label">{{ calcMode() === 'from-gross' ? 'Net payout' : 'Target payout' }}</span>
+          <strong>${{ displayMetrics().net | number:'1.2-2' }}</strong>
+        </div>
       </div>
 
       <div class="calculator-inner-split">
-        <!-- Text Metrics Column -->
         <div class="metrics-breakdown-box">
-          <div class="field-group input-amount-field">
+          <div class="field-group input-amount-field transaction-amount-block">
+            <div class="transaction-section-label">
+              <span class="material-icons">payments</span>
+              <span>Transaction amount</span>
+            </div>
             <label class="input-label" for="inputAmountVal">
               @if (calcMode() === 'from-gross') {
                 Invoice Amount (Gross)
@@ -102,59 +126,79 @@
                 class="fintech-input text-money"
               />
             </div>
-            <span class="field-micro-hint">Adjust amount to project fee variations instantly</span>
+            <span class="field-micro-hint">Adjust the amount to recalculate every transaction component instantly.</span>
           </div>
 
-          <div class="breakdown-list">
-            <div class="breakdown-item">
-              <span class="item-name">Processor Fee ({{ feePercent() }}%):</span>
-              <span class="item-value text-crimson font-mono">
-                -${{ (calcMode() === 'from-gross' ? fromGrossResults().percentageFee : toNetResults().percentageFee) | number:'1.2-2' }}
-              </span>
+          <div class="breakdown-statement">
+            <div class="breakdown-statement-heading">
+              <span>Fee calculation</span>
+              <span>Amount</span>
             </div>
 
             <div class="breakdown-item">
-              <span class="item-name">Fixed Gateway Flat Cut:</span>
-              <span class="item-value text-crimson font-mono">
-                -${{ (calcMode() === 'from-gross' ? fromGrossResults().fixedFee : toNetResults().fixedFee) | number:'1.2-2' }}
-              </span>
+              <div class="breakdown-item-label">
+                <span class="breakdown-item-dot"></span>
+                <span>
+                  <strong>Variable processing fee</strong>
+                  <small>{{ feePercent() }}% of transaction</small>
+                </span>
+              </div>
+              <span class="item-value text-crimson font-mono">-${{ (calcMode() === 'from-gross' ? fromGrossResults().percentageFee : toNetResults().percentageFee) | number:'1.2-2' }}</span>
             </div>
 
-            <div class="breakdown-item border-highlight">
-              <span class="item-name text-crimson">Total Processor Deductions:</span>
-              <span class="item-value text-crimson font-mono font-semibold">
-                -${{ (calcMode() === 'from-gross' ? fromGrossResults().totalFee : toNetResults().totalFee) | number:'1.2-2' }}
-              </span>
+            <div class="breakdown-item">
+              <div class="breakdown-item-label">
+                <span class="breakdown-item-dot"></span>
+                <span>
+                  <strong>Fixed gateway fee</strong>
+                  <small>${{ feeFixed() | number:'1.2-2' }} per transaction</small>
+                </span>
+              </div>
+              <span class="item-value text-crimson font-mono">-${{ (calcMode() === 'from-gross' ? fromGrossResults().fixedFee : toNetResults().fixedFee) | number:'1.2-2' }}</span>
             </div>
 
-            <div class="breakdown-item divider"></div>
+            <div class="breakdown-item total-fee-row">
+              <div class="breakdown-item-label">
+                <span class="breakdown-total-icon material-icons">remove_circle_outline</span>
+                <span><strong>Total processor deductions</strong></span>
+              </div>
+              <span class="item-value text-crimson font-mono font-semibold">-${{ displayMetrics().fee | number:'1.2-2' }}</span>
+            </div>
 
-            <div class="breakdown-item total">
-              <span class="item-name">Net Payout to Bank:</span>
-              <span class="item-value text-neon font-mono">
-                ${{ (calcMode() === 'from-gross' ? fromGrossResults().netPayout : toNetResults().targetNet) | number:'1.2-2' }}
-              </span>
+            <div class="statement-divider"></div>
+
+            <div class="breakdown-item net-payout-row">
+              <div class="breakdown-item-label">
+                <span class="breakdown-net-icon material-icons">account_balance</span>
+                <span>
+                  <strong>{{ calcMode() === 'from-gross' ? 'Net payout to bank' : 'Target payout to bank' }}</strong>
+                  <small>Amount retained by your business</small>
+                </span>
+              </div>
+              <span class="net-payout-value font-mono">${{ displayMetrics().net | number:'1.2-2' }}</span>
             </div>
           </div>
 
-          <!-- Context Advice Alert -->
           <div class="merchant-advice-box">
             <span class="material-icons advice-icon">lightbulb</span>
             <p class="advice-text">
               @if (calcMode() === 'from-gross') {
                 To receive exactly <strong>${{ inputAmount() | number:'1.2-2' }}</strong> in your account, switch to <em>"Charge Extra to Cover Fees"</em> mode to bill <strong>${{ toNetResults().requiredGross | number:'1.2-2' }}</strong>.
               } @else {
-                By adding <strong>${{ toNetResults().totalFee | number:'1.2-2' }}</strong> to the client's invoice, the payment processor fee is fully offset.
+                By charging <strong>${{ toNetResults().requiredGross | number:'1.2-2' }}</strong>, the processor fee is accounted for and your target payout remains <strong>${{ toNetResults().targetNet | number:'1.2-2' }}</strong>.
               }
             </p>
           </div>
         </div>
 
-        <!-- Chart.js Canvas Container -->
         <div class="chart-visual-panel">
           <h3 class="chart-title">Revenue vs. Processor Fee Share</h3>
           <div class="chart-canvas-wrapper">
             <canvas #calcChart id="calcChart"></canvas>
+          </div>
+          <div class="chart-context-note">
+            <span class="material-icons">info</span>
+            <span>The chart shows the share of the gross transaction retained by your business versus deducted by the processor.</span>
           </div>
         </div>
       </div>
