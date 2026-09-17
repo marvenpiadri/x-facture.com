@@ -25,7 +25,8 @@
               "src/styles/calculator-system.css",
               "src/styles/calculator-presets.css",
               "src/styles/calculator-universal.css",
-              "src/styles/calculator-components.css"
+              "src/styles/calculator-components.css",
+              "src/styles/calculator-polish.css"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
