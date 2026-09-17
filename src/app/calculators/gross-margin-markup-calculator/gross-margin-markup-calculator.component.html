@@ -1,11 +1,10 @@
 <app-calculator-layout
   title="Gross Margin & Markup Profit Calculator"
-  subtitle="Determine optimal retail price targets, eliminate margin vs. markup confusion, and visualize profit yield per inventory batch."
+  subtitle="Determine optimal selling prices, compare margin with markup, and project profit across a product batch."
   icon="calculate"
-  currentToolName="Gross Margin vs. Markup Engine"
+  currentToolName="Gross Margin & Markup Engine"
 >
   <div mainContent class="calculator-main-pane">
-    <!-- Mode Toggle Switcher -->
     <div class="calc-mode-switcher">
       <button
         type="button"
@@ -14,7 +13,7 @@
         (click)="mode.set('target-margin')"
       >
         <span class="material-icons">price_check</span>
-        <span>Set Target Margin % (Calculate Price)</span>
+        <span>Set Target Margin</span>
       </button>
       <button
         type="button"
@@ -23,147 +22,89 @@
         (click)="mode.set('price-analysis')"
       >
         <span class="material-icons">analytics</span>
-        <span>Analyze Selling Price (Calculate Margin)</span>
+        <span>Analyze Selling Price</span>
       </button>
     </div>
 
-    <!-- Controls & Input Card -->
     <section class="fintech-card input-card">
       <div class="card-header">
         <span class="material-icons card-icon">inventory_2</span>
-        <h2 class="card-title">Cost & Pricing Variables</h2>
+        <h2 class="card-title">Cost & Pricing Inputs</h2>
       </div>
 
       <div class="inputs-two-col-grid">
-        <!-- COGS -->
         <div class="field-group">
-          <label class="input-label" for="cogsInput">Wholesale Cost of Goods (COGS)</label>
+          <label class="input-label" for="cogsInput">Unit Cost / COGS</label>
           <div class="input-symbol-wrap prefix large">
             <span class="input-affix">$</span>
-            <input
-              id="cogsInput"
-              type="number"
-              step="5"
-              min="0"
-              [ngModel]="cogs()"
-              (ngModelChange)="cogs.set($event)"
-              class="fintech-input"
-            />
+            <input id="cogsInput" type="number" step="5" min="0" [ngModel]="cogs()" (ngModelChange)="cogs.set($event)" class="fintech-input" />
           </div>
-          <span class="field-micro-hint">Unit purchase cost of the item/goods</span>
+          <span class="field-micro-hint">Direct cost of one unit before operating expenses</span>
         </div>
 
-        <!-- Target Margin (Only shown in target-margin mode) -->
         @if (mode() === 'target-margin') {
           <div class="field-group">
-            <label class="input-label" for="targetMarginInput">Desired Gross Margin (%)</label>
+            <label class="input-label" for="targetMarginInput">Target Gross Margin (%)</label>
             <div class="input-symbol-wrap suffix large">
-              <input
-                id="targetMarginInput"
-                type="number"
-                step="1"
-                min="0"
-                max="99.9"
-                [ngModel]="targetMargin()"
-                (ngModelChange)="targetMargin.set($event)"
-                class="fintech-input text-money"
-              />
+              <input id="targetMarginInput" type="number" step="1" min="0" max="99.9" [ngModel]="targetMargin()" (ngModelChange)="targetMargin.set($event)" class="fintech-input text-money" />
               <span class="input-affix">%</span>
             </div>
-            <span class="field-micro-hint">Profit percentage on final selling price</span>
+            <span class="field-micro-hint">Profit as a percentage of the final selling price</span>
           </div>
         }
 
-        <!-- Selling Price (Only shown in price-analysis mode) -->
         @if (mode() === 'price-analysis') {
           <div class="field-group">
-            <label class="input-label" for="sellingPriceInput">Retail Selling Price ($)</label>
+            <label class="input-label" for="sellingPriceInput">Selling Price per Unit</label>
             <div class="input-symbol-wrap prefix large">
               <span class="input-affix">$</span>
-              <input
-                id="sellingPriceInput"
-                type="number"
-                step="5"
-                min="0"
-                [ngModel]="sellingPriceInput()"
-                (ngModelChange)="sellingPriceInput.set($event)"
-                class="fintech-input text-money"
-              />
+              <input id="sellingPriceInput" type="number" step="5" min="0" [ngModel]="sellingPriceInput()" (ngModelChange)="sellingPriceInput.set($event)" class="fintech-input text-money" />
             </div>
-            <span class="field-micro-hint">Current or planned retail price per unit</span>
+            <span class="field-micro-hint">Current or planned customer price</span>
           </div>
         }
 
-        <!-- Quantity Batch -->
         <div class="field-group">
-          <label class="input-label" for="quantityInput">Inventory Batch Volume (Units)</label>
+          <label class="input-label" for="quantityInput">Batch Quantity</label>
           <div class="input-symbol-wrap suffix">
-            <input
-              id="quantityInput"
-              type="number"
-              step="10"
-              min="1"
-              max="1000000"
-              [ngModel]="quantityUnits()"
-              (ngModelChange)="quantityUnits.set($event)"
-              class="fintech-input font-mono"
-            />
+            <input id="quantityInput" type="number" step="10" min="1" max="1000000" [ngModel]="quantityUnits()" (ngModelChange)="quantityUnits.set($event)" class="fintech-input font-mono" />
             <span class="input-affix">units</span>
           </div>
-          <span class="field-micro-hint">Batch size to project total purchase and returns</span>
+          <span class="field-micro-hint">Optional volume for total revenue and profit</span>
         </div>
       </div>
     </section>
 
-    <!-- Calculation Engine Main Output -->
     <section class="fintech-card results-card">
       <div class="results-hero-strip">
         <div class="hero-metric-cell main-highlight">
-          <span class="hero-lbl">Unit Selling Price Target</span>
-          <span class="hero-num text-neon font-mono">
-            ${{ results().sellingPrice | number:'1.2-2' }}
-          </span>
-          <span class="hero-subtext">Unit Cost: ${{ results().cogs | number:'1.2-2' }}</span>
+          <span class="hero-lbl">Selling Price per Unit</span>
+          <span class="hero-num text-neon font-mono">${{ results().sellingPrice | number:'1.2-2' }}</span>
+          <span class="hero-subtext">Unit cost: ${{ results().cogs | number:'1.2-2' }}</span>
         </div>
 
         <div class="hero-metric-cell fee-highlight">
-          <span class="hero-lbl">Net Gross Profit margin</span>
-          <span class="hero-num font-mono text-neon">
-            +${{ results().profitPerUnit | number:'1.2-2' }}
-          </span>
-          <span class="hero-subtext">Margin: {{ results().marginPct | number:'1.1-1' }}% | Markup: {{ results().markupPct | number:'1.1-1' }}%</span>
+          <span class="hero-lbl">Gross Profit per Unit</span>
+          <span class="hero-num font-mono text-neon">+${{ results().profitPerUnit | number:'1.2-2' }}</span>
+          <span class="hero-subtext">Margin: {{ results().marginPct | number:'1.1-1' }}% · Markup: {{ results().markupPct | number:'1.1-1' }}%</span>
         </div>
       </div>
 
-      <!-- Comparison Bar Chart -->
       <div class="chart-section">
         <div class="chart-header-row">
-          <h3 class="chart-title">Pricing Breakdown: Cost vs. Net Markup Share</h3>
-          <span class="chart-legend-badge">Values scaled to retail unit</span>
+          <h3 class="chart-title">Selling Price Composition</h3>
+          <span class="chart-legend-badge">Unit cost vs gross profit</span>
         </div>
         <div class="chart-canvas-wrapper">
           <canvas #calcChart id="calcChart"></canvas>
         </div>
       </div>
 
-      <!-- Batch Volume Aggregates -->
       <div class="batch-summary-strip">
-        <div class="batch-col">
-          <span class="batch-lbl">Batch Units</span>
-          <span class="batch-val font-mono">{{ results().quantity | number }}</span>
-        </div>
-        <div class="batch-col">
-          <span class="batch-lbl">Total COGS Cost</span>
-          <span class="batch-val text-crimson font-mono">${{ results().totalCost | number:'1.2-2' }}</span>
-        </div>
-        <div class="batch-col">
-          <span class="batch-lbl">Total Revenue</span>
-          <span class="batch-val font-mono">${{ results().totalRevenue | number:'1.2-2' }}</span>
-        </div>
-        <div class="batch-col">
-          <span class="batch-lbl">Total Net Profit</span>
-          <span class="batch-val text-neon font-mono">+${{ results().totalProfit | number:'1.2-2' }}</span>
-        </div>
+        <div class="batch-col"><span class="batch-lbl">Batch Units</span><span class="batch-val font-mono">{{ results().quantity | number }}</span></div>
+        <div class="batch-col"><span class="batch-lbl">Total COGS</span><span class="batch-val text-crimson font-mono">${{ results().totalCost | number:'1.2-2' }}</span></div>
+        <div class="batch-col"><span class="batch-lbl">Total Revenue</span><span class="batch-val font-mono">${{ results().totalRevenue | number:'1.2-2' }}</span></div>
+        <div class="batch-col"><span class="batch-lbl">Total Gross Profit</span><span class="batch-val text-neon font-mono">+${{ results().totalProfit | number:'1.2-2' }}</span></div>
       </div>
     </section>
   </div>
