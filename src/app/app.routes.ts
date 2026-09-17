@@ -48,13 +48,18 @@ export const routes: Routes = [
   { path: 'calculators/cash-register-change-calculator', component: CashRegisterChangeCalculatorComponent },
   { path: 'calculators/compound-working-capital-calculator', component: CompoundWorkingCapitalCalculatorComponent },
 
-  // New calculator pages share one reusable calculator implementation.
   { path: 'calculators/roi-calculator', component: SimpleFinanceCalculatorComponent },
   { path: 'calculators/roas-calculator', component: SimpleFinanceCalculatorComponent },
   { path: 'calculators/customer-acquisition-cost-calculator', component: SimpleFinanceCalculatorComponent },
   { path: 'calculators/customer-lifetime-value-calculator', component: SimpleFinanceCalculatorComponent },
   { path: 'calculators/cagr-calculator', component: SimpleFinanceCalculatorComponent },
   { path: 'calculators/discount-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/net-profit-margin-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/contribution-margin-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/percentage-change-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/price-increase-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/debt-to-income-calculator', component: SimpleFinanceCalculatorComponent },
+  { path: 'calculators/loan-payoff-calculator', component: SimpleFinanceCalculatorComponent },
 
   { path: ':docType', component: DocumentListPage },
   { path: ':docType/new', component: DocumentEditPage },
