@@ -65,5 +65,23 @@ export const FINANCE_TOOLS: FinanceToolConfig[] = [
   },
   {
     id: 'discount', slug: 'discount-calculator', title: 'Discount Calculator', shortTitle: 'Sale Price & Savings', category: 'Pricing & Margins', description: 'Calculate discount savings and final sale price from an original price and percentage discount.', icon: 'sell', badge: 'New', route: '/calculators/discount-calculator'
+  },
+  {
+    id: 'net-profit-margin', slug: 'net-profit-margin-calculator', title: 'Net Profit Margin Calculator', shortTitle: 'Net Profit Margin', category: 'Pricing & Margins', description: 'Calculate net profit margin from revenue and net profit to measure profitability as a percentage of sales.', icon: 'account_balance', badge: 'New', route: '/calculators/net-profit-margin-calculator'
+  },
+  {
+    id: 'contribution-margin', slug: 'contribution-margin-calculator', title: 'Contribution Margin Calculator', shortTitle: 'Contribution Margin', category: 'Pricing & Margins', description: 'Calculate contribution margin and contribution margin ratio for break-even and operating planning.', icon: 'donut_small', badge: 'New', route: '/calculators/contribution-margin-calculator'
+  },
+  {
+    id: 'percentage-change', slug: 'percentage-change-calculator', title: 'Percentage Change Calculator', shortTitle: 'Percentage Change', category: 'Pricing & Margins', description: 'Calculate percentage increases and decreases between an original value and a new value.', icon: 'percent', badge: 'New', route: '/calculators/percentage-change-calculator'
+  },
+  {
+    id: 'price-increase', slug: 'price-increase-calculator', title: 'Price Increase Calculator', shortTitle: 'Price Increase', category: 'Pricing & Margins', description: 'Calculate a new selling price and absolute increase from a planned percentage price raise.', icon: 'trending_up', badge: 'New', route: '/calculators/price-increase-calculator'
+  },
+  {
+    id: 'debt-to-income', slug: 'debt-to-income-calculator', title: 'Debt-to-Income Ratio Calculator', shortTitle: 'Debt-to-Income Ratio', category: 'Financing & Growth', description: 'Calculate DTI from monthly debt obligations and gross monthly income.', icon: 'credit_score', badge: 'New', route: '/calculators/debt-to-income-calculator'
+  },
+  {
+    id: 'loan-payoff', slug: 'loan-payoff-calculator', title: 'Loan Payoff Calculator', shortTitle: 'Loan Payoff Time', category: 'Financing & Growth', description: 'Estimate how long it will take to repay a loan from the balance, interest rate and monthly payment.', icon: 'schedule', badge: 'New', route: '/calculators/loan-payoff-calculator'
   }
 ];
