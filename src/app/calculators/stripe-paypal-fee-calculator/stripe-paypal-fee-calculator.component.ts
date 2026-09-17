@@ -47,6 +47,7 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
     this.seoService.updateCalculatorMetadata({
       slug: 'stripe-paypal-fee-calculator',
       name: 'Stripe & PayPal Merchant Fee Calculator',
+      category: 'payments',
       title: 'Stripe & PayPal Fee Calculator (2026) | Merchant Fee Calculator',
       description: 'Calculate payment processing fees, net payouts, effective rates, and the gross amount needed to cover Stripe or PayPal transaction fees.',
       keywords: [
