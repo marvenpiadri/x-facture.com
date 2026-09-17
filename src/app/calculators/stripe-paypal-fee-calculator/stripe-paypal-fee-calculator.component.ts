@@ -34,7 +34,6 @@ interface FeeTier {
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, CalculatorLayoutComponent, FintechCardComponent, FintechInputComponent],
   templateUrl: './stripe-paypal-fee-calculator.component.html',
-  styleUrl: './stripe-paypal-fee-calculator.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -150,8 +149,8 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
         datasets: [{
           data: [metrics.net, metrics.fee],
           backgroundColor: ['#188038', '#dc2626'],
-          borderColor: ['#ffffff', '#ffffff'],
-          borderWidth: 3,
+          borderWidth: 0,
+          hoverBorderWidth: 0,
           hoverOffset: 6
         }]
       },
@@ -160,15 +159,12 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
         maintainAspectRatio: false,
         cutout: '72%',
         plugins: {
-          legend: {
-            display: false
-          },
+          legend: { display: false },
           tooltip: {
-            backgroundColor: '#ffffff',
-            titleColor: '#24292f',
-            bodyColor: '#57606a',
-            borderColor: '#d8dee4',
-            borderWidth: 1,
+            backgroundColor: 'rgba(20, 24, 22, 0.96)',
+            titleColor: '#ffffff',
+            bodyColor: '#d9e0dc',
+            borderWidth: 0,
             padding: 10,
             callbacks: {
               label: (context) => ` ${context.label}: $${(Number(context.raw) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
