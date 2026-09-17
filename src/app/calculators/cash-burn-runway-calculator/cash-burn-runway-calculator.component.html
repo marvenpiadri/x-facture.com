@@ -5,7 +5,6 @@
   currentToolName="Startup Cash Burn & Runway Model"
 >
   <div mainContent class="calculator-main-pane">
-    <!-- Quick Scenario Preset Cards -->
     <div class="scenario-presets-bar">
       <span class="preset-label">Quick Scenarios:</span>
       <button type="button" class="scenario-btn" (click)="setScenario(50000, 5000, 15000, 5)">Early Seed Stage</button>
@@ -13,8 +12,7 @@
       <button type="button" class="scenario-btn" (click)="setScenario(100000, 40000, 38000, 2)">Default Alive</button>
     </div>
 
-    <!-- Controls & Input Card -->
-    <app-fintech-card title="Treasury & Operational Run-Rate Inputs" icon="account_balance" class="input-card">
+    <app-fintech-card title="Cash & Operating Inputs" icon="account_balance" class="input-card">
       <div class="inputs-two-col-grid">
         <app-fintech-input
           id="startingCash"
@@ -28,7 +26,7 @@
 
         <app-fintech-input
           id="monthlyRevenue"
-          label="Monthly Sales / Revenues ($)"
+          label="Monthly Revenue ($)"
           [value]="monthlyRevenue()"
           (valueChange)="monthlyRevenue.set($event)"
           prefix="$"
@@ -48,7 +46,7 @@
 
         <app-fintech-input
           id="revenueGrowthRate"
-          label="Planned Monthly Growth Rate (%)"
+          label="Planned Monthly Revenue Growth (%)"
           [value]="revenueGrowthRate()"
           (valueChange)="revenueGrowthRate.set($event)"
           suffix="%"
@@ -59,23 +57,22 @@
       </div>
     </app-fintech-card>
 
-    <!-- Forecast & Runway Results Card -->
-    <app-fintech-card title="Amortization Results" icon="analytics" class="results-card">
+    <app-fintech-card title="Runway & Cash Forecast" icon="analytics" class="results-card">
       <div class="results-hero-strip">
         <div class="hero-metric-cell main-highlight">
-          <span class="hero-lbl">Remaining Runway Period</span>
+          <span class="hero-lbl">Remaining Runway</span>
           <span class="hero-num font-mono text-neon">
             @if (isCashFlowPositive()) {
-              Infinite
+              Unlimited
             } @else {
-              {{ runwayMonths() | number:'1.1-1' }} Mos
+              {{ runwayMonths() | number:'1.1-1' }} Months
             }
           </span>
-          <span class="hero-subtext">Zero-Cash Date: {{ zeroCashDate() }}</span>
+          <span class="hero-subtext">Projected zero-cash date: {{ zeroCashDate() }}</span>
         </div>
 
         <div class="hero-metric-cell fee-highlight">
-          <span class="hero-lbl">Net Monthly Cash Burn</span>
+          <span class="hero-lbl">Net Monthly Burn</span>
           <span class="hero-num font-mono" [class.text-crimson]="!isCashFlowPositive()" [class.text-neon]="isCashFlowPositive()">
             @if (isCashFlowPositive()) {
               +${{ (monthlyRevenue() - monthlyExpenses()) | number:'1.0-0' }}/mo
@@ -83,15 +80,14 @@
               -${{ netBurnRate() | number:'1.0-0' }}/mo
             }
           </span>
-          <span class="hero-subtext">Gross OPEX: ${{ grossBurnRate() | number:'1.0-0' }}/mo</span>
+          <span class="hero-subtext">Operating expenses: ${{ grossBurnRate() | number:'1.0-0' }}/mo</span>
         </div>
       </div>
 
-      <!-- 12-Month Projection Line Chart -->
       <div class="chart-section">
         <div class="chart-header-row">
-          <h3 class="chart-title">12-Month Capital Runway Trajectory</h3>
-          <span class="chart-legend-badge">Line slope down to zero = liquidation</span>
+          <h3 class="chart-title">12-Month Cash Balance Projection</h3>
+          <span class="chart-legend-badge">Revenue growth is modeled monthly</span>
         </div>
         <div class="chart-canvas-wrapper">
           <canvas #calcChart id="calcChart"></canvas>
