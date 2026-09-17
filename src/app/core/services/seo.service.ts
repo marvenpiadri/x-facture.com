@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
-import { CalculatorDefinition } from '../../calculators/calculator-registry';
+import { CalculatorDefinition, getCalculatorBySlug } from '../../calculators/calculator-registry';
 
 export interface SeoMetadata {
   title: string;
@@ -31,9 +31,7 @@ export class SeoService {
     this.metaService.updateTag({ name: 'description', content: data.description });
     this.metaService.updateTag({ name: 'robots', content: 'index, follow' });
 
-    if (data.keywords) {
-      this.metaService.updateTag({ name: 'keywords', content: data.keywords });
-    }
+    if (data.keywords) this.metaService.updateTag({ name: 'keywords', content: data.keywords });
 
     this.metaService.updateTag({ property: 'og:title', content: data.title });
     this.metaService.updateTag({ property: 'og:description', content: data.description });
@@ -41,12 +39,10 @@ export class SeoService {
     this.metaService.updateTag({ property: 'og:type', content: data.type || 'website' });
     this.metaService.updateTag({ property: 'og:site_name', content: this.siteName });
     this.metaService.updateTag({ property: 'og:image', content: image });
-
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.metaService.updateTag({ name: 'twitter:title', content: data.title });
     this.metaService.updateTag({ name: 'twitter:description', content: data.description });
     this.metaService.updateTag({ name: 'twitter:image', content: image });
-
     this.updateCanonicalLink(url);
   }
 
@@ -64,19 +60,35 @@ export class SeoService {
 
     this.setJsonLd({
       '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: calculator.name,
-      url,
-      applicationCategory: 'FinanceApplication',
-      operatingSystem: 'All',
-      isAccessibleForFree: true,
-      description: calculator.description,
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD'
-      }
+      '@graph': [
+        {
+          '@type': 'WebApplication',
+          '@id': `${url}#calculator`,
+          name: calculator.name,
+          url,
+          applicationCategory: 'FinanceApplication',
+          operatingSystem: 'All',
+          isAccessibleForFree: true,
+          description: calculator.description,
+          keywords: calculator.keywords.join(', '),
+          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+        },
+        {
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+            { '@type': 'ListItem', position: 2, name: 'Calculators', item: `${this.siteUrl}/calculators` },
+            { '@type': 'ListItem', position: 3, name: calculator.name, item: url }
+          ]
+        }
+      ]
     });
+  }
+
+  /** Resolve and apply the canonical metadata for a registered calculator. */
+  updateCalculatorMetadataBySlug(slug: string): void {
+    const calculator = getCalculatorBySlug(slug);
+    if (calculator) this.updateCalculatorMetadata(calculator);
   }
 
   private normalizeUrl(url: string): string {
@@ -92,9 +104,8 @@ export class SeoService {
 
   private updateCanonicalLink(url: string): void {
     let link: HTMLLinkElement | null = this.document.querySelector('link[rel="canonical"]');
-    if (link) {
-      link.setAttribute('href', url);
-    } else {
+    if (link) link.setAttribute('href', url);
+    else {
       link = this.document.createElement('link');
       link.setAttribute('rel', 'canonical');
       link.setAttribute('href', url);
