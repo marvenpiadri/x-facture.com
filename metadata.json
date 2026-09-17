@@ -1,0 +1,6 @@
+{
+  "name": "x-facture — Local Business OS & Pro Calculators",
+  "description": "Premium small business operating system featuring professional invoicing, retail POS, financial ledger, and specialized merchant calculators.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,94 @@
+<app-calculator-layout
+  title="Break-Even Point & Unit Volume Calculator"
+  subtitle="Calculate how many units you need to sell to cover all your fixed and variable costs."
+  icon="balance"
+  currentToolName="Break-Even Analysis Engine"
+>
+  <div mainContent class="calculator-main-pane">
+    <div class="aging-presets-bar">
+      <span class="aging-lbl">Business Type:</span>
+      @for (p of presets; track p.name) {
+        <button type="button" class="aging-btn" (click)="setPreset(p)">
+          {{ p.name }}
+        </button>
+      }
+    </div>
+
+    <!-- Controls & Input Card -->
+    <app-fintech-card title="Economic Variables" icon="insights">
+      <div class="inputs-two-col-grid">
+        <div class="field-group">
+          <label class="input-label">Total Fixed Costs ($)</label>
+          <div class="input-symbol-wrap prefix">
+            <span class="input-affix">$</span>
+            <input type="number" [ngModel]="fixedCosts()" (ngModelChange)="fixedCosts.set($event)" class="fintech-input" placeholder="0.00" />
+          </div>
+          <span class="field-micro-hint">Rent, Salary, SaaS, Insurance</span>
+        </div>
+
+        <div class="field-group">
+          <label class="input-label">Price per Unit ($)</label>
+          <div class="input-symbol-wrap prefix">
+            <span class="input-affix">$</span>
+            <input type="number" [ngModel]="sellingPricePerUnit()" (ngModelChange)="sellingPricePerUnit.set($event)" class="fintech-input" placeholder="0.00" />
+          </div>
+          <span class="field-micro-hint">Average retail selling price</span>
+        </div>
+
+        <div class="field-group">
+          <label class="input-label">Variable Cost per Unit ($)</label>
+          <div class="input-symbol-wrap prefix">
+            <span class="input-affix">$</span>
+            <input type="number" [ngModel]="variableCostPerUnit()" (ngModelChange)="variableCostPerUnit.set($event)" class="fintech-input" placeholder="0.00" />
+          </div>
+          <span class="field-micro-hint">COGS, shipping, sales commission</span>
+        </div>
+      </div>
+    </app-fintech-card>
+
+    <!-- Results & Chart Card -->
+    <app-fintech-card title="Break-Even Projections" icon="analytics">
+      <div class="results-hero-strip">
+        <div class="hero-metric-cell main-highlight">
+          <span class="hero-lbl">Units to Break-Even</span>
+          <span class="hero-num text-neon font-mono">{{ results().breakEvenUnits | number }}</span>
+          <span class="hero-subtext">Cumulative Sales Volume</span>
+        </div>
+        <div class="hero-metric-cell fee-highlight">
+          <span class="hero-lbl">Revenue to Break-Even</span>
+          <span class="hero-num font-mono text-neon">${{ results().breakEvenRevenue | number:'1.0-0' }}</span>
+          <span class="hero-subtext">Gross Sales Target</span>
+        </div>
+      </div>
+
+      <div class="chart-section">
+        <div class="chart-header-row">
+          <h3 class="chart-title">Revenue vs. Cost Intersection</h3>
+          <span class="chart-legend-badge">Units vs. Total Expenditure</span>
+        </div>
+        <div class="chart-canvas-wrapper">
+          <canvas #calcChart id="calcChart"></canvas>
+        </div>
+      </div>
+
+      <div class="batch-summary-strip">
+        <div class="batch-col">
+          <span class="batch-lbl">Contribution Margin</span>
+          <span class="batch-val font-mono">${{ results().contributionMargin | number:'1.2-2' }}</span>
+        </div>
+        <div class="batch-col">
+          <span class="batch-lbl">Margin Ratio</span>
+          <span class="batch-val font-mono">{{ results().contributionMarginRatio | percent:'1.1-1' }}</span>
+        </div>
+        <div class="batch-col">
+          <span class="batch-lbl">Fixed Overheads</span>
+          <span class="batch-val font-mono">${{ results().fixed | number:'1.0-0' }}</span>
+        </div>
+        <div class="batch-col">
+          <span class="batch-lbl">Unit Cost</span>
+          <span class="batch-val font-mono">${{ results().variable | number:'1.2-2' }}</span>
+        </div>
+      </div>
+    </app-fintech-card>
+  </div>
+</app-calculator-layout>

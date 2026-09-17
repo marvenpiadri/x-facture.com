@@ -1,0 +1,490 @@
+<div class="app-layout" (click)="closeMenus()">
+  <!-- Global App Header (Hidden during printing) -->
+  <header class="app-header no-print" (click)="$event.stopPropagation()">
+    <div class="header-left">
+      <!-- Brand Logo Lockup -->
+      <a routerLink="/" class="brand-logo" (click)="closeMenus()">
+        <div class="brand-badge">
+          <img src="/x-facture-LOGO-PFP.png" alt="x-facture logo" class="brand-logo-img" />
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">x-facture</span>
+          <span class="brand-sub">FINANCIAL & POS OS</span>
+        </div>
+      </a>
+
+      <!-- Primary Nav Links: Home + Categorized Dropdowns + Direct Settings -->
+      <nav class="primary-nav">
+        <!-- Home Link (Landing Page) -->
+        <a routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" class="nav-link" (click)="closeMenus()" id="nav-home-link">
+          <span class="material-icons nav-ico">home</span>
+          <span>Home</span>
+        </a>
+
+        <!-- Documents Dropdown -->
+        <div class="nav-item-dropdown">
+          <button
+            type="button"
+            class="nav-link dropdown-trigger"
+            [class.active]="showDocsDropdown()"
+            (click)="toggleDocsDropdown()"
+            id="nav-docs-dropdown-btn"
+          >
+            <span class="material-icons nav-ico">description</span>
+            <span>Documents</span>
+            <span class="material-icons arrow-ico">expand_more</span>
+          </button>
+
+          @if (showDocsDropdown()) {
+            <div class="dropdown-menu-card docs-menu" (click)="$event.stopPropagation()">
+              <div class="dropdown-header">Invoicing & Commercial Documents</div>
+              <div class="dropdown-scroll">
+                @for (doc of docConfigs; track doc.docType) {
+                  <a
+                    [routerLink]="['/' + doc.routeSegment]"
+                    class="dropdown-item"
+                    (click)="closeMenus()"
+                  >
+                    <span class="material-icons item-icon">{{ doc.icon }}</span>
+                    <div class="item-text">
+                      <strong class="item-title">{{ doc.pluralName }}</strong>
+                      <span class="item-desc">{{ doc.singularName }} management</span>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Operations & Management Dropdown -->
+        <div class="nav-item-dropdown">
+          <button
+            type="button"
+            class="nav-link dropdown-trigger"
+            [class.active]="showOpsDropdown()"
+            (click)="toggleOpsDropdown()"
+            id="nav-ops-dropdown-btn"
+          >
+            <span class="material-icons nav-ico">business_center</span>
+            <span>Operations</span>
+            <span class="material-icons arrow-ico">expand_more</span>
+          </button>
+
+          @if (showOpsDropdown()) {
+            <div class="dropdown-menu-card ops-menu" (click)="$event.stopPropagation()">
+              <div class="dropdown-header">Business Operations & Records</div>
+              <div class="dropdown-scroll">
+                <a routerLink="/dashboard" class="dropdown-item" (click)="closeMenus()">
+                  <span class="material-icons item-icon">dashboard</span>
+                  <div class="item-text">
+                    <strong class="item-title">Business Dashboard</strong>
+                    <span class="item-desc">KPI metrics, revenue graphs, and recent transactions</span>
+                  </div>
+                </a>
+
+                <a routerLink="/store/pos" class="dropdown-item" (click)="closeMenus()">
+                  <span class="material-icons item-icon">point_of_sale</span>
+                  <div class="item-text">
+                    <strong class="item-title">POS Terminal Register</strong>
+                    <span class="item-desc">Live checkout, barcode scanner, till session</span>
+                  </div>
+                </a>
+
+                <a routerLink="/ledger" class="dropdown-item" (click)="closeMenus()">
+                  <span class="material-icons item-icon">account_balance_wallet</span>
+                  <div class="item-text">
+                    <strong class="item-title">Smart Financial Ledger</strong>
+                    <span class="item-desc">Real-time revenue, expense & payment log</span>
+                  </div>
+                </a>
+
+                <a routerLink="/clients" class="dropdown-item" (click)="closeMenus()">
+                  <span class="material-icons item-icon">people</span>
+                  <div class="item-text">
+                    <strong class="item-title">Client Directory & CRM</strong>
+                    <span class="item-desc">Accounts, tax IDs, and billing contacts</span>
+                  </div>
+                </a>
+
+                <a routerLink="/products" class="dropdown-item" (click)="closeMenus()">
+                  <span class="material-icons item-icon">inventory_2</span>
+                  <div class="item-text">
+                    <strong class="item-title">Product & Services Catalog</strong>
+                    <span class="item-desc">Item pricing, SKU, barcodes, and inventory</span>
+                  </div>
+                </a>
+
+                <a routerLink="/settings" class="dropdown-item" (click)="closeMenus()">
+                  <span class="material-icons item-icon">settings</span>
+                  <div class="item-text">
+                    <strong class="item-title">System & Company Settings</strong>
+                    <span class="item-desc">Tax rates, currency, company profile, data</span>
+                  </div>
+                </a>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Calculators & Smart Tools Dropdown -->
+        <div class="nav-item-dropdown">
+          <button
+            type="button"
+            class="nav-link dropdown-trigger"
+            [class.active]="showToolsDropdown()"
+            (click)="toggleToolsDropdown()"
+            id="smart-tools-nav-btn"
+          >
+            <span class="material-icons nav-ico">calculate</span>
+            <span class="tools-nav-label">Calculators</span>
+            <span class="material-icons arrow-ico">expand_more</span>
+          </button>
+
+          @if (showToolsDropdown()) {
+            <div class="dropdown-menu-card tools-mega-menu" (click)="$event.stopPropagation()">
+              <!-- Top Toolbar inside Menu -->
+              <div class="tools-menu-header">
+                <div class="menu-search-bar">
+                  <span class="material-icons search-ico">search</span>
+                  <input
+                    type="text"
+                    [(ngModel)]="quickSearch"
+                    placeholder="Search calculators (Stripe, Burn rate, Loan, VAT...)"
+                    class="tools-quick-search-input"
+                    (click)="$event.stopPropagation()"
+                  />
+                  @if (quickSearch()) {
+                    <button type="button" class="btn-clear-menu-search" (click)="quickSearch.set('')">
+                      <span class="material-icons">close</span>
+                    </button>
+                  }
+                </div>
+                <div class="tools-quick-actions">
+                  <button type="button" class="quick-action-pill" (click)="openQuickToolDrawer('vat')" title="Quick VAT Popup">
+                    <span class="material-icons">percent</span> VAT
+                  </button>
+                  <button type="button" class="quick-action-pill" (click)="openQuickToolDrawer('margin')" title="Quick Margin Popup">
+                    <span class="material-icons">trending_up</span> Margin
+                  </button>
+                  <button type="button" class="quick-action-pill" (click)="openQuickToolDrawer('change')" title="Quick Cash Tender Popup">
+                    <span class="material-icons">payments</span> Change
+                  </button>
+                </div>
+              </div>
+
+              <!-- Dedicated Pro Calculators Section -->
+              <div class="pro-calculators-banner">
+                <span class="pro-badge">FEATURED MODELS</span>
+                <div class="pro-calc-links-grid">
+                  <a routerLink="/calculators/stripe-paypal-fee-calculator" class="pro-calc-chip" (click)="closeMenus()">
+                    <span class="material-icons">payments</span> Stripe & PayPal
+                  </a>
+                  <a routerLink="/calculators/cash-burn-runway-calculator" class="pro-calc-chip" (click)="closeMenus()">
+                    <span class="material-icons">hourglass_bottom</span> Cash Runway
+                  </a>
+                  <a routerLink="/calculators/break-even-sales-calculator" class="pro-calc-chip" (click)="closeMenus()">
+                    <span class="material-icons">balance</span> Break-Even Sales
+                  </a>
+                  <a routerLink="/calculators/commercial-loan-emi-calculator" class="pro-calc-chip" (click)="closeMenus()">
+                    <span class="material-icons">account_balance</span> Commercial Loan
+                  </a>
+                  <a routerLink="/calculators/gross-margin-markup-calculator" class="pro-calc-chip" (click)="closeMenus()">
+                    <span class="material-icons">price_check</span> Gross Margin
+                  </a>
+                </div>
+              </div>
+
+              <!-- General Tools Grid -->
+              <div class="tools-menu-grid">
+                @for (tool of filteredFinanceTools(); track tool.id) {
+                  <a
+                    [routerLink]="tool.route"
+                    class="tool-menu-item"
+                    (click)="closeMenus()"
+                  >
+                    <div class="tool-item-icon-box">
+                      <span class="material-icons">{{ tool.icon }}</span>
+                    </div>
+                    <div class="tool-item-info">
+                      <div class="tool-title-row">
+                        <strong class="tool-title">{{ tool.title }}</strong>
+                        <span class="tool-badge-cat">{{ tool.category }}</span>
+                      </div>
+                      <span class="tool-summary-text">{{ tool.description }}</span>
+                    </div>
+                  </a>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+      </nav>
+    </div>
+
+    <!-- Header Right Controls (Minimalist Preferences Dropdown) -->
+    <div class="header-right">
+      <div class="nav-item-dropdown profile-dropdown-wrapper">
+        <button
+          type="button"
+          class="header-pref-menu-btn"
+          [class.active]="showProfileMenu()"
+          (click)="toggleProfileMenu()"
+          id="header-preferences-dropdown-btn"
+          title="System Preferences & Settings"
+        >
+          <span class="material-icons menu-ico">tune</span>
+          <span class="lang-tag">{{ currentLang() }}</span>
+          <span class="material-icons theme-mini-ico">{{ isDark() ? 'dark_mode' : 'light_mode' }}</span>
+          <span class="material-icons arrow-ico">expand_more</span>
+        </button>
+
+        @if (showProfileMenu()) {
+          <div class="dropdown-menu-card preferences-menu-card" (click)="$event.stopPropagation()">
+            <div class="dropdown-header">System Preferences</div>
+
+            <div class="pref-menu-content">
+              <!-- 1. Mode Switcher (Dark / Light) -->
+              <div class="pref-row">
+                <div class="pref-label-group">
+                  <span class="material-icons pref-ico">{{ isDark() ? 'dark_mode' : 'light_mode' }}</span>
+                  <div class="pref-text">
+                    <strong class="pref-title">Appearance</strong>
+                    <span class="pref-sub">{{ isDark() ? 'Dark Theme' : 'Light Theme' }}</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  class="theme-toggle-pill"
+                  (click)="toggleTheme()"
+                >
+                  <span class="pill-badge" [class.active]="!isDark()">
+                    <span class="material-icons">light_mode</span>
+                  </span>
+                  <span class="pill-badge" [class.active]="isDark()">
+                    <span class="material-icons">dark_mode</span>
+                  </span>
+                </button>
+              </div>
+
+              <!-- 2. Language Changer -->
+              <div class="pref-block">
+                <div class="pref-block-title-row">
+                  <span class="material-icons pref-ico">translate</span>
+                  <strong class="pref-title">Language</strong>
+                </div>
+                <div class="lang-grid">
+                  @for (lang of languages; track lang.code) {
+                    <button
+                      type="button"
+                      class="lang-chip"
+                      [class.active]="currentLang() === lang.code"
+                      (click)="setLanguage(lang.code)"
+                    >
+                      <span class="flag-icon">{{ lang.flag }}</span>
+                      <span class="lang-name">{{ lang.name }}</span>
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div class="pref-divider"></div>
+
+              <!-- 3. Settings Anchor -->
+              <a routerLink="/settings" class="dropdown-item settings-item" (click)="closeMenus()">
+                <span class="material-icons item-icon">settings</span>
+                <div class="item-text">
+                  <strong class="item-title">System & Company Settings</strong>
+                  <span class="item-desc">Taxes, company details, currency & POS</span>
+                </div>
+                <span class="material-icons chevron-ico">chevron_right</span>
+              </a>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </header>
+
+  <!-- Instant Quick Calculator Drawer (Floating Overlay) -->
+  @if (showQuickToolDrawer()) {
+    <div class="quick-drawer-backdrop" (click)="closeQuickToolDrawer()">
+      <div class="quick-drawer-panel" (click)="$event.stopPropagation()">
+        <div class="drawer-header">
+          <div class="drawer-title-group">
+            <span class="material-icons drawer-icon">calculate</span>
+            <div>
+              <h3 class="drawer-title">Quick Financial Assistant</h3>
+              <p class="drawer-subtitle">Instant scratchpad calculations</p>
+            </div>
+          </div>
+          <button type="button" class="btn-close-drawer" (click)="closeQuickToolDrawer()">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <!-- Quick Tabs -->
+        <div class="drawer-tabs">
+          <button
+            type="button"
+            class="drawer-tab-btn"
+            [class.active]="quickToolTab() === 'vat'"
+            (click)="quickToolTab.set('vat')"
+          >
+            <span class="material-icons">percent</span> VAT / Tax
+          </button>
+          <button
+            type="button"
+            class="drawer-tab-btn"
+            [class.active]="quickToolTab() === 'margin'"
+            (click)="quickToolTab.set('margin')"
+          >
+            <span class="material-icons">trending_up</span> Margin & Markup
+          </button>
+          <button
+            type="button"
+            class="drawer-tab-btn"
+            [class.active]="quickToolTab() === 'change'"
+            (click)="quickToolTab.set('change')"
+          >
+            <span class="material-icons">payments</span> POS Change
+          </button>
+        </div>
+
+        <!-- Drawer Content -->
+        <div class="drawer-body">
+          @if (quickToolTab() === 'vat') {
+            <div class="quick-tool-section">
+              <div class="drawer-input-group">
+                <label class="drawer-label">Net Amount ($)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="quickVatBase"
+                  step="0.01"
+                  class="drawer-input"
+                />
+              </div>
+              <div class="drawer-input-group">
+                <label class="drawer-label">VAT Rate (%)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="quickVatRate"
+                  step="0.1"
+                  class="drawer-input"
+                />
+              </div>
+
+              <div class="quick-results-box">
+                <div class="quick-result-row">
+                  <span class="res-lbl">Tax Amount:</span>
+                  <span class="res-val font-mono">${{ quickVatTax() | number:'1.2-2' }}</span>
+                </div>
+                <div class="quick-result-row total-row">
+                  <span class="res-lbl">Gross Total:</span>
+                  <span class="res-val text-money font-mono">${{ quickVatGross() | number:'1.2-2' }}</span>
+                </div>
+              </div>
+
+              <a
+                routerLink="/calculators/sales-tax-vat-splitter"
+                class="btn-open-full-tool"
+                (click)="closeQuickToolDrawer()"
+              >
+                <span class="material-icons">open_in_new</span>
+                <span>Open Full VAT & Reverse Calculator</span>
+              </a>
+            </div>
+          }
+
+          @if (quickToolTab() === 'margin') {
+            <div class="quick-tool-section">
+              <div class="drawer-input-group">
+                <label class="drawer-label">Cost Price ($)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="quickMarginCost"
+                  step="0.01"
+                  class="drawer-input"
+                />
+              </div>
+              <div class="drawer-input-group">
+                <label class="drawer-label">Selling Price ($)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="quickMarginPrice"
+                  step="0.01"
+                  class="drawer-input"
+                />
+              </div>
+
+              <div class="quick-results-box">
+                <div class="quick-result-row">
+                  <span class="res-lbl">Profit per Unit:</span>
+                  <span class="res-val text-money font-mono">${{ quickMarginProfit() | number:'1.2-2' }}</span>
+                </div>
+                <div class="quick-result-row total-row">
+                  <span class="res-lbl">Profit Margin:</span>
+                  <span class="res-val font-mono">{{ quickMarginPct() | number:'1.1-2' }}%</span>
+                </div>
+              </div>
+
+              <a
+                routerLink="/calculators/gross-margin-markup-calculator"
+                class="btn-open-full-tool"
+                (click)="closeQuickToolDrawer()"
+              >
+                <span class="material-icons">open_in_new</span>
+                <span>Open Full Margin & Target Pricing Engine</span>
+              </a>
+            </div>
+          }
+
+          @if (quickToolTab() === 'change') {
+            <div class="quick-tool-section">
+              <div class="drawer-input-group">
+                <label class="drawer-label">Sale Total ($)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="quickChangeSale"
+                  step="0.01"
+                  class="drawer-input"
+                />
+              </div>
+              <div class="drawer-input-group">
+                <label class="drawer-label">Amount Tendered ($)</label>
+                <input
+                  type="number"
+                  [(ngModel)]="quickChangeTendered"
+                  step="0.01"
+                  class="drawer-input"
+                />
+              </div>
+
+              <div class="quick-results-box">
+                <div class="quick-result-row total-row">
+                  <span class="res-lbl">Change Due:</span>
+                  <span class="res-val text-money font-mono">${{ quickChangeDue() | number:'1.2-2' }}</span>
+                </div>
+              </div>
+
+              <a
+                routerLink="/calculators/cash-register-change-calculator"
+                class="btn-open-full-tool"
+                (click)="closeQuickToolDrawer()"
+              >
+                <span class="material-icons">open_in_new</span>
+                <span>Open Full Cash Denominations Counter</span>
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Router Outlet Canvas -->
+  <main class="main-content-viewport">
+    <router-outlet />
+  </main>
+</div>
