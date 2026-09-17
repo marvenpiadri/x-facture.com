@@ -30,6 +30,7 @@ Chart.register(...registerables);
 })
 export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewInit, OnDestroy {
   private seoService = inject(SeoService);
+  readonly Math = Math;
 
   @ViewChild('calcChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
   private chartInstance: Chart | null = null;
@@ -61,7 +62,6 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
   results = computed(() => {
     const cost = Math.max(0.01, Number(this.cogs()) || 0.01);
     const qty = Math.max(1, Number(this.quantityUnits()) || 1);
-
     let finalPrice = 0;
     let marginPct = 0;
     let markupPct = 0;
@@ -83,7 +83,6 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     const totalRevenue = finalPrice * qty;
     const totalCost = cost * qty;
     const totalProfit = profitPerUnit * qty;
-
     return { cogs: cost, sellingPrice: finalPrice, profitPerUnit, marginPct, markupPct, quantity: qty, totalRevenue, totalCost, totalProfit, isLoss: profitPerUnit < 0 };
   });
 
@@ -96,7 +95,6 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
 
   ngAfterViewInit(): void { this.initChart(); }
   ngOnDestroy(): void { this.chartInstance?.destroy(); this.chartInstance = null; }
-
   setMarginPreset(pct: number): void { this.mode.set('target-margin'); this.targetMargin.set(pct); }
 
   private initChart(): void {
@@ -104,7 +102,6 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
     const res = this.results();
-
     this.chartInstance = new Chart(ctx, {
       type: 'bar',
       data: { labels: ['Selling Price Composition'], datasets: [
@@ -113,14 +110,8 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
       ] },
       options: {
         indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-        scales: {
-          x: { stacked: true, grid: { color: '#21262d' }, ticks: { color: '#8b949e', font: { size: 11 }, callback: (val) => `$${Number(val).toFixed(2)}` } },
-          y: { stacked: true, grid: { display: false }, ticks: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } }
-        },
-        plugins: {
-          legend: { position: 'top', labels: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } },
-          tooltip: { backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9', borderColor: '#30363d', borderWidth: 1, callbacks: { label: (context) => ` ${context.dataset.label}: $${Number(context.raw).toFixed(2)}` } }
-        }
+        scales: { x: { stacked: true, grid: { color: '#21262d' }, ticks: { color: '#8b949e', font: { size: 11 }, callback: (val) => `$${Number(val).toFixed(2)}` } }, y: { stacked: true, grid: { display: false }, ticks: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } } },
+        plugins: { legend: { position: 'top', labels: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } }, tooltip: { backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9', borderColor: '#30363d', borderWidth: 1, callbacks: { label: (context) => ` ${context.dataset.label}: $${Number(context.raw).toFixed(2)}` } } }
       }
     });
   }
