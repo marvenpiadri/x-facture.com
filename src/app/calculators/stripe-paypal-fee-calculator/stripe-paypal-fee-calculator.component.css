@@ -1,361 +1,137 @@
-/* Stripe & PayPal calculator-specific layout. Shared calculator primitives live in calculator-system.css. */
-#calculator-page-root .calculator-main-pane[mainContent] { gap: 24px; }
-#calculator-page-root .input-card { gap: 20px; }
-#calculator-page-root .input-card .presets-section { gap: 10px; }
-#calculator-page-root .input-card .preset-pill-grid { margin-bottom: 4px; }
-#calculator-page-root .input-card .custom-rates-grid { margin-top: 4px; }
-#calculator-page-root .results-card { gap: 22px; }
-#calculator-page-root .calculator-inner-split { gap: 24px; }
-#calculator-page-root .metrics-breakdown-box,
-#calculator-page-root .chart-visual-panel { min-width: 0; }
-#calculator-page-root .metrics-breakdown-box { display: flex; flex-direction: column; gap: 16px; }
-#calculator-page-root .input-amount-field { gap: 8px; }
-#calculator-page-root .input-amount-field .field-micro-hint { margin-top: 0; }
-#calculator-page-root .merchant-advice-box { margin-top: 0; }
-#calculator-page-root .chart-visual-panel { gap: 14px; }
+/* Stripe & PayPal — reference implementation for the X-Facture Finance Engine. */
 
-/* Transaction Breakdown — dashboard treatment */
-#calculator-page-root .transaction-breakdown-card {
-  overflow: hidden;
-  gap: 0;
-  padding: 0;
-}
-#calculator-page-root .transaction-breakdown-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 24px 24px 20px;
-}
-#calculator-page-root .transaction-breakdown-heading {
-  display: flex;
-  align-items: flex-start;
-  gap: 13px;
-  min-width: 0;
-}
-#calculator-page-root .transaction-breakdown-icon {
-  display: grid;
-  flex: 0 0 38px;
-  width: 38px;
-  height: 38px;
-  margin-top: 2px;
-  place-items: center;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 10px;
-  background: var(--surface-2, #161b22);
-  color: var(--text-neon, #00e676);
-}
-#calculator-page-root .transaction-breakdown-icon .material-icons { font-size: 20px; }
-#calculator-page-root .section-eyebrow {
-  display: block;
-  margin-bottom: 4px;
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-#calculator-page-root .transaction-breakdown-heading .card-title {
-  margin: 0;
-  color: var(--text-primary, #f0f6fc);
-  font-size: 1.08rem;
-  line-height: 1.25;
-}
-#calculator-page-root .transaction-breakdown-subtitle {
-  max-width: 650px;
-  margin: 5px 0 0;
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.79rem;
-  line-height: 1.5;
-}
-#calculator-page-root .effective-rate-badge {
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-  min-width: 112px;
-  padding: 9px 12px;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 10px;
-  background: var(--surface-2, #161b22);
-}
-#calculator-page-root .effective-rate-badge span {
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-#calculator-page-root .effective-rate-badge strong {
-  color: var(--text-primary, #f0f6fc);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.94rem;
-  line-height: 1.2;
+#calculator-page-root .calculator-main-pane[mainContent]{gap:20px}
+#calculator-page-root .input-card{gap:20px}
+#calculator-page-root .input-card .presets-section{gap:10px}
+#calculator-page-root .input-card .custom-rates-grid{margin-top:2px}
+
+/* Results surface: a deliberate dashboard, not a text block. */
+#calculator-page-root .transaction-breakdown-card{
+  overflow:hidden;
+  padding:0;
+  gap:0;
+  border:1px solid var(--color-border,#d8dee4);
+  border-radius:18px;
+  background:var(--color-surface,#fff);
+  box-shadow:0 12px 32px rgba(31,35,40,.08);
 }
 
-#calculator-page-root .transaction-summary-strip {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 36px minmax(0, 1fr) 36px minmax(0, 1fr);
-  align-items: stretch;
-  margin: 0 24px 22px;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--surface-2, #161b22);
+#calculator-page-root .transaction-breakdown-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  padding:22px 24px;
+  border-bottom:1px solid var(--color-border,#d8dee4);
+  background:linear-gradient(180deg,var(--color-surface,#fff),var(--color-surface-subtle,#f6f8fa));
 }
-#calculator-page-root .transaction-summary-cell {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 5px;
-  min-width: 0;
-  min-height: 86px;
-  padding: 15px 17px;
+#calculator-page-root .transaction-breakdown-heading{display:flex;align-items:center;gap:14px;min-width:0}
+#calculator-page-root .transaction-breakdown-icon{
+  width:44px;height:44px;flex:0 0 44px;display:grid;place-items:center;
+  border:1px solid var(--color-border,#d8dee4);border-radius:12px;
+  background:var(--color-surface,#fff);color:var(--color-money-green,#188038);
+  box-shadow:0 2px 7px rgba(31,35,40,.06)
 }
-#calculator-page-root .transaction-summary-cell + .transaction-summary-cell { border-inline-start: 0; }
-#calculator-page-root .summary-index {
-  position: absolute;
-  top: 10px;
-  right: 13px;
-  color: var(--text-secondary, #8b949e);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.57rem;
-  opacity: 0.55;
-}
-#calculator-page-root .summary-label {
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-#calculator-page-root .transaction-summary-cell strong {
-  overflow: hidden;
-  color: var(--text-primary, #f0f6fc);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 1.16rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#calculator-page-root .fee-summary-cell { background: rgba(248, 81, 73, 0.025); }
-#calculator-page-root .fee-summary-cell strong { color: var(--text-crimson, #f85149); }
-#calculator-page-root .net-summary-cell { background: rgba(0, 230, 118, 0.045); }
-#calculator-page-root .net-summary-cell strong { color: var(--text-neon, #00e676); }
-#calculator-page-root .summary-operator {
-  display: grid;
-  width: 36px;
-  place-items: center;
-  border-inline: 1px solid var(--border-color, #30363d);
-  color: var(--text-secondary, #8b949e);
-}
-#calculator-page-root .summary-operator .material-icons { font-size: 17px; }
+#calculator-page-root .transaction-breakdown-icon .material-icons{font-size:22px}
+#calculator-page-root .section-eyebrow{display:block;margin-bottom:4px;color:var(--color-money-green,#188038);font-size:9px;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
+#calculator-page-root .transaction-breakdown-heading .card-title{margin:0;color:var(--color-text-main,#24292f);font-size:18px;font-weight:850;letter-spacing:-.025em;line-height:1.2}
+#calculator-page-root .transaction-breakdown-subtitle{max-width:680px;margin:5px 0 0;color:var(--color-text-secondary,#57606a);font-size:11.5px;line-height:1.5}
+#calculator-page-root .effective-rate-badge{min-width:118px;display:flex;flex-direction:column;align-items:flex-end;gap:3px;padding:10px 13px;border:1px solid var(--color-border,#d8dee4);border-radius:11px;background:var(--color-surface,#fff)}
+#calculator-page-root .effective-rate-badge span{color:var(--color-text-muted,#8c959f);font-size:8px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+#calculator-page-root .effective-rate-badge strong{color:var(--color-text-main,#24292f);font:850 16px/1 var(--font-mono,ui-monospace);letter-spacing:-.03em}
 
-#calculator-page-root .calculator-inner-split {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
-  padding: 0 24px 24px;
+/* Primary equation. */
+#calculator-page-root .transaction-summary-strip{
+  display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr) 42px minmax(0,1fr);
+  margin:20px 24px 22px;overflow:hidden;border:1px solid var(--color-border,#d8dee4);border-radius:14px;
+  background:var(--color-surface-subtle,#f6f8fa)
 }
-#calculator-page-root .transaction-amount-block {
-  padding: 16px;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 11px;
-  background: var(--surface-2, #161b22);
-}
-#calculator-page-root .transaction-section-label {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-bottom: 11px;
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-#calculator-page-root .transaction-section-label .material-icons { color: var(--text-neon, #00e676); font-size: 16px; }
+#calculator-page-root .transaction-summary-cell{position:relative;min-width:0;min-height:104px;display:flex;flex-direction:column;justify-content:center;gap:6px;padding:18px 18px}
+#calculator-page-root .summary-index{position:absolute;top:12px;right:14px;color:var(--color-text-muted,#8c959f);font:700 9px/1 var(--font-mono,ui-monospace);opacity:.65}
+#calculator-page-root .summary-label{color:var(--color-text-secondary,#57606a);font-size:9px;font-weight:800;letter-spacing:.055em;text-transform:uppercase}
+#calculator-page-root .transaction-summary-cell strong{overflow:hidden;color:var(--color-text-main,#24292f);font:850 clamp(20px,2.4vw,26px)/1.05 var(--font-mono,ui-monospace);letter-spacing:-.045em;text-overflow:ellipsis;white-space:nowrap}
+#calculator-page-root .fee-summary-cell{background:rgba(220,38,38,.045)}
+#calculator-page-root .fee-summary-cell strong{color:#dc2626}
+#calculator-page-root .net-summary-cell{background:var(--color-money-green-light,#eaf8ef)}
+#calculator-page-root .net-summary-cell strong{color:var(--color-money-green,#188038)}
+#calculator-page-root .summary-operator{display:grid;place-items:center;border-inline:1px solid var(--color-border,#d8dee4);color:var(--color-text-muted,#8c959f);background:var(--color-surface,#fff)}
+#calculator-page-root .summary-operator .material-icons{font-size:18px}
 
-#calculator-page-root .breakdown-statement {
-  overflow: hidden;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 11px;
-  background: var(--surface-1, #0d1117);
-}
-#calculator-page-root .breakdown-statement-heading {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--border-color, #30363d);
-  background: var(--surface-2, #161b22);
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-}
-#calculator-page-root .breakdown-statement .breakdown-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-width: 0;
-  padding: 13px 14px;
-}
-#calculator-page-root .breakdown-item-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-#calculator-page-root .breakdown-item-label > span:last-child {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-#calculator-page-root .breakdown-item-label strong {
-  color: var(--text-primary, #f0f6fc);
-  font-size: 0.8rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-#calculator-page-root .breakdown-item-label small {
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.68rem;
-  line-height: 1.35;
-}
-#calculator-page-root .fee-row-icon {
-  display: grid;
-  flex: 0 0 27px;
-  width: 27px;
-  height: 27px;
-  place-items: center;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 7px;
-  background: var(--surface-2, #161b22);
-  color: var(--text-secondary, #8b949e);
-  font-size: 0.7rem;
-  font-weight: 800;
-}
-#calculator-page-root .fixed-icon { font-size: 14px; }
-#calculator-page-root .percent-icon { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-#calculator-page-root .breakdown-statement .item-value {
-  flex: 0 0 auto;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.82rem;
-  font-weight: 650;
-  white-space: nowrap;
-}
-#calculator-page-root .fee-value { color: var(--text-crimson, #f85149); }
-#calculator-page-root .breakdown-statement .total-fee-row {
-  margin-top: 1px;
-  border-top: 1px solid var(--border-color, #30363d);
-  background: rgba(248, 81, 73, 0.035);
-}
-#calculator-page-root .breakdown-total-icon,
-#calculator-page-root .breakdown-net-icon {
-  flex: 0 0 auto;
-  font-size: 19px;
-}
-#calculator-page-root .breakdown-total-icon { color: var(--text-crimson, #f85149); }
-#calculator-page-root .breakdown-net-icon { color: var(--text-neon, #00e676); }
-#calculator-page-root .total-fee-value { font-size: 0.88rem !important; }
-#calculator-page-root .statement-divider { height: 1px; margin: 0 14px; background: var(--border-color, #30363d); }
-#calculator-page-root .breakdown-statement .net-payout-row {
-  padding-top: 15px;
-  padding-bottom: 15px;
-  background: rgba(0, 230, 118, 0.05);
-}
-#calculator-page-root .net-payout-row .breakdown-item-label strong { font-size: 0.84rem; }
-#calculator-page-root .net-payout-value {
-  flex: 0 0 auto;
-  color: var(--text-neon, #00e676);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 1.08rem;
-  font-weight: 750;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
+/* Lower dashboard grid. */
+#calculator-page-root .calculator-inner-split{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(300px,.88fr);gap:16px;padding:0 24px 24px}
+#calculator-page-root .metrics-breakdown-box{display:flex;flex-direction:column;gap:14px;min-width:0}
 
-#calculator-page-root .merchant-advice-box {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px 13px;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 10px;
-  background: var(--surface-2, #161b22);
-}
-#calculator-page-root .advice-icon { flex: 0 0 auto; color: #e3b341; font-size: 18px; }
-#calculator-page-root .advice-text { margin: 0; color: var(--text-secondary, #8b949e); font-size: 0.72rem; line-height: 1.55; }
-#calculator-page-root .advice-text strong { color: var(--text-primary, #f0f6fc); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-#calculator-page-root .advice-text em { color: var(--text-primary, #f0f6fc); font-style: normal; font-weight: 600; }
+/* Input card inside results. */
+#calculator-page-root .transaction-amount-block{padding:18px;border:1px solid var(--color-border,#d8dee4);border-radius:14px;background:var(--color-surface-subtle,#f6f8fa)}
+#calculator-page-root .transaction-section-label{display:flex;align-items:center;gap:7px;margin-bottom:12px;color:var(--color-text-main,#24292f);font-size:10px;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
+#calculator-page-root .transaction-section-label .material-icons{color:var(--color-money-green,#188038);font-size:17px}
+#calculator-page-root .transaction-amount-block .input-label{margin-bottom:5px}
+#calculator-page-root .transaction-amount-block .input-symbol-wrap.large{height:56px}
+#calculator-page-root .transaction-amount-block .input-symbol-wrap.large .input-affix{left:14px;color:var(--color-money-green,#188038);font-size:17px}
+#calculator-page-root .transaction-amount-block .input-symbol-wrap.large .fintech-input{height:56px;padding-left:38px;border-radius:11px;background:var(--color-surface,#fff);font-size:22px;font-weight:850;letter-spacing:-.04em}
+#calculator-page-root .field-micro-hint{display:block;margin-top:7px;color:var(--color-text-muted,#8c959f);font-size:10px;line-height:1.4}
 
-#calculator-page-root .chart-visual-panel {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 11px;
-  background: var(--surface-2, #161b22);
-}
-#calculator-page-root .chart-panel-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-#calculator-page-root .chart-title { margin: 0; color: var(--text-primary, #f0f6fc); font-size: 0.88rem; line-height: 1.3; }
-#calculator-page-root .chart-rate {
-  flex: 0 0 auto;
-  padding: 4px 7px;
-  border: 1px solid var(--border-color, #30363d);
-  border-radius: 6px;
-  color: var(--text-secondary, #8b949e);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.64rem;
-}
-#calculator-page-root .chart-canvas-wrapper { position: relative; width: 100%; min-height: 240px; }
-#calculator-page-root .chart-legend-summary { display: grid; gap: 8px; margin-top: 2px; padding-top: 11px; border-top: 1px solid var(--border-color, #30363d); }
-#calculator-page-root .chart-legend-summary > div { display: grid; grid-template-columns: 9px 1fr auto; align-items: center; gap: 8px; color: var(--text-secondary, #8b949e); font-size: 0.69rem; }
-#calculator-page-root .chart-legend-summary strong { color: var(--text-primary, #f0f6fc); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.73rem; }
-#calculator-page-root .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
-#calculator-page-root .revenue-dot { background: #00e676; }
-#calculator-page-root .fee-dot { background: #f85149; }
-#calculator-page-root .chart-context-note { display: flex; align-items: flex-start; gap: 7px; margin-top: 2px; padding: 9px 10px; border: 1px solid var(--border-color, #30363d); border-radius: 8px; color: var(--text-secondary, #8b949e); font-size: 0.66rem; line-height: 1.45; }
-#calculator-page-root .chart-context-note .material-icons { flex: 0 0 auto; margin-top: 1px; font-size: 14px; }
+/* Ledger / statement. */
+#calculator-page-root .breakdown-statement{overflow:hidden;border:1px solid var(--color-border,#d8dee4);border-radius:14px;background:var(--color-surface,#fff)}
+#calculator-page-root .breakdown-statement-heading{display:flex;align-items:center;justify-content:space-between;padding:11px 15px;border-bottom:1px solid var(--color-border,#d8dee4);background:var(--color-surface-subtle,#f6f8fa);color:var(--color-text-muted,#8c959f);font-size:9px;font-weight:850;letter-spacing:.07em;text-transform:uppercase}
+#calculator-page-root .breakdown-statement .breakdown-item{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0;padding:14px 15px;border-bottom:1px solid var(--color-border,#d8dee4)}
+#calculator-page-root .breakdown-item-label{display:flex;align-items:center;gap:10px;min-width:0}
+#calculator-page-root .breakdown-item-label>span:last-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+#calculator-page-root .breakdown-item-label strong{color:var(--color-text-main,#24292f);font-size:11.5px;font-weight:750;line-height:1.3}
+#calculator-page-root .breakdown-item-label small{color:var(--color-text-muted,#8c959f);font-size:9.5px;line-height:1.35}
+#calculator-page-root .fee-row-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border:1px solid var(--color-border,#d8dee4);border-radius:9px;background:var(--color-surface-subtle,#f6f8fa);color:var(--color-text-secondary,#57606a);font:800 10px/1 var(--font-mono,ui-monospace)}
+#calculator-page-root .fixed-icon{font-size:15px}
+#calculator-page-root .breakdown-statement .item-value{flex:0 0 auto;font:800 12px/1 var(--font-mono,ui-monospace);white-space:nowrap}
+#calculator-page-root .fee-value{color:#dc2626}
+#calculator-page-root .breakdown-statement .total-fee-row{background:rgba(220,38,38,.035)}
+#calculator-page-root .breakdown-total-icon{flex:0 0 auto;color:#dc2626;font-size:18px}
+#calculator-page-root .total-fee-value{font-size:13px!important}
+#calculator-page-root .statement-divider{height:8px;background:var(--color-canvas,#f6f8fa);border-bottom:1px solid var(--color-border,#d8dee4)}
+#calculator-page-root .breakdown-statement .net-payout-row{border-bottom:0;background:linear-gradient(90deg,var(--color-money-green-light,#eaf8ef),var(--color-surface,#fff))}
+#calculator-page-root .breakdown-net-icon{flex:0 0 auto;color:var(--color-money-green,#188038);font-size:20px}
+#calculator-page-root .net-payout-row .breakdown-item-label strong{font-size:12px}
+#calculator-page-root .net-payout-value{flex:0 0 auto;color:var(--color-money-green,#188038);font:900 18px/1 var(--font-mono,ui-monospace);letter-spacing:-.035em;white-space:nowrap}
 
-@media (max-width: 900px) {
-  #calculator-page-root .calculator-inner-split { grid-template-columns: 1fr; }
-  #calculator-page-root .chart-visual-panel { min-height: 0; }
+/* Actionable insight. */
+#calculator-page-root .merchant-advice-box{display:flex;align-items:flex-start;gap:10px;padding:13px 14px;border:1px solid #ead8a1;border-radius:12px;background:#fffaf0}
+#calculator-page-root .advice-icon{flex:0 0 auto;color:#b7791f;font-size:18px}
+#calculator-page-root .advice-text{margin:0;color:#66583d;font-size:10.5px;line-height:1.55}
+#calculator-page-root .advice-text strong{color:var(--color-text-main,#24292f);font:800 10.5px/1.4 var(--font-mono,ui-monospace)}
+#calculator-page-root .advice-text em{color:var(--color-text-main,#24292f);font-style:normal;font-weight:750}
+
+/* Analytics panel. */
+#calculator-page-root .chart-visual-panel{display:flex;flex-direction:column;gap:14px;min-width:0;padding:18px;border:1px solid var(--color-border,#d8dee4);border-radius:14px;background:var(--color-surface-subtle,#f6f8fa)}
+#calculator-page-root .chart-panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+#calculator-page-root .chart-title{margin:0;color:var(--color-text-main,#24292f);font-size:14px;font-weight:850;letter-spacing:-.02em;text-transform:none}
+#calculator-page-root .chart-rate{flex:0 0 auto;padding:5px 8px;border:1px solid var(--color-border,#d8dee4);border-radius:7px;background:var(--color-surface,#fff);color:var(--color-text-secondary,#57606a);font:800 9px/1 var(--font-mono,ui-monospace)}
+#calculator-page-root .chart-canvas-wrapper{position:relative;width:100%;height:250px;min-height:220px;padding:8px;border:1px solid var(--color-border,#d8dee4);border-radius:12px;background:var(--color-surface,#fff)}
+#calculator-page-root .chart-canvas-wrapper canvas{width:100%!important;height:100%!important}
+#calculator-page-root .chart-legend-summary{display:grid;gap:7px;padding-top:2px}
+#calculator-page-root .chart-legend-summary>div{display:grid;grid-template-columns:9px 1fr auto;align-items:center;gap:8px;padding:8px 9px;border:1px solid var(--color-border,#d8dee4);border-radius:9px;background:var(--color-surface,#fff);color:var(--color-text-secondary,#57606a);font-size:10px}
+#calculator-page-root .chart-legend-summary strong{color:var(--color-text-main,#24292f);font:850 10.5px/1 var(--font-mono,ui-monospace)}
+#calculator-page-root .legend-dot{width:8px;height:8px;border-radius:50%}.revenue-dot{background:#188038}.fee-dot{background:#dc2626}
+#calculator-page-root .chart-context-note{display:flex;align-items:flex-start;gap:7px;padding:10px;border:1px dashed var(--color-border,#d8dee4);border-radius:9px;color:var(--color-text-muted,#8c959f);font-size:9.5px;line-height:1.45;background:var(--color-surface,#fff)}
+#calculator-page-root .chart-context-note .material-icons{font-size:15px;flex:0 0 auto}
+
+@media(max-width:900px){
+  #calculator-page-root .calculator-inner-split{grid-template-columns:1fr}
+  #calculator-page-root .chart-visual-panel{min-height:0}
 }
-@media (max-width: 767px) {
-  #calculator-page-root .calculator-main-pane[mainContent] { gap: 16px; }
-  #calculator-page-root .input-card { gap: 16px; }
-  #calculator-page-root .results-card { gap: 0; }
-  #calculator-page-root .transaction-breakdown-header { flex-direction: column; gap: 13px; padding: 18px 16px 16px; }
-  #calculator-page-root .effective-rate-badge { align-self: flex-start; min-width: 0; }
-  #calculator-page-root .transaction-summary-strip { grid-template-columns: 1fr; margin: 0 16px 16px; }
-  #calculator-page-root .transaction-summary-cell { min-height: 72px; padding: 13px 14px; }
-  #calculator-page-root .summary-operator { width: 100%; height: 22px; border-top: 1px solid var(--border-color, #30363d); border-bottom: 1px solid var(--border-color, #30363d); border-inline: 0; }
-  #calculator-page-root .calculator-inner-split { gap: 16px; padding: 0 16px 16px; }
-  #calculator-page-root .chart-canvas-wrapper { min-height: 220px; }
+@media(max-width:767px){
+  #calculator-page-root .transaction-breakdown-header{align-items:flex-start;flex-direction:column;padding:18px 16px}
+  #calculator-page-root .effective-rate-badge{align-items:flex-start;min-width:0;width:100%}
+  #calculator-page-root .transaction-summary-strip{grid-template-columns:1fr;margin:14px 16px 16px}
+  #calculator-page-root .summary-operator{min-height:24px;border-inline:0;border-block:1px solid var(--color-border,#d8dee4)}
+  #calculator-page-root .transaction-summary-cell{min-height:82px}
+  #calculator-page-root .calculator-inner-split{padding:0 16px 16px;gap:12px}
+  #calculator-page-root .transaction-breakdown-heading .card-title{font-size:16px}
+  #calculator-page-root .transaction-breakdown-subtitle{font-size:10.5px}
 }
-@media (max-width: 480px) {
-  #calculator-page-root .transaction-breakdown-heading { gap: 10px; }
-  #calculator-page-root .transaction-breakdown-icon { flex-basis: 34px; width: 34px; height: 34px; border-radius: 9px; }
-  #calculator-page-root .transaction-breakdown-icon .material-icons { font-size: 18px; }
-  #calculator-page-root .transaction-breakdown-heading .card-title { font-size: 1rem; }
-  #calculator-page-root .transaction-breakdown-subtitle { font-size: 0.73rem; }
-  #calculator-page-root .transaction-summary-cell strong { font-size: 1.04rem; }
-  #calculator-page-root .breakdown-statement .breakdown-item { gap: 9px; padding: 11px 12px; }
-  #calculator-page-root .breakdown-item-label { gap: 8px; }
-  #calculator-page-root .breakdown-item-label strong { font-size: 0.75rem; }
-  #calculator-page-root .breakdown-item-label small { font-size: 0.63rem; }
-  #calculator-page-root .breakdown-statement .item-value { font-size: 0.75rem; }
-  #calculator-page-root .net-payout-value { font-size: 0.94rem; }
+@media(max-width:480px){
+  #calculator-page-root .transaction-breakdown-icon{width:40px;height:40px;flex-basis:40px}
+  #calculator-page-root .transaction-summary-cell strong{font-size:21px}
+  #calculator-page-root .transaction-amount-block{padding:14px}
+  #calculator-page-root .breakdown-statement .breakdown-item{padding:12px}
+  #calculator-page-root .chart-visual-panel{padding:14px}
+  #calculator-page-root .chart-canvas-wrapper{height:220px}
 }
