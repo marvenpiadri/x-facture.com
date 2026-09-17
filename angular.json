@@ -28,7 +28,8 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "src/styles/calculator-system.css"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
