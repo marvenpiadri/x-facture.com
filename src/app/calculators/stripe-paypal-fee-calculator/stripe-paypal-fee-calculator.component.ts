@@ -145,14 +145,35 @@ export class StripePaypalFeeCalculatorComponent implements OnInit, AfterViewInit
     const metrics = this.displayMetrics();
     this.chartInstance = new Chart(ctx, {
       type: 'doughnut',
-      data: { labels: ['Net Revenue Kept', 'Processor Fees'], datasets: [{ data: [metrics.net, metrics.fee], backgroundColor: ['#00e676', '#f85149'], borderColor: ['#0d1117', '#0d1117'], borderWidth: 3, hoverOffset: 6 }] },
+      data: {
+        labels: ['Net Revenue Kept', 'Processor Fees'],
+        datasets: [{
+          data: [metrics.net, metrics.fee],
+          backgroundColor: ['#188038', '#dc2626'],
+          borderColor: ['#ffffff', '#ffffff'],
+          borderWidth: 3,
+          hoverOffset: 6
+        }]
+      },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         cutout: '72%',
         plugins: {
-          legend: { position: 'bottom', labels: { color: '#c9d1d9', font: { family: 'system-ui, -apple-system, sans-serif', size: 12, weight: 'bold' }, padding: 16, usePointStyle: true } },
-          tooltip: { backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9', borderColor: '#30363d', borderWidth: 1, padding: 10, callbacks: { label: (context) => ` ${context.label}: $${(Number(context.raw) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` } }
+          legend: {
+            display: false
+          },
+          tooltip: {
+            backgroundColor: '#ffffff',
+            titleColor: '#24292f',
+            bodyColor: '#57606a',
+            borderColor: '#d8dee4',
+            borderWidth: 1,
+            padding: 10,
+            callbacks: {
+              label: (context) => ` ${context.label}: $${(Number(context.raw) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+            }
+          }
         }
       }
     });
