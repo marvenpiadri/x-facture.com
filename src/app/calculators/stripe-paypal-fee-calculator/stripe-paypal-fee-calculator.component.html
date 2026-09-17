@@ -100,7 +100,7 @@
             </div>
             <div class="breakdown-item fee-detail-row">
               <div class="breakdown-item-label">
-                <span class="fee-row-icon fixed-icon material-icons">credit_card</span>
+                <span class="fee-row-icon fixed-icon material-icons">payments</span>
                 <span><strong>Fixed gateway fee</strong><small>${{ feeFixed() | number:'1.2-2' }} per transaction</small></span>
               </div>
               <span class="item-value fee-value">-${{ (calcMode() === 'from-gross' ? fromGrossResults().fixedFee : toNetResults().fixedFee) | number:'1.2-2' }}</span>
