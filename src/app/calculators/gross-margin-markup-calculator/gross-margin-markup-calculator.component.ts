@@ -44,19 +44,11 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     });
 
     this.seoService.setJsonLd({
-      '@context': 'https://schema.org',
-      '@type': 'WebApplication',
-      name: 'Gross Margin & Markup Calculator',
-      url: 'https://x-facture.com/calculators/gross-margin-markup-calculator',
-      applicationCategory: 'FinanceApplication',
-      operatingSystem: 'All',
-      isAccessibleForFree: true,
+      '@context': 'https://schema.org', '@type': 'WebApplication', name: 'Gross Margin & Markup Calculator',
+      url: 'https://x-facture.com/calculators/gross-margin-markup-calculator', applicationCategory: 'FinanceApplication',
+      operatingSystem: 'All', isAccessibleForFree: true,
       description: 'Business pricing tool to compute gross profit margins, markups, selling prices, and product profit.',
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD'
-      }
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
     });
   }
 
@@ -67,8 +59,8 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
   quantityUnits = signal<number>(100);
 
   results = computed(() => {
-    const cost = Math.max(0.01, this.cogs());
-    const qty = Math.max(1, this.quantityUnits());
+    const cost = Math.max(0.01, Number(this.cogs()) || 0.01);
+    const qty = Math.max(1, Number(this.quantityUnits()) || 1);
 
     let finalPrice = 0;
     let marginPct = 0;
@@ -76,13 +68,13 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     let profitPerUnit = 0;
 
     if (this.mode() === 'target-margin') {
-      const m = Math.min(99.9, Math.max(0, this.targetMargin()));
+      const m = Math.min(99.9, Math.max(0, Number(this.targetMargin()) || 0));
       finalPrice = cost / (1 - m / 100);
       profitPerUnit = finalPrice - cost;
       marginPct = m;
       markupPct = cost > 0 ? (profitPerUnit / cost) * 100 : 0;
     } else {
-      finalPrice = Math.max(cost, this.sellingPriceInput());
+      finalPrice = Math.max(0, Number(this.sellingPriceInput()) || 0);
       profitPerUnit = finalPrice - cost;
       marginPct = finalPrice > 0 ? (profitPerUnit / finalPrice) * 100 : 0;
       markupPct = cost > 0 ? (profitPerUnit / cost) * 100 : 0;
@@ -92,7 +84,7 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     const totalCost = cost * qty;
     const totalProfit = profitPerUnit * qty;
 
-    return { cogs: cost, sellingPrice: finalPrice, profitPerUnit, marginPct, markupPct, quantity: qty, totalRevenue, totalCost, totalProfit };
+    return { cogs: cost, sellingPrice: finalPrice, profitPerUnit, marginPct, markupPct, quantity: qty, totalRevenue, totalCost, totalProfit, isLoss: profitPerUnit < 0 };
   });
 
   constructor() {
@@ -103,18 +95,9 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
   }
 
   ngAfterViewInit(): void { this.initChart(); }
+  ngOnDestroy(): void { this.chartInstance?.destroy(); this.chartInstance = null; }
 
-  ngOnDestroy(): void {
-    if (this.chartInstance) {
-      this.chartInstance.destroy();
-      this.chartInstance = null;
-    }
-  }
-
-  setMarginPreset(pct: number): void {
-    this.mode.set('target-margin');
-    this.targetMargin.set(pct);
-  }
+  setMarginPreset(pct: number): void { this.mode.set('target-margin'); this.targetMargin.set(pct); }
 
   private initChart(): void {
     if (!this.chartCanvas?.nativeElement) return;
@@ -124,13 +107,10 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
 
     this.chartInstance = new Chart(ctx, {
       type: 'bar',
-      data: {
-        labels: ['Selling Price Composition'],
-        datasets: [
-          { label: 'Cost of Goods (COGS)', data: [res.cogs], backgroundColor: '#f85149', borderColor: '#0d1117', borderWidth: 2 },
-          { label: 'Gross Profit Margin', data: [res.profitPerUnit], backgroundColor: '#00e676', borderColor: '#0d1117', borderWidth: 2 }
-        ]
-      },
+      data: { labels: ['Selling Price Composition'], datasets: [
+        { label: 'Cost of Goods (COGS)', data: [res.cogs], backgroundColor: '#f85149', borderColor: '#0d1117', borderWidth: 2 },
+        { label: 'Gross Profit / Loss', data: [res.profitPerUnit], backgroundColor: '#00e676', borderColor: '#0d1117', borderWidth: 2 }
+      ] },
       options: {
         indexAxis: 'y', responsive: true, maintainAspectRatio: false,
         scales: {
@@ -149,6 +129,6 @@ export class GrossMarginMarkupCalculatorComponent implements OnInit, AfterViewIn
     if (!this.chartInstance) return;
     this.chartInstance.data.datasets[0].data = [cogs];
     this.chartInstance.data.datasets[1].data = [profit];
-    this.chartInstance.update();
+    this.chartInstance.update('none');
   }
 }
