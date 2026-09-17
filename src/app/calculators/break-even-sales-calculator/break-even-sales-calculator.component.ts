@@ -59,11 +59,7 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
       operatingSystem: 'All',
       isAccessibleForFree: true,
       description: 'Business break-even point, unit volume, contribution margin, and revenue analysis tool.',
-      offers: {
-        '@type': 'Offer',
-        price: '0',
-        priceCurrency: 'USD'
-      }
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
     });
   }
 
@@ -79,14 +75,14 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
   sellingPricePerUnit = signal<number>(50);
 
   results = computed(() => {
-    const fixed = Math.max(0, this.fixedCosts());
-    const variable = Math.max(0, this.variableCostPerUnit());
-    const price = Math.max(0, this.sellingPricePerUnit());
+    const fixed = Math.max(0, Number(this.fixedCosts()) || 0);
+    const variable = Math.max(0, Number(this.variableCostPerUnit()) || 0);
+    const price = Math.max(0, Number(this.sellingPricePerUnit()) || 0);
 
     const contributionMargin = price - variable;
     const contributionMarginRatio = price > 0 ? contributionMargin / price : 0;
-    const breakEvenUnits = contributionMargin > 0 ? Math.ceil(fixed / contributionMargin) : 0;
-    const breakEvenRevenue = breakEvenUnits * price;
+    const breakEvenUnits = fixed === 0 ? 0 : contributionMargin > 0 ? Math.ceil(fixed / contributionMargin) : null;
+    const breakEvenRevenue = breakEvenUnits === null ? null : breakEvenUnits * price;
 
     return {
       contributionMargin,
@@ -95,25 +91,18 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
       breakEvenRevenue,
       fixed,
       variable,
-      price
+      price,
+      isAchievable: breakEvenUnits !== null
     };
   });
 
   constructor() {
-    effect(() => {
-      this.updateChart();
-    });
+    effect(() => this.updateChart());
   }
 
-  ngAfterViewInit(): void {
-    this.initChart();
-  }
+  ngAfterViewInit(): void { this.initChart(); }
 
-  ngOnDestroy(): void {
-    if (this.chartInstance) {
-      this.chartInstance.destroy();
-    }
-  }
+  ngOnDestroy(): void { this.chartInstance?.destroy(); }
 
   setPreset(p: BreakEvenPreset): void {
     this.fixedCosts.set(p.fixedCosts);
@@ -127,8 +116,9 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
     if (!ctx) return;
 
     const res = this.results();
-    const maxUnits = res.breakEvenUnits > 0 ? res.breakEvenUnits * 2 : 100;
-    const step = Math.ceil(maxUnits / 10);
+    const breakEvenUnits = res.breakEvenUnits ?? 100;
+    const maxUnits = breakEvenUnits > 0 ? breakEvenUnits * 2 : 100;
+    const step = Math.max(1, Math.ceil(maxUnits / 10));
     const labels = Array.from({ length: 11 }, (_, i) => i * step);
 
     this.chartInstance = new Chart(ctx, {
@@ -159,14 +149,15 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
   private updateChart(): void {
     if (!this.chartInstance) return;
     const res = this.results();
-    const maxUnits = res.breakEvenUnits > 0 ? res.breakEvenUnits * 2 : 100;
-    const step = Math.ceil(maxUnits / 10);
+    const breakEvenUnits = res.breakEvenUnits ?? 100;
+    const maxUnits = breakEvenUnits > 0 ? breakEvenUnits * 2 : 100;
+    const step = Math.max(1, Math.ceil(maxUnits / 10));
     const labels = Array.from({ length: 11 }, (_, i) => i * step);
 
     this.chartInstance.data.labels = labels;
     this.chartInstance.data.datasets[0].data = labels.map(u => u * res.price);
     this.chartInstance.data.datasets[1].data = labels.map(u => res.fixed + (u * res.variable));
     this.chartInstance.data.datasets[2].data = labels.map(() => res.fixed);
-    this.chartInstance.update();
+    this.chartInstance.update('none');
   }
 }
