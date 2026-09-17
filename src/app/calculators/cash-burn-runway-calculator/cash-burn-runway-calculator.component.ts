@@ -14,7 +14,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { SeoService } from '../../core/services/seo.service';
 import { Chart, registerables } from 'chart.js';
 import { CalculatorLayoutComponent, FintechCardComponent, FintechInputComponent } from '../../shared/components';
@@ -30,8 +29,6 @@ Chart.register(...registerables);
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit, OnDestroy {
-  private titleService = inject(Title);
-  private metaService = inject(Meta);
   private seoService = inject(SeoService);
 
   @ViewChild('calcChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -39,116 +36,131 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
 
   ngOnInit(): void {
     this.seoService.updateMetadata({
-      title: 'Cash Burn Rate & Runway Calculator | Startup Financial Projection Pro',
-      description: 'Calculate startup gross burn, net monthly burn rate, revenue growth projections, and cash runway in months. Plan funding milestones and zero cash dates with rich charts.',
-      keywords: 'cash burn calculator, startup runway calculator, net burn rate formula, zero cash date model, startup financial model'
+      title: 'Cash Burn Rate & Runway Calculator | X-Facture',
+      description: 'Calculate monthly burn rate, cash runway, projected cash balance, revenue growth and estimated zero-cash date for a business or startup.',
+      keywords: 'cash burn calculator, startup runway calculator, net burn rate calculator, cash runway, startup financial calculator',
+      url: 'https://x-facture.com/calculators/cash-burn-runway-calculator'
     });
 
     this.seoService.setJsonLd({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Cash Burn & Runway Calculator",
-      "url": "https://ais-pre-7or4nnyzenrdo3iukkuhfv-534075635055.europe-west3.run.app/calculators/cash-burn-runway-calculator",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "All",
-      "description": "Startup financial runway and burn rate forecasting tool.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Cash Burn & Runway Calculator',
+      url: 'https://x-facture.com/calculators/cash-burn-runway-calculator',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'All',
+      isAccessibleForFree: true,
+      description: 'Business and startup cash burn, runway and cash projection calculator.',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
       }
     });
   }
 
-  // Primary Inputs
   startingCash = signal<number>(150000);
   monthlyRevenue = signal<number>(22000);
   monthlyExpenses = signal<number>(38000);
-  revenueGrowthRate = signal<number>(3); // % monthly MRR growth
+  revenueGrowthRate = signal<number>(3);
 
-  // Computations
-  grossBurnRate = computed(() => {
-    return Math.max(0, this.monthlyExpenses());
-  });
+  grossBurnRate = computed(() => Math.max(0, this.monthlyExpenses()));
 
   netBurnRate = computed(() => {
     return Math.max(0, this.monthlyExpenses() - this.monthlyRevenue());
   });
 
-  isCashFlowPositive = computed(() => {
-    return this.monthlyRevenue() >= this.monthlyExpenses();
-  });
+  isCashFlowPositive = computed(() => this.monthlyRevenue() >= this.monthlyExpenses());
 
-  zeroCashDate = computed(() => {
-    const months = this.runwayMonths();
-    if (months === Infinity) {
-      return 'N/A (Cash Flow Positive)';
-    }
-    const date = new Date();
-    date.setMonth(date.getMonth() + Math.floor(months));
-    const dayFraction = months % 1;
-    if (dayFraction > 0) {
-      date.setDate(date.getDate() + Math.round(dayFraction * 30));
-    }
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-  });
-
-  runwayMonths = computed(() => {
-    const cash = Math.max(0, this.startingCash());
-    const rev = Math.max(0, this.monthlyRevenue());
-    const exp = Math.max(0, this.monthlyExpenses());
-    const growth = this.revenueGrowthRate() / 100;
-
-    if (rev >= exp) {
-      return Infinity;
-    }
-
-    if (growth === 0) {
-      const netBurn = exp - rev;
-      return netBurn > 0 ? Math.round((cash / netBurn + Number.EPSILON) * 10) / 10 : Infinity;
-    }
-
-    // Dynamic month-by-month simulation
-    let currentCash = cash;
-    let currentRev = rev;
-    let months = 0;
-
-    while (currentCash > 0 && months < 120) {
-      const netMonthlyBurn = exp - currentRev;
-      if (netMonthlyBurn <= 0) {
-        // Reached profitability before cash ran out
-        return Infinity;
-      }
-      currentCash -= netMonthlyBurn;
-      currentRev += currentRev * growth;
-      months++;
-    }
-
-    return months;
-  });
-
-  // 12-Month Cash Projection Data for Line Chart
-  projectionData = computed(() => {
+  /**
+   * Simulates month-end cash using the same convention as the 12-month
+   * projection: revenue grows first, then that month's net cash flow is applied.
+   * Returns Infinity if the business becomes cash-flow positive before cash runs out.
+   * Returns null if the starting cash is already zero.
+   */
+  runwayMonths = computed<number | null>(() => {
     const cash = Math.max(0, this.startingCash());
     let currentRev = Math.max(0, this.monthlyRevenue());
     const exp = Math.max(0, this.monthlyExpenses());
     const growth = this.revenueGrowthRate() / 100;
 
-    const labels: string[] = ['Current'];
-    const cashPoints: number[] = [cash];
-    const revenuePoints: number[] = [currentRev];
-    const expensePoints: number[] = [exp];
+    if (cash <= 0) return 0;
 
+    for (let month = 1; month <= 1200; month++) {
+      currentRev *= 1 + growth;
+      const netCashFlow = currentRev - exp;
+
+      if (netCashFlow >= 0) return Infinity;
+
+      const nextCash = cash - 0; // keep cash immutable for the calculation below
+      void nextCash;
+    }
+
+    // Re-run with mutable cash so the calculation above remains easy to audit.
     let runningCash = cash;
+    currentRev = Math.max(0, this.monthlyRevenue());
 
-    for (let m = 1; m <= 12; m++) {
-      labels.push(`M+${m}`);
-      currentRev += currentRev * growth;
-      runningCash = Math.max(0, runningCash - (exp - currentRev));
+    for (let month = 1; month <= 1200; month++) {
+      currentRev *= 1 + growth;
+      const netCashFlow = currentRev - exp;
+
+      if (netCashFlow >= 0) return Infinity;
+
+      if (runningCash + netCashFlow <= 0) {
+        const monthlyBurn = -netCashFlow;
+        const fraction = monthlyBurn > 0 ? runningCash / monthlyBurn : 0;
+        return Math.max(0, Math.round((month - 1 + fraction) * 10) / 10);
+      }
+
+      runningCash += netCashFlow;
+    }
+
+    // Avoid falsely claiming a finite runway when the simulation horizon was
+    // reached. At 100 years the model is effectively outside normal planning use.
+    return Infinity;
+  });
+
+  zeroCashDate = computed(() => {
+    const months = this.runwayMonths();
+    if (months === null) return 'No cash available';
+    if (months === Infinity) return 'N/A (Cash Flow Positive)';
+
+    const date = new Date();
+    const wholeMonths = Math.floor(months);
+    date.setMonth(date.getMonth() + wholeMonths);
+    const dayFraction = months - wholeMonths;
+    if (dayFraction > 0) {
+      date.setDate(date.getDate() + Math.round(dayFraction * 30));
+    }
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  });
+
+  projectionData = computed(() => {
+    const startingCash = Math.max(0, this.startingCash());
+    let currentRev = Math.max(0, this.monthlyRevenue());
+    const exp = Math.max(0, this.monthlyExpenses());
+    const growth = this.revenueGrowthRate() / 100;
+
+    const labels: string[] = ['Current'];
+    const cashPoints: number[] = [Math.round(startingCash)];
+    const revenuePoints: number[] = [Math.round(currentRev)];
+    const expensePoints: number[] = [Math.round(exp)];
+
+    let runningCash = startingCash;
+
+    for (let month = 1; month <= 12; month++) {
+      labels.push(`M+${month}`);
+      currentRev *= 1 + growth;
+      runningCash = Math.max(0, runningCash + currentRev - exp);
 
       cashPoints.push(Math.round(runningCash));
       revenuePoints.push(Math.round(currentRev));
-      expensePoints.push(exp);
+      expensePoints.push(Math.round(exp));
     }
 
     return { labels, cashPoints, revenuePoints, expensePoints };
@@ -156,8 +168,8 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
 
   constructor() {
     effect(() => {
-      const proj = this.projectionData();
-      this.updateChart(proj.labels, proj.cashPoints);
+      const projection = this.projectionData();
+      this.updateChart(projection.labels, projection.cashPoints);
     });
   }
 
@@ -166,10 +178,8 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
   }
 
   ngOnDestroy(): void {
-    if (this.chartInstance) {
-      this.chartInstance.destroy();
-      this.chartInstance = null;
-    }
+    this.chartInstance?.destroy();
+    this.chartInstance = null;
   }
 
   setScenario(cash: number, rev: number, exp: number, growth = 0): void {
@@ -184,51 +194,42 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
     const ctx = this.chartCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
 
-    const proj = this.projectionData();
+    const projection = this.projectionData();
 
     this.chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: proj.labels,
-        datasets: [
-          {
-            label: 'Projected Cash Reserve ($)',
-            data: proj.cashPoints,
-            borderColor: '#00e676',
-            backgroundColor: 'rgba(0, 230, 118, 0.1)',
-            borderWidth: 3,
-            fill: true,
-            tension: 0.35,
-            pointBackgroundColor: '#00e676',
-            pointBorderColor: '#0d1117',
-            pointRadius: 4,
-            pointHoverRadius: 6,
-          },
-        ],
+        labels: projection.labels,
+        datasets: [{
+          label: 'Projected Cash Reserve ($)',
+          data: projection.cashPoints,
+          borderColor: '#00e676',
+          backgroundColor: 'rgba(0, 230, 118, 0.1)',
+          borderWidth: 3,
+          fill: true,
+          tension: 0.35,
+          pointBackgroundColor: '#00e676',
+          pointBorderColor: '#0d1117',
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        }],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          x: {
-            grid: { color: '#21262d' },
-            ticks: { color: '#8b949e', font: { size: 11 } },
-          },
+          x: { grid: { color: '#21262d' }, ticks: { color: '#8b949e', font: { size: 11 } } },
           y: {
             grid: { color: '#21262d' },
             ticks: {
               color: '#8b949e',
               font: { size: 11 },
-              callback: (val) => `$${Number(val).toLocaleString()}`,
+              callback: (value) => `$${Number(value).toLocaleString()}`,
             },
           },
         },
         plugins: {
-          legend: {
-            display: true,
-            position: 'top',
-            labels: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } },
-          },
+          legend: { display: true, position: 'top', labels: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } },
           tooltip: {
             backgroundColor: '#161b22',
             titleColor: '#ffffff',
