@@ -30,7 +30,7 @@ export class CalculatorLayoutComponent {
     const current = this.calculator();
     if (!current) return [];
 
-    return current.related
+    return (current.related ?? [])
       .map(slug => getCalculatorBySlug(slug))
       .filter((calculator): calculator is NonNullable<typeof calculator> => !!calculator);
   });
