@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
+import { CalculatorDefinition } from '../../calculators/calculator-registry';
 
 export interface SeoMetadata {
   title: string;
@@ -15,40 +16,78 @@ export interface SeoMetadata {
   providedIn: 'root',
 })
 export class SeoService {
-  private titleService = inject(Title);
-  private metaService = inject(Meta);
-  private document = inject(DOCUMENT);
+  private readonly titleService = inject(Title);
+  private readonly metaService = inject(Meta);
+  private readonly document = inject(DOCUMENT);
+  private readonly siteUrl = 'https://x-facture.com';
+  private readonly siteName = 'X-Facture';
+  private readonly defaultImage = `${this.siteUrl}/x-facture-LOGO-PFP.png`;
 
   updateMetadata(data: SeoMetadata): void {
-    const title = data.title;
-    const description = data.description;
-    const siteName = 'x-facture';
-    const url = data.url || this.document.location.origin + this.document.location.pathname;
-    const image = data.image || `${this.document.location.origin}/favicon.ico`;
+    const url = this.normalizeUrl(data.url || `${this.siteUrl}${this.document.location.pathname}`);
+    const image = data.image || this.defaultImage;
 
-    // Standard Tags
-    this.titleService.setTitle(title);
-    this.metaService.updateTag({ name: 'description', content: description });
+    this.titleService.setTitle(data.title);
+    this.metaService.updateTag({ name: 'description', content: data.description });
+    this.metaService.updateTag({ name: 'robots', content: 'index, follow' });
+
     if (data.keywords) {
       this.metaService.updateTag({ name: 'keywords', content: data.keywords });
     }
 
-    // OpenGraph Tags
-    this.metaService.updateTag({ property: 'og:title', content: title });
-    this.metaService.updateTag({ property: 'og:description', content: description });
+    this.metaService.updateTag({ property: 'og:title', content: data.title });
+    this.metaService.updateTag({ property: 'og:description', content: data.description });
     this.metaService.updateTag({ property: 'og:url', content: url });
     this.metaService.updateTag({ property: 'og:type', content: data.type || 'website' });
-    this.metaService.updateTag({ property: 'og:site_name', content: siteName });
+    this.metaService.updateTag({ property: 'og:site_name', content: this.siteName });
     this.metaService.updateTag({ property: 'og:image', content: image });
 
-    // Twitter Tags
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.metaService.updateTag({ name: 'twitter:title', content: title });
-    this.metaService.updateTag({ name: 'twitter:description', content: description });
+    this.metaService.updateTag({ name: 'twitter:title', content: data.title });
+    this.metaService.updateTag({ name: 'twitter:description', content: data.description });
     this.metaService.updateTag({ name: 'twitter:image', content: image });
 
-    // Canonical Link
     this.updateCanonicalLink(url);
+  }
+
+  /** Apply the canonical public SEO contract for a calculator definition. */
+  updateCalculatorMetadata(calculator: CalculatorDefinition): void {
+    const url = `${this.siteUrl}/calculators/${calculator.slug}`;
+    this.updateMetadata({
+      title: calculator.title,
+      description: calculator.description,
+      keywords: calculator.keywords.join(', '),
+      url,
+      image: this.defaultImage,
+      type: 'website'
+    });
+
+    this.setJsonLd({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: calculator.name,
+      url,
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'All',
+      isAccessibleForFree: true,
+      description: calculator.description,
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
+      }
+    });
+  }
+
+  private normalizeUrl(url: string): string {
+    try {
+      const parsed = new URL(url, this.siteUrl);
+      parsed.hash = '';
+      parsed.search = '';
+      return parsed.toString().replace(/\/$/, '') || this.siteUrl;
+    } catch {
+      return url;
+    }
   }
 
   private updateCanonicalLink(url: string): void {
@@ -63,7 +102,7 @@ export class SeoService {
     }
   }
 
-  setJsonLd(data: any): void {
+  setJsonLd(data: unknown): void {
     let script = this.document.querySelector('script[type="application/ld+json"]#dynamic-json-ld');
     if (!script) {
       script = this.document.createElement('script');
