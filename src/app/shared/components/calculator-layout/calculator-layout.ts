@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
+import { SeoService } from '../../../core/services/seo.service';
 import { CALCULATOR_REGISTRY, getCalculatorBySlug } from '../../../calculators/calculator-registry';
 
 @Component({
@@ -13,6 +14,8 @@ import { CALCULATOR_REGISTRY, getCalculatorBySlug } from '../../../calculators/c
 })
 export class CalculatorLayoutComponent {
   private readonly router = inject(Router);
+  // Instantiates the route-driven SEO service for every calculator page.
+  private readonly seoService = inject(SeoService);
 
   title = input<string>('');
   subtitle = input<string>('');
