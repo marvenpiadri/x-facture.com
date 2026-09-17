@@ -1,6 +1,8 @@
 import { Injectable, inject } from '@angular/core';
 import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { CalculatorDefinition, getCalculatorBySlug } from '../../calculators/calculator-registry';
 
 export interface SeoMetadata {
@@ -12,16 +14,26 @@ export interface SeoMetadata {
   type?: 'website' | 'article';
 }
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class SeoService {
   private readonly titleService = inject(Title);
   private readonly metaService = inject(Meta);
   private readonly document = inject(DOCUMENT);
+  private readonly router = inject(Router);
   private readonly siteUrl = 'https://x-facture.com';
   private readonly siteName = 'X-Facture';
   private readonly defaultImage = `${this.siteUrl}/x-facture-LOGO-PFP.png`;
+
+  constructor() {
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(event => {
+        const slug = event.urlAfterRedirects.split('?')[0].split('#')[0].split('/').filter(Boolean).pop() ?? '';
+        if (event.urlAfterRedirects.startsWith('/calculators/') && getCalculatorBySlug(slug)) {
+          this.updateCalculatorMetadataBySlug(slug);
+        }
+      });
+  }
 
   updateMetadata(data: SeoMetadata): void {
     const url = this.normalizeUrl(data.url || `${this.siteUrl}${this.document.location.pathname}`);
@@ -30,7 +42,6 @@ export class SeoService {
     this.titleService.setTitle(data.title);
     this.metaService.updateTag({ name: 'description', content: data.description });
     this.metaService.updateTag({ name: 'robots', content: 'index, follow' });
-
     if (data.keywords) this.metaService.updateTag({ name: 'keywords', content: data.keywords });
 
     this.metaService.updateTag({ property: 'og:title', content: data.title });
@@ -46,7 +57,6 @@ export class SeoService {
     this.updateCanonicalLink(url);
   }
 
-  /** Apply the canonical public SEO contract for a calculator definition. */
   updateCalculatorMetadata(calculator: CalculatorDefinition): void {
     const url = `${this.siteUrl}/calculators/${calculator.slug}`;
     this.updateMetadata({
@@ -85,7 +95,6 @@ export class SeoService {
     });
   }
 
-  /** Resolve and apply the canonical metadata for a registered calculator. */
   updateCalculatorMetadataBySlug(slug: string): void {
     const calculator = getCalculatorBySlug(slug);
     if (calculator) this.updateCalculatorMetadata(calculator);
