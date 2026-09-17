@@ -66,57 +66,38 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
 
   grossBurnRate = computed(() => Math.max(0, this.monthlyExpenses()));
 
-  netBurnRate = computed(() => {
-    return Math.max(0, this.monthlyExpenses() - this.monthlyRevenue());
-  });
+  netBurnRate = computed(() => Math.max(0, this.monthlyExpenses() - this.monthlyRevenue()));
 
   isCashFlowPositive = computed(() => this.monthlyRevenue() >= this.monthlyExpenses());
 
-  /**
-   * Simulates month-end cash using the same convention as the 12-month
-   * projection: revenue grows first, then that month's net cash flow is applied.
-   * Returns Infinity if the business becomes cash-flow positive before cash runs out.
-   * Returns null if the starting cash is already zero.
-   */
+  /** Simulates month-end cash using the same convention as the 12-month projection. */
   runwayMonths = computed<number | null>(() => {
-    const cash = Math.max(0, this.startingCash());
+    const startingCash = Math.max(0, this.startingCash());
     let currentRev = Math.max(0, this.monthlyRevenue());
-    const exp = Math.max(0, this.monthlyExpenses());
+    const expenses = Math.max(0, this.monthlyExpenses());
     const growth = this.revenueGrowthRate() / 100;
 
-    if (cash <= 0) return 0;
+    if (startingCash <= 0) return 0;
 
+    let runningCash = startingCash;
+
+    // A 100-year horizon prevents an unbounded loop while avoiding the old
+    // 120-month result that could be mistaken for an actual runway value.
     for (let month = 1; month <= 1200; month++) {
       currentRev *= 1 + growth;
-      const netCashFlow = currentRev - exp;
+      const netCashFlow = currentRev - expenses;
 
       if (netCashFlow >= 0) return Infinity;
 
-      const nextCash = cash - 0; // keep cash immutable for the calculation below
-      void nextCash;
-    }
-
-    // Re-run with mutable cash so the calculation above remains easy to audit.
-    let runningCash = cash;
-    currentRev = Math.max(0, this.monthlyRevenue());
-
-    for (let month = 1; month <= 1200; month++) {
-      currentRev *= 1 + growth;
-      const netCashFlow = currentRev - exp;
-
-      if (netCashFlow >= 0) return Infinity;
-
-      if (runningCash + netCashFlow <= 0) {
-        const monthlyBurn = -netCashFlow;
-        const fraction = monthlyBurn > 0 ? runningCash / monthlyBurn : 0;
+      const monthlyBurn = -netCashFlow;
+      if (runningCash <= monthlyBurn) {
+        const fraction = runningCash / monthlyBurn;
         return Math.max(0, Math.round((month - 1 + fraction) * 10) / 10);
       }
 
-      runningCash += netCashFlow;
+      runningCash -= monthlyBurn;
     }
 
-    // Avoid falsely claiming a finite runway when the simulation horizon was
-    // reached. At 100 years the model is effectively outside normal planning use.
     return Infinity;
   });
 
@@ -129,38 +110,34 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
     const wholeMonths = Math.floor(months);
     date.setMonth(date.getMonth() + wholeMonths);
     const dayFraction = months - wholeMonths;
-    if (dayFraction > 0) {
-      date.setDate(date.getDate() + Math.round(dayFraction * 30));
-    }
+    if (dayFraction > 0) date.setDate(date.getDate() + Math.round(dayFraction * 30));
 
     return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+      year: 'numeric', month: 'short', day: 'numeric'
     });
   });
 
   projectionData = computed(() => {
     const startingCash = Math.max(0, this.startingCash());
     let currentRev = Math.max(0, this.monthlyRevenue());
-    const exp = Math.max(0, this.monthlyExpenses());
+    const expenses = Math.max(0, this.monthlyExpenses());
     const growth = this.revenueGrowthRate() / 100;
 
     const labels: string[] = ['Current'];
     const cashPoints: number[] = [Math.round(startingCash)];
     const revenuePoints: number[] = [Math.round(currentRev)];
-    const expensePoints: number[] = [Math.round(exp)];
+    const expensePoints: number[] = [Math.round(expenses)];
 
     let runningCash = startingCash;
 
     for (let month = 1; month <= 12; month++) {
       labels.push(`M+${month}`);
       currentRev *= 1 + growth;
-      runningCash = Math.max(0, runningCash + currentRev - exp);
+      runningCash = Math.max(0, runningCash + currentRev - expenses);
 
       cashPoints.push(Math.round(runningCash));
       revenuePoints.push(Math.round(currentRev));
-      expensePoints.push(Math.round(exp));
+      expensePoints.push(Math.round(expenses));
     }
 
     return { labels, cashPoints, revenuePoints, expensePoints };
@@ -173,9 +150,7 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
     });
   }
 
-  ngAfterViewInit(): void {
-    this.initChart();
-  }
+  ngAfterViewInit(): void { this.initChart(); }
 
   ngOnDestroy(): void {
     this.chartInstance?.destroy();
@@ -231,14 +206,9 @@ export class CashBurnRunwayCalculatorComponent implements OnInit, AfterViewInit,
         plugins: {
           legend: { display: true, position: 'top', labels: { color: '#c9d1d9', font: { size: 12, weight: 'bold' } } },
           tooltip: {
-            backgroundColor: '#161b22',
-            titleColor: '#ffffff',
-            bodyColor: '#c9d1d9',
-            borderColor: '#30363d',
-            borderWidth: 1,
-            callbacks: {
-              label: (context) => ` Cash Balance: $${Number(context.raw).toLocaleString()}`,
-            },
+            backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9',
+            borderColor: '#30363d', borderWidth: 1,
+            callbacks: { label: (context) => ` Cash Balance: $${Number(context.raw).toLocaleString()}` },
           },
         },
       },
