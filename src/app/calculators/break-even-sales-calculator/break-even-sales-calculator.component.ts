@@ -14,7 +14,6 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { Title, Meta } from '@angular/platform-browser';
 import { SeoService } from '../../core/services/seo.service';
 import { Chart, registerables } from 'chart.js';
 import { CalculatorLayoutComponent, FintechCardComponent } from '../../shared/components';
@@ -37,8 +36,6 @@ interface BreakEvenPreset {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit, OnDestroy {
-  private titleService = inject(Title);
-  private metaService = inject(Meta);
   private seoService = inject(SeoService);
 
   @ViewChild('calcChart') chartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -46,23 +43,26 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
 
   ngOnInit(): void {
     this.seoService.updateMetadata({
-      title: 'Break-Even Point & Unit Volume Calculator | Finance Analysis Pro',
-      description: 'Calculate your business break-even point in units and sales revenue. Analyze contribution margins and safety margins to cover overheads with interactive charts.',
-      keywords: 'break-even calculator, unit volume calculator, business overheads calculator, contribution margin calculator, profitability analysis tool'
+      title: 'Break-Even Point Calculator — Units, Revenue & Contribution Margin | X-Facture',
+      description: 'Calculate your business break-even point in units and sales revenue. Analyze contribution margin and fixed costs with an interactive break-even chart.',
+      keywords: 'break-even calculator, break even point calculator, break-even units, break-even revenue, contribution margin calculator, fixed cost calculator',
+      url: 'https://x-facture.com/calculators/break-even-sales-calculator',
+      image: 'https://x-facture.com/x-facture-LOGO-PFP.png'
     });
 
     this.seoService.setJsonLd({
-      "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "Break-Even Sales Calculator",
-      "url": "https://ais-pre-7or4nnyzenrdo3iukkuhfv-534075635055.europe-west3.run.app/calculators/break-even-sales-calculator",
-      "applicationCategory": "FinanceApplication",
-      "operatingSystem": "All",
-      "description": "Business unit-volume and break-even point analysis tool.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Break-Even Point Calculator',
+      url: 'https://x-facture.com/calculators/break-even-sales-calculator',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'All',
+      isAccessibleForFree: true,
+      description: 'Business break-even point, unit volume, contribution margin, and revenue analysis tool.',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'USD'
       }
     });
   }
@@ -85,7 +85,6 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
 
     const contributionMargin = price - variable;
     const contributionMarginRatio = price > 0 ? contributionMargin / price : 0;
-    
     const breakEvenUnits = contributionMargin > 0 ? Math.ceil(fixed / contributionMargin) : 0;
     const breakEvenRevenue = breakEvenUnits * price;
 
@@ -135,58 +134,23 @@ export class BreakEvenSalesCalculatorComponent implements OnInit, AfterViewInit,
     this.chartInstance = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: labels,
+        labels,
         datasets: [
-          {
-            label: 'Total Revenue',
-            data: labels.map(u => u * res.price),
-            borderColor: '#00e676',
-            backgroundColor: 'rgba(0, 230, 118, 0.1)',
-            fill: true,
-            tension: 0.1
-          },
-          {
-            label: 'Total Costs',
-            data: labels.map(u => res.fixed + (u * res.variable)),
-            borderColor: '#f85149',
-            backgroundColor: 'rgba(248, 81, 73, 0.1)',
-            fill: true,
-            tension: 0.1
-          },
-          {
-            label: 'Fixed Costs',
-            data: labels.map(() => res.fixed),
-            borderColor: '#30363d',
-            borderDash: [5, 5],
-            fill: false,
-            tension: 0
-          }
+          { label: 'Total Revenue', data: labels.map(u => u * res.price), borderColor: '#00e676', backgroundColor: 'rgba(0, 230, 118, 0.1)', fill: true, tension: 0.1 },
+          { label: 'Total Costs', data: labels.map(u => res.fixed + (u * res.variable)), borderColor: '#f85149', backgroundColor: 'rgba(248, 81, 73, 0.1)', fill: true, tension: 0.1 },
+          { label: 'Fixed Costs', data: labels.map(() => res.fixed), borderColor: '#30363d', borderDash: [5, 5], fill: false, tension: 0 }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: {
-            beginAtZero: true,
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            ticks: { color: '#8b949e' }
-          },
-          x: {
-            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-            ticks: { color: '#8b949e' },
-            title: { display: true, text: 'Units Sold', color: '#8b949e' }
-          }
+          y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b949e' } },
+          x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#8b949e' }, title: { display: true, text: 'Units Sold', color: '#8b949e' } }
         },
         plugins: {
           legend: { labels: { color: '#c9d1d9' } },
-          tooltip: {
-            backgroundColor: '#161b22',
-            titleColor: '#ffffff',
-            bodyColor: '#c9d1d9',
-            borderColor: '#30363d',
-            borderWidth: 1
-          }
+          tooltip: { backgroundColor: '#161b22', titleColor: '#ffffff', bodyColor: '#c9d1d9', borderColor: '#30363d', borderWidth: 1 }
         }
       }
     });
