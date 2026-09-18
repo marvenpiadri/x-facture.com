@@ -45,4 +45,14 @@
   <url><loc>https://x-facture.com/calculators/price-increase-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://x-facture.com/calculators/debt-to-income-calculator</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://x-facture.com/calculators/loan-payoff-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-</urlset>
+  <url><loc>https://x-facture.com/calculators/gross-profit-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/operating-margin-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/average-order-value-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/conversion-rate-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/churn-rate-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/customer-retention-rate-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/sales-commission-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/payback-period-calculator</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://x-facture.com/calculators/revenue-growth-calculator</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://x-facture.com/calculators/inventory-days-calculator</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
+  <url><loc>https://x-facture.com/calculators/reorder-point-calculator</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>\n</urlset>
