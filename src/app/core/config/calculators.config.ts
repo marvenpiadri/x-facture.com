@@ -14,11 +14,11 @@ export interface FinanceToolConfig {
 }
 
 const CATEGORY_LABELS: Record<CalculatorCategory, FinanceToolConfig['category']> = {
-  'business-finance': 'Financing & Growth',
-  loans: 'Financing & Growth',
-  'taxes-pricing': 'Tax & Compliance',
-  payments: 'Billing & Rates',
-  freelance: 'Billing & Rates',
+  'business-finance': 'Business Finance',
+  loans: 'Loans & Financing',
+  'taxes-pricing': 'Pricing & Tax',
+  payments: 'Payments & Fees',
+  freelance: 'Freelance & Rates',
   inventory: 'Inventory & Operations',
 };
 
