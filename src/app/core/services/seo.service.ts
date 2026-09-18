@@ -144,7 +144,12 @@ export class SeoService {
       '/settings': { title: 'Company & Business Settings | X-Facture', description: 'Configure company details, tax settings, currency and business preferences in X-Facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
     };
 
-    const metadata = routeSeo[path] ?? { title: 'X-Facture — Free Business Tools', description: 'Practical free business tools for invoicing, finance, pricing, taxes, payments and operations.', url: `${this.siteUrl}${path}` };
+    const metadata = routeSeo[path] ?? {
+      title: 'X-Facture — Free Business Tools',
+      description: 'Practical free business tools for invoicing, finance, pricing, taxes, payments and operations.',
+      url: `${this.siteUrl}${path}`,
+      robots: 'noindex, nofollow'
+    };
     this.updateMetadata(metadata);
     this.setSiteSchema(metadata.url || this.siteUrl, metadata.title);
   }
