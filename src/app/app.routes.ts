@@ -11,6 +11,7 @@ import { DocumentEditPage } from './features/documents/pages/document-edit/docum
 import { DocumentPreviewPage } from './features/documents/pages/document-preview/document-preview';
 import { CalculatorsHubPage } from './calculators/calculators-hub';
 import { SimpleFinanceCalculatorComponent } from './calculators/simple-finance-calculator/simple-finance-calculator';
+import { ADDITIONAL_CALCULATORS } from './calculators/additional-calculators';
 import { StripePaypalFeeCalculatorComponent } from './calculators/stripe-paypal-fee-calculator/stripe-paypal-fee-calculator.component';
 import { CashBurnRunwayCalculatorComponent } from './calculators/cash-burn-runway-calculator/cash-burn-runway-calculator.component';
 import { GrossMarginMarkupCalculatorComponent } from './calculators/gross-margin-markup-calculator/gross-margin-markup-calculator.component';
@@ -24,17 +25,7 @@ import { CurrencyExchangeFeeCalculatorComponent } from './calculators/currency-e
 import { CashRegisterChangeCalculatorComponent } from './calculators/cash-register-change-calculator/cash-register-change-calculator.component';
 import { CompoundWorkingCapitalCalculatorComponent } from './calculators/compound-working-capital-calculator/compound-working-capital-calculator.component';
 
-export const routes: Routes = [
-  { path: '', component: LandingHomePage, pathMatch: 'full' },
-  { path: 'home', component: LandingHomePage },
-  { path: 'dashboard', component: DashboardHomePage },
-  { path: 'store/pos', component: PosTerminalPage },
-  { path: 'ledger', component: LedgerViewPage },
-  { path: 'clients', component: ClientsHubPage },
-  { path: 'products', component: ProductsHubPage },
-  { path: 'settings', component: SettingsHubPage },
-
-  { path: 'calculators', component: CalculatorsHubPage },
+const SPECIALIZED_CALCULATOR_ROUTES: Routes = [
   { path: 'calculators/stripe-paypal-fee-calculator', component: StripePaypalFeeCalculatorComponent },
   { path: 'calculators/cash-burn-runway-calculator', component: CashBurnRunwayCalculatorComponent },
   { path: 'calculators/gross-margin-markup-calculator', component: GrossMarginMarkupCalculatorComponent },
@@ -47,19 +38,26 @@ export const routes: Routes = [
   { path: 'calculators/currency-exchange-fee-calculator', component: CurrencyExchangeFeeCalculatorComponent },
   { path: 'calculators/cash-register-change-calculator', component: CashRegisterChangeCalculatorComponent },
   { path: 'calculators/compound-working-capital-calculator', component: CompoundWorkingCapitalCalculatorComponent },
+];
 
-  { path: 'calculators/roi-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/roas-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/customer-acquisition-cost-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/customer-lifetime-value-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/cagr-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/discount-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/net-profit-margin-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/contribution-margin-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/percentage-change-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/price-increase-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/debt-to-income-calculator', component: SimpleFinanceCalculatorComponent },
-  { path: 'calculators/loan-payoff-calculator', component: SimpleFinanceCalculatorComponent },
+const SIMPLE_CALCULATOR_ROUTES: Routes = ADDITIONAL_CALCULATORS.map(calculator => ({
+  path: `calculators/${calculator.slug}`,
+  component: SimpleFinanceCalculatorComponent,
+}));
+
+export const routes: Routes = [
+  { path: '', component: LandingHomePage, pathMatch: 'full' },
+  { path: 'home', component: LandingHomePage },
+  { path: 'dashboard', component: DashboardHomePage },
+  { path: 'store/pos', component: PosTerminalPage },
+  { path: 'ledger', component: LedgerViewPage },
+  { path: 'clients', component: ClientsHubPage },
+  { path: 'products', component: ProductsHubPage },
+  { path: 'settings', component: SettingsHubPage },
+
+  { path: 'calculators', component: CalculatorsHubPage },
+  ...SPECIALIZED_CALCULATOR_ROUTES,
+  ...SIMPLE_CALCULATOR_ROUTES,
 
   { path: ':docType', component: DocumentListPage },
   { path: ':docType/new', component: DocumentEditPage },
