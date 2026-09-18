@@ -173,28 +173,7 @@
                 </div>
               </div>
 
-              <!-- Dedicated Pro Calculators Section -->
-              <div class="pro-calculators-banner">
-                <span class="pro-badge">FEATURED MODELS</span>
-                <div class="pro-calc-links-grid">
-                  <a routerLink="/calculators/stripe-paypal-fee-calculator" class="pro-calc-chip" (click)="closeMenus()">
-                    <span class="material-icons">payments</span> Stripe & PayPal
-                  </a>
-                  <a routerLink="/calculators/cash-burn-runway-calculator" class="pro-calc-chip" (click)="closeMenus()">
-                    <span class="material-icons">hourglass_bottom</span> Cash Runway
-                  </a>
-                  <a routerLink="/calculators/break-even-sales-calculator" class="pro-calc-chip" (click)="closeMenus()">
-                    <span class="material-icons">balance</span> Break-Even Sales
-                  </a>
-                  <a routerLink="/calculators/commercial-loan-emi-calculator" class="pro-calc-chip" (click)="closeMenus()">
-                    <span class="material-icons">account_balance</span> Commercial Loan
-                  </a>
-                  <a routerLink="/calculators/gross-margin-markup-calculator" class="pro-calc-chip" (click)="closeMenus()">
-                    <span class="material-icons">price_check</span> Gross Margin
-                  </a>
-                </div>
-              </div>
-
+              <!-- All calculators come from the registry. No duplicate featured links. -->
               <!-- General Tools Grid -->
               <div class="tools-menu-grid">
                 @for (tool of filteredFinanceTools(); track tool.id) {
