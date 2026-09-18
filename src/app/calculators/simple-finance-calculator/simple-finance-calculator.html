@@ -15,15 +15,8 @@
           <label class="simple-field">
             <span class="simple-field-label">{{ input[1] }}</span>
             <div class="simple-input-wrap">
-              @if (slug !== 'roas-calculator' && slug !== 'customer-acquisition-cost-calculator' && slug !== 'cagr-calculator') { <b>$</b> }
               <input type="number" min="0" step="any" [value]="value(input[0])" (input)="set(input[0], $any($event.target).value)" />
-              @if (slug === 'cagr-calculator' && input[0] === 'c') { <b>years</b> }
-              @if (slug === 'customer-acquisition-cost-calculator' && input[0] === 'b') { <b>customers</b> }
-              @if (slug === 'roas-calculator' && input[0] === 'a') { <b>$</b> }
-              @if (slug === 'customer-lifetime-value-calculator' && input[0] === 'b') { <b>/ yr</b> }
-              @if (slug === 'customer-lifetime-value-calculator' && input[0] === 'c') { <b>years</b> }
-              @if (slug === 'customer-lifetime-value-calculator' && input[0] === 'd') { <b>%</b> }
-              @if (slug === 'discount-calculator' && input[0] === 'd') { <b>%</b> }
+              @if (input[3]) { <b>{{ input[3] }}</b> }
             </div>
             <span class="field-state"><span class="material-icons">edit</span> Editable input</span>
           </label>
