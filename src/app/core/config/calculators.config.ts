@@ -5,7 +5,7 @@ export interface FinanceToolConfig {
   slug: string;
   title: string;
   shortTitle: string;
-  category: 'Pricing & Margins' | 'Tax & Compliance' | 'Cashier & POS' | 'Financing & Growth' | 'Billing & Rates' | 'Cash Flow & Runway' | 'Customers & Marketing' | 'Inventory & Operations';
+  category: 'Business Finance' | 'Loans & Financing' | 'Pricing & Tax' | 'Payments & Fees' | 'Freelance & Rates' | 'Inventory & Operations';
   description: string;
   icon: string;
   badge?: string;

@@ -42,7 +42,12 @@
               ],
               "outputHashing": "all"
             },
-            "development": {"optimization": false, "extractLicenses": false, "sourceMap": true}
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "externalDependencies": ["@google/genai"]
+            }
           },
           "defaultConfiguration": "production"
         },
