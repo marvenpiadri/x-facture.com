@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://x-facture.com/sitemap.xml
+Sitemap: https://www.x-facture.com/sitemap.xml
