@@ -22,7 +22,7 @@ export class SeoService {
   private readonly metaService = inject(Meta);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  private readonly siteUrl = 'https://x-facture.com';
+  private readonly siteUrl = 'https://www.x-facture.com';
   private readonly siteName = 'X-Facture';
   private readonly defaultImage = `${this.siteUrl}/x-facture-LOGO-PFP.png`;
 
@@ -135,7 +135,7 @@ export class SeoService {
 
     const routeSeo: Record<string, SeoMetadata> = {
       '/': { title: 'X-Facture — Free Business Tools, Financial Calculators & Invoicing', description: 'Free business tools for entrepreneurs and companies: invoicing, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'business tools, financial calculators, invoice generator, free invoicing, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
-      '/home': { title: 'X-Facture — Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home` },
+      '/home': { title: 'X-Facture — Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
       '/dashboard': { title: 'Business Dashboard | X-Facture', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in X-Facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
       '/store/pos': { title: 'Free POS & Cash Register | X-Facture', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
       '/ledger': { title: 'Business Financial Ledger | X-Facture', description: 'Track business revenue, expenses and payment records with X-Facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
@@ -151,7 +151,7 @@ export class SeoService {
       robots: 'noindex, nofollow'
     };
     this.updateMetadata(metadata);
-    this.setSiteSchema(metadata.url || this.siteUrl, metadata.title);
+    if (path !== '/') this.setSiteSchema(metadata.url || this.siteUrl, metadata.title);
   }
 
   private organizationSchema(): Record<string, unknown> {
