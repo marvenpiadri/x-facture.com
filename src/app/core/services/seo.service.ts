@@ -22,7 +22,7 @@ export class SeoService {
   private readonly metaService = inject(Meta);
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
-  private readonly siteUrl = 'https://www.x-facture.com';
+  private readonly siteUrl = 'https://x-facture.com';
   private readonly siteName = 'X-Facture';
   private readonly defaultImage = `${this.siteUrl}/x-facture-LOGO-PFP.png`;
 
@@ -151,7 +151,19 @@ export class SeoService {
       robots: 'noindex, nofollow'
     };
     this.updateMetadata(metadata);
-    if (path !== '/') this.setSiteSchema(metadata.url || this.siteUrl, metadata.title);
+    if (path === '/') this.setHomepageSchema();
+    else this.setSiteSchema(metadata.url || this.siteUrl, metadata.title);
+  }
+
+  private setHomepageSchema(): void {
+    this.setJsonLd({
+      '@context': 'https://schema.org',
+      '@graph': [
+        this.organizationSchema(),
+        { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
+        { '@type': 'WebPage', '@id': `${this.siteUrl}#webpage`, name: 'X-Facture — Free Business Tools, Financial Calculators & Invoicing', url: this.siteUrl, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } }
+      ]
+    });
   }
 
   private organizationSchema(): Record<string, unknown> {
