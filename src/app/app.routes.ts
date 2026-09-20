@@ -47,7 +47,7 @@ const SIMPLE_CALCULATOR_ROUTES: Routes = ADDITIONAL_CALCULATORS.map(calculator =
 
 export const routes: Routes = [
   { path: '', component: LandingHomePage, pathMatch: 'full' },
-  { path: 'home', component: LandingHomePage },
+  { path: 'home', redirectTo: '', pathMatch: 'full' },
   { path: 'dashboard', component: DashboardHomePage },
   { path: 'store/pos', component: PosTerminalPage },
   { path: 'ledger', component: LedgerViewPage },
