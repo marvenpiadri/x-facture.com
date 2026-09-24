@@ -4,8 +4,17 @@
   "outputDirectory": "dist/app/browser",
   "rewrites": [
     {
+      "source": "/",
+      "destination": "/api"
+    },
+    {
       "source": "/(.*)",
-      "destination": "/index.html"
+      "destination": "/api"
     }
-  ]
+  ],
+  "functions": {
+    "api/index.js": {
+      "includeFiles": "dist/app/**"
+    }
+  }
 }
