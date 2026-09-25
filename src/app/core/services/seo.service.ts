@@ -110,7 +110,7 @@ export class SeoService {
 
     if (segments[0] === 'calculators') {
       this.updateMetadata({
-        title: 'Business Calculators & Financial Tools | X-Facture',
+        title: 'X-Facture • Business Calculators & Financial Tools',
         description: 'Free business calculators for pricing, margins, taxes, payments, loans, cash flow, inventory, marketing and everyday financial decisions.',
         keywords: 'business calculators, financial calculators, pricing calculator, profit calculator, cash flow calculator, tax calculator, loan calculator, invoice calculator',
         url: `${this.siteUrl}/calculators`
@@ -124,7 +124,7 @@ export class SeoService {
     if (docConfig && segments.length === 1) {
       const url = `${this.siteUrl}/${docConfig.routeSegment}`;
       this.updateMetadata({
-        title: `${docConfig.pluralName} — Free Business Documents | X-Facture`,
+        title: `X-Facture • ${docConfig.pluralName} | Free Business Documents`,
         description: `${docConfig.description} Create and manage ${docConfig.pluralName.toLowerCase()} with X-Facture's free business document tools.`,
         keywords: `${docConfig.pluralName.toLowerCase()}, ${docConfig.singularName.toLowerCase()}, business documents, invoicing, free business tools`,
         url
@@ -134,18 +134,18 @@ export class SeoService {
     }
 
     const routeSeo: Record<string, SeoMetadata> = {
-      '/': { title: 'X-Facture | Free Business Tools, Financial Calculators & Invoicing', description: 'Free business tools for entrepreneurs and companies: invoicing, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'business tools, financial calculators, invoice generator, free invoicing, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
-      '/home': { title: 'X-Facture | Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
-      '/dashboard': { title: 'Business Dashboard | X-Facture', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in X-Facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
-      '/store/pos': { title: 'Free POS & Cash Register | X-Facture', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
-      '/ledger': { title: 'Business Financial Ledger | X-Facture', description: 'Track business revenue, expenses and payment records with X-Facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
-      '/clients': { title: 'Client Directory & CRM | X-Facture', description: 'Organize customer accounts, billing contacts and client information for everyday business operations.', keywords: 'client management, CRM, customer directory, billing contacts', url: `${this.siteUrl}/clients` },
-      '/products': { title: 'Products & Services Catalog | X-Facture', description: 'Manage products, services, pricing, SKUs and inventory information for your business.', keywords: 'product catalog, service catalog, SKU management, inventory, business products', url: `${this.siteUrl}/products` },
-      '/settings': { title: 'Company & Business Settings | X-Facture', description: 'Configure company details, tax settings, currency and business preferences in X-Facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
+      '/': { title: 'X-Facture • Free Business Tools, Financial Calculators & Invoicing', description: 'Free business tools for entrepreneurs and companies: invoicing, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'business tools, financial calculators, invoice generator, free invoicing, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
+      '/home': { title: 'X-Facture • Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
+      '/dashboard': { title: 'X-Facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in X-Facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
+      '/store/pos': { title: 'X-Facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
+      '/ledger': { title: 'X-Facture • Business Financial Ledger', description: 'Track business revenue, expenses and payment records with X-Facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
+      '/clients': { title: 'X-Facture • Client Directory & CRM', description: 'Organize customer accounts, billing contacts and client information for everyday business operations.', keywords: 'client management, CRM, customer directory, billing contacts', url: `${this.siteUrl}/clients` },
+      '/products': { title: 'X-Facture • Products & Services Catalog', description: 'Manage products, services, pricing, SKUs and inventory information for your business.', keywords: 'product catalog, service catalog, SKU management, inventory, business products', url: `${this.siteUrl}/products` },
+      '/settings': { title: 'X-Facture • Company & Business Settings', description: 'Configure company details, tax settings, currency and business preferences in X-Facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
     };
 
     const metadata = routeSeo[path] ?? {
-      title: 'X-Facture | Free Business Tools',
+      title: 'X-Facture • Free Business Tools',
       description: 'Practical free business tools for invoicing, finance, pricing, taxes, payments and operations.',
       url: `${this.siteUrl}${path}`,
       robots: 'noindex, nofollow'
