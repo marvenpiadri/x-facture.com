@@ -1,3 +1,6 @@
+@if (activeSlug !== 'pdf') {
+  <app-pdf-workspace [workspaceMode]="activeSlug.replace('-pdf','').replace('pdf-','')"></app-pdf-workspace>
+} @else {
 <div class="pdf-studio-page">
   <section class="pdf-hero">
     <div class="pdf-hero-inner">
@@ -48,3 +51,5 @@
     </section>
   </main>
 </div>
+
+}
