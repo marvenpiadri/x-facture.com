@@ -12,9 +12,9 @@
         </div>
         <div class="page-workspace">
           <div class="page-workspace-toolbar"><strong>Pages</strong><span>{{ pages().length }} page{{ pages().length === 1 ? '' : 's' }}</span></div>
-          <div class="page-grid">
+          <div class="page-grid" cdkDropList cdkDropListOrientation="mixed" (cdkDropListDropped)="dropPage($event)">
             @for (page of pages(); track page.number) {
-              <article class="page-card" [class.selected]="page.selected">
+              <article class="page-card" cdkDrag [class.selected]="page.selected"><div class="drag-handle" cdkDragHandle title="Drag page"><span class="material-icons">drag_indicator</span></div>
                 <button type="button" class="page-select" (click)="togglePage(page.number)"><span class="material-icons">{{ page.selected ? 'check_box' : 'check_box_outline_blank' }}</span></button>
                 <div class="page-preview" [style.transform]="'rotate(' + page.rotation + 'deg)'"><iframe [src]="previewUrl(page.number)" title="PDF page preview" loading="lazy"></iframe></div>
                 <div class="page-meta"><span>Page {{ page.number }}</span><button type="button" (click)="rotatePage(page.number)"><span class="material-icons">rotate_right</span></button></div>
