@@ -1,0 +1,42 @@
+<section class="pdf-workspace">
+  <header class="workspace-header">
+    <div><div class="workspace-kicker">X-FACTURE PDF STUDIO</div><h1>{{ title }}</h1><p>{{ description }}</p></div>
+    <label class="change-file"><span class="material-icons">add</span> Add files<input type="file" accept=".pdf,image/*" multiple (change)="onFilesSelected($event)"></label>
+  </header>
+  @if (files().length) {
+    <div class="workspace-layout">
+      <section class="workspace-main">
+        <div class="file-strip">
+          <strong>{{ files().length }} file{{ files().length === 1 ? '' : 's' }}</strong>
+          <div class="file-strip-list">@for (item of files(); track item.id) { <button type="button" class="file-pill" [class.active]="item.id === activeFileId()" (click)="selectFile(item.id)">{{ item.file.name }}</button> }</div>
+        </div>
+        <div class="page-workspace">
+          <div class="page-workspace-toolbar"><strong>Pages</strong><span>{{ pages().length }} page{{ pages().length === 1 ? '' : 's' }}</span></div>
+          <div class="page-grid">
+            @for (page of pages(); track page.number) {
+              <article class="page-card" [class.selected]="page.selected">
+                <button type="button" class="page-select" (click)="togglePage(page.number)"><span class="material-icons">{{ page.selected ? 'check_box' : 'check_box_outline_blank' }}</span></button>
+                <div class="page-preview"><div class="preview-sheet"><span class="material-icons">picture_as_pdf</span><small>{{ activeFile?.file?.name }}</small></div></div>
+                <div class="page-meta"><span>Page {{ page.number }}</span><button type="button" (click)="rotatePage(page.number)"><span class="material-icons">rotate_right</span></button></div>
+              </article>
+            }
+          </div>
+          <div class="drop-hint"><span class="material-icons">more_horiz</span><span>Drop files here to add them to this workspace</span></div>
+        </div>
+      </section>
+      <aside class="workspace-sidebar">
+        <div class="settings-card">
+          <div class="settings-heading"><span class="material-icons">tune</span><div><strong>{{ title }}</strong><span>Workspace settings</span></div></div>
+          @if (mode() === 'split') {
+            <label class="field"><span>Split mode</span><select [ngModel]="splitMode()" (ngModelChange)="splitMode.set($event)"><option value="all">Every page</option><option value="selected">Selected pages</option><option value="range">Page range</option></select></label>
+          }
+          <div class="summary"><span>Selected pages</span><strong>{{ selectedCount }}</strong></div>
+          <button type="button" class="primary-action" [disabled]="isProcessing()" (click)="execute()"><span class="material-icons">arrow_forward</span>{{ isProcessing() ? 'Preparing…' : 'Continue' }}</button>
+          <small>Browser-first workspace. Shared server processing can be connected later.</small>
+        </div>
+      </aside>
+    </div>
+  } @else {
+    <div class="empty-workspace"><span class="material-icons">picture_as_pdf</span><h2>Drop your PDF here</h2><p>or choose a file to open the workspace</p><label class="primary-action upload-action">Choose files<input type="file" accept=".pdf,image/*" multiple (change)="onFilesSelected($event)"></label><div class="drop-hint"><span class="material-icons">more_horiz</span></div></div>
+  }
+</section>
