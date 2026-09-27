@@ -1,0 +1,50 @@
+<div class="pdf-studio-page">
+  <section class="pdf-hero">
+    <div class="pdf-hero-inner">
+      <div class="pdf-eyebrow"><span class="material-icons">picture_as_pdf</span> X-Facture PDF Studio</div>
+      <h1>{{ activeSlug === 'pdf' ? 'PDF tools for everyday documents' : (tools.find(t => t.slug === activeSlug)?.title || 'PDF Studio') }}</h1>
+      <p>Work with PDFs inside X-Facture. Local-first tools handle routine page operations in your browser, while server-powered capabilities are prepared for the shared X-Facture document service.</p>
+      <div class="pdf-hero-actions">
+        <a routerLink="/pdf" class="pdf-action-primary"><span class="material-icons">apps</span><span>All PDF tools</span></a>
+        <a routerLink="/invoices/new" class="pdf-action-secondary"><span class="material-icons">receipt_long</span><span>Create an invoice</span></a>
+      </div>
+    </div>
+  </section>
+
+  <main class="pdf-content">
+    <section class="pdf-section">
+      <div class="section-heading">
+        <span class="section-kicker">PDF STUDIO</span>
+        <h2>Choose what you need to do</h2>
+        <p>Each search-friendly tool page opens into the same PDF workspace foundation, so features can grow without creating disconnected mini-apps.</p>
+      </div>
+
+      <div class="pdf-tool-grid">
+        @for (tool of tools; track tool.slug) {
+          <a class="pdf-tool-card" [class.is-active]="isActive(tool)" [class.is-disabled]="tool.mode !== 'local'" [routerLink]="['/pdf', tool.slug]" [attr.aria-current]="isActive(tool) ? 'page' : null">
+            <div class="tool-icon"><span class="material-icons">{{ tool.icon }}</span></div>
+            <div class="tool-copy">
+              <h3>{{ tool.title }}</h3>
+              <p>{{ tool.description }}</p>
+            </div>
+            <div class="tool-footer"><span>{{ statusLabel(tool) }}</span><span class="material-icons">arrow_forward</span></div>
+          </a>
+        }
+      </div>
+    </section>
+
+    <section class="pdf-workspace-preview">
+      <div class="workspace-icon"><span class="material-icons">construction</span></div>
+      <div>
+        <span class="section-kicker">UNIFIED WORKSPACE</span>
+        <h2>One PDF workspace, many document tasks</h2>
+        <p>Split, merge, organize, extract, rotate, delete, and reorder pages from the same document workspace. Backend-dependent operations remain visibly disabled until the shared Gotenberg API is connected.</p>
+      </div>
+    </section>
+
+    <section class="pdf-privacy-note">
+      <span class="material-icons">shield</span>
+      <div><strong>Local-first by design</strong><span>Routine page operations are intended to stay in the browser whenever technically possible. Server processing will be introduced through one shared X-Facture document API.</span></div>
+    </section>
+  </main>
+</div>
