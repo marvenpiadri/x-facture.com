@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PDFDocument, degrees } from 'pdf-lib';
 
 type PdfWorkspaceMode = 'split' | 'merge' | 'organize' | 'extract' | 'delete' | 'rotate' | 'compress' | 'image-to-pdf' | 'pdf-to-image';
 interface WorkspaceFile { id: string; file: File; url: string; pageCount: number; }
 interface WorkspacePage { id: string; sourceFileId: string; sourcePageIndex: number; number: number; selected: boolean; rotation: number; }
 
-@Component({ selector: 'app-pdf-workspace', standalone: true, imports: [CommonModule, FormsModule], templateUrl: './pdf-workspace.html', styleUrl: './pdf-workspace.css' })
+@Component({ selector: 'app-pdf-workspace', standalone: true, imports: [CommonModule, FormsModule, DragDropModule], templateUrl: './pdf-workspace.html', styleUrl: './pdf-workspace.css' })
 export class PdfWorkspaceComponent implements OnDestroy {
   readonly mode = signal<PdfWorkspaceMode>('split');
   readonly files = signal<WorkspaceFile[]>([]);
@@ -56,6 +57,12 @@ export class PdfWorkspaceComponent implements OnDestroy {
   togglePage(number: number): void { this.pages.update(items => items.map(page => page.number === number ? {...page, selected: !page.selected} : page)); }
   selectAllPages(): void { this.pages.update(items => items.map(page => ({...page, selected: true}))); }
   clearPageSelection(): void { this.pages.update(items => items.map(page => ({...page, selected: false}))); }
+  dropPage(event: CdkDragDrop<WorkspacePage[]>): void {
+    const items = [...this.pages()];
+    moveItemInArray(items, event.previousIndex, event.currentIndex);
+    this.pages.set(items.map((page, index) => ({ ...page, number: index + 1 })));
+  }
+
   rotatePage(number: number): void { this.pages.update(items => items.map(page => page.number === number ? {...page, rotation: (page.rotation + 90) % 360} : page)); }
   get activeFile(): WorkspaceFile | undefined { return this.files().find(file => file.id === this.activeFileId()); }
   get selectedCount(): number { return this.pages().filter(page => page.selected).length; }
