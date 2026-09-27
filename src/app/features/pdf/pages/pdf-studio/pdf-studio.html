@@ -1,4 +1,4 @@
-@if (activeSlug !== 'pdf') {
+@if (activeSlug !== 'pdf' && activeToolIsLocal) {
   <app-pdf-workspace [workspaceMode]="activeSlug.replace('-pdf','').replace('pdf-','')"></app-pdf-workspace>
 } @else {
 <div class="pdf-studio-page">
