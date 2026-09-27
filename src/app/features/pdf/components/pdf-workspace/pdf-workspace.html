@@ -16,7 +16,7 @@
             @for (page of pages(); track page.number) {
               <article class="page-card" [class.selected]="page.selected">
                 <button type="button" class="page-select" (click)="togglePage(page.number)"><span class="material-icons">{{ page.selected ? 'check_box' : 'check_box_outline_blank' }}</span></button>
-                <div class="page-preview"><div class="preview-sheet"><span class="material-icons">picture_as_pdf</span><small>{{ activeFile?.file?.name }}</small></div></div>
+                <div class="page-preview" [style.transform]="'rotate(' + page.rotation + 'deg)'"><iframe [src]="previewUrl(page.number)" title="PDF page preview" loading="lazy"></iframe></div>
                 <div class="page-meta"><span>Page {{ page.number }}</span><button type="button" (click)="rotatePage(page.number)"><span class="material-icons">rotate_right</span></button></div>
               </article>
             }
