@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { SeoService } from '../../../../core/services/seo.service';
+import { PdfWorkspaceComponent } from '../../components/pdf-workspace';
 
 interface PdfTool {
   slug: string;
@@ -14,7 +15,7 @@ interface PdfTool {
 @Component({
   selector: 'app-pdf-studio',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PdfWorkspaceComponent],
   templateUrl: './pdf-studio.html',
   styleUrl: './pdf-studio.css',
   changeDetection: ChangeDetectionStrategy.OnPush
