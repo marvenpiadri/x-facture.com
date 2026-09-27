@@ -53,6 +53,10 @@ export class PdfStudioPage implements OnInit {
     });
   }
 
+  get activeToolIsLocal(): boolean {
+    return this.tools.find(item => item.slug === this.activeSlug)?.mode === 'local';
+  }
+
   isActive(tool: PdfTool): boolean {
     return this.activeSlug === tool.slug;
   }
