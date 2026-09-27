@@ -3,7 +3,7 @@
     <div><div class="workspace-kicker">X-FACTURE PDF STUDIO</div><h1>{{ title }}</h1><p>{{ description }}</p></div>
     <label class="change-file"><span class="material-icons">add</span> Add files<input type="file" accept=".pdf,image/*" multiple (change)="onFilesSelected($event)"></label>
   </header>
-  @if (files().length) {
+  @if (errorMessage()) {<div class="workspace-error" role="alert"><span class="material-icons">info</span>{{ errorMessage() }}</div>}\n  @if (files().length) {
     <div class="workspace-layout">
       <section class="workspace-main">
         <div class="file-strip">
