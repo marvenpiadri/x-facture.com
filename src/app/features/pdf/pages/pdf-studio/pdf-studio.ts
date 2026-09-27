@@ -37,6 +37,8 @@ export class PdfStudioPage implements OnInit {
 
   activeSlug = 'pdf';
 
+  /** Unified workspace is rendered for tool routes; the landing remains the catalog. */
+
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       this.activeSlug = params.get('tool') || 'pdf';
