@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, Input, OnDestroy, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 type PdfWorkspaceMode = 'split' | 'merge' | 'organize' | 'extract' | 'delete' | 'rotate' | 'compress' | 'image-to-pdf' | 'pdf-to-image';
@@ -16,6 +16,8 @@ interface WorkspacePage { number: number; selected: boolean; rotation: number; }
 })
 export class PdfWorkspaceComponent implements OnDestroy {
   readonly mode = signal<PdfWorkspaceMode>('split');
+
+  @Input() set workspaceMode(value: string) { this.setMode(value); }
   readonly files = signal<WorkspaceFile[]>([]);
   readonly pages = signal<WorkspacePage[]>([]);
   readonly activeFileId = signal<string | null>(null);
