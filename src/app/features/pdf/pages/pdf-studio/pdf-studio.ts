@@ -72,7 +72,11 @@ export class PdfStudioPage {
   readonly metadata = signal({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
   readonly imageFiles = signal<File[]>([]);
   readonly imagePageSize = signal<'a4' | 'letter' | 'fit'>('a4');
+  readonly imageOrientation = signal<'auto' | 'portrait' | 'landscape'>('auto');
+  readonly imageFit = signal<'contain' | 'fill'>('contain');
   readonly pdfToImageScale = signal(1.5);
+  readonly pdfToImageFormat = signal<'png' | 'jpeg'>('png');
+  readonly pdfToImageQuality = signal(0.92);
   readonly isFileDragActive = signal(false);
   readonly isPageDropActive = signal(false);
   readonly isMergeDropActive = signal(false);
@@ -707,13 +711,21 @@ export class PdfStudioPage {
     this.imagePageSize.set(size);
   }
 
+  setImageOrientation(orientation: 'auto' | 'portrait' | 'landscape'): void {
+    this.imageOrientation.set(orientation);
+  }
+
+  setImageFit(fit: 'contain' | 'fill'): void {
+    this.imageFit.set(fit);
+  }
+
   async createPdfFromImages(): Promise<void> {
     const files = this.imageFiles();
     if (!files.length) return;
     this.isProcessing.set(true);
     this.error.set(null);
     try {
-      const bytes = await this.pdfEngine.imagesToPdf(files, this.imagePageSize());
+      const bytes = await this.pdfEngine.imagesToPdf(files, this.imagePageSize(), this.imageOrientation(), this.imageFit());
       this.pdfEngine.download(bytes, 'x-facture-images.pdf');
     } catch {
       this.error.set('The selected images could not be converted to PDF.');
@@ -730,6 +742,14 @@ export class PdfStudioPage {
 
   setPdfToImageScale(scale: number): void {
     this.pdfToImageScale.set(scale);
+  }
+
+  setPdfToImageFormat(format: 'png' | 'jpeg'): void {
+    this.pdfToImageFormat.set(format);
+  }
+
+  setPdfToImageQuality(quality: number): void {
+    this.pdfToImageQuality.set(Math.max(0.5, Math.min(1, quality)));
   }
 
   async exportPdfToImages(): Promise<void> {
@@ -754,12 +774,15 @@ export class PdfStudioPage {
         canvas.width = Math.ceil(viewport.width);
         canvas.height = Math.ceil(viewport.height);
         await page.render({ canvas, canvasContext: context, viewport }).promise;
-        const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+        const format = this.pdfToImageFormat();
+        const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+        const extension = format === 'jpeg' ? 'jpg' : 'png';
+        const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, mimeType, this.pdfToImageQuality()));
         if (blob) {
           const url = URL.createObjectURL(blob);
           const anchor = window.document.createElement('a');
           anchor.href = url;
-          anchor.download = `x-facture-page-${String(index + 1).padStart(2, '0')}.png`;
+          anchor.download = `x-facture-page-${String(index + 1).padStart(2, '0')}.${extension}`;
           anchor.click();
           setTimeout(() => URL.revokeObjectURL(url), 3000);
         }
