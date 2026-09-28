@@ -80,16 +80,30 @@
       } @else {
         <div class="page-grid">
           @for (thumbnail of thumbnails(); track $index) {
-            <article class="page-card" [class.selected]="isSelected($index)" [class.rotated]="(pageRotations()[$index] ?? 0) % 180 !== 0">
+            <article
+              class="page-card"
+              [class.selected]="isSelected($index)"
+              [class.dragging]="draggedPage() === $index"
+              [class.rotated]="(pageRotations()[pageOrder()[$index]] ?? 0) % 180 !== 0"
+              draggable="true"
+              (dragstart)="onDragStart($index)"
+              (dragover)="onDragOver($event)"
+              (drop)="onDropPage($index)"
+            >
               <button type="button" class="page-preview" (click)="togglePage($index)" [attr.aria-label]="'Select page ' + ($index + 1)">
-                <img [src]="thumbnail" [alt]="'Page ' + ($index + 1)" loading="lazy" />
+                <img
+                  [src]="thumbnail"
+                  [alt]="'Page ' + ($index + 1)"
+                  loading="lazy"
+                  [style.transform]="'rotate(' + (pageRotations()[pageOrder()[$index]] ?? 0) + 'deg)'"
+                />
                 @if (isSelected($index)) {
                   <span class="selection-mark material-icons">check</span>
                 }
               </button>
               <div class="page-meta">
                 <span>Page {{ $index + 1 }}</span>
-                <button type="button" (click)="rotatePage($index)" aria-label="Rotate page">
+                <button type="button" (click)="rotatePage(pageOrder()[$index])" aria-label="Rotate page">
                   <span class="material-icons">rotate_right</span>
                 </button>
               </div>
@@ -123,7 +137,7 @@
         <div class="tool-panel">
           <span class="panel-kicker">PAGE SELECTION</span>
           <h2>Work with selected pages</h2>
-          <p>Select pages directly from the canvas. Your selection stays local until you download the result.</p>
+          <p>Select pages directly from the canvas. Drag pages to reorder them, rotate individual pages, or prepare a clean selection for export.</p>
           <div class="selection-summary">
             <strong>{{ selectedPages().length }}</strong>
             <span>selected pages</span>
@@ -133,6 +147,8 @@
         <div class="option-actions">
           <button type="button" (click)="selectAll()">Select all pages</button>
           <button type="button" (click)="deselectAll()">Clear selection</button>
+          <button type="button" (click)="duplicateSelected()" [disabled]="!selectedPages().length">Duplicate selected</button>
+          <button type="button" (click)="deleteSelected()" [disabled]="!selectedPages().length || selectedPages().length >= (pageCount() ?? 0)">Delete selected</button>
         </div>
       } @else {
         <div class="tool-panel">
