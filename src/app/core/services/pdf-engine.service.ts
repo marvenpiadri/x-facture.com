@@ -76,6 +76,31 @@ export class PdfEngineService {
     return output.save();
   }
 
+  async deletePages(file: File, pageIndices: number[]): Promise<Uint8Array> {
+    const source = await this.load(file);
+    const deleted = new Set(pageIndices);
+    const remaining = source.getPageIndices().filter(index => !deleted.has(index));
+    return this.reorderPages(file, remaining);
+  }
+
+  async duplicatePages(file: File, pageIndices: number[]): Promise<Uint8Array> {
+    const source = await this.load(file);
+    const output = await PDFDocument.create();
+    const selected = new Set(pageIndices);
+
+    for (const index of source.getPageIndices()) {
+      const pages = await output.copyPages(source, [index]);
+      output.addPage(pages[0]);
+
+      if (selected.has(index)) {
+        const duplicate = await output.copyPages(source, [index]);
+        output.addPage(duplicate[0]);
+      }
+    }
+
+    return output.save();
+  }
+
   async rotatePages(file: File, angle: number): Promise<Uint8Array> {
     const pdf = await this.load(file);
 
