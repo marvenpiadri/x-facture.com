@@ -243,6 +243,17 @@ export class PdfStudioPage {
     };
   }
 
+  moveMergeDocument(documentId: string, direction: -1 | 1): void {
+    const documents = [...this.mergeDocuments()];
+    const index = documents.findIndex(document => document.id === documentId);
+    const targetIndex = index + direction;
+    if (index < 0 || targetIndex < 0 || targetIndex >= documents.length) return;
+    const [document] = documents.splice(index, 1);
+    if (!document) return;
+    documents.splice(targetIndex, 0, document);
+    this.mergeDocuments.set(documents);
+  }
+
   removeMergeFile(index: number): void {
     const documents = this.mergeDocuments().filter((_, documentIndex) => documentIndex !== index);
     this.mergeDocuments.set(documents);
