@@ -2,25 +2,19 @@
   <aside class="pdf-sidebar">
     <div class="sidebar-heading">
       <span class="material-icons">picture_as_pdf</span>
-      <div>
-        <span class="eyebrow">X-FACTURE</span>
-        <strong>PDF Engine</strong>
-      </div>
+      <div><span class="eyebrow">X-FACTURE</span><strong>PDF Engine</strong></div>
     </div>
-
     <label class="sidebar-search">
       <span class="material-icons">search</span>
       <input placeholder="Search PDF tools" aria-label="Search PDF tools" (input)="onSearch($event)" />
     </label>
-
     @for (category of categories; track category) {
       @if (toolsFor(category).length) {
         <section class="tool-category">
           <div class="category-title">{{ categoryLabels[category] }}</div>
           @for (tool of toolsFor(category); track tool.id) {
             <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route">
-              <span class="material-icons">{{ tool.icon }}</span>
-              <span>{{ tool.name }}</span>
+              <span class="material-icons">{{ tool.icon }}</span><span>{{ tool.name }}</span>
             </a>
           }
         </section>
@@ -34,101 +28,137 @@
         <span class="eyebrow">DOCUMENT WORKSPACE</span>
         <h1>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</h1>
       </div>
-
-      @if (file(); as currentFile) {
+      @if (activeTool() !== 'merge-pdf' && file(); as currentFile) {
         <div class="active-file-pill">
-          <span class="material-icons">description</span>
-          <span>{{ currentFile.name }}</span>
+          <span class="material-icons">description</span><span>{{ currentFile.name }}</span>
           @if (pageCount() !== null) { <span>{{ pageCount() }} pages</span> }
-          <button type="button" (click)="clearFile()" aria-label="Remove PDF">
-            <span class="material-icons">close</span>
-          </button>
+          <button type="button" (click)="clearFile()" aria-label="Remove PDF"><span class="material-icons">close</span></button>
         </div>
       }
     </div>
 
-    <div class="canvas-toolbar">
-      @if (file()) {
-        <div class="toolbar-group">
-          <button type="button" (click)="selectAll()">Select all</button>
-          <button type="button" (click)="deselectAll()">Deselect</button>
-          <span class="toolbar-count">{{ selectedPages().length }} / {{ pageCount() ?? 0 }} selected</span>
-        </div>
-        <div class="toolbar-group">
-          <button type="button" (click)="zoom.set(Math.max(.45, zoom() - .1))" aria-label="Zoom out">−</button>
-          <span>{{ Math.round(zoom() * 100) }}%</span>
-          <button type="button" (click)="zoom.set(Math.min(1.2, zoom() + .1))" aria-label="Zoom in">+</button>
-        </div>
-      }
-    </div>
+    @if (activeTool() !== 'merge-pdf') {
+      <div class="canvas-toolbar">
+        @if (file()) {
+          <div class="toolbar-group">
+            <button type="button" (click)="selectAll()">Select all</button>
+            <button type="button" (click)="deselectAll()">Deselect</button>
+            <span class="toolbar-count">{{ selectedPages().length }} / {{ pageCount() ?? 0 }} selected</span>
+          </div>
+          <div class="toolbar-group">
+            <button type="button" (click)="zoom.set(Math.max(.45, zoom() - .1))" aria-label="Zoom out">−</button>
+            <span>{{ Math.round(zoom() * 100) }}%</span>
+            <button type="button" (click)="zoom.set(Math.min(1.2, zoom() + .1))" aria-label="Zoom in">+</button>
+          </div>
+        }
+      </div>
+    }
 
     <div class="canvas-content">
       @if (activeTool() === 'merge-pdf') {
-        <div class="merge-workspace">
-          <div class="merge-upload" (click)="triggerUpload(pdfInput)">
-            <span class="material-icons">library_add</span>
-            <strong>Add PDF files</strong>
-            <span>Choose two or more PDFs to merge in order.</span>
+        <div class="merge-composer">
+          <div
+            class="merge-upload"
+            [class.drop-active]="isMergeDropActive()"
+            (click)="triggerUpload(pdfInput)"
+            (dragenter)="isMergeDropActive.set(true); $event.preventDefault()"
+            (dragover)="isMergeDropActive.set(true); $event.preventDefault()"
+            (dragleave)="isMergeDropActive.set(false)"
+          >
+            <span class="material-icons">{{ isMergeDropActive() ? 'file_download' : 'library_add' }}</span>
+            <strong>{{ isMergeDropActive() ? 'Drop PDFs here' : 'Add PDF files' }}</strong>
+            <span>Build one document from multiple PDFs. You can reorder documents and move individual pages between them.</span>
           </div>
-          @if (mergeFiles().length) {
-            <div class="merge-file-list">
-              @for (mergeFile of mergeFiles(); track mergeFile.name + $index) {
-                <div class="merge-file-row">
-                  <span class="merge-position">{{ $index + 1 }}</span>
-                  <span class="material-icons">picture_as_pdf</span>
-                  <span class="merge-file-name">{{ mergeFile.name }}</span>
-                  <button type="button" (click)="removeMergeFile($index)" aria-label="Remove PDF">
-                    <span class="material-icons">close</span>
-                  </button>
-                </div>
+
+          @if (mergeDocuments().length) {
+            <div class="merge-workspace-head">
+              <div><strong>{{ mergeDocuments().length }} documents</strong><span>{{ mergePageCount() }} pages in composition</span></div>
+              <span class="merge-hint"><span class="material-icons">open_with</span> Drag a document or a page</span>
+            </div>
+
+            <div class="merge-document-list" cdkDropList (cdkDropListDropped)="onMergeDocumentDrop($event)" cdkDropListOrientation="vertical">
+              @for (document of mergeDocuments(); track document.id; let documentIndex = $index) {
+                <section class="merge-document" cdkDrag>
+                  <header class="merge-document-header" cdkDragHandle>
+                    <div class="merge-document-grip"><span class="material-icons">drag_indicator</span></div>
+                    <div class="merge-document-number">{{ documentIndex + 1 }}</div>
+                    <span class="material-icons">picture_as_pdf</span>
+                    <div class="merge-document-title">
+                      <strong>{{ document.file.name }}</strong>
+                      <span>{{ document.pages.length }} {{ document.pages.length === 1 ? 'page' : 'pages' }}</span>
+                    </div>
+                    <button type="button" (click)="removeMergeFile(documentIndex); $event.stopPropagation()" aria-label="Remove document">
+                      <span class="material-icons">close</span>
+                    </button>
+                  </header>
+
+                  <div
+                    class="merge-page-grid"
+                    cdkDropList
+                    [id]="'merge-pages-' + document.id"
+                    [cdkDropListData]="document.pages"
+                    [cdkDropListConnectedTo]="mergeDropListIds()"
+                    (cdkDropListDropped)="onMergePageDrop($event, document.id)"
+                    (cdkDropListEntered)="isMergeDropActive.set(true)"
+                    (cdkDropListExited)="isMergeDropActive.set(false)"
+                  >
+                    @for (page of document.pages; track page.id; let pageIndex = $index) {
+                      <article class="merge-page" cdkDrag>
+                        <div class="merge-page-preview">
+                          <img [src]="page.thumbnail" [alt]="document.file.name + ' page ' + (pageIndex + 1)" loading="lazy" [style.transform]="'rotate(' + page.rotation + 'deg)'" />
+                          <span class="merge-page-number">{{ pageIndex + 1 }}</span>
+                          <span class="merge-page-drag"><span class="material-icons">drag_indicator</span></span>
+                        </div>
+                        <footer>
+                          <span>Page {{ pageIndex + 1 }}</span>
+                          <div>
+                            <button type="button" (click)="rotateMergePage(document.id, page.id)" aria-label="Rotate page"><span class="material-icons">rotate_right</span></button>
+                            <button type="button" (click)="removeMergePage(document.id, page.id)" aria-label="Remove page"><span class="material-icons">delete_outline</span></button>
+                          </div>
+                        </footer>
+                      </article>
+                    }
+                    @if (!document.pages.length) {
+                      <div class="merge-empty-pages"><span class="material-icons">add_to_photos</span><strong>Drop pages here</strong><span>This document is empty. Move a page from another PDF into this area.</span></div>
+                    }
+                  </div>
+                </section>
               }
+            </div>
+          } @else {
+            <div class="merge-empty">
+              <span class="material-icons">layers</span>
+              <strong>Your composition starts here</strong>
+              <span>Add two or more PDFs, then arrange documents and pages visually before exporting.</span>
             </div>
           }
         </div>
       } @else if (!file()) {
-        <div class="upload-sheet" (click)="triggerUpload(pdfInput)">
-          <div class="upload-icon"><span class="material-icons">upload_file</span></div>
-          <h2>Drop a PDF here</h2>
-          <p>or choose a file from your computer</p>
+        <div
+          class="upload-sheet"
+          [class.drop-active]="isFileDragActive()"
+          (click)="triggerUpload(pdfInput)"
+          (dragenter)="onFileDragEnter($event)"
+          (dragover)="onFileDragOver($event)"
+          (dragleave)="onFileDragLeave($event)"
+        >
+          <div class="upload-icon"><span class="material-icons">{{ isFileDragActive() ? 'file_download' : 'upload_file' }}</span></div>
+          <h2>{{ isFileDragActive() ? 'Drop PDF to open' : 'Drop a PDF here' }}</h2>
+          <p>{{ isFileDragActive() ? 'Release to load the document' : 'or choose a file from your computer' }}</p>
           <button type="button" class="upload-button" (click)="$event.stopPropagation(); triggerUpload(pdfInput)">Choose PDF</button>
           <small>Files stay in your browser during this local processing phase.</small>
         </div>
       } @else if (isProcessing() && !thumbnails().length) {
-        <div class="loading-sheet">
-          <span class="material-icons spin">progress_activity</span>
-          <strong>Preparing document preview</strong>
-          <span>Rendering PDF pages locally…</span>
-        </div>
+        <div class="loading-sheet"><span class="material-icons spin">progress_activity</span><strong>Preparing document preview</strong><span>Rendering PDF pages locally…</span></div>
       } @else {
-        <div class="page-grid" cdkDropList cdkDropListOrientation="mixed" [cdkDropListData]="pageOrder()" (cdkDropListDropped)="onPageDrop($event)">
+        <div class="page-grid" [class.drop-active]="isPageDropActive()" cdkDropList cdkDropListOrientation="mixed" [cdkDropListData]="pageOrder()" (cdkDropListDropped)="onPageDrop($event)">
           @for (thumbnail of thumbnails(); track $index) {
-            <article
-              class="page-card"
-              cdkDrag
-              [class.selected]="isSelected($index)"
-              [class.unselected]="!isSelected($index)"
-              [class.dragging]="draggedPage() === $index"
-              (cdkDragStarted)="onDragStarted($index)"
-              (cdkDragEnded)="onDragEnded()"
-              [class.rotated]="isRotated(pageOrder()[$index])"
-            >
+            <article class="page-card" cdkDrag [class.selected]="isSelected($index)" [class.unselected]="!isSelected($index)" [class.dragging]="draggedPage() === $index" (cdkDragStarted)="onDragStarted($index)" (cdkDragEnded)="onDragEnded()" [class.rotated]="isRotated(pageOrder()[$index])">
               <button type="button" class="page-preview" (click)="togglePage($index)" [attr.aria-label]="'Select page ' + ($index + 1)">
-                <img
-                  [src]="thumbnail"
-                  [alt]="'Page ' + ($index + 1)"
-                  loading="lazy"
-                  [style.transform]="'rotate(' + getPageRotation(pageOrder()[$index]) + 'deg)'"
-                />
-                @if (isSelected($index)) {
-                  <span class="selection-mark material-icons">check</span>
-                }
+                <img [src]="thumbnail" [alt]="'Page ' + ($index + 1)" loading="lazy" [style.transform]="'rotate(' + getPageRotation(pageOrder()[$index]) + 'deg)'" />
+                @if (isSelected($index)) { <span class="selection-mark material-icons">check</span> }
               </button>
-              <div class="page-meta">
-                <span>Page {{ $index + 1 }}</span>
-                <button type="button" (click)="rotatePage(pageOrder()[$index])" aria-label="Rotate page">
-                  <span class="material-icons">rotate_right</span>
-                </button>
-              </div>
+              <div class="page-meta"><span>Page {{ $index + 1 }}</span><button type="button" (click)="rotatePage(pageOrder()[$index])" aria-label="Rotate page"><span class="material-icons">rotate_right</span></button></div>
             </article>
           }
         </div>
@@ -136,41 +166,55 @@
     </div>
 
     @if (error(); as message) {
-      <div class="canvas-error">
-        <span class="material-icons">error_outline</span>
-        <span>{{ message }}</span>
-      </div>
+      <div class="canvas-error"><span class="material-icons">error_outline</span><span>{{ message }}</span></div>
     }
-
     <input #pdfInput type="file" accept="application/pdf,.pdf" [multiple]="activeTool() === 'merge-pdf'" hidden (change)="onFileSelected($event)" />
   </main>
 
   <aside class="pdf-options">
     <div class="options-header">
       <span class="material-icons">tune</span>
-      <div>
-        <span class="eyebrow">{{ categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
-        <strong>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</strong>
-      </div>
+      <div><span class="eyebrow">{{ categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span><strong>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</strong></div>
     </div>
 
     <div class="options-body">
-      @if (activeTool() === 'organize-pdf' || activeTool() === 'split-pdf') {
+      @if (activeTool() === 'merge-pdf') {
         <div class="tool-panel">
-          <span class="panel-kicker">PAGE SELECTION</span>
-          <h2>Split selection</h2>
-          <p>Select pages directly from the canvas. Drag pages to reorder them, rotate individual pages, or prepare a clean selection for export.</p>
-          <div class="selection-summary">
-            <strong>{{ selectedPages().length }}</strong>
-            <span>selected pages</span>
-          </div>
+          <span class="panel-kicker">COMPOSITION</span>
+          <h2>Build the final document</h2>
+          <p>Reorder whole PDFs with the document handle. Drag any page into another PDF to change its place in the final document.</p>
+          <div class="selection-summary"><strong>{{ mergePageCount() }}</strong><span>pages in final composition</span></div>
         </div>
-
         <div class="option-actions">
-          <button type="button" (click)="selectAll()">Select all pages</button>
-          @if (activeTool() === 'split-pdf') { <button type="button" (click)="setSplitMode('selected')" [class.active]="splitMode() === 'selected'">Selected pages</button> }
-          @if (activeTool() === 'split-pdf') { <button type="button" (click)="setSplitMode('ranges')" [class.active]="splitMode() === 'ranges'">Page ranges</button> }
-          <button type="button" (click)="deselectAll()">Clear selection</button>
+          <div class="merge-rule"><span class="material-icons">swap_vert</span><span>Document order controls final PDF sections.</span></div>
+          <div class="merge-rule"><span class="material-icons">open_with</span><span>Page order controls the exact page sequence.</span></div>
+          <div class="merge-rule"><span class="material-icons">delete_outline</span><span>Remove pages without rebuilding a source PDF.</span></div>
+        </div>
+      } @else if (activeTool() === 'split-pdf') {
+        <div class="tool-panel">
+          <span class="panel-kicker">SPLIT METHOD</span>
+          <h2>Choose how to split</h2>
+          <p>Use the canvas to select pages, enter ranges, or create evenly sized parts.</p>
+        </div>
+        <div class="split-methods">
+          <button type="button" (click)="setSplitMode('selected')" [class.active]="splitMode() === 'selected'"><strong>Selected pages</strong><span>Use the pages selected in the canvas.</span></button>
+          <button type="button" (click)="setSplitMode('ranges')" [class.active]="splitMode() === 'ranges'"><strong>Page ranges</strong><span>Example: 1-3, 5, 8-10.</span></button>
+          <button type="button" (click)="setSplitMode('every-page')" [class.active]="splitMode() === 'every-page'"><strong>Split into parts</strong><span>Create one PDF per N pages.</span></button>
+        </div>
+        @if (splitMode() === 'ranges') {
+          <label class="field-label">Page ranges<input type="text" [value]="splitRanges()" (input)="onSplitRanges($event)" placeholder="1-3, 5, 8-10" /></label>
+        }
+        @if (splitMode() === 'every-page') {
+          <label class="field-label">Pages per part<input type="number" min="1" max="100" [value]="splitChunkSize()" (input)="onSplitChunkSize($event)" /></label>
+        }
+      } @else if (activeTool() === 'organize-pdf') {
+        <div class="tool-panel">
+          <span class="panel-kicker">PAGE WORKSPACE</span><h2>Arrange your document</h2>
+          <p>Drag pages to reorder them, rotate individual pages, duplicate selected pages, or remove pages before export.</p>
+          <div class="selection-summary"><strong>{{ selectedPages().length }}</strong><span>selected pages</span></div>
+        </div>
+        <div class="option-actions">
+          <button type="button" (click)="selectAll()">Select all pages</button><button type="button" (click)="deselectAll()">Clear selection</button>
           <button type="button" (click)="duplicateSelected()" [disabled]="!selectedPages().length">Duplicate selected</button>
           <button type="button" (click)="deleteSelected()" [disabled]="!canDeleteSelected()">Delete selected</button>
         </div>
@@ -182,44 +226,21 @@
         </div>
       }
 
-      <div class="option-card">
-        <span class="material-icons">memory</span>
-        <div>
-          <strong>Local-first</strong>
-          <p>Browser-safe PDF operations run on this device.</p>
-        </div>
-      </div>
-
+      <div class="option-card"><span class="material-icons">memory</span><div><strong>Local-first</strong><p>Browser-safe PDF operations run on this device.</p></div></div>
       @if (['pdf-to-word', 'word-to-pdf', 'pdf-to-excel', 'epub-to-pdf', 'excel-to-pdf', 'markdown-to-pdf', 'csv-to-pdf', 'compress-pdf', 'protect-pdf', 'sign-pdf', 'repair-pdf', 'unlock-pdf', 'pdf-ocr'].includes(activeTool())) {
-        <div class="coming-soon">
-          <span class="material-icons">schedule</span>
-          <strong>Server processing coming later</strong>
-          <p>This operation will use X-Facture's future document server for advanced conversion or processing.</p>
-        </div>
+        <div class="coming-soon"><span class="material-icons">schedule</span><strong>Server processing coming later</strong><p>This operation will use X-Facture's future document server for advanced conversion or processing.</p></div>
       }
     </div>
 
     <div class="options-footer">
       @if (activeTool() === 'merge-pdf') {
-        <button type="button" class="execute-button" [disabled]="mergeFiles().length < 2 || isProcessing()" (click)="mergeSelectedFiles()">
-          <span class="material-icons">merge_type</span>
-          <span>{{ isProcessing() ? 'Merging…' : 'Merge PDF files' }}</span>
-        </button>
+        <button type="button" class="execute-button" [disabled]="mergeDocuments().length < 2 || !mergePageCount() || isProcessing()" (click)="mergeSelectedFiles()"><span class="material-icons">merge_type</span><span>{{ isProcessing() ? 'Building…' : 'Build merged PDF' }}</span></button>
       } @else if (activeTool() === 'organize-pdf') {
-        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="downloadOrganized()">
-          <span class="material-icons">download</span>
-          <span>{{ isProcessing() ? 'Processing…' : 'Download organized PDF' }}</span>
-        </button>
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="downloadOrganized()"><span class="material-icons">download</span><span>{{ isProcessing() ? 'Processing…' : 'Download organized PDF' }}</span></button>
       } @else if (activeTool() === 'split-pdf') {
-        <button type="button" class="execute-button" [disabled]="!file() || !selectedPages().length || isProcessing()" (click)="extractSelected()">
-          <span class="material-icons">download</span>
-          <span>{{ isProcessing() ? 'Processing…' : 'Extract selected pages' }}</span>
-        </button>
+        <button type="button" class="execute-button" [disabled]="!file() || !selectedPages().length || isProcessing()" (click)="splitPdf()"><span class="material-icons">content_cut</span><span>{{ isProcessing() ? 'Splitting…' : 'Split PDF' }}</span></button>
       } @else {
-        <button type="button" class="execute-button" disabled>
-          <span class="material-icons">schedule</span>
-          <span>Available in a later phase</span>
-        </button>
+        <button type="button" class="execute-button" disabled><span class="material-icons">schedule</span><span>Available in a later phase</span></button>
       }
     </div>
   </aside>
