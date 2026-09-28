@@ -10,6 +10,16 @@ export interface PdfMergeInput {
   rotation?: number;
 }
 
+export interface PdfComposePage {
+  pageIndex: number;
+  rotation?: number;
+}
+
+export interface PdfComposeInput {
+  file: File;
+  pages: PdfComposePage[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class PdfEngineService {
   async read(file: File): Promise<ArrayBuffer> {
@@ -26,19 +36,31 @@ export class PdfEngineService {
   }
 
   async merge(files: PdfMergeInput[]): Promise<Uint8Array> {
+    return this.composePages(
+      files.map(item => ({
+        file: item.file,
+        pages: [],
+      })),
+    );
+  }
+
+  async composePages(inputs: PdfComposeInput[]): Promise<Uint8Array> {
     const output = await PDFDocument.create();
 
-    for (const item of files) {
-      const source = await this.load(item.file);
-      const pages = await output.copyPages(source, source.getPageIndices());
+    for (const input of inputs) {
+      const source = await this.load(input.file);
+      const indices = input.pages.length
+        ? input.pages.map(page => page.pageIndex).filter(index => index >= 0 && index < source.getPageCount())
+        : source.getPageIndices();
+      const pages = await output.copyPages(source, indices);
 
-      for (const page of pages) {
-        if (item.rotation) {
-          const current = page.getRotation().angle;
-          page.setRotation(degrees((current + item.rotation) % 360));
+      pages.forEach((page, position) => {
+        const rotation = input.pages[position]?.rotation ?? 0;
+        if (rotation) {
+          page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
         }
         output.addPage(page);
-      }
+      });
     }
 
     return output.save();
@@ -48,10 +70,8 @@ export class PdfEngineService {
     const source = await this.load(file);
     const output = await PDFDocument.create();
     const validIndices = pageIndices.filter(index => index >= 0 && index < source.getPageCount());
-
     const pages = await output.copyPages(source, validIndices);
     pages.forEach(page => output.addPage(page));
-
     return output.save();
   }
 
@@ -63,13 +83,11 @@ export class PdfEngineService {
     const source = await this.load(file);
     const output = await PDFDocument.create();
     const validIndices = orderedIndices.filter(index => index >= 0 && index < source.getPageCount());
-
     const pages = await output.copyPages(source, validIndices);
+
     pages.forEach((page, position) => {
       const rotation = rotations[validIndices[position]] ?? 0;
-      if (rotation) {
-        page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
-      }
+      if (rotation) page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
       output.addPage(page);
     });
 
@@ -78,11 +96,9 @@ export class PdfEngineService {
 
   async rotatePages(file: File, angle: number): Promise<Uint8Array> {
     const pdf = await this.load(file);
-
     pdf.getPages().forEach(page => {
       page.setRotation(degrees((page.getRotation().angle + angle) % 360));
     });
-
     return pdf.save();
   }
 
@@ -92,11 +108,9 @@ export class PdfEngineService {
     const blob = new Blob([buffer], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
-
     anchor.href = url;
     anchor.download = fileName;
     anchor.click();
-
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   }
 }
