@@ -351,7 +351,8 @@ export class PdfStudioPage {
 
   async mergeSelectedFiles(): Promise<void> {
     const documents = this.mergeDocuments();
-    if (documents.length < 2 || this.mergePageCount() === 0) return;
+    const expectedPages = this.mergePageCount();
+    if (documents.length < 2 || expectedPages === 0) return;
 
     this.isProcessing.set(true);
     this.error.set(null);
@@ -363,6 +364,14 @@ export class PdfStudioPage {
           pages: document.pages.map(page => ({ pageIndex: page.sourceIndex, rotation: page.rotation })),
         }))
       );
+
+      const mergedFile = new File([bytes], 'x-facture-merged.pdf', { type: 'application/pdf' });
+      const outputPageCount = await this.pdfEngine.getPageCount(mergedFile);
+      if (outputPageCount !== expectedPages) {
+        this.error.set(`Merge verification failed: the workspace contains ${expectedPages} pages, but the exported PDF contains ${outputPageCount}. Nothing was downloaded.`);
+        return;
+      }
+
       this.pdfEngine.download(bytes, 'x-facture-merged.pdf');
     } catch {
       this.error.set('The composed PDF could not be created.');
