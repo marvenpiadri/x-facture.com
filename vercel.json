@@ -16,5 +16,6 @@
     "api/index.js": {
       "includeFiles": "dist/**"
     }
-  }
+  },
+  "installCommand": "rm -rf node_modules && npm install"
 }
