@@ -79,10 +79,10 @@
           @if (mergeDocuments().length) {
             <div class="merge-workspace-head">
               <div><strong>{{ mergeDocuments().length }} documents</strong><span>{{ mergePageCount() }} pages in composition</span></div>
-              <span class="merge-hint"><span class="material-icons">open_with</span> Drag a document or a page</span>
+              <span class="merge-hint"><span class="material-icons">open_with</span> Move PDFs with the arrows. Drag pages freely.</span>
             </div>
 
-            <div class="merge-document-list" cdkDropList (cdkDropListDropped)="onMergeDocumentDrop($event)" cdkDropListOrientation="vertical">
+            <div class="merge-document-list">
               @for (document of mergeDocuments(); track document.id; let documentIndex = $index) {
                 <section class="merge-document">
                   <header class="merge-document-header">
@@ -94,8 +94,8 @@
                       <span>{{ document.pages.length }} {{ document.pages.length === 1 ? 'page' : 'pages' }}</span>
                     </div>
                     <div class="merge-document-actions">
-                      <button type="button" (click)="moveMergeDocument(document.id, -1)" [disabled]="documentIndex === 0" aria-label="Move PDF left"><span class="material-icons">arrow_back</span></button>
-                      <button type="button" (click)="moveMergeDocument(document.id, 1)" [disabled]="documentIndex === mergeDocuments().length - 1" aria-label="Move PDF right"><span class="material-icons">arrow_forward</span></button>
+                      <button type="button" (click)="moveMergeDocument(document.id, -1)" [disabled]="documentIndex === 0" aria-label="Move PDF up"><span class="material-icons">arrow_upward</span></button>
+                      <button type="button" (click)="moveMergeDocument(document.id, 1)" [disabled]="documentIndex === mergeDocuments().length - 1" aria-label="Move PDF down"><span class="material-icons">arrow_downward</span></button>
                       <button type="button" (click)="removeMergeFile(documentIndex); $event.stopPropagation()" aria-label="Remove document"><span class="material-icons">close</span></button>
                     </div>
                   </header>
