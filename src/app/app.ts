@@ -122,6 +122,7 @@ export class App {
       this.showProfileMenu.set(false);
       this.showOpsDropdown.set(false);
       this.showToolsDropdown.set(false);
+      this.showPdfDropdown.set(false);
     }
   }
 
