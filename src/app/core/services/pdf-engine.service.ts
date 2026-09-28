@@ -140,9 +140,19 @@ export class PdfEngineService {
     return pdf.save();
   }
 
+
+  private formatPageNumber(number: number, format: 'numeric' | 'roman-lower' | 'roman-upper'): string {
+    if (format === 'numeric') return String(number);
+    const values: Array<[number, string]> = [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']];
+    let value = Math.max(1, Math.floor(number));
+    let result = '';
+    for (const [unit, numeral] of values) { while (value >= unit) { result += numeral; value -= unit; } }
+    return format === 'roman-lower' ? result.toLowerCase() : result;
+  }
+
   async addPageNumbers(
     file: File,
-    options: { start: number; position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'; fontSize: number; pageIndices?: number[] } = {
+    options: { start: number; format?: 'numeric' | 'roman-lower' | 'roman-upper'; prefix?: string; suffix?: string; position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'; fontSize: number; pageIndices?: number[] } = {
       start: 1,
       position: 'bottom-center',
       fontSize: 10,
@@ -155,7 +165,7 @@ export class PdfEngineService {
     let number = options.start;
     pdf.getPages().forEach((page, index) => {
       if (selected && !selected.has(index)) return;
-      const label = String(number);
+      const label = `${options.prefix ?? ''}${this.formatPageNumber(number, options.format ?? 'numeric')}${options.suffix ?? ''}`;
       const width = page.getWidth();
       const height = page.getHeight();
       const textWidth = font.widthOfTextAtSize(label, options.fontSize);
