@@ -30,6 +30,7 @@ export class App {
   showDocsDropdown = signal<boolean>(false);
   showOpsDropdown = signal<boolean>(false);
   showToolsDropdown = signal<boolean>(false);
+  showPdfDropdown = signal<boolean>(false);
   showProfileMenu = signal<boolean>(false);
   showQuickToolDrawer = signal<boolean>(false);
 
@@ -97,6 +98,17 @@ export class App {
       this.showDocsDropdown.set(false);
       this.showOpsDropdown.set(false);
       this.showToolsDropdown.set(false);
+      this.showPdfDropdown.set(false);
+    }
+  }
+
+  togglePdfDropdown(): void {
+    this.showPdfDropdown.update(v => !v);
+    if (this.showPdfDropdown()) {
+      this.showProfileMenu.set(false);
+      this.showDocsDropdown.set(false);
+      this.showOpsDropdown.set(false);
+      this.showToolsDropdown.set(false);
     }
   }
 
@@ -119,6 +131,7 @@ export class App {
       this.showProfileMenu.set(false);
       this.showDocsDropdown.set(false);
       this.showToolsDropdown.set(false);
+      this.showPdfDropdown.set(false);
     }
   }
 
@@ -128,6 +141,7 @@ export class App {
       this.showProfileMenu.set(false);
       this.showDocsDropdown.set(false);
       this.showOpsDropdown.set(false);
+      this.showPdfDropdown.set(false);
     }
   }
 
@@ -146,6 +160,7 @@ export class App {
     this.showDocsDropdown.set(false);
     this.showOpsDropdown.set(false);
     this.showToolsDropdown.set(false);
+    this.showPdfDropdown.set(false);
   }
 
   createDoc(docType: string): void {
