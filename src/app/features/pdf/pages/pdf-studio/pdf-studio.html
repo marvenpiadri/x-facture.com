@@ -241,6 +241,63 @@
           <button type="button" (click)="setRotateScope('all')" [class.active]="rotateScope() === 'all'"><strong>All pages</strong><span>Apply to the entire document.</span></button>
           <button type="button" (click)="setRotateScope('selected')" [class.active]="rotateScope() === 'selected'"><strong>Selected pages</strong><span>Apply only to selected pages.</span></button>
         </div>
+      } @else if (activeTool() === 'add-watermark') {
+        <div class="tool-panel"><span class="panel-kicker">WATERMARK</span><h2>Stamp the document</h2><p>Add a configurable text watermark to every page or only the pages selected on the canvas.</p></div>
+        <label class="field-label">Watermark text<input type="text" [value]="watermarkText()" (input)="setWatermarkText($event)" placeholder="CONFIDENTIAL" /></label>
+        <div class="split-methods">
+          <button type="button" (click)="setWatermarkPosition('center')" [class.active]="watermarkPosition() === 'center'"><strong>Center</strong><span>Large diagonal document stamp.</span></button>
+          <button type="button" (click)="setWatermarkPosition('top-left')" [class.active]="watermarkPosition() === 'top-left'"><strong>Top left</strong><span>Compact corner placement.</span></button>
+          <button type="button" (click)="setWatermarkPosition('top-right')" [class.active]="watermarkPosition() === 'top-right'"><strong>Top right</strong><span>Compact corner placement.</span></button>
+          <button type="button" (click)="setWatermarkPosition('bottom-left')" [class.active]="watermarkPosition() === 'bottom-left'"><strong>Bottom left</strong><span>Compact corner placement.</span></button>
+          <button type="button" (click)="setWatermarkPosition('bottom-right')" [class.active]="watermarkPosition() === 'bottom-right'"><strong>Bottom right</strong><span>Compact corner placement.</span></button>
+        </div>
+        <div class="field-grid">
+          <label class="field-label">Opacity<input type="range" min="0.05" max="0.8" step="0.05" [value]="watermarkOpacity()" (input)="setWatermarkOpacity($event)" /></label>
+          <label class="field-label">Font size<input type="number" min="10" max="120" [value]="watermarkFontSize()" (input)="setWatermarkFontSize($event)" /></label>
+          <label class="field-label">Angle<input type="number" min="-180" max="180" [value]="watermarkAngle()" (input)="setWatermarkAngle($event)" /></label>
+        </div>
+        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be stamped' }}</span></div>
+      } @else if (activeTool() === 'add-page-numbers') {
+        <div class="tool-panel"><span class="panel-kicker">PAGE NUMBERS</span><h2>Number the document</h2><p>Add sequential page numbers with a chosen starting number and placement.</p></div>
+        <div class="field-grid">
+          <label class="field-label">Start number<input type="number" min="1" [value]="pageNumberStart()" (input)="setPageNumberStart($event)" /></label>
+          <label class="field-label">Font size<input type="number" min="6" max="36" [value]="pageNumberFontSize()" (input)="setPageNumberFontSize($event)" /></label>
+        </div>
+        <div class="split-methods">
+          <button type="button" (click)="setPageNumberPosition('bottom-left')" [class.active]="pageNumberPosition() === 'bottom-left'"><strong>Bottom left</strong><span>Standard footer placement.</span></button>
+          <button type="button" (click)="setPageNumberPosition('bottom-center')" [class.active]="pageNumberPosition() === 'bottom-center'"><strong>Bottom center</strong><span>Centered footer placement.</span></button>
+          <button type="button" (click)="setPageNumberPosition('bottom-right')" [class.active]="pageNumberPosition() === 'bottom-right'"><strong>Bottom right</strong><span>Right aligned footer.</span></button>
+          <button type="button" (click)="setPageNumberPosition('top-left')" [class.active]="pageNumberPosition() === 'top-left'"><strong>Top left</strong><span>Header placement.</span></button>
+          <button type="button" (click)="setPageNumberPosition('top-center')" [class.active]="pageNumberPosition() === 'top-center'"><strong>Top center</strong><span>Centered header placement.</span></button>
+          <button type="button" (click)="setPageNumberPosition('top-right')" [class.active]="pageNumberPosition() === 'top-right'"><strong>Top right</strong><span>Right aligned header.</span></button>
+        </div>
+      } @else if (activeTool() === 'crop-pdf') {
+        <div class="tool-panel"><span class="panel-kicker">CROP</span><h2>Trim page boundaries</h2><p>Choose a precise margin preset. Apply it to every page or only the pages selected on the canvas.</p></div>
+        <div class="split-methods">
+          <button type="button" (click)="setCropMargin(0)" [class.active]="cropMargin() === 0"><strong>No crop</strong><span>Restore the full page box.</span></button>
+          <button type="button" (click)="setCropMargin(12)" [class.active]="cropMargin() === 12"><strong>12 pt</strong><span>Light trim around the edges.</span></button>
+          <button type="button" (click)="setCropMargin(24)" [class.active]="cropMargin() === 24"><strong>24 pt</strong><span>Standard document trim.</span></button>
+          <button type="button" (click)="setCropMargin(48)" [class.active]="cropMargin() === 48"><strong>48 pt</strong><span>Strong edge reduction.</span></button>
+          <button type="button" (click)="setCropMargin(72)" [class.active]="cropMargin() === 72"><strong>72 pt</strong><span>Heavy one-inch trim.</span></button>
+        </div>
+        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be cropped' }}</span></div>
+      } @else if (activeTool() === 'pdf-editor') {
+        <div class="tool-panel"><span class="panel-kicker">EDIT</span><h2>Add text to the document</h2><p>This browser-first editor adds new text overlays without pretending to rewrite existing PDF text. Select pages on the canvas to target only those pages.</p></div>
+        <label class="field-label">Text<input type="text" [value]="editText()" (input)="setEditText($event)" placeholder="Add a note, label or heading" /></label>
+        <label class="field-label">Font size<input type="number" min="6" max="72" [value]="editTextFontSize()" (input)="setEditTextFontSize($event)" /></label>
+        <div class="split-methods">
+          <button type="button" (click)="setEditTextPosition('top-left')" [class.active]="editTextPosition() === 'top-left'"><strong>Top left</strong><span>Header style overlay.</span></button>
+          <button type="button" (click)="setEditTextPosition('center')" [class.active]="editTextPosition() === 'center'"><strong>Center</strong><span>Centered document annotation.</span></button>
+          <button type="button" (click)="setEditTextPosition('bottom-left')" [class.active]="editTextPosition() === 'bottom-left'"><strong>Bottom left</strong><span>Footer style overlay.</span></button>
+        </div>
+      } @else if (activeTool() === 'add-watermark') {
+        <button type="button" class="execute-button" [disabled]="!file() || !watermarkText().trim() || isProcessing()" (click)="watermarkPdf()"><span class="material-icons">branding_watermark</span><span>{{ isProcessing() ? 'Applying...' : 'Apply watermark' }}</span></button>
+      } @else if (activeTool() === 'add-page-numbers') {
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="numberPages()"><span class="material-icons">format_list_numbered</span><span>{{ isProcessing() ? 'Numbering...' : 'Add page numbers' }}</span></button>
+      } @else if (activeTool() === 'crop-pdf') {
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="cropPdf()"><span class="material-icons">crop</span><span>{{ isProcessing() ? 'Cropping...' : 'Export cropped PDF' }}</span></button>
+      } @else if (activeTool() === 'pdf-editor') {
+        <button type="button" class="execute-button" [disabled]="!file() || !editText().trim() || isProcessing()" (click)="addTextToPdf()"><span class="material-icons">edit</span><span>{{ isProcessing() ? 'Adding...' : 'Add text to PDF' }}</span></button>
       } @else if (activeTool() === 'flatten-pdf') {
         <div class="tool-panel"><span class="panel-kicker">FLATTEN</span><h2>Make the document static</h2><p>Flatten interactive form fields into the page content for a clean static PDF.</p></div>
       } @else if (activeTool() === 'pdf-metadata') {
