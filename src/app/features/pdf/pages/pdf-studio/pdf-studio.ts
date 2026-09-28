@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { PdfEngineService } from '../../../core/services/pdf-engine.service';
+import { PdfEngineService } from '../../../../core/services/pdf-engine.service';
 
 type PdfCategory = 'organize' | 'edit' | 'convert' | 'security';
 
