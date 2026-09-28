@@ -314,6 +314,12 @@ export class PdfStudioPage {
     }
   }
 
+  canDeleteSelected(): boolean {
+    const count = this.pageCount();
+    const selected = this.selectedPages().length;
+    return selected > 0 && count !== null && selected < count;
+  }
+
   async deleteSelected(): Promise<void> {
     const currentFile = this.file();
     const positions = this.selectedPages();
