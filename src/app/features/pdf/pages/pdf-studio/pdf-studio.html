@@ -111,10 +111,6 @@
               (cdkDragStarted)="onDragStarted($index)"
               (cdkDragEnded)="onDragEnded()"
               [class.rotated]="(pageRotations()[pageOrder()[$index]] ?? 0) % 180 !== 0"
-              draggable="true"
-              (dragstart)="onDragStart($index)"
-              (dragover)="onDragOver($event)"
-              (drop)="onDropPage($index)"
             >
               <button type="button" class="page-preview" (click)="togglePage($index)" [attr.aria-label]="'Select page ' + ($index + 1)">
                 <img
@@ -174,7 +170,7 @@
           <button type="button" (click)="selectAll()">Select all pages</button>
           <button type="button" (click)="deselectAll()">Clear selection</button>
           <button type="button" (click)="duplicateSelected()" [disabled]="!selectedPages().length">Duplicate selected</button>
-          <button type="button" (click)="deleteSelected()" [disabled]="!selectedPages().length || selectedPages().length >= pageCount()">Delete selected</button>
+          <button type="button" (click)="deleteSelected()" [disabled]="!canDeleteSelected()">Delete selected</button>
         </div>
       } @else {
         <div class="tool-panel">
