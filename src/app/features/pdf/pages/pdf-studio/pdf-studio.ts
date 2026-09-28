@@ -73,6 +73,11 @@ export class PdfStudioPage {
   readonly cropRight = signal(24);
   readonly cropBottom = signal(24);
   readonly cropLeft = signal(24);
+  readonly cropX = signal(8);
+  readonly cropY = signal(8);
+  readonly cropWidth = signal(84);
+  readonly cropHeight = signal(84);
+  readonly cropDragState = signal<{ mode: string; startX: number; startY: number; x: number; y: number; width: number; height: number } | null>(null);
   readonly editText = signal('');
   readonly editTextFontSize = signal(18);
   readonly editTextPosition = signal<'top-left' | 'center' | 'bottom-left'>('top-left');
@@ -171,6 +176,10 @@ export class PdfStudioPage {
     this.imageFiles.set([]);
     this.splitRanges.set('');
     this.selectedPages.set([]);
+    this.cropX.set(8);
+    this.cropY.set(8);
+    this.cropWidth.set(84);
+    this.cropHeight.set(84);
   }
 
   get filteredTools(): PdfTool[] {
@@ -638,27 +647,126 @@ export class PdfStudioPage {
   }
 
   setCropMargin(margin: number): void {
-    const value = Math.max(0, Math.floor(margin));
-    this.cropTop.set(value); this.cropRight.set(value); this.cropBottom.set(value); this.cropLeft.set(value);
+    const value = Math.max(0, Math.min(48, Math.floor(margin)));
+    const inset = value === 0 ? 0 : Math.min(45, value / 1.5);
+    this.cropX.set(inset);
+    this.cropY.set(inset);
+    this.cropWidth.set(100 - inset * 2);
+    this.cropHeight.set(100 - inset * 2);
   }
 
   setCropSide(side: 'top' | 'right' | 'bottom' | 'left', event: Event): void {
-    const value = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value) || 0));
-    if (side === 'top') this.cropTop.set(value);
-    if (side === 'right') this.cropRight.set(value);
-    if (side === 'bottom') this.cropBottom.set(value);
-    if (side === 'left') this.cropLeft.set(value);
+    const value = Math.max(0, Math.min(99, Number((event.target as HTMLInputElement).value) || 0));
+    if (side === 'left') {
+      const right = this.cropX() + this.cropWidth();
+      this.cropX.set(Math.min(value, right - 1));
+      this.cropWidth.set(Math.max(1, right - value));
+    }
+    if (side === 'right') {
+      const right = Math.max(this.cropX() + 1, Math.min(100 - value, 100));
+      this.cropWidth.set(Math.max(1, right - this.cropX()));
+    }
+    if (side === 'top') {
+      const bottom = this.cropY() + this.cropHeight();
+      this.cropY.set(Math.min(value, bottom - 1));
+      this.cropHeight.set(Math.max(1, bottom - value));
+    }
+    if (side === 'bottom') {
+      const bottom = Math.max(this.cropY() + 1, Math.min(100 - value, 100));
+      this.cropHeight.set(Math.max(1, bottom - this.cropY()));
+    }
   }
 
   cropPreviewStyle(): Record<string, string> {
-    const max = Math.max(this.cropTop(), this.cropRight(), this.cropBottom(), this.cropLeft(), 1);
-    const scale = Math.min(1, 72 / max);
     return {
-      '--crop-top': Math.min(45, this.cropTop() * scale) + 'px',
-      '--crop-right': Math.min(45, this.cropRight() * scale) + 'px',
-      '--crop-bottom': Math.min(45, this.cropBottom() * scale) + 'px',
-      '--crop-left': Math.min(45, this.cropLeft() * scale) + 'px',
+      '--crop-x': this.cropX() + '%',
+      '--crop-y': this.cropY() + '%',
+      '--crop-width': this.cropWidth() + '%',
+      '--crop-height': this.cropHeight() + '%',
     };
+  }
+
+  startCropDrag(event: PointerEvent, mode: string): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const target = event.currentTarget as HTMLElement;
+    target.setPointerCapture?.(event.pointerId);
+    this.cropDragState.set({
+      mode,
+      startX: event.clientX,
+      startY: event.clientY,
+      x: this.cropX(),
+      y: this.cropY(),
+      width: this.cropWidth(),
+      height: this.cropHeight(),
+    });
+    const move = (moveEvent: PointerEvent) => this.updateCropDrag(moveEvent);
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      this.cropDragState.set(null);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up, { once: true });
+  }
+
+  private updateCropDrag(event: PointerEvent): void {
+    const state = this.cropDragState();
+    if (!state) return;
+    const preview = document.querySelector('.crop-preview') as HTMLElement | null;
+    if (!preview) return;
+    const rect = preview.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+
+    const dx = ((event.clientX - state.startX) / rect.width) * 100;
+    const dy = ((event.clientY - state.startY) / rect.height) * 100;
+    const minSize = 5;
+    let x = state.x;
+    let y = state.y;
+    let width = state.width;
+    let height = state.height;
+
+    if (state.mode === 'move') {
+      x = Math.max(0, Math.min(100 - width, state.x + dx));
+      y = Math.max(0, Math.min(100 - height, state.y + dy));
+    } else {
+      if (state.mode.includes('w')) {
+        const nextX = Math.max(0, Math.min(state.x + state.width - minSize, state.x + dx));
+        width = state.width - (nextX - state.x);
+        x = nextX;
+      }
+      if (state.mode.includes('e')) width = Math.max(minSize, Math.min(100 - x, state.width + dx));
+      if (state.mode.includes('n')) {
+        const nextY = Math.max(0, Math.min(state.y + state.height - minSize, state.y + dy));
+        height = state.height - (nextY - state.y);
+        y = nextY;
+      }
+      if (state.mode.includes('s')) height = Math.max(minSize, Math.min(100 - y, state.height + dy));
+    }
+
+    this.cropX.set(x);
+    this.cropY.set(y);
+    this.cropWidth.set(width);
+    this.cropHeight.set(height);
+  }
+
+  async cropPdf(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const pageIndices = this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined;
+      const bytes = await this.pdfEngine.cropPages(currentFile, {
+        xPercent: this.cropX(),
+        yPercent: this.cropY(),
+        widthPercent: this.cropWidth(),
+        heightPercent: this.cropHeight(),
+        pageIndices
+      });
+      this.pdfEngine.download(bytes, 'x-facture-cropped.pdf');
+    } catch { this.error.set('The PDF pages could not be cropped.'); }
+    finally { this.isProcessing.set(false); }
   }
 
   clearMetadata(): void {
