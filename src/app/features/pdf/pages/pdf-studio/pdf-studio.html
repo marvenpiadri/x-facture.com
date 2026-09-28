@@ -1,0 +1,133 @@
+<section class="pdf-studio" (dragover)="$event.preventDefault()" (drop)="onDrop($event)">
+  <aside class="pdf-sidebar">
+    <div class="sidebar-heading">
+      <span class="material-icons">picture_as_pdf</span>
+      <div>
+        <span class="eyebrow">X-FACTURE</span>
+        <strong>PDF Engine</strong>
+      </div>
+    </div>
+
+    <label class="sidebar-search">
+      <span class="material-icons">search</span>
+      <input placeholder="Search PDF tools" aria-label="Search PDF tools" />
+    </label>
+
+    @for (category of ['organize', 'edit', 'convert', 'security']; track category) {
+      <section class="tool-category">
+        <div class="category-title">{{ categoryLabels[category] }}</div>
+        @for (tool of toolsFor(category); track tool.id) {
+          <a
+            class="tool-link"
+            [class.active]="activeTool() === tool.id"
+            [routerLink]="tool.route"
+          >
+            <span class="material-icons">{{ tool.icon }}</span>
+            <span>{{ tool.name }}</span>
+          </a>
+        }
+      </section>
+    }
+  </aside>
+
+  <main class="pdf-canvas">
+    <div class="canvas-topbar">
+      <div>
+        <span class="eyebrow">DOCUMENT WORKSPACE</span>
+        <h1>{{ activeTool() === 'organize-pdf' && !file() ? 'PDF Studio' : (tools.find(t => t.id === activeTool())?.name || 'PDF Studio') }}</h1>
+      </div>
+
+      @if (file(); as currentFile) {
+        <div class="active-file-pill">
+          <span class="material-icons">description</span>
+          <span>{{ currentFile.name }}</span>
+          @if (pageCount() !== null) {
+            <span>{{ pageCount() }} pages</span>
+          }
+          <button type="button" (click)="clearFile()" aria-label="Remove PDF">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+      }
+    </div>
+
+    <div class="canvas-content">
+      @if (!file()) {
+        <div class="upload-sheet" (click)="triggerUpload(pdfInput)">
+          <div class="upload-icon">
+            <span class="material-icons">upload_file</span>
+          </div>
+          <h2>Drop a PDF here</h2>
+          <p>or choose a file from your computer</p>
+          <button type="button" class="upload-button" (click)="$event.stopPropagation(); triggerUpload(pdfInput)">
+            Choose PDF
+          </button>
+          <small>Files stay in your browser during this local processing phase.</small>
+        </div>
+      } @else {
+        <div class="document-placeholder">
+          <span class="material-icons">picture_as_pdf</span>
+          <h2>{{ file()?.name }}</h2>
+          <p>{{ pageCount() ?? '—' }} pages loaded. Page rendering will be added with the visual workspace in the next phase.</p>
+        </div>
+      }
+    </div>
+
+    @if (error(); as message) {
+      <div class="canvas-error">
+        <span class="material-icons">error_outline</span>
+        <span>{{ message }}</span>
+      </div>
+    }
+
+    <input #pdfInput type="file" accept="application/pdf,.pdf" hidden (change)="onFileSelected($event)" />
+  </main>
+
+  <aside class="pdf-options">
+    <div class="options-header">
+      <span class="material-icons">tune</span>
+      <div>
+        <span class="eyebrow">{{ categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
+        <strong>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</strong>
+      </div>
+    </div>
+
+    <div class="options-body">
+      <div class="option-card">
+        <span class="material-icons">auto_awesome</span>
+        <div>
+          <strong>Shared PDF Engine</strong>
+          <p>All tools will use the same document-processing layer.</p>
+        </div>
+      </div>
+
+      <div class="option-card">
+        <span class="material-icons">memory</span>
+        <div>
+          <strong>Local-first processing</strong>
+          <p>Browser-safe operations run locally before server conversion is introduced.</p>
+        </div>
+      </div>
+
+      @if (file()) {
+        <div class="file-summary">
+          <span>Current document</span>
+          <strong>{{ file()?.name }}</strong>
+          <span>{{ pageCount() ?? '—' }} pages</span>
+        </div>
+      } @else {
+        <div class="empty-options">
+          <span class="material-icons">upload_file</span>
+          <p>Upload a PDF to configure this tool.</p>
+        </div>
+      }
+    </div>
+
+    <div class="options-footer">
+      <button type="button" class="execute-button" [disabled]="!file()">
+        <span class="material-icons">bolt</span>
+        <span>Configure & Process</span>
+      </button>
+    </div>
+  </aside>
+</section>
