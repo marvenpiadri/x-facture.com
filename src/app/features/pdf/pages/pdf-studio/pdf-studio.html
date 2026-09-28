@@ -13,7 +13,7 @@
       <input placeholder="Search PDF tools" aria-label="Search PDF tools" />
     </label>
 
-    @for (category of ['organize', 'edit', 'convert', 'security']; track category) {
+    @for (category of categories; track category) {
       <section class="tool-category">
         <div class="category-title">{{ categoryLabels[category] }}</div>
         @for (tool of toolsFor(category); track tool.id) {
