@@ -24,13 +24,18 @@ interface PdfTool {
 })
 export class PdfStudioPage {
   private readonly route = inject(ActivatedRoute);
-  readonly pdfEngine = inject(PdfEngineService);
 
+  readonly pdfEngine = inject(PdfEngineService);
   readonly activeTool = signal<string>('organize-pdf');
   readonly file = signal<File | null>(null);
   readonly pageCount = signal<number | null>(null);
   readonly error = signal<string | null>(null);
   readonly isProcessing = signal(false);
+  readonly searchQuery = signal('');
+  readonly thumbnails = signal<string[]>([]);
+  readonly selectedPages = signal<number[]>([]);
+  readonly pageRotations = signal<Record<number, number>>({});
+  readonly zoom = signal(0.72);
 
   readonly tools: PdfTool[] = [
     { id: 'organize-pdf', name: 'Organize Pages', description: 'Reorder, rotate and remove pages.', icon: 'view_carousel', category: 'organize', route: '/pdf/organize-pdf' },
@@ -66,8 +71,20 @@ export class PdfStudioPage {
     });
   }
 
+  get filteredTools(): PdfTool[] {
+    const query = this.searchQuery().trim().toLowerCase();
+    if (!query) return this.tools;
+    return this.tools.filter(tool =>
+      `${tool.name} ${tool.description} ${tool.category}`.toLowerCase().includes(query)
+    );
+  }
+
   toolsFor(category: PdfCategory): PdfTool[] {
-    return this.tools.filter(tool => tool.category === category);
+    return this.filteredTools.filter(tool => tool.category === category);
+  }
+
+  onSearch(event: Event): void {
+    this.searchQuery.set((event.target as HTMLInputElement).value);
   }
 
   async onFileSelected(event: Event): Promise<void> {
@@ -75,18 +92,8 @@ export class PdfStudioPage {
     const selected = input.files?.[0];
 
     if (!selected) return;
-
-    this.error.set(null);
-    this.file.set(selected);
-
-    try {
-      this.pageCount.set(await this.pdfEngine.getPageCount(selected));
-    } catch {
-      this.pageCount.set(null);
-      this.error.set('This file could not be opened as a valid PDF.');
-    } finally {
-      input.value = '';
-    }
+    await this.loadFile(selected);
+    input.value = '';
   }
 
   triggerUpload(input: HTMLInputElement): void {
@@ -97,15 +104,106 @@ export class PdfStudioPage {
     event.preventDefault();
     const dropped = event.dataTransfer?.files?.[0];
     if (!dropped) return;
+    await this.loadFile(dropped);
+  }
 
+  private async loadFile(selected: File): Promise<void> {
     this.error.set(null);
-    this.file.set(dropped);
+    this.isProcessing.set(true);
+    this.file.set(selected);
+    this.pageCount.set(null);
+    this.thumbnails.set([]);
+    this.selectedPages.set([]);
+    this.pageRotations.set({});
 
     try {
-      this.pageCount.set(await this.pdfEngine.getPageCount(dropped));
+      const count = await this.pdfEngine.getPageCount(selected);
+      this.pageCount.set(count);
+      this.selectedPages.set(Array.from({ length: count }, (_, index) => index));
+      await this.renderThumbnails(selected, count);
     } catch {
       this.pageCount.set(null);
+      this.file.set(null);
       this.error.set('This file could not be opened as a valid PDF.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
+  private async renderThumbnails(file: File, count: number): Promise<void> {
+    if (typeof window === 'undefined') return;
+
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    pdfjs.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs';
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const document = await pdfjs.getDocument({ data: bytes }).promise;
+    const images: string[] = [];
+
+    try {
+      for (let index = 1; index <= count; index += 1) {
+        const page = await document.getPage(index);
+        const baseViewport = page.getViewport({ scale: 1 });
+        const scale = Math.min(0.72, 120 / baseViewport.width);
+        const viewport = page.getViewport({ scale });
+        const canvas = window.document.createElement('canvas');
+        const context = canvas.getContext('2d', { alpha: false });
+
+        if (!context) continue;
+
+        canvas.width = Math.ceil(viewport.width);
+        canvas.height = Math.ceil(viewport.height);
+        await page.render({ canvasContext: context, viewport }).promise;
+        images.push(canvas.toDataURL('image/jpeg', 0.82));
+        page.cleanup();
+      }
+      this.thumbnails.set(images);
+    } finally {
+      await document.destroy();
+    }
+  }
+
+  togglePage(index: number): void {
+    const selected = new Set(this.selectedPages());
+    if (selected.has(index)) selected.delete(index);
+    else selected.add(index);
+    this.selectedPages.set([...selected].sort((a, b) => a - b));
+  }
+
+  selectAll(): void {
+    const count = this.pageCount() ?? 0;
+    this.selectedPages.set(Array.from({ length: count }, (_, index) => index));
+  }
+
+  deselectAll(): void {
+    this.selectedPages.set([]);
+  }
+
+  rotatePage(index: number): void {
+    const rotations = { ...this.pageRotations() };
+    rotations[index] = ((rotations[index] ?? 0) + 90) % 360;
+    this.pageRotations.set(rotations);
+  }
+
+  isSelected(index: number): boolean {
+    return this.selectedPages().includes(index);
+  }
+
+  async extractSelected(): Promise<void> {
+    const currentFile = this.file();
+    const selected = this.selectedPages();
+    if (!currentFile || !selected.length) return;
+
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const bytes = await this.pdfEngine.extractPages(currentFile, selected);
+      this.pdfEngine.download(bytes, 'x-facture-extracted.pdf');
+    } catch {
+      this.error.set('The selected pages could not be extracted.');
+    } finally {
+      this.isProcessing.set(false);
     }
   }
 
@@ -113,5 +211,8 @@ export class PdfStudioPage {
     this.file.set(null);
     this.pageCount.set(null);
     this.error.set(null);
+    this.thumbnails.set([]);
+    this.selectedPages.set([]);
+    this.pageRotations.set({});
   }
 }
