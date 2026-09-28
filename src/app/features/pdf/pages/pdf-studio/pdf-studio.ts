@@ -249,7 +249,8 @@ export class PdfStudioPage {
       ...document,
       pages: [...document.pages],
     }));
-    const sourceDocumentId = event.previousContainer.id.replace('merge-pages-', '');
+    const dragData = event.item.data as { documentId?: string; pageId?: string } | undefined;
+    const sourceDocumentId = dragData?.documentId ?? event.previousContainer.id.replace('merge-pages-', '');
     const source = documents.find(document => document.id === sourceDocumentId);
     const target = documents.find(document => document.id === targetDocumentId);
     if (!source || !target) return;
@@ -257,9 +258,14 @@ export class PdfStudioPage {
     if (source.id === target.id) {
       moveItemInArray(target.pages, event.previousIndex, event.currentIndex);
     } else {
-      const [page] = source.pages.splice(event.previousIndex, 1);
+      const pageIndex = dragData?.pageId
+        ? source.pages.findIndex(page => page.id === dragData.pageId)
+        : event.previousIndex;
+      if (pageIndex < 0) return;
+      const [page] = source.pages.splice(pageIndex, 1);
       if (!page) return;
-      target.pages.splice(event.currentIndex, 0, page);
+      const insertionIndex = Math.min(event.currentIndex, target.pages.length);
+      target.pages.splice(insertionIndex, 0, page);
     }
 
     this.mergeDocuments.set(documents);
