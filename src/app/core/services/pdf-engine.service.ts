@@ -51,12 +51,17 @@ export class PdfEngineService {
     return output.save();
   }
 
-  async extractPages(file: File, pageIndices: number[]): Promise<Uint8Array> {
+  async extractPages(file: File, pageIndices: number[], rotations: Record<number, number> = {}): Promise<Uint8Array> {
     const source = await this.load(file);
     const output = await PDFDocument.create();
     const validIndices = pageIndices.filter(index => index >= 0 && index < source.getPageCount());
     const pages = await output.copyPages(source, validIndices);
-    pages.forEach(page => output.addPage(page));
+    pages.forEach((page, position) => {
+      const sourceIndex = validIndices[position];
+      const rotation = rotations[sourceIndex] ?? 0;
+      if (rotation) page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
+      output.addPage(page);
+    });
     return output.save();
   }
 
