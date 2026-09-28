@@ -168,7 +168,7 @@
     @if (error(); as message) {
       <div class="canvas-error"><span class="material-icons">error_outline</span><span>{{ message }}</span></div>
     }
-    <input #pdfInput type="file" accept="application/pdf,.pdf" [multiple]="activeTool() === 'merge-pdf'" hidden (change)="onFileSelected($event)" />
+    <input #pdfInput type="file" [accept]="activeTool() === 'image-to-pdf' ? 'image/png,image/jpeg,.png,.jpg,.jpeg' : 'application/pdf,.pdf'" [multiple]="activeTool() === 'merge-pdf' || activeTool() === 'image-to-pdf'" hidden (change)="onFileSelected($event)" />
   </main>
 
   <aside class="pdf-options">
