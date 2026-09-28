@@ -1021,19 +1021,7 @@
   padding: 7px 10px;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-surface-subtle);
-  cursor: grab;
-}
-
-.merge-document-header:active {
-  cursor: grabbing;
-}
-
-.merge-document-grip {
-  color: var(--color-text-muted);
-}
-
-.merge-document-grip .material-icons {
-  font-size: 18px;
+  cursor: default;
 }
 
 .merge-document-number {
