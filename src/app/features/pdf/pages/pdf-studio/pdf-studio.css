@@ -1375,3 +1375,25 @@
   color: var(--color-money-green);
   font-size: 17px;
 }
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.field-grid .field-label {
+  margin-bottom: 0;
+}
+
+.field-label input[type="range"] {
+  min-height: 28px;
+  padding: 0;
+  accent-color: var(--color-money-green);
+}
+
+@media (max-width: 520px) {
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+}
