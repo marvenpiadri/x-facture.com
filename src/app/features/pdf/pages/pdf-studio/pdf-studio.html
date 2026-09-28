@@ -309,6 +309,10 @@
         <div class="tool-panel"><span class="panel-kicker">EDIT</span><h2>Add text to the document</h2><p>This browser-first editor adds new text overlays without pretending to rewrite existing PDF text. Select pages on the canvas to target only those pages.</p></div>
         <label class="field-label">Text<input type="text" [value]="editText()" (input)="setEditText($event)" placeholder="Add a note, label or heading" /></label>
         <label class="field-label">Font size<input type="number" min="6" max="72" [value]="editTextFontSize()" (input)="setEditTextFontSize($event)" /></label>
+        <div class="field-grid editor-position-fields">
+          <label class="field-label">X position (%)<input type="number" min="0" max="100" [value]="editTextX()" (input)="setEditTextCoordinate('x', $event)" /></label>
+          <label class="field-label">Y position (%)<input type="number" min="0" max="100" [value]="editTextY()" (input)="setEditTextCoordinate('y', $event)" /></label>
+        </div>
         <div class="split-methods">
           <button type="button" (click)="setEditTextPosition('top-left')" [class.active]="editTextPosition() === 'top-left'"><strong>Top left</strong><span>Header style overlay.</span></button>
           <button type="button" (click)="setEditTextPosition('center')" [class.active]="editTextPosition() === 'center'"><strong>Center</strong><span>Centered document annotation.</span></button>
