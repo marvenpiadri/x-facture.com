@@ -33,7 +33,9 @@ export class PdfStudioPage {
   readonly isProcessing = signal(false);
   readonly searchQuery = signal('');
   readonly thumbnails = signal<string[]>([]);
+  readonly pageOrder = signal<number[]>([]);
   readonly selectedPages = signal<number[]>([]);
+  readonly draggedPage = signal<number | null>(null);
   readonly pageRotations = signal<Record<number, number>>({});
   readonly zoom = signal(0.72);
   readonly Math = Math;
@@ -122,12 +124,14 @@ export class PdfStudioPage {
     this.file.set(selected);
     this.pageCount.set(null);
     this.thumbnails.set([]);
+    this.pageOrder.set([]);
     this.selectedPages.set([]);
     this.pageRotations.set({});
 
     try {
       const count = await this.pdfEngine.getPageCount(selected);
       this.pageCount.set(count);
+      this.pageOrder.set(Array.from({ length: count }, (_, index) => index));
       this.selectedPages.set(Array.from({ length: count }, (_, index) => index));
       await this.renderThumbnails(selected, count);
     } catch {
@@ -173,11 +177,48 @@ export class PdfStudioPage {
     }
   }
 
-  togglePage(index: number): void {
+  togglePage(position: number): void {
     const selected = new Set(this.selectedPages());
-    if (selected.has(index)) selected.delete(index);
-    else selected.add(index);
+    if (selected.has(position)) selected.delete(position);
+    else selected.add(position);
     this.selectedPages.set([...selected].sort((a, b) => a - b));
+  }
+
+  onDragStart(position: number): void {
+    this.draggedPage.set(position);
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+  }
+
+  onDropPage(position: number): void {
+    const from = this.draggedPage();
+    if (from === null || from === position) {
+      this.draggedPage.set(null);
+      return;
+    }
+
+    const order = [...this.pageOrder()];
+    const thumbnails = [...this.thumbnails()];
+    const [movedPage] = order.splice(from, 1);
+    const [movedThumbnail] = thumbnails.splice(from, 1);
+    order.splice(position, 0, movedPage);
+    thumbnails.splice(position, 0, movedThumbnail);
+
+    const selected = new Set(this.selectedPages());
+    const selectedOriginalPages = this.selectedPages().map(index => this.pageOrder()[index]);
+    const nextSelectedOriginalPages = selectedOriginalPages;
+    const nextSelectedPositions = nextSelectedOriginalPages
+      .map(original => order.indexOf(original))
+      .filter(index => index >= 0)
+      .sort((a, b) => a - b);
+
+    this.pageOrder.set(order);
+    this.thumbnails.set(thumbnails);
+    this.selectedPages.set(nextSelectedPositions);
+    this.draggedPage.set(null);
+    void selected;
   }
 
   selectAll(): void {
@@ -201,19 +242,76 @@ export class PdfStudioPage {
 
   async extractSelected(): Promise<void> {
     const currentFile = this.file();
-    const selected = this.selectedPages();
-    if (!currentFile || !selected.length) return;
+    const positions = this.selectedPages();
+    if (!currentFile || !positions.length) return;
 
     this.isProcessing.set(true);
     this.error.set(null);
     try {
-      const bytes = await this.pdfEngine.extractPages(currentFile, selected);
+      const indices = positions.map(position => this.pageOrder()[position]);
+      const bytes = await this.pdfEngine.extractPages(currentFile, indices);
       this.pdfEngine.download(bytes, 'x-facture-extracted.pdf');
     } catch {
       this.error.set('The selected pages could not be extracted.');
     } finally {
       this.isProcessing.set(false);
     }
+  }
+
+  async downloadOrganized(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const bytes = await this.pdfEngine.reorderPages(
+        currentFile,
+        this.pageOrder(),
+        this.pageRotations(),
+      );
+      this.pdfEngine.download(bytes, 'x-facture-organized.pdf');
+    } catch {
+      this.error.set('The organized PDF could not be created.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
+  async deleteSelected(): Promise<void> {
+    const currentFile = this.file();
+    const positions = this.selectedPages();
+    if (!currentFile || !positions.length || positions.length >= (this.pageCount() ?? 0)) return;
+
+    const deleted = new Set(positions);
+    const nextOrder = this.pageOrder().filter((_, position) => !deleted.has(position));
+    const nextThumbnails = this.thumbnails().filter((_, position) => !deleted.has(position));
+
+    this.pageOrder.set(nextOrder);
+    this.thumbnails.set(nextThumbnails);
+    this.pageCount.set(nextOrder.length);
+    this.selectedPages.set([]);
+  }
+
+  duplicateSelected(): void {
+    const positions = this.selectedPages();
+    if (!positions.length) return;
+
+    const order = [...this.pageOrder()];
+    const thumbnails = [...this.thumbnails()];
+    let offset = 0;
+
+    for (const position of positions) {
+      const actualPosition = position + offset;
+      order.splice(actualPosition + 1, 0, order[actualPosition]);
+      thumbnails.splice(actualPosition + 1, 0, thumbnails[actualPosition]);
+      offset += 1;
+    }
+
+    this.pageOrder.set(order);
+    this.thumbnails.set(thumbnails);
+    this.pageCount.set(order.length);
+    this.selectedPages.set([]);
   }
 
   clearFile(): void {
@@ -223,5 +321,6 @@ export class PdfStudioPage {
     this.thumbnails.set([]);
     this.selectedPages.set([]);
     this.pageRotations.set({});
+    this.draggedPage.set(null);
   }
 }
