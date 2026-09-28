@@ -498,6 +498,32 @@ export class PdfStudioPage {
     }
   }
 
+  setRotateAngle(angle: number): void {
+    this.rotateAngle.set(angle);
+  }
+
+  setRotateScope(scope: 'all' | 'selected'): void {
+    this.rotateScope.set(scope);
+  }
+
+  async rotatePdf(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const indices = this.selectedPages().map(position => this.pageOrder()[position]);
+      const bytes = this.rotateScope() === 'selected' && indices.length
+        ? await this.pdfEngine.rotateSelectedPages(currentFile, indices, this.rotateAngle())
+        : await this.pdfEngine.rotatePages(currentFile, this.rotateAngle());
+      this.pdfEngine.download(bytes, 'x-facture-rotated.pdf');
+    } catch {
+      this.error.set('The PDF could not be rotated.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
   async downloadOrganized(): Promise<void> {
     const currentFile = this.file();
     if (!currentFile) return;
