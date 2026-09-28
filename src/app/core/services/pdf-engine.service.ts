@@ -152,9 +152,10 @@ export class PdfEngineService {
     const font = await pdf.embedFont(StandardFonts.Helvetica);
     const selected = options.pageIndices ? new Set(options.pageIndices) : null;
 
+    let number = options.start;
     pdf.getPages().forEach((page, index) => {
       if (selected && !selected.has(index)) return;
-      const label = String(options.start + index);
+      const label = String(number);
       const width = page.getWidth();
       const height = page.getHeight();
       const textWidth = font.widthOfTextAtSize(label, options.fontSize);
@@ -169,6 +170,7 @@ export class PdfEngineService {
       if (options.position === 'bottom-right') { x = width - textWidth - margin; y = margin; }
 
       page.drawText(label, { x, y, size: options.fontSize, font, color: rgb(0.25, 0.25, 0.25) });
+      number += 1;
     });
 
     return pdf.save();
