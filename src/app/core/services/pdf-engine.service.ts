@@ -142,7 +142,7 @@ export class PdfEngineService {
 
   async addPageNumbers(
     file: File,
-    options: { start: number; position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'; fontSize: number } = {
+    options: { start: number; position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'; fontSize: number; pageIndices?: number[] } = {
       start: 1,
       position: 'bottom-center',
       fontSize: 10,
@@ -150,9 +150,10 @@ export class PdfEngineService {
   ): Promise<Uint8Array> {
     const pdf = await this.load(file);
     const font = await pdf.embedFont(StandardFonts.Helvetica);
-    const pages = pdf.getPages();
+    const selected = options.pageIndices ? new Set(options.pageIndices) : null;
 
-    pages.forEach((page, index) => {
+    pdf.getPages().forEach((page, index) => {
+      if (selected && !selected.has(index)) return;
       const label = String(options.start + index);
       const width = page.getWidth();
       const height = page.getHeight();
