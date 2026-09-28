@@ -218,6 +218,33 @@
           <button type="button" (click)="duplicateSelected()" [disabled]="!selectedPages().length">Duplicate selected</button>
           <button type="button" (click)="deleteSelected()" [disabled]="!canDeleteSelected()">Delete selected</button>
         </div>
+      } @else if (activeTool() === 'rotate-pdf') {
+        <div class="tool-panel"><span class="panel-kicker">ROTATE</span><h2>Turn pages exactly as needed</h2><p>Choose an angle and apply it to the whole document or only the selected pages.</p></div>
+        <div class="split-methods">
+          <button type="button" (click)="setRotateAngle(90)" [class.active]="rotateAngle() === 90"><strong>90° clockwise</strong><span>Quarter turn clockwise.</span></button>
+          <button type="button" (click)="setRotateAngle(180)" [class.active]="rotateAngle() === 180"><strong>180°</strong><span>Turn pages upside down.</span></button>
+          <button type="button" (click)="setRotateAngle(270)" [class.active]="rotateAngle() === 270"><strong>270° clockwise</strong><span>Quarter turn counter-clockwise.</span></button>
+        </div>
+        <div class="split-methods">
+          <button type="button" (click)="setRotateScope('all')" [class.active]="rotateScope() === 'all'"><strong>All pages</strong><span>Apply to the entire document.</span></button>
+          <button type="button" (click)="setRotateScope('selected')" [class.active]="rotateScope() === 'selected'"><strong>Selected pages</strong><span>Apply only to selected pages.</span></button>
+        </div>
+      } @else if (activeTool() === 'flatten-pdf') {
+        <div class="tool-panel"><span class="panel-kicker">FLATTEN</span><h2>Make the document static</h2><p>Flatten interactive form fields into the page content for a clean static PDF.</p></div>
+      } @else if (activeTool() === 'pdf-metadata') {
+        <div class="tool-panel"><span class="panel-kicker">DOCUMENT IDENTITY</span><h2>Inspect and clean metadata</h2><p>Read common metadata fields, edit them, and export a cleaned copy.</p></div>
+        <div class="option-actions"><button type="button" (click)="loadMetadata()">Read current metadata</button></div>
+        <label class="field-label">Title<input type="text" [value]="metadata().title" (input)="onMetadataField('title', $event)" /></label>
+        <label class="field-label">Author<input type="text" [value]="metadata().author" (input)="onMetadataField('author', $event)" /></label>
+        <label class="field-label">Subject<input type="text" [value]="metadata().subject" (input)="onMetadataField('subject', $event)" /></label>
+        <label class="field-label">Keywords<input type="text" [value]="metadata().keywords" (input)="onMetadataField('keywords', $event)" placeholder="invoice, contract, report" /></label>
+      } @else if (activeTool() === 'image-to-pdf') {
+        <div class="tool-panel"><span class="panel-kicker">IMAGE COMPOSITION</span><h2>Turn images into a document</h2><p>Add multiple JPG or PNG images, choose the page format, then create one ordered PDF.</p><div class="selection-summary"><strong>{{ imageFiles().length }}</strong><span>images queued</span></div></div>
+        <div class="split-methods">
+          <button type="button" (click)="setImagePageSize('a4')" [class.active]="imagePageSize() === 'a4'"><strong>A4</strong><span>Standard document pages.</span></button>
+          <button type="button" (click)="setImagePageSize('letter')" [class.active]="imagePageSize() === 'letter'"><strong>Letter</strong><span>US Letter page format.</span></button>
+          <button type="button" (click)="setImagePageSize('fit')" [class.active]="imagePageSize() === 'fit'"><strong>Fit image</strong><span>Use image dimensions as the page.</span></button>
+        </div>
       } @else {
         <div class="tool-panel">
           <span class="panel-kicker">{{ categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
