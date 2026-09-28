@@ -69,7 +69,10 @@ export class PdfStudioPage {
   readonly pageNumberPrefix = signal('');
   readonly pageNumberSuffix = signal('');
   readonly pageNumberPosition = signal<PageNumberPosition>('bottom-center');
-  readonly cropMargin = signal(24);
+  readonly cropTop = signal(24);
+  readonly cropRight = signal(24);
+  readonly cropBottom = signal(24);
+  readonly cropLeft = signal(24);
   readonly editText = signal('');
   readonly editTextFontSize = signal(18);
   readonly editTextPosition = signal<'top-left' | 'center' | 'bottom-left'>('top-left');
@@ -600,7 +603,29 @@ export class PdfStudioPage {
     finally { this.isProcessing.set(false); }
   }
 
-  setCropMargin(margin: number): void { this.cropMargin.set(Math.max(0, margin)); }
+  setCropMargin(margin: number): void {
+    const value = Math.max(0, Math.floor(margin));
+    this.cropTop.set(value); this.cropRight.set(value); this.cropBottom.set(value); this.cropLeft.set(value);
+  }
+
+  setCropSide(side: 'top' | 'right' | 'bottom' | 'left', event: Event): void {
+    const value = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value) || 0));
+    if (side === 'top') this.cropTop.set(value);
+    if (side === 'right') this.cropRight.set(value);
+    if (side === 'bottom') this.cropBottom.set(value);
+    if (side === 'left') this.cropLeft.set(value);
+  }
+
+  cropPreviewStyle(): Record<string, string> {
+    const max = Math.max(this.cropTop(), this.cropRight(), this.cropBottom(), this.cropLeft(), 1);
+    const scale = Math.min(1, 72 / max);
+    return {
+      '--crop-top': Math.min(45, this.cropTop() * scale) + 'px',
+      '--crop-right': Math.min(45, this.cropRight() * scale) + 'px',
+      '--crop-bottom': Math.min(45, this.cropBottom() * scale) + 'px',
+      '--crop-left': Math.min(45, this.cropLeft() * scale) + 'px',
+    };
+  }
 
   clearMetadata(): void {
     this.metadata.set({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
@@ -613,7 +638,7 @@ export class PdfStudioPage {
     this.error.set(null);
     try {
       const pageIndices = this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined;
-      const bytes = await this.pdfEngine.cropPages(currentFile, { margin: this.cropMargin(), pageIndices });
+      const bytes = await this.pdfEngine.cropPages(currentFile, { top: this.cropTop(), right: this.cropRight(), bottom: this.cropBottom(), left: this.cropLeft(), pageIndices });
       this.pdfEngine.download(bytes, 'x-facture-cropped.pdf');
     } catch { this.error.set('The PDF pages could not be cropped.'); }
     finally { this.isProcessing.set(false); }
