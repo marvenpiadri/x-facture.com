@@ -1,12 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterModule } from '@angular/router';
+import { filter } from 'rxjs/operators';
 import { FormsModule } from '@angular/forms';
 import { PosService } from './core/services/pos.service';
 import { ThemeService } from './core/services/theme.service';
 import { DOCUMENT_TYPE_CONFIGS } from './core/config/document-type-config';
 import { DocumentTypeConfig } from './core/models/document-type-config.model';
 import { FINANCE_TOOLS, FinanceToolConfig } from './core/config/calculators.config';
+import { getCalculatorBySlug } from './calculators/calculator-registry';
+
+interface AppBreadcrumb {
+  label: string;
+  url?: string;
+}
 
 interface PdfNavTool {
   id: string;
@@ -60,6 +67,7 @@ export class App {
   ];
   readonly currentTheme = this.themeService.theme;
   readonly isDark = computed(() => this.themeService.isDark());
+  readonly currentBreadcrumbs = signal<AppBreadcrumb[]>([]);
 
   showDocsDropdown = signal<boolean>(false);
   showOpsDropdown = signal<boolean>(false);
@@ -121,6 +129,64 @@ export class App {
   quickChangeDue = computed(() => {
     return Math.max(0, Math.round((this.quickChangeTendered() - this.quickChangeSale() + Number.EPSILON) * 100) / 100);
   });
+
+  constructor() {
+    this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(event => this.updateBreadcrumbs(event.urlAfterRedirects));
+    this.updateBreadcrumbs(this.router.url || '/');
+  }
+
+  private updateBreadcrumbs(rawUrl: string): void {
+    const path = rawUrl.split('?')[0].split('#')[0] || '/';
+    const segments = path.split('/').filter(Boolean);
+    if (!segments.length || segments[0] === 'pdf') {
+      this.currentBreadcrumbs.set([]);
+      return;
+    }
+
+    const breadcrumbs: AppBreadcrumb[] = [{ label: 'Home', url: '/' }];
+    const section = segments[0];
+    const docConfig = DOCUMENT_TYPE_CONFIGS[section];
+
+    if (section === 'calculators') {
+      breadcrumbs.push({ label: 'Business Calculators', url: '/calculators' });
+      if (segments[1]) {
+        const calculator = getCalculatorBySlug(segments[1]);
+        breadcrumbs.push({ label: calculator?.name || this.humanizeSegment(segments[1]) });
+      }
+    } else if (docConfig) {
+      breadcrumbs.push({ label: docConfig.pluralName, url: '/' + docConfig.routeSegment });
+      if (segments[1] === 'new') {
+        breadcrumbs.push({ label: 'New ' + docConfig.singularName });
+      } else if (segments[2] === 'edit') {
+        breadcrumbs.push({ label: segments[1], url: '/' + section + '/' + segments[1] + '/preview' });
+        breadcrumbs.push({ label: 'Edit' });
+      } else if (segments[2] === 'preview') {
+        breadcrumbs.push({ label: segments[1] });
+        breadcrumbs.push({ label: 'Preview' });
+      }
+    } else {
+      const labels: Record<string, string> = {
+        dashboard: 'Business Dashboard',
+        store: 'POS Register',
+        ledger: 'Financial Ledger',
+        clients: 'Clients & CRM',
+        products: 'Products & Services',
+        settings: 'Settings'
+      };
+      breadcrumbs.push({ label: labels[section] || this.humanizeSegment(section) });
+    }
+
+    this.currentBreadcrumbs.set(breadcrumbs);
+  }
+
+  private humanizeSegment(value: string): string {
+    return value
+      .replace(/-calculator$/, '')
+      .replace(/-/g, ' ')
+      .replace(/\\b\\w/g, character => character.toUpperCase());
+  }
 
   toggleTheme(): void {
     this.themeService.toggleTheme();
