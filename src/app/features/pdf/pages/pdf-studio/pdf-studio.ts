@@ -69,10 +69,6 @@ export class PdfStudioPage {
   readonly pageNumberPrefix = signal('');
   readonly pageNumberSuffix = signal('');
   readonly pageNumberPosition = signal<PageNumberPosition>('bottom-center');
-  readonly cropTop = signal(24);
-  readonly cropRight = signal(24);
-  readonly cropBottom = signal(24);
-  readonly cropLeft = signal(24);
   readonly cropX = signal(8);
   readonly cropY = signal(8);
   readonly cropWidth = signal(84);
@@ -773,19 +769,6 @@ export class PdfStudioPage {
 
   clearMetadata(): void {
     this.metadata.set({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
-  }
-
-  async cropPdf(): Promise<void> {
-    const currentFile = this.file();
-    if (!currentFile) return;
-    this.isProcessing.set(true);
-    this.error.set(null);
-    try {
-      const pageIndices = this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined;
-      const bytes = await this.pdfEngine.cropPages(currentFile, { top: this.cropTop(), right: this.cropRight(), bottom: this.cropBottom(), left: this.cropLeft(), pageIndices });
-      this.pdfEngine.download(bytes, 'x-facture-cropped.pdf');
-    } catch { this.error.set('The PDF pages could not be cropped.'); }
-    finally { this.isProcessing.set(false); }
   }
 
   setEditText(event: Event): void { this.editText.set((event.target as HTMLInputElement).value); }
