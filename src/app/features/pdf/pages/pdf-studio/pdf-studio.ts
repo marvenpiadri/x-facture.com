@@ -8,6 +8,7 @@ type PdfCategory = 'organize' | 'edit' | 'convert' | 'security' | 'intelligence'
 type SplitMode = 'selected' | 'ranges' | 'every-page';
 type WatermarkPosition = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 type PageNumberPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+type PageNumberFormat = 'numeric' | 'roman-lower' | 'roman-upper';
 
 interface PdfTool {
   id: string;
@@ -64,6 +65,9 @@ export class PdfStudioPage {
   readonly watermarkPosition = signal<WatermarkPosition>('center');
   readonly pageNumberStart = signal(1);
   readonly pageNumberFontSize = signal(10);
+  readonly pageNumberFormat = signal<PageNumberFormat>('numeric');
+  readonly pageNumberPrefix = signal('');
+  readonly pageNumberSuffix = signal('');
   readonly pageNumberPosition = signal<PageNumberPosition>('bottom-center');
   readonly cropMargin = signal(24);
   readonly editText = signal('');
@@ -572,6 +576,9 @@ export class PdfStudioPage {
   setPageNumberStart(event: Event): void { this.pageNumberStart.set(Math.max(1, Math.floor(Number((event.target as HTMLInputElement).value) || 1))); }
   setPageNumberFontSize(event: Event): void { this.pageNumberFontSize.set(Math.max(6, Math.min(36, Math.floor(Number((event.target as HTMLInputElement).value) || 10)))); }
   setPageNumberPosition(position: PageNumberPosition): void { this.pageNumberPosition.set(position); }
+  setPageNumberFormat(format: PageNumberFormat): void { this.pageNumberFormat.set(format); }
+  setPageNumberPrefix(event: Event): void { this.pageNumberPrefix.set((event.target as HTMLInputElement).value); }
+  setPageNumberSuffix(event: Event): void { this.pageNumberSuffix.set((event.target as HTMLInputElement).value); }
 
   async numberPages(): Promise<void> {
     const currentFile = this.file();
@@ -583,6 +590,9 @@ export class PdfStudioPage {
         start: this.pageNumberStart(),
         position: this.pageNumberPosition(),
         fontSize: this.pageNumberFontSize(),
+        format: this.pageNumberFormat(),
+        prefix: this.pageNumberPrefix(),
+        suffix: this.pageNumberSuffix(),
         pageIndices: this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined,
       });
       this.pdfEngine.download(bytes, 'x-facture-numbered.pdf');
@@ -590,7 +600,11 @@ export class PdfStudioPage {
     finally { this.isProcessing.set(false); }
   }
 
-  setCropMargin(margin: number): void { this.cropMargin.set(margin); }
+  setCropMargin(margin: number): void { this.cropMargin.set(Math.max(0, margin)); }
+
+  clearMetadata(): void {
+    this.metadata.set({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
+  }
 
   async cropPdf(): Promise<void> {
     const currentFile = this.file();
