@@ -95,7 +95,7 @@ export class PdfStudioPage {
     { id: 'crop-pdf', name: 'Crop PDF', description: 'Trim page boundaries with controlled crop margins.', icon: 'crop', category: 'edit', route: '/pdf/crop-pdf', available: true },
     { id: 'pdf-editor', name: 'PDF Editor', description: 'Add text overlays to PDF pages.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' , available: true },
     { id: 'add-watermark', name: 'Watermark', description: 'Stamp configurable text onto selected or all pages.', icon: 'branding_watermark', category: 'edit', route: '/pdf/add-watermark' , available: true },
-    { id: 'add-page-numbers', name: 'Page Numbers', description: 'Add configurable page numbering.', icon: 'format_list_numbered', category: 'edit', route: '/pdf/add-page-numbers', available: false },
+    { id: 'add-page-numbers', name: 'Page Numbers', description: 'Add configurable page numbering to selected or all pages.', icon: 'format_list_numbered', category: 'edit', route: '/pdf/add-page-numbers', available: true },
     { id: 'pdf-forms', name: 'PDF Forms', description: 'Create, fill and manage interactive PDF forms.', icon: 'assignment', category: 'edit', route: '/pdf/pdf-forms', available: false },
     { id: 'redact-pdf', name: 'Redact PDF', description: 'Permanently remove sensitive content from a document.', icon: 'visibility_off', category: 'edit', route: '/pdf/redact-pdf', available: false },
     { id: 'image-to-pdf', name: 'Image to PDF', description: 'Create PDFs from images.', icon: 'image', category: 'convert', route: '/pdf/image-to-pdf' },
@@ -579,6 +579,7 @@ export class PdfStudioPage {
         start: this.pageNumberStart(),
         position: this.pageNumberPosition(),
         fontSize: this.pageNumberFontSize(),
+        pageIndices: this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined,
       });
       this.pdfEngine.download(bytes, 'x-facture-numbered.pdf');
     } catch { this.error.set('Page numbers could not be added.'); }
