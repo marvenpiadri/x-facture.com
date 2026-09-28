@@ -259,12 +259,19 @@
           <label class="field-label">Font size<input type="number" min="10" max="120" [value]="watermarkFontSize()" (input)="setWatermarkFontSize($event)" /></label>
           <label class="field-label">Angle<input type="number" min="-180" max="180" [value]="watermarkAngle()" (input)="setWatermarkAngle($event)" /></label>
         </div>
-        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be numbered' }}</span></div>
+        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be watermarked' }}</span></div>
       } @else if (activeTool() === 'add-page-numbers') {
         <div class="tool-panel"><span class="panel-kicker">PAGE NUMBERS</span><h2>Number the document</h2><p>Add sequential page numbers to all pages or only the pages selected on the canvas.</p></div>
         <div class="field-grid">
           <label class="field-label">Start number<input type="number" min="1" [value]="pageNumberStart()" (input)="setPageNumberStart($event)" /></label>
           <label class="field-label">Font size<input type="number" min="6" max="36" [value]="pageNumberFontSize()" (input)="setPageNumberFontSize($event)" /></label>
+          <label class="field-label">Prefix<input type="text" [value]="pageNumberPrefix()" (input)="setPageNumberPrefix($event)" placeholder="Page " /></label>
+          <label class="field-label">Suffix<input type="text" [value]="pageNumberSuffix()" (input)="setPageNumberSuffix($event)" placeholder=" of 20" /></label>
+        </div>
+        <div class="split-methods">
+          <button type="button" (click)="setPageNumberFormat('numeric')" [class.active]="pageNumberFormat() === 'numeric'"><strong>1, 2, 3</strong><span>Standard numeric numbering.</span></button>
+          <button type="button" (click)="setPageNumberFormat('roman-lower')" [class.active]="pageNumberFormat() === 'roman-lower'"><strong>i, ii, iii</strong><span>Lowercase Roman numerals.</span></button>
+          <button type="button" (click)="setPageNumberFormat('roman-upper')" [class.active]="pageNumberFormat() === 'roman-upper'"><strong>I, II, III</strong><span>Uppercase Roman numerals.</span></button>
         </div>
         <div class="split-methods">
           <button type="button" (click)="setPageNumberPosition('bottom-left')" [class.active]="pageNumberPosition() === 'bottom-left'"><strong>Bottom left</strong><span>Standard footer placement.</span></button>
@@ -305,7 +312,7 @@
         <div class="tool-panel"><span class="panel-kicker">FLATTEN</span><h2>Make the document static</h2><p>Flatten interactive form fields into the page content for a clean static PDF.</p></div>
       } @else if (activeTool() === 'pdf-metadata') {
         <div class="tool-panel"><span class="panel-kicker">DOCUMENT IDENTITY</span><h2>Inspect and clean metadata</h2><p>Read common metadata fields, edit them, and export a cleaned copy.</p></div>
-        <div class="option-actions"><button type="button" (click)="loadMetadata()">Read current metadata</button></div>
+        <div class="option-actions"><button type="button" (click)="loadMetadata()">Read current metadata</button><button type="button" (click)="clearMetadata()">Clear fields</button></div>
         <label class="field-label">Title<input type="text" [value]="metadata().title" (input)="onMetadataField('title', $event)" /></label>
         <label class="field-label">Author<input type="text" [value]="metadata().author" (input)="onMetadataField('author', $event)" /></label>
         <label class="field-label">Subject<input type="text" [value]="metadata().subject" (input)="onMetadataField('subject', $event)" /></label>
