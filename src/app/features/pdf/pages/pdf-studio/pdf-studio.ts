@@ -52,6 +52,12 @@ export class PdfStudioPage {
   readonly splitMode = signal<SplitMode>('selected');
   readonly splitRanges = signal('');
   readonly splitChunkSize = signal(1);
+  readonly rotateAngle = signal(90);
+  readonly rotateScope = signal<'all' | 'selected'>('all');
+  readonly metadata = signal({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
+  readonly imageFiles = signal<File[]>([]);
+  readonly imagePageSize = signal<'a4' | 'letter' | 'fit'>('a4');
+  readonly pdfToImageScale = signal(1.5);
   readonly isFileDragActive = signal(false);
   readonly isPageDropActive = signal(false);
   readonly isMergeDropActive = signal(false);
