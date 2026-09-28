@@ -211,13 +211,13 @@ export class PdfStudioPage {
 
         canvas.width = Math.ceil(viewport.width);
         canvas.height = Math.ceil(viewport.height);
-        await page.render({ canvasContext: context, viewport }).promise;
+        await page.render({ canvas: canvas, canvasContext: context, viewport }).promise;
         images.push(canvas.toDataURL('image/jpeg', 0.82));
         page.cleanup();
       }
       this.thumbnails.set(images);
     } finally {
-      await document.destroy();
+      document.cleanup();
     }
   }
 
