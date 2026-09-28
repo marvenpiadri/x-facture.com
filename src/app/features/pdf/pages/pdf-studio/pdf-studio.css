@@ -698,3 +698,27 @@
     gap: 10px;
   }
 }
+
+
+.page-card {
+  cursor: grab;
+}
+
+.page-card:active {
+  cursor: grabbing;
+}
+
+.page-card.dragging {
+  opacity: .55;
+  transform: scale(.98);
+  border-color: var(--color-money-green);
+}
+
+.page-preview img {
+  transform-origin: center;
+}
+
+.option-actions button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
