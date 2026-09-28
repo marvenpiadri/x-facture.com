@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PdfEngineService } from '../../../../core/services/pdf-engine.service';
 
 type PdfCategory = 'organize' | 'edit' | 'convert' | 'security';
+type SplitMode = 'selected' | 'ranges' | 'every-page';
 
 interface PdfTool {
   id: string;
@@ -13,6 +14,19 @@ interface PdfTool {
   icon: string;
   category: PdfCategory;
   route: string;
+}
+
+interface MergePage {
+  id: string;
+  sourceIndex: number;
+  thumbnail: string;
+  rotation: number;
+}
+
+interface MergeDocument {
+  id: string;
+  file: File;
+  pages: MergePage[];
 }
 
 @Component({
@@ -25,32 +39,33 @@ interface PdfTool {
 })
 export class PdfStudioPage {
   private readonly route = inject(ActivatedRoute);
-
   readonly pdfEngine = inject(PdfEngineService);
+
   readonly activeTool = signal<string>('organize-pdf');
   readonly file = signal<File | null>(null);
   readonly mergeFiles = signal<File[]>([]);
+  readonly mergeDocuments = signal<MergeDocument[]>([]);
   readonly pageCount = signal<number | null>(null);
   readonly error = signal<string | null>(null);
   readonly isProcessing = signal(false);
   readonly searchQuery = signal('');
-  readonly splitMode = signal<'selected' | 'ranges' | 'every-page'>('selected');
+  readonly splitMode = signal<SplitMode>('selected');
   readonly splitRanges = signal('');
   readonly splitChunkSize = signal(1);
   readonly isFileDragActive = signal(false);
   readonly isPageDropActive = signal(false);
+  readonly isMergeDropActive = signal(false);
   readonly thumbnails = signal<string[]>([]);
   readonly pageOrder = signal<number[]>([]);
   readonly selectedPages = signal<number[]>([]);
   readonly draggedPage = signal<number | null>(null);
-  readonly pageRotations = signal<Record<number, number>>({});
   readonly zoom = signal(0.72);
   readonly Math = Math;
 
   readonly tools: PdfTool[] = [
     { id: 'organize-pdf', name: 'Organize Pages', description: 'Reorder, rotate and remove pages.', icon: 'view_carousel', category: 'organize', route: '/pdf/organize-pdf' },
-    { id: 'merge-pdf', name: 'Merge PDF', description: 'Combine files in the order you choose.', icon: 'merge_type', category: 'organize', route: '/pdf/merge-pdf' },
-    { id: 'split-pdf', name: 'Split PDF', description: 'Extract pages or page ranges.', icon: 'content_cut', category: 'organize', route: '/pdf/split-pdf' },
+    { id: 'merge-pdf', name: 'Merge PDF', description: 'Compose several PDFs at document and page level.', icon: 'merge_type', category: 'organize', route: '/pdf/merge-pdf' },
+    { id: 'split-pdf', name: 'Split PDF', description: 'Extract pages, ranges or evenly sized parts.', icon: 'content_cut', category: 'organize', route: '/pdf/split-pdf' },
     { id: 'rotate-pdf', name: 'Rotate PDF', description: 'Rotate pages permanently.', icon: 'rotate_right', category: 'organize', route: '/pdf/rotate-pdf' },
     { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive content into a clean document.', icon: 'layers_clear', category: 'organize', route: '/pdf/flatten-pdf' },
     { id: 'pdf-editor', name: 'PDF Editor', description: 'Edit and annotate PDF content.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' },
@@ -75,7 +90,6 @@ export class PdfStudioPage {
   ];
 
   readonly categories: PdfCategory[] = ['organize', 'edit', 'convert', 'security'];
-
   readonly categoryLabels: Record<PdfCategory, string> = {
     organize: 'Organize',
     edit: 'Edit & Content',
@@ -84,24 +98,28 @@ export class PdfStudioPage {
   };
 
   constructor() {
-    this.route.paramMap.subscribe(params => {
-      this.activeTool.set(params.get('tool') || 'organize-pdf');
-    });
+    this.route.paramMap.subscribe(params => this.activeTool.set(params.get('tool') || 'organize-pdf'));
   }
 
   get filteredTools(): PdfTool[] {
     const query = this.searchQuery().trim().toLowerCase();
     if (!query) return this.tools;
-    return this.tools.filter(tool =>
-      `${tool.name} ${tool.description} ${tool.category}`.toLowerCase().includes(query)
-    );
+    return this.tools.filter(tool => `${tool.name} ${tool.description} ${tool.category}`.toLowerCase().includes(query));
   }
 
   toolsFor(category: PdfCategory): PdfTool[] {
     return this.filteredTools.filter(tool => tool.category === category);
   }
 
-  setSplitMode(mode: 'selected' | 'ranges' | 'every-page'): void {
+  mergeDropListIds(): string[] {
+    return this.mergeDocuments().map(document => `merge-pages-${document.id}`);
+  }
+
+  mergePageCount(): number {
+    return this.mergeDocuments().reduce((total, document) => total + document.pages.length, 0);
+  }
+
+  setSplitMode(mode: SplitMode): void {
     this.splitMode.set(mode);
     this.error.set(null);
   }
@@ -139,11 +157,10 @@ export class PdfStudioPage {
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const selected = Array.from(input.files ?? []);
-
     if (!selected.length) return;
 
     if (this.activeTool() === 'merge-pdf') {
-      this.addMergeFiles(selected);
+      await this.addMergeFiles(selected);
     } else {
       await this.loadFile(selected[0]);
     }
@@ -151,32 +168,120 @@ export class PdfStudioPage {
     input.value = '';
   }
 
-  addMergeFiles(files: File[]): void {
+  async addMergeFiles(files: File[]): Promise<void> {
     const pdfs = files.filter(file => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
     if (!pdfs.length) return;
-    this.mergeFiles.set([...this.mergeFiles(), ...pdfs]);
-    this.file.set(this.mergeFiles()[0] ?? pdfs[0]);
+
     this.error.set(null);
+    this.isProcessing.set(true);
+
+    try {
+      const additions = await Promise.all(pdfs.map(file => this.createMergeDocument(file)));
+      const documents = [...this.mergeDocuments(), ...additions];
+      this.mergeDocuments.set(documents);
+      this.mergeFiles.set(documents.map(document => document.file));
+      this.file.set(documents[0]?.file ?? null);
+    } catch {
+      this.error.set('One or more PDF files could not be opened.');
+    } finally {
+      this.isProcessing.set(false);
+      this.isMergeDropActive.set(false);
+    }
+  }
+
+  private async createMergeDocument(file: File): Promise<MergeDocument> {
+    const count = await this.pdfEngine.getPageCount(file);
+    const thumbnails = await this.renderPdfThumbnails(file, count);
+    return {
+      id: `pdf-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      file,
+      pages: Array.from({ length: count }, (_, index) => ({
+        id: `${file.name}-page-${index}-${Math.random().toString(36).slice(2, 7)}`,
+        sourceIndex: index,
+        thumbnail: thumbnails[index],
+        rotation: 0,
+      })),
+    };
   }
 
   removeMergeFile(index: number): void {
-    const files = this.mergeFiles().filter((_, fileIndex) => fileIndex !== index);
-    this.mergeFiles.set(files);
-    this.file.set(files[0] ?? null);
+    const documents = this.mergeDocuments().filter((_, documentIndex) => documentIndex !== index);
+    this.mergeDocuments.set(documents);
+    this.mergeFiles.set(documents.map(document => document.file));
+    this.file.set(documents[0]?.file ?? null);
+  }
+
+  onMergeDocumentDrop(event: CdkDragDrop<MergeDocument[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    const documents = [...this.mergeDocuments()];
+    moveItemInArray(documents, event.previousIndex, event.currentIndex);
+    this.mergeDocuments.set(documents);
+    this.mergeFiles.set(documents.map(document => document.file));
+  }
+
+  onMergePageDrop(event: CdkDragDrop<MergePage[]>, targetDocumentId: string): void {
+    const documents = this.mergeDocuments().map(document => ({
+      ...document,
+      pages: [...document.pages],
+    }));
+    const sourceDocumentId = event.previousContainer.id.replace('merge-pages-', '');
+    const source = documents.find(document => document.id === sourceDocumentId);
+    const target = documents.find(document => document.id === targetDocumentId);
+    if (!source || !target) return;
+
+    if (source.id === target.id) {
+      moveItemInArray(target.pages, event.previousIndex, event.currentIndex);
+    } else {
+      const [page] = source.pages.splice(event.previousIndex, 1);
+      if (!page) return;
+      target.pages.splice(event.currentIndex, 0, page);
+    }
+
+    this.mergeDocuments.set(documents);
+    this.mergeFiles.set(documents.map(document => document.file));
+    this.isMergeDropActive.set(false);
+  }
+
+  removeMergePage(documentId: string, pageId: string): void {
+    const documents = this.mergeDocuments().map(document =>
+      document.id === documentId
+        ? { ...document, pages: document.pages.filter(page => page.id !== pageId) }
+        : document
+    );
+    this.mergeDocuments.set(documents);
+  }
+
+  rotateMergePage(documentId: string, pageId: string): void {
+    const documents = this.mergeDocuments().map(document =>
+      document.id === documentId
+        ? {
+            ...document,
+            pages: document.pages.map(page =>
+              page.id === pageId ? { ...page, rotation: (page.rotation + 90) % 360 } : page
+            ),
+          }
+        : document
+    );
+    this.mergeDocuments.set(documents);
   }
 
   async mergeSelectedFiles(): Promise<void> {
-    const files = this.mergeFiles();
-    if (files.length < 2) return;
+    const documents = this.mergeDocuments();
+    if (documents.length < 2 || this.mergePageCount() === 0) return;
 
     this.isProcessing.set(true);
     this.error.set(null);
 
     try {
-      const bytes = await this.pdfEngine.merge(files.map(file => ({ file })));
+      const bytes = await this.pdfEngine.composePages(
+        documents.map(document => ({
+          file: document.file,
+          pages: document.pages.map(page => ({ pageIndex: page.sourceIndex, rotation: page.rotation })),
+        }))
+      );
       this.pdfEngine.download(bytes, 'x-facture-merged.pdf');
     } catch {
-      this.error.set('The selected PDF files could not be merged.');
+      this.error.set('The composed PDF could not be created.');
     } finally {
       this.isProcessing.set(false);
     }
@@ -189,14 +294,12 @@ export class PdfStudioPage {
   async onDrop(event: DragEvent): Promise<void> {
     event.preventDefault();
     this.isFileDragActive.set(false);
+    this.isMergeDropActive.set(false);
     const dropped = Array.from(event.dataTransfer?.files ?? []);
     if (!dropped.length) return;
 
-    if (this.activeTool() === 'merge-pdf') {
-      this.addMergeFiles(dropped);
-    } else {
-      await this.loadFile(dropped[0]);
-    }
+    if (this.activeTool() === 'merge-pdf') await this.addMergeFiles(dropped);
+    else await this.loadFile(dropped[0]);
   }
 
   private async loadFile(selected: File): Promise<void> {
@@ -204,11 +307,12 @@ export class PdfStudioPage {
     this.isProcessing.set(true);
     this.file.set(selected);
     this.mergeFiles.set([]);
+    this.mergeDocuments.set([]);
     this.pageCount.set(null);
     this.thumbnails.set([]);
     this.pageOrder.set([]);
     this.selectedPages.set([]);
-    this.pageRotations.set({});
+    this.draggedPage.set(null);
 
     try {
       const count = await this.pdfEngine.getPageCount(selected);
@@ -225,13 +329,10 @@ export class PdfStudioPage {
     }
   }
 
-  private async renderThumbnails(file: File, count: number): Promise<void> {
-    if (typeof window === 'undefined') return;
-
+  private async renderPdfThumbnails(file: File, count: number): Promise<string[]> {
+    if (typeof window === 'undefined') return [];
     const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
-    pdfjs.GlobalWorkerOptions.workerSrc =
-      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs';
-
+    pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs';
     const bytes = new Uint8Array(await file.arrayBuffer());
     const document = await pdfjs.getDocument({ data: bytes }).promise;
     const images: string[] = [];
@@ -244,19 +345,22 @@ export class PdfStudioPage {
         const viewport = page.getViewport({ scale });
         const canvas = window.document.createElement('canvas');
         const context = canvas.getContext('2d', { alpha: false });
-
         if (!context) continue;
-
         canvas.width = Math.ceil(viewport.width);
         canvas.height = Math.ceil(viewport.height);
-        await page.render({ canvas: canvas, canvasContext: context, viewport }).promise;
+        await page.render({ canvas, canvasContext: context, viewport }).promise;
         images.push(canvas.toDataURL('image/jpeg', 0.82));
         page.cleanup();
       }
-      this.thumbnails.set(images);
     } finally {
       document.cleanup();
     }
+
+    return images;
+  }
+
+  private async renderThumbnails(file: File, count: number): Promise<void> {
+    this.thumbnails.set(await this.renderPdfThumbnails(file, count));
   }
 
   togglePage(position: number): void {
@@ -273,18 +377,14 @@ export class PdfStudioPage {
     const order = [...this.pageOrder()];
     const thumbnails = [...this.thumbnails()];
     const selectedOriginalPages = this.selectedPages().map(index => order[index]);
-
     moveItemInArray(order, event.previousIndex, event.currentIndex);
     moveItemInArray(thumbnails, event.previousIndex, event.currentIndex);
 
-    const nextSelectedPositions = selectedOriginalPages
-      .map(original => order.indexOf(original))
-      .filter(index => index >= 0)
-      .sort((a, b) => a - b);
-
     this.pageOrder.set(order);
     this.thumbnails.set(thumbnails);
-    this.selectedPages.set(nextSelectedPositions);
+    this.selectedPages.set(
+      selectedOriginalPages.map(original => order.indexOf(original)).filter(index => index >= 0).sort((a, b) => a - b)
+    );
   }
 
   onDragStarted(position: number): void {
@@ -307,9 +407,7 @@ export class PdfStudioPage {
   }
 
   rotatePage(index: number): void {
-    const rotations = { ...this.pageRotations() };
-    rotations[index] = ((rotations[index] ?? 0) + 90) % 360;
-    this.pageRotations.set(rotations);
+    this.pageRotations.update(rotations => ({ ...rotations, [index]: ((rotations[index] ?? 0) + 90) % 360 }));
   }
 
   getPageRotation(index: number): number {
@@ -346,7 +444,7 @@ export class PdfStudioPage {
     const count = this.pageCount() ?? 0;
     const pages = new Set<number>();
     for (const token of this.splitRanges().split(',').map(value => value.trim()).filter(Boolean)) {
-      const match = token.match(/^(\\d+)(?:\\s*-\\s*(\\d+))?$/);
+      const match = token.match(/^(\d+)(?:\s*-\s*(\d+))?$/);
       if (!match) throw new Error('Use ranges such as 1-3, 5, 8-10.');
       const start = Number(match[1]);
       const end = Number(match[2] ?? match[1]);
@@ -379,12 +477,10 @@ export class PdfStudioPage {
 
       const chunkSize = this.splitChunkSize();
       const ordered = this.pageOrder();
-      let part = 1;
-      for (let start = 0; start < count; start += chunkSize) {
+      for (let start = 0, part = 1; start < count; start += chunkSize, part += 1) {
         const indices = ordered.slice(start, start + chunkSize);
         const bytes = await this.pdfEngine.extractPages(currentFile, indices);
         this.pdfEngine.download(bytes, `x-facture-part-${String(part).padStart(2, '0')}.pdf`);
-        part += 1;
       }
     } catch (error) {
       this.error.set(error instanceof Error ? error.message : 'The PDF could not be split.');
@@ -396,15 +492,10 @@ export class PdfStudioPage {
   async downloadOrganized(): Promise<void> {
     const currentFile = this.file();
     if (!currentFile) return;
-
     this.isProcessing.set(true);
     this.error.set(null);
     try {
-      const bytes = await this.pdfEngine.reorderPages(
-        currentFile,
-        this.pageOrder(),
-        this.pageRotations(),
-      );
+      const bytes = await this.pdfEngine.reorderPages(currentFile, this.pageOrder(), this.pageRotations());
       this.pdfEngine.download(bytes, 'x-facture-organized.pdf');
     } catch {
       this.error.set('The organized PDF could not be created.');
@@ -419,15 +510,12 @@ export class PdfStudioPage {
     return selected > 0 && count !== null && selected < count;
   }
 
-  async deleteSelected(): Promise<void> {
-    const currentFile = this.file();
+  deleteSelected(): void {
     const positions = this.selectedPages();
-    if (!currentFile || !positions.length || positions.length >= (this.pageCount() ?? 0)) return;
-
+    if (!positions.length || positions.length >= (this.pageCount() ?? 0)) return;
     const deleted = new Set(positions);
     const nextOrder = this.pageOrder().filter((_, position) => !deleted.has(position));
     const nextThumbnails = this.thumbnails().filter((_, position) => !deleted.has(position));
-
     this.pageOrder.set(nextOrder);
     this.thumbnails.set(nextThumbnails);
     this.pageCount.set(nextOrder.length);
@@ -437,18 +525,15 @@ export class PdfStudioPage {
   duplicateSelected(): void {
     const positions = this.selectedPages();
     if (!positions.length) return;
-
     const order = [...this.pageOrder()];
     const thumbnails = [...this.thumbnails()];
     let offset = 0;
-
     for (const position of positions) {
       const actualPosition = position + offset;
       order.splice(actualPosition + 1, 0, order[actualPosition]);
       thumbnails.splice(actualPosition + 1, 0, thumbnails[actualPosition]);
       offset += 1;
     }
-
     this.pageOrder.set(order);
     this.thumbnails.set(thumbnails);
     this.pageCount.set(order.length);
@@ -462,10 +547,15 @@ export class PdfStudioPage {
     this.thumbnails.set([]);
     this.pageOrder.set([]);
     this.selectedPages.set([]);
-    this.pageRotations.set({});
     this.mergeFiles.set([]);
+    this.mergeDocuments.set([]);
     this.draggedPage.set(null);
     this.isFileDragActive.set(false);
+    this.isMergeDropActive.set(false);
     this.isPageDropActive.set(false);
+  }
+
+  pageNumber(document: MergeDocument, index: number): string {
+    return `Page ${index + 1}`;
   }
 }
