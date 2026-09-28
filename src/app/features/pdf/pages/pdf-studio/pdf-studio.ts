@@ -524,6 +524,73 @@ export class PdfStudioPage {
     }
   }
 
+  async flattenPdf(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const bytes = await this.pdfEngine.flatten(currentFile);
+      this.pdfEngine.download(bytes, 'x-facture-flattened.pdf');
+    } catch {
+      this.error.set('This PDF could not be flattened.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
+  async loadMetadata(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+    this.isProcessing.set(true);
+    try {
+      this.metadata.set(await this.pdfEngine.getMetadata(currentFile));
+    } catch {
+      this.error.set('The PDF metadata could not be read.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
+  onMetadataField(field: 'title' | 'author' | 'subject' | 'keywords', event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.metadata.update(current => ({ ...current, [field]: value }));
+  }
+
+  async saveMetadata(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const bytes = await this.pdfEngine.updateMetadata(currentFile, this.metadata());
+      this.pdfEngine.download(bytes, 'x-facture-metadata.pdf');
+    } catch {
+      this.error.set('The PDF metadata could not be updated.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
+  setImagePageSize(size: 'a4' | 'letter' | 'fit'): void {
+    this.imagePageSize.set(size);
+  }
+
+  async createPdfFromImages(): Promise<void> {
+    const files = this.imageFiles();
+    if (!files.length) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const bytes = await this.pdfEngine.imagesToPdf(files, this.imagePageSize());
+      this.pdfEngine.download(bytes, 'x-facture-images.pdf');
+    } catch {
+      this.error.set('The selected images could not be converted to PDF.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
   async downloadOrganized(): Promise<void> {
     const currentFile = this.file();
     if (!currentFile) return;
