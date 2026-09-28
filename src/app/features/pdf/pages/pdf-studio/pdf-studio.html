@@ -312,6 +312,16 @@
         <label class="field-label">Keywords<input type="text" [value]="metadata().keywords" (input)="onMetadataField('keywords', $event)" placeholder="invoice, contract, report" /></label>
       } @else if (activeTool() === 'image-to-pdf') {
         <div class="tool-panel"><span class="panel-kicker">IMAGE COMPOSITION</span><h2>Turn images into a document</h2><p>Add multiple JPG or PNG images, choose the page format, then create one ordered PDF.</p><div class="selection-summary"><strong>{{ imageFiles().length }}</strong><span>images queued</span></div></div>
+        <div class="image-queue">
+          @for (image of imageFiles(); track image.name + '-' + $index; let imageIndex = $index) {
+            <div class="image-queue-item">
+              <span class="material-icons">image</span><strong>{{ image.name }}</strong><small>{{ (image.size / 1024 / 1024).toFixed(2) }} MB</small>
+              <button type="button" (click)="moveImage(imageIndex, -1)" [disabled]="imageIndex === 0" aria-label="Move image up"><span class="material-icons">arrow_upward</span></button>
+              <button type="button" (click)="moveImage(imageIndex, 1)" [disabled]="imageIndex === imageFiles().length - 1" aria-label="Move image down"><span class="material-icons">arrow_downward</span></button>
+              <button type="button" (click)="removeImage(imageIndex)" aria-label="Remove image"><span class="material-icons">close</span></button>
+            </div>
+          }
+        </div>
         <div class="split-methods">
           <button type="button" (click)="setImagePageSize('a4')" [class.active]="imagePageSize() === 'a4'"><strong>A4</strong><span>Standard document pages.</span></button>
           <button type="button" (click)="setImagePageSize('letter')" [class.active]="imagePageSize() === 'letter'"><strong>Letter</strong><span>US Letter page format.</span></button>
