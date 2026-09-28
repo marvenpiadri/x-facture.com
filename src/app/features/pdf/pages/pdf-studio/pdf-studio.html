@@ -10,40 +10,36 @@
 
     <label class="sidebar-search">
       <span class="material-icons">search</span>
-      <input placeholder="Search PDF tools" aria-label="Search PDF tools" />
+      <input placeholder="Search PDF tools" aria-label="Search PDF tools" (input)="onSearch($event)" />
     </label>
 
     @for (category of categories; track category) {
-      <section class="tool-category">
-        <div class="category-title">{{ categoryLabels[category] }}</div>
-        @for (tool of toolsFor(category); track tool.id) {
-          <a
-            class="tool-link"
-            [class.active]="activeTool() === tool.id"
-            [routerLink]="tool.route"
-          >
-            <span class="material-icons">{{ tool.icon }}</span>
-            <span>{{ tool.name }}</span>
-          </a>
-        }
-      </section>
+      @if (toolsFor(category).length) {
+        <section class="tool-category">
+          <div class="category-title">{{ categoryLabels[category] }}</div>
+          @for (tool of toolsFor(category); track tool.id) {
+            <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route">
+              <span class="material-icons">{{ tool.icon }}</span>
+              <span>{{ tool.name }}</span>
+            </a>
+          }
+        </section>
+      }
     }
   </aside>
 
   <main class="pdf-canvas">
     <div class="canvas-topbar">
-      <div>
+      <div class="document-title">
         <span class="eyebrow">DOCUMENT WORKSPACE</span>
-        <h1>{{ activeTool() === 'organize-pdf' && !file() ? 'PDF Studio' : (tools.find(t => t.id === activeTool())?.name || 'PDF Studio') }}</h1>
+        <h1>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</h1>
       </div>
 
       @if (file(); as currentFile) {
         <div class="active-file-pill">
           <span class="material-icons">description</span>
           <span>{{ currentFile.name }}</span>
-          @if (pageCount() !== null) {
-            <span>{{ pageCount() }} pages</span>
-          }
+          @if (pageCount() !== null) { <span>{{ pageCount() }} pages</span> }
           <button type="button" (click)="clearFile()" aria-label="Remove PDF">
             <span class="material-icons">close</span>
           </button>
@@ -51,24 +47,54 @@
       }
     </div>
 
+    <div class="canvas-toolbar">
+      @if (file()) {
+        <div class="toolbar-group">
+          <button type="button" (click)="selectAll()">Select all</button>
+          <button type="button" (click)="deselectAll()">Deselect</button>
+          <span class="toolbar-count">{{ selectedPages().length }} / {{ pageCount() ?? 0 }} selected</span>
+        </div>
+        <div class="toolbar-group">
+          <button type="button" (click)="zoom.set(Math.max(.45, zoom() - .1))" aria-label="Zoom out">−</button>
+          <span>{{ Math.round(zoom() * 100) }}%</span>
+          <button type="button" (click)="zoom.set(Math.min(1.2, zoom() + .1))" aria-label="Zoom in">+</button>
+        </div>
+      }
+    </div>
+
     <div class="canvas-content">
       @if (!file()) {
         <div class="upload-sheet" (click)="triggerUpload(pdfInput)">
-          <div class="upload-icon">
-            <span class="material-icons">upload_file</span>
-          </div>
+          <div class="upload-icon"><span class="material-icons">upload_file</span></div>
           <h2>Drop a PDF here</h2>
           <p>or choose a file from your computer</p>
-          <button type="button" class="upload-button" (click)="$event.stopPropagation(); triggerUpload(pdfInput)">
-            Choose PDF
-          </button>
+          <button type="button" class="upload-button" (click)="$event.stopPropagation(); triggerUpload(pdfInput)">Choose PDF</button>
           <small>Files stay in your browser during this local processing phase.</small>
         </div>
+      } @else if (isProcessing() && !thumbnails().length) {
+        <div class="loading-sheet">
+          <span class="material-icons spin">progress_activity</span>
+          <strong>Preparing document preview</strong>
+          <span>Rendering PDF pages locally…</span>
+        </div>
       } @else {
-        <div class="document-placeholder">
-          <span class="material-icons">picture_as_pdf</span>
-          <h2>{{ file()?.name }}</h2>
-          <p>{{ pageCount() ?? '—' }} pages loaded. Page rendering will be added with the visual workspace in the next phase.</p>
+        <div class="page-grid">
+          @for (thumbnail of thumbnails(); track $index) {
+            <article class="page-card" [class.selected]="isSelected($index)" [class.rotated]="(pageRotations()[$index] ?? 0) % 180 !== 0">
+              <button type="button" class="page-preview" (click)="togglePage($index)" [attr.aria-label]="'Select page ' + ($index + 1)">
+                <img [src]="thumbnail" [alt]="'Page ' + ($index + 1)" loading="lazy" />
+                @if (isSelected($index)) {
+                  <span class="selection-mark material-icons">check</span>
+                }
+              </button>
+              <div class="page-meta">
+                <span>Page {{ $index + 1 }}</span>
+                <button type="button" (click)="rotatePage($index)" aria-label="Rotate page">
+                  <span class="material-icons">rotate_right</span>
+                </button>
+              </div>
+            </article>
+          }
         </div>
       }
     </div>
@@ -93,41 +119,58 @@
     </div>
 
     <div class="options-body">
-      <div class="option-card">
-        <span class="material-icons">auto_awesome</span>
-        <div>
-          <strong>Shared PDF Engine</strong>
-          <p>All tools will use the same document-processing layer.</p>
+      @if (activeTool() === 'organize-pdf' || activeTool() === 'split-pdf') {
+        <div class="tool-panel">
+          <span class="panel-kicker">PAGE SELECTION</span>
+          <h2>Work with selected pages</h2>
+          <p>Select pages directly from the canvas. Your selection stays local until you download the result.</p>
+          <div class="selection-summary">
+            <strong>{{ selectedPages().length }}</strong>
+            <span>selected pages</span>
+          </div>
         </div>
-      </div>
+
+        <div class="option-actions">
+          <button type="button" (click)="selectAll()">Select all pages</button>
+          <button type="button" (click)="deselectAll()">Clear selection</button>
+        </div>
+      } @else {
+        <div class="tool-panel">
+          <span class="panel-kicker">{{ categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
+          <h2>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</h2>
+          <p>{{ tools.find(t => t.id === activeTool())?.description || 'Work with your document in the shared PDF workspace.' }}</p>
+        </div>
+      }
 
       <div class="option-card">
         <span class="material-icons">memory</span>
         <div>
-          <strong>Local-first processing</strong>
-          <p>Browser-safe operations run locally before server conversion is introduced.</p>
+          <strong>Local-first</strong>
+          <p>Browser-safe PDF operations run on this device.</p>
         </div>
       </div>
 
-      @if (file()) {
-        <div class="file-summary">
-          <span>Current document</span>
-          <strong>{{ file()?.name }}</strong>
-          <span>{{ pageCount() ?? '—' }} pages</span>
-        </div>
-      } @else {
-        <div class="empty-options">
-          <span class="material-icons">upload_file</span>
-          <p>Upload a PDF to configure this tool.</p>
+      @if (['pdf-to-word', 'word-to-pdf', 'pdf-to-excel', 'compress-pdf', 'protect-pdf', 'sign-pdf', 'repair-pdf'].includes(activeTool())) {
+        <div class="coming-soon">
+          <span class="material-icons">schedule</span>
+          <strong>Server processing coming later</strong>
+          <p>This operation will use X-Facture's future document server for advanced conversion or processing.</p>
         </div>
       }
     </div>
 
     <div class="options-footer">
-      <button type="button" class="execute-button" [disabled]="!file()">
-        <span class="material-icons">bolt</span>
-        <span>Configure & Process</span>
-      </button>
+      @if (activeTool() === 'organize-pdf' || activeTool() === 'split-pdf') {
+        <button type="button" class="execute-button" [disabled]="!file() || !selectedPages().length || isProcessing()" (click)="extractSelected()">
+          <span class="material-icons">download</span>
+          <span>{{ isProcessing() ? 'Processing…' : 'Extract selected pages' }}</span>
+        </button>
+      } @else {
+        <button type="button" class="execute-button" disabled>
+          <span class="material-icons">schedule</span>
+          <span>Available in a later phase</span>
+        </button>
+      }
     </div>
   </aside>
 </section>
