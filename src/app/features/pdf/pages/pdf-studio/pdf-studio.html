@@ -176,7 +176,12 @@
     </div>
 
     <div class="options-footer">
-      @if (activeTool() === 'organize-pdf' || activeTool() === 'split-pdf') {
+      @if (activeTool() === 'organize-pdf') {
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="downloadOrganized()">
+          <span class="material-icons">download</span>
+          <span>{{ isProcessing() ? 'Processing…' : 'Download organized PDF' }}</span>
+        </button>
+      } @else if (activeTool() === 'split-pdf') {
         <button type="button" class="execute-button" [disabled]="!file() || !selectedPages().length || isProcessing()" (click)="extractSelected()">
           <span class="material-icons">download</span>
           <span>{{ isProcessing() ? 'Processing…' : 'Extract selected pages' }}</span>
