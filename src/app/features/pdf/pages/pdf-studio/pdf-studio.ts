@@ -374,7 +374,9 @@ export class PdfStudioPage {
         }))
       );
 
-      const mergedFile = new File([bytes], 'x-facture-merged.pdf', { type: 'application/pdf' });
+      const mergedBuffer = new ArrayBuffer(bytes.byteLength);
+      new Uint8Array(mergedBuffer).set(bytes);
+      const mergedFile = new File([mergedBuffer], 'x-facture-merged.pdf', { type: 'application/pdf' });
       const outputPageCount = await this.pdfEngine.getPageCount(mergedFile);
       if (outputPageCount !== expectedPages) {
         this.error.set(`Merge verification failed: the workspace contains ${expectedPages} pages, but the exported PDF contains ${outputPageCount}. Nothing was downloaded.`);
