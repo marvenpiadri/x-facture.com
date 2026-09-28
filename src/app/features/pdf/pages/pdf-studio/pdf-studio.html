@@ -29,6 +29,13 @@
   </aside>
 
   <main class="pdf-canvas">
+    <nav class="pdf-breadcrumbs" aria-label="Breadcrumb">
+      <a routerLink="/"><span class="material-icons">home</span><span>X-Facture</span></a>
+      <span class="material-icons">chevron_right</span>
+      <a routerLink="/pdf">PDF</a>
+      <span class="material-icons">chevron_right</span>
+      <span>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</span>
+    </nav>
     <div class="canvas-topbar">
       <div class="document-title">
         <span class="eyebrow">DOCUMENT WORKSPACE</span>
