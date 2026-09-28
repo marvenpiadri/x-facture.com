@@ -43,6 +43,7 @@ export class PdfStudioPage {
     { id: 'merge-pdf', name: 'Merge PDF', description: 'Combine files in the order you choose.', icon: 'merge_type', category: 'organize', route: '/pdf/merge-pdf' },
     { id: 'split-pdf', name: 'Split PDF', description: 'Extract pages or page ranges.', icon: 'content_cut', category: 'organize', route: '/pdf/split-pdf' },
     { id: 'rotate-pdf', name: 'Rotate PDF', description: 'Rotate pages permanently.', icon: 'rotate_right', category: 'organize', route: '/pdf/rotate-pdf' },
+    { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive content into a clean document.', icon: 'layers_clear', category: 'organize', route: '/pdf/flatten-pdf' },
     { id: 'pdf-editor', name: 'PDF Editor', description: 'Edit and annotate PDF content.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' },
     { id: 'add-watermark', name: 'Watermark', description: 'Stamp text or branding onto pages.', icon: 'branding_watermark', category: 'edit', route: '/pdf/add-watermark' },
     { id: 'add-page-numbers', name: 'Page Numbers', description: 'Add configurable page numbering.', icon: 'format_list_numbered', category: 'edit', route: '/pdf/add-page-numbers' },
@@ -51,10 +52,17 @@ export class PdfStudioPage {
     { id: 'word-to-pdf', name: 'Word to PDF', description: 'Convert office documents to PDF.', icon: 'upload_file', category: 'convert', route: '/pdf/word-to-pdf' },
     { id: 'pdf-to-excel', name: 'PDF to Excel', description: 'Extract structured tables.', icon: 'table_chart', category: 'convert', route: '/pdf/pdf-to-excel' },
     { id: 'pdf-to-image', name: 'PDF to Image', description: 'Export pages as images.', icon: 'photo_library', category: 'convert', route: '/pdf/pdf-to-image' },
+    { id: 'epub-to-pdf', name: 'EPUB to PDF', description: 'Turn ebooks into PDF documents.', icon: 'menu_book', category: 'convert', route: '/pdf/epub-to-pdf' },
+    { id: 'excel-to-pdf', name: 'Excel to PDF', description: 'Turn spreadsheets into polished PDFs.', icon: 'table_view', category: 'convert', route: '/pdf/excel-to-pdf' },
+    { id: 'markdown-to-pdf', name: 'Markdown to PDF', description: 'Render Markdown as a clean document.', icon: 'code', category: 'convert', route: '/pdf/markdown-to-pdf' },
+    { id: 'csv-to-pdf', name: 'CSV to PDF', description: 'Turn tabular data into a PDF report.', icon: 'table_chart', category: 'convert', route: '/pdf/csv-to-pdf' },
     { id: 'compress-pdf', name: 'Compress PDF', description: 'Reduce size while preserving quality.', icon: 'compress', category: 'security', route: '/pdf/compress-pdf' },
     { id: 'protect-pdf', name: 'Protect PDF', description: 'Secure PDFs with password protection.', icon: 'lock', category: 'security', route: '/pdf/protect-pdf' },
     { id: 'sign-pdf', name: 'Sign PDF', description: 'Prepare documents for signing.', icon: 'draw', category: 'security', route: '/pdf/sign-pdf' },
     { id: 'repair-pdf', name: 'Repair PDF', description: 'Recover and sanitize damaged PDFs.', icon: 'build', category: 'security', route: '/pdf/repair-pdf' },
+    { id: 'unlock-pdf', name: 'Unlock PDF', description: 'Remove PDF password protection when permitted.', icon: 'key', category: 'security', route: '/pdf/unlock-pdf' },
+    { id: 'pdf-ocr', name: 'PDF OCR & Text', description: 'Extract searchable text from PDF documents.', icon: 'text_snippet', category: 'security', route: '/pdf/pdf-ocr' },
+    { id: 'pdf-metadata', name: 'PDF Metadata', description: 'Inspect and clean document metadata.', icon: 'info', category: 'security', route: '/pdf/pdf-metadata' },
   ];
 
   readonly categories: PdfCategory[] = ['organize', 'edit', 'convert', 'security'];
