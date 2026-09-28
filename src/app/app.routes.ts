@@ -10,6 +10,7 @@ import { DocumentListPage } from './features/documents/pages/document-list/docum
 import { DocumentEditPage } from './features/documents/pages/document-edit/document-edit';
 import { DocumentPreviewPage } from './features/documents/pages/document-preview/document-preview';
 import { CalculatorsHubPage } from './calculators/calculators-hub';
+import { PdfStudioPage } from './features/pdf/pages/pdf-studio/pdf-studio';
 import { SimpleFinanceCalculatorComponent } from './calculators/simple-finance-calculator/simple-finance-calculator';
 import { ADDITIONAL_CALCULATORS } from './calculators/additional-calculators';
 import { StripePaypalFeeCalculatorComponent } from './calculators/stripe-paypal-fee-calculator/stripe-paypal-fee-calculator.component';
@@ -55,6 +56,10 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsHubPage },
 
   { path: 'calculators', component: CalculatorsHubPage },
+
+  // PDF Engine — intentionally before the generic document routes.
+  { path: 'pdf', component: PdfStudioPage },
+  { path: 'pdf/:tool', component: PdfStudioPage },
   ...SPECIALIZED_CALCULATOR_ROUTES,
   ...SIMPLE_CALCULATOR_ROUTES,
 
