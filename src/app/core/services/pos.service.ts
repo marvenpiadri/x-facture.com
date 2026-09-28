@@ -54,6 +54,9 @@ export class PosService {
    * Open Register Session with starting float
    */
   async openSession(cashierName: string, startingFloat: number): Promise<RegisterSession> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('POS storage is unavailable outside the browser.');
+    }
     const sessionCount = await db.posSessions.count();
     const sessionNumber = `SESS-${new Date().getFullYear()}-${String(sessionCount + 1).padStart(4, '0')}`;
 
@@ -82,6 +85,9 @@ export class PosService {
    * Generate X-Report (Mid-session summary without closing register)
    */
   async generateXReport(): Promise<RegisterReport> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('POS storage is unavailable outside the browser.');
+    }
     const session = this.currentSession();
     if (!session) throw new Error('No active register session');
 
@@ -111,6 +117,9 @@ export class PosService {
    * Close Register Session with Z-Report and cash count reconciliation
    */
   async closeSession(actualCashCounted: number, notes?: string): Promise<RegisterReport> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('POS storage is unavailable outside the browser.');
+    }
     const session = this.currentSession();
     if (!session) throw new Error('No active register session');
 
@@ -251,6 +260,9 @@ export class PosService {
    * 5. Returns the generated BusinessDocument for preview routing
    */
   async checkout(payments: PosPaymentRecord[]): Promise<BusinessDocument> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('POS storage is unavailable outside the browser.');
+    }
     const session = this.currentSession();
     if (!session) throw new Error('Please open register session first');
 
