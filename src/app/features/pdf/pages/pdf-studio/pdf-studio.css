@@ -1397,3 +1397,36 @@
     grid-template-columns: 1fr;
   }
 }
+
+.merge-document-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.merge-document-actions button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.merge-document-actions button:hover:not(:disabled) {
+  border-color: var(--color-money-green);
+  color: var(--color-money-green);
+}
+
+.merge-document-actions button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.merge-document-header {
+  cursor: default;
+}
