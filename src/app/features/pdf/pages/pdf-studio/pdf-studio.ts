@@ -339,6 +339,7 @@ export class PdfStudioPage {
     this.thumbnails.set([]);
     this.pageOrder.set([]);
     this.selectedPages.set([]);
+    this.pageRotations.set({});
     this.draggedPage.set(null);
 
     try {
