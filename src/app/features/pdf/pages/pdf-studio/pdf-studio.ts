@@ -251,7 +251,7 @@ export class PdfStudioPage {
     thumbnails.splice(position, 0, movedThumbnail);
 
     const selectedOriginalPages = this.selectedPages().map(index => this.pageOrder()[index]);
-    const nextSelectedPositions = nextSelectedOriginalPages
+    const nextSelectedPositions = selectedOriginalPages
       .map(original => order.indexOf(original))
       .filter(index => index >= 0)
       .sort((a, b) => a - b);
@@ -362,6 +362,7 @@ export class PdfStudioPage {
     this.thumbnails.set([]);
     this.selectedPages.set([]);
     this.pageRotations.set({});
+    this.mergeFiles.set([]);
     this.draggedPage.set(null);
   }
 }
