@@ -289,30 +289,41 @@
           <button type="button" (click)="setPageNumberPosition('top-right')" [class.active]="pageNumberPosition() === 'top-right'"><strong>Top right</strong><span>Right aligned header.</span></button>
         </div>
       } @else if (activeTool() === 'crop-pdf') {
-        <div class="tool-panel"><span class="panel-kicker">VISUAL CROP</span><h2>Trim each edge precisely</h2><p>Adjust the crop visually, then apply the same crop box to every page or only the selected pages.</p></div>
+        <div class="tool-panel"><span class="panel-kicker">VISUAL CROP</span><h2>Crop like an image</h2><p>Drag the crop box, move it, or pull any edge and corner handle. The preview updates live before you export.</p></div>
         <div class="crop-preview-panel">
           @if (thumbnails().length) {
             <div class="crop-preview">
-              <img [src]="thumbnails()[pageOrder()[0] ?? 0]" alt="Crop preview" />
-              <div class="crop-mask"></div>
-              <div class="crop-frame" [ngStyle]="cropPreviewStyle()"></div>
+              <img [src]="thumbnails()[pageOrder()[0] ?? 0]" alt="Crop preview" draggable="false" />
+              <div class="crop-overlay" aria-hidden="true"></div>
+              <div class="crop-frame" [ngStyle]="cropPreviewStyle()" (pointerdown)="startCropDrag($event, 'move')">
+                <span class="crop-dimension">{{ cropWidth().toFixed(0) }}% × {{ cropHeight().toFixed(0) }}%</span>
+                <button type="button" class="crop-handle crop-handle-nw" aria-label="Resize crop top left" (pointerdown)="startCropDrag($event, 'nw')"></button>
+                <button type="button" class="crop-handle crop-handle-n" aria-label="Resize crop top" (pointerdown)="startCropDrag($event, 'n')"></button>
+                <button type="button" class="crop-handle crop-handle-ne" aria-label="Resize crop top right" (pointerdown)="startCropDrag($event, 'ne')"></button>
+                <button type="button" class="crop-handle crop-handle-e" aria-label="Resize crop right" (pointerdown)="startCropDrag($event, 'e')"></button>
+                <button type="button" class="crop-handle crop-handle-se" aria-label="Resize crop bottom right" (pointerdown)="startCropDrag($event, 'se')"></button>
+                <button type="button" class="crop-handle crop-handle-s" aria-label="Resize crop bottom" (pointerdown)="startCropDrag($event, 's')"></button>
+                <button type="button" class="crop-handle crop-handle-sw" aria-label="Resize crop bottom left" (pointerdown)="startCropDrag($event, 'sw')"></button>
+                <button type="button" class="crop-handle crop-handle-w" aria-label="Resize crop left" (pointerdown)="startCropDrag($event, 'w')"></button>
+              </div>
             </div>
-            <small>Preview of page {{ (pageOrder()[0] ?? 0) + 1 }}</small>
+            <small>Live preview of page {{ (pageOrder()[0] ?? 0) + 1 }}. The same crop rectangle is applied to the pages you select.</small>
           }
         </div>
-        <div class="split-methods crop-presets">
-          <button type="button" (click)="setCropMargin(0)" [class.active]="cropTop() === 0 && cropRight() === 0 && cropBottom() === 0 && cropLeft() === 0"><strong>Full page</strong><span>Reset all edges.</span></button>
-          <button type="button" (click)="setCropMargin(12)" [class.active]="cropTop() === 12 && cropRight() === 12 && cropBottom() === 12 && cropLeft() === 12"><strong>12 pt</strong><span>Light trim.</span></button>
-          <button type="button" (click)="setCropMargin(24)" [class.active]="cropTop() === 24 && cropRight() === 24 && cropBottom() === 24 && cropLeft() === 24"><strong>24 pt</strong><span>Standard trim.</span></button>
-          <button type="button" (click)="setCropMargin(48)" [class.active]="cropTop() === 48 && cropRight() === 48 && cropBottom() === 48 && cropLeft() === 48"><strong>48 pt</strong><span>Strong trim.</span></button>
+        <div class="crop-presets split-methods">
+          <button type="button" (click)="setCropMargin(0)" [class.active]="cropX() === 0 && cropY() === 0 && cropWidth() === 100 && cropHeight() === 100"><strong>Full page</strong><span>Show the complete page.</span></button>
+          <button type="button" (click)="setCropMargin(12)"><strong>Light trim</strong><span>Small inset on every edge.</span></button>
+          <button type="button" (click)="setCropMargin(24)"><strong>Standard</strong><span>Balanced document crop.</span></button>
+          <button type="button" (click)="setCropMargin(48)"><strong>Strong trim</strong><span>More aggressive page trim.</span></button>
         </div>
         <div class="field-grid crop-fields">
-          <label class="field-label">Top (pt)<input type="number" min="0" [value]="cropTop()" (input)="setCropSide('top', $event)" /></label>
-          <label class="field-label">Right (pt)<input type="number" min="0" [value]="cropRight()" (input)="setCropSide('right', $event)" /></label>
-          <label class="field-label">Bottom (pt)<input type="number" min="0" [value]="cropBottom()" (input)="setCropSide('bottom', $event)" /></label>
-          <label class="field-label">Left (pt)<input type="number" min="0" [value]="cropLeft()" (input)="setCropSide('left', $event)" /></label>
+          <label class="field-label">Left (%)<input type="number" min="0" max="99" [value]="cropX()" (input)="setCropSide('left', $event)" /></label>
+          <label class="field-label">Top (%)<input type="number" min="0" max="99" [value]="cropY()" (input)="setCropSide('top', $event)" /></label>
+          <label class="field-label">Right inset (%)<input type="number" min="0" max="99" [value]="100 - cropX() - cropWidth()" (input)="setCropSide('right', $event)" /></label>
+          <label class="field-label">Bottom inset (%)<input type="number" min="0" max="99" [value]="100 - cropY() - cropHeight()" (input)="setCropSide('bottom', $event)" /></label>
         </div>
-        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be cropped' }}</span></div>      } @else if (activeTool() === 'pdf-editor') {
+        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be cropped' }}</span></div>
+      } @else if (activeTool() === 'pdf-editor') {
         <div class="tool-panel"><span class="panel-kicker">EDIT</span><h2>Add text to the document</h2><p>This browser-first editor adds new text overlays without pretending to rewrite existing PDF text. Select pages on the canvas to target only those pages.</p></div>
         <label class="field-label">Text<input type="text" [value]="editText()" (input)="setEditText($event)" placeholder="Add a note, label or heading" /></label>
         <label class="field-label">Font size<input type="number" min="6" max="72" [value]="editTextFontSize()" (input)="setEditTextFontSize($event)" /></label>
