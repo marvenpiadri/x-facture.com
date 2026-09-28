@@ -123,6 +123,43 @@ export class SeoService {
       return;
     }
 
+    if (segments[0] === 'pdf') {
+      const pdfTools: Record<string, { title: string; description: string; keywords: string }> = {
+        'organize-pdf': { title: 'Organize PDF Pages Online', description: 'Reorder, rotate and manage PDF pages directly in your browser with X-Facture.', keywords: 'organize PDF, reorder PDF pages, rotate PDF pages, PDF page organizer' },
+        'merge-pdf': { title: 'Merge PDF Files Online', description: 'Combine PDF files and move individual pages between documents with X-Facture.', keywords: 'merge PDF, combine PDF files, merge PDF pages' },
+        'split-pdf': { title: 'Split PDF Online', description: 'Split PDFs by selected pages, ranges or page groups directly in your browser.', keywords: 'split PDF, extract PDF pages, PDF splitter' },
+        'rotate-pdf': { title: 'Rotate PDF Pages Online', description: 'Rotate PDF pages and export the corrected document directly in your browser.', keywords: 'rotate PDF, rotate PDF pages' },
+        'flatten-pdf': { title: 'Flatten PDF Online', description: 'Flatten PDF content into a clean document with X-Facture.', keywords: 'flatten PDF, flatten PDF forms' },
+        'crop-pdf': { title: 'Crop PDF Online', description: 'Crop PDF pages with independent top, right, bottom and left controls.', keywords: 'crop PDF, PDF cropper, crop PDF pages' },
+        'pdf-editor': { title: 'PDF Editor Online', description: 'Add positioned text to PDF pages directly in your browser with X-Facture.', keywords: 'PDF editor, edit PDF, add text to PDF' },
+        'add-watermark': { title: 'Add Watermark to PDF', description: 'Add configurable text watermarks to PDF pages directly in your browser.', keywords: 'PDF watermark, add watermark to PDF' },
+        'add-page-numbers': { title: 'Add Page Numbers to PDF', description: 'Add customizable page numbers, prefixes and suffixes to PDF pages.', keywords: 'PDF page numbers, number PDF pages' },
+        'image-to-pdf': { title: 'Image to PDF Converter', description: 'Convert and arrange images into a PDF with page size, orientation and fit controls.', keywords: 'image to PDF, JPG to PDF, PNG to PDF' },
+        'pdf-to-image': { title: 'PDF to Image Converter', description: 'Export PDF pages as PNG or JPEG images directly in your browser.', keywords: 'PDF to image, PDF to JPG, PDF to PNG' },
+        'pdf-metadata': { title: 'PDF Metadata Tool', description: 'Inspect and update PDF metadata such as title, author, subject and keywords.', keywords: 'PDF metadata, edit PDF metadata' }
+      };
+
+      const tool = segments[1] ? pdfTools[segments[1]] : undefined;
+      if (tool) {
+        const url = `${this.siteUrl}/pdf/${segments[1]}`;
+        this.updateMetadata({ title: `X-Facture • ${tool.title}`, description: tool.description, keywords: tool.keywords, url });
+        this.setPdfSchema(url, tool.title);
+        return;
+      }
+
+      if (segments.length === 1) {
+        const url = `${this.siteUrl}/pdf`;
+        this.updateMetadata({
+          title: 'X-Facture • PDF Tools & Document Engine',
+          description: 'Browser-first PDF tools for organizing, merging, splitting, editing, converting and managing documents with X-Facture.',
+          keywords: 'PDF tools, PDF editor, merge PDF, split PDF, PDF converter, document engine',
+          url
+        });
+        this.setPdfSchema(url, 'PDF Tools & Document Engine');
+        return;
+      }
+    }
+
     const docType = segments[0];
     const docConfig = docType ? DOCUMENT_TYPE_CONFIGS[docType] : undefined;
     if (docConfig && segments.length === 1) {
@@ -194,6 +231,22 @@ export class SeoService {
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
         { '@type': 'WebPage', '@id': `${this.siteUrl}#webpage`, name: 'X-Facture | Free Business Tools, Financial Calculators & Invoicing', url: this.siteUrl, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } }
+      ]
+    });
+  }
+
+  private setPdfSchema(url: string, pageName: string): void {
+    this.setJsonLd({
+      '@context': 'https://schema.org',
+      '@graph': [
+        this.organizationSchema(),
+        { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
+        { '@type': 'WebPage', '@id': `${url}#webpage`, name: pageName, url, isPartOf: { '@id': `${this.siteUrl}/pdf#webpage` } },
+        { '@type': 'BreadcrumbList', itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+          { '@type': 'ListItem', position: 2, name: 'PDF', item: `${this.siteUrl}/pdf` },
+          ...(url === `${this.siteUrl}/pdf` ? [] : [{ '@type': 'ListItem', position: 3, name: pageName, item: url }])
+        ] }
       ]
     });
   }
