@@ -53,6 +53,9 @@ export class ProductService {
   }
 
   async saveProduct(product: Partial<Product>): Promise<Product> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Product storage is unavailable outside the browser.');
+    }
     const name = (product.name || 'New Item').trim();
     const slug = (product.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
     const now = new Date().toISOString();
@@ -79,6 +82,9 @@ export class ProductService {
   }
 
   async deleteProduct(id: string): Promise<void> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Product storage is unavailable outside the browser.');
+    }
     await db.products.delete(id);
     await this.loadProducts();
   }
