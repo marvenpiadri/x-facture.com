@@ -261,14 +261,6 @@ export class PdfStudioPage {
     this.file.set(documents[0]?.file ?? null);
   }
 
-  onMergeDocumentDrop(event: CdkDragDrop<MergeDocument[]>): void {
-    if (event.previousIndex === event.currentIndex) return;
-    const documents = [...this.mergeDocuments()];
-    moveItemInArray(documents, event.previousIndex, event.currentIndex);
-    this.mergeDocuments.set(documents);
-    this.mergeFiles.set(documents.map(document => document.file));
-  }
-
   onMergePageDrop(event: CdkDragDrop<MergePage[]>, targetDocumentId: string): void {
     const documents = this.mergeDocuments().map(document => ({
       ...document,
