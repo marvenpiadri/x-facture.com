@@ -44,6 +44,9 @@ export class SettingsService {
   }
 
   async updateSettings(updated: Partial<BusinessProfileSettings>): Promise<BusinessProfileSettings> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Settings storage is unavailable outside the browser.');
+    }
     const current = await this.loadSettings();
     const merged: BusinessProfileSettings = {
       ...current,
@@ -96,6 +99,9 @@ export class SettingsService {
    * Export all user data as JSON
    */
   async exportFullDatabase(): Promise<string> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Database export is unavailable outside the browser.');
+    }
     const [settings, documents, clients, products, posSessions, posSales, ledgerEntries] = await Promise.all([
       db.settings.toArray(),
       db.documents.toArray(),
@@ -127,6 +133,9 @@ export class SettingsService {
    * Import all user data from JSON
    */
   async importFullDatabase(jsonString: string): Promise<boolean> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      return false;
+    }
     try {
       const parsed = JSON.parse(jsonString);
       if (!parsed.data) throw new Error('Invalid backup file');
