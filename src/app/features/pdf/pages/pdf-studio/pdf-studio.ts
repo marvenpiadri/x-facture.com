@@ -777,6 +777,21 @@ export class PdfStudioPage {
     }
   }
 
+  moveImage(index: number, direction: -1 | 1): void {
+    const images = [...this.imageFiles()];
+    const target = index + direction;
+    if (index < 0 || index >= images.length || target < 0 || target >= images.length) return;
+    [images[index], images[target]] = [images[target], images[index]];
+    this.imageFiles.set(images);
+  }
+
+  removeImage(index: number): void {
+    const images = [...this.imageFiles()];
+    if (index < 0 || index >= images.length) return;
+    images.splice(index, 1);
+    this.imageFiles.set(images);
+  }
+
   setImagePageSize(size: 'a4' | 'letter' | 'fit'): void {
     this.imagePageSize.set(size);
   }
