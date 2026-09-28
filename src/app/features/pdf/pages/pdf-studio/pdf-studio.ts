@@ -103,8 +103,6 @@ export class PdfStudioPage {
     { id: 'split-pdf', name: 'Split PDF', description: 'Extract pages, ranges or evenly sized parts.', icon: 'content_cut', category: 'organize', route: '/pdf/split-pdf' },
     { id: 'rotate-pdf', name: 'Rotate PDF', description: 'Rotate pages permanently.', icon: 'rotate_right', category: 'organize', route: '/pdf/rotate-pdf' },
     { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive content into a clean document.', icon: 'layers_clear', category: 'organize', route: '/pdf/flatten-pdf', available: true },
-    { id: 'remove-pages', name: 'Remove Pages', description: 'Remove selected pages while preserving the rest of the document.', icon: 'delete_sweep', category: 'organize', route: '/pdf/remove-pages', available: true },
-    { id: 'extract-pages', name: 'Extract Pages', description: 'Build a new PDF from selected pages.', icon: 'content_copy', category: 'organize', route: '/pdf/extract-pages', available: true },
     { id: 'crop-pdf', name: 'Crop PDF', description: 'Trim page boundaries with controlled crop margins.', icon: 'crop', category: 'edit', route: '/pdf/crop-pdf', available: true },
     { id: 'pdf-editor', name: 'PDF Editor', description: 'Add text overlays to PDF pages.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' , available: true },
     { id: 'add-watermark', name: 'Watermark', description: 'Stamp configurable text onto selected or all pages.', icon: 'branding_watermark', category: 'edit', route: '/pdf/add-watermark' , available: true },
