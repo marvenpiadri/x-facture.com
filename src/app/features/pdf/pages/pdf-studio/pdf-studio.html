@@ -169,6 +169,7 @@
         <div class="option-actions">
           <button type="button" (click)="selectAll()">Select all pages</button>
           @if (activeTool() === 'split-pdf') { <button type="button" (click)="setSplitMode('selected')" [class.active]="splitMode() === 'selected'">Selected pages</button> }
+          @if (activeTool() === 'split-pdf') { <button type="button" (click)="setSplitMode('ranges')" [class.active]="splitMode() === 'ranges'">Page ranges</button> }
           <button type="button" (click)="deselectAll()">Clear selection</button>
           <button type="button" (click)="duplicateSelected()" [disabled]="!selectedPages().length">Duplicate selected</button>
           <button type="button" (click)="deleteSelected()" [disabled]="!canDeleteSelected()">Delete selected</button>
