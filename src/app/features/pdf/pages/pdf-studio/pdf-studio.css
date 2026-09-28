@@ -1487,3 +1487,23 @@
 .crop-fields .field-label{margin-bottom:0}
 .crop-presets{margin-bottom:10px}
 .editor-position-fields{margin-bottom:10px}.editor-position-fields .field-label{margin-bottom:0}
+
+.pdf-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 28px;
+  padding: 7px 16px 0;
+  color: var(--color-text-muted);
+  font-size: 9px;
+  font-weight: 700;
+}
+.pdf-breadcrumbs a {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: inherit;
+  text-decoration: none;
+}
+.pdf-breadcrumbs a:hover { color: var(--color-money-green); }
+.pdf-breadcrumbs .material-icons { font-size: 14px; }
