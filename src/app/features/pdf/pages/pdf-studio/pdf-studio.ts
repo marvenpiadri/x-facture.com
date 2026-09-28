@@ -147,7 +147,32 @@ export class PdfStudioPage {
   };
 
   constructor() {
-    this.route.paramMap.subscribe(params => this.activeTool.set(params.get('tool') || 'organize-pdf'));
+    this.route.paramMap.subscribe(params => {
+      const nextTool = params.get('tool') || 'organize-pdf';
+      this.resetToolState();
+      this.activeTool.set(nextTool);
+    });
+  }
+
+  private resetToolState(): void {
+    this.file.set(null);
+    this.mergeFiles.set([]);
+    this.mergeDocuments.set([]);
+    this.pageCount.set(null);
+    this.error.set(null);
+    this.isProcessing.set(false);
+    this.thumbnails.set([]);
+    this.pageOrder.set([]);
+    this.selectedPages.set([]);
+    this.pageRotations.set({});
+    this.draggedPage.set(null);
+    this.isFileDragActive.set(false);
+    this.isPageDropActive.set(false);
+    this.isMergeDropActive.set(false);
+    this.metadata.set({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
+    this.imageFiles.set([]);
+    this.splitRanges.set('');
+    this.selectedPages.set([]);
   }
 
   get filteredTools(): PdfTool[] {
