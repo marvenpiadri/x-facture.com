@@ -64,6 +64,7 @@ export class PdfStudioPage {
   readonly thumbnails = signal<string[]>([]);
   readonly pageOrder = signal<number[]>([]);
   readonly selectedPages = signal<number[]>([]);
+  readonly pageRotations = signal<Record<number, number>>({});
   readonly draggedPage = signal<number | null>(null);
   readonly zoom = signal(0.72);
   readonly Math = Math;
