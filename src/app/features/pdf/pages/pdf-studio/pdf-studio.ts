@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PdfEngineService } from '../../../../core/services/pdf-engine.service';
 
@@ -17,7 +18,7 @@ interface PdfTool {
 @Component({
   selector: 'app-pdf-studio',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, DragDropModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pdf-studio.html',
   styleUrl: './pdf-studio.css',
@@ -228,29 +229,16 @@ export class PdfStudioPage {
     this.selectedPages.set([...selected].sort((a, b) => a - b));
   }
 
-  onDragStart(position: number): void {
-    this.draggedPage.set(position);
-  }
-
-  onDragOver(event: DragEvent): void {
-    event.preventDefault();
-  }
-
-  onDropPage(position: number): void {
-    const from = this.draggedPage();
-    if (from === null || from === position) {
-      this.draggedPage.set(null);
-      return;
-    }
+  onPageDrop(event: CdkDragDrop<number[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
 
     const order = [...this.pageOrder()];
     const thumbnails = [...this.thumbnails()];
-    const [movedPage] = order.splice(from, 1);
-    const [movedThumbnail] = thumbnails.splice(from, 1);
-    order.splice(position, 0, movedPage);
-    thumbnails.splice(position, 0, movedThumbnail);
+    const selectedOriginalPages = this.selectedPages().map(index => order[index]);
 
-    const selectedOriginalPages = this.selectedPages().map(index => this.pageOrder()[index]);
+    moveItemInArray(order, event.previousIndex, event.currentIndex);
+    moveItemInArray(thumbnails, event.previousIndex, event.currentIndex);
+
     const nextSelectedPositions = selectedOriginalPages
       .map(original => order.indexOf(original))
       .filter(index => index >= 0)
@@ -259,6 +247,13 @@ export class PdfStudioPage {
     this.pageOrder.set(order);
     this.thumbnails.set(thumbnails);
     this.selectedPages.set(nextSelectedPositions);
+  }
+
+  onDragStarted(position: number): void {
+    this.draggedPage.set(position);
+  }
+
+  onDragEnded(): void {
     this.draggedPage.set(null);
   }
 
