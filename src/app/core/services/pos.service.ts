@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { db } from '../db/app-database';
 import { PosCartItem, PosPaymentRecord, PosSale, RegisterReport, RegisterSession } from '../models/pos.model';
 import { Product } from '../models/product.model';
@@ -12,6 +13,8 @@ import { BusinessDocument } from '../models/document.model';
   providedIn: 'root'
 })
 export class PosService {
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
   private settingsService = inject(SettingsService);
   private documentService = inject(DocumentService);
   private calculationService = inject(CalculationService);
@@ -22,18 +25,29 @@ export class PosService {
   readonly currentNote = signal<string>('');
 
   constructor() {
-    this.restoreActiveSession();
+    if (this.isBrowser) {
+      this.restoreActiveSession();
+    }
   }
 
   async restoreActiveSession(): Promise<RegisterSession | null> {
-    const openSessions = await db.posSessions.where('status').equals('open').toArray();
-    if (openSessions.length > 0) {
-      const active = openSessions[0];
-      this.currentSession.set(active);
-      return active;
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      this.currentSession.set(null);
+      return null;
     }
-    this.currentSession.set(null);
-    return null;
+    try {
+      const openSessions = await db.posSessions.where('status').equals('open').toArray();
+      if (openSessions.length > 0) {
+        const active = openSessions[0];
+        this.currentSession.set(active);
+        return active;
+      }
+      this.currentSession.set(null);
+      return null;
+    } catch {
+      this.currentSession.set(null);
+      return null;
+    }
   }
 
   /**

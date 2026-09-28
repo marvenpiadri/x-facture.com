@@ -33,53 +33,61 @@ export class AppDatabase extends Dexie {
 
 export const db = new AppDatabase();
 
+export const DEFAULT_BUSINESS_SETTINGS: BusinessProfileSettings = {
+  id: 'current',
+  company: {
+    name: 'x-facture Studio SARL',
+    legalName: 'x-facture Studio SARL',
+    email: 'billing@x-facture.com',
+    phone: '+1 (555) 234-8900',
+    address: '100 Innovation Boulevard, Suite 400',
+    city: 'San Francisco',
+    postalCode: '94107',
+    country: 'United States',
+    taxId: 'US-94-3829104',
+    logoUrl: '',
+    bankDetails: 'Bank: Silicon Horizon Bank\nRouting (ABA): 121000358\nAccount: 4892019482\nSWIFT: SHBKUS6S\nIBAN: US44SHBK1210003584892019482'
+  },
+  defaultCurrency: 'USD',
+  defaultTaxRate: 10,
+  defaultPaymentTerms: 'Payment due within 30 days of invoice date. Late payments accrue 1.5% interest per month.',
+  defaultFormalTemplate: 'modern',
+  defaultReceiptTemplate: 'thermal-80mm',
+  paperSize: 'a4',
+  prefixes: {
+    'invoices': { prefix: 'INV', nextNumber: 1001, padding: 4 },
+    'proforma-invoices': { prefix: 'PRO', nextNumber: 101, padding: 4 },
+    'commercial-invoices': { prefix: 'COM', nextNumber: 201, padding: 4 },
+    'quotes': { prefix: 'QUO', nextNumber: 501, padding: 4 },
+    'purchase-orders': { prefix: 'PO', nextNumber: 301, padding: 4 },
+    'receipts': { prefix: 'RCT', nextNumber: 2001, padding: 4 },
+    'credit-notes': { prefix: 'CRN', nextNumber: 101, padding: 4 },
+    'delivery-notes': { prefix: 'DLV', nextNumber: 401, padding: 4 },
+    'timesheet-invoices': { prefix: 'TSH', nextNumber: 101, padding: 4 },
+    'work-orders': { prefix: 'WO', nextNumber: 101, padding: 4 },
+    'statements': { prefix: 'STMT', nextNumber: 101, padding: 4 },
+    'service-agreements': { prefix: 'SA', nextNumber: 101, padding: 4 },
+    'retainer-invoices': { prefix: 'RET', nextNumber: 101, padding: 4 },
+    'bills-of-lading': { prefix: 'BOL', nextNumber: 101, padding: 4 },
+    'custom-documents': { prefix: 'DOC', nextNumber: 101, padding: 4 }
+  },
+  updatedAt: new Date().toISOString()
+};
+
 /**
  * Seed initial sample business data if DB is empty
  */
 export async function seedInitialDataIfNeeded(): Promise<void> {
+  if (typeof window === 'undefined' || typeof indexedDB === 'undefined') {
+    return;
+  }
   try {
     const existingSettings = await db.settings.get('current');
     if (existingSettings) return;
 
     // 1. Initial Business Settings
     const defaultSettings: BusinessProfileSettings = {
-      id: 'current',
-      company: {
-        name: 'x-facture Studio SARL',
-        legalName: 'x-facture Studio SARL',
-        email: 'billing@x-facture.com',
-        phone: '+1 (555) 234-8900',
-        address: '100 Innovation Boulevard, Suite 400',
-        city: 'San Francisco',
-        postalCode: '94107',
-        country: 'United States',
-        taxId: 'US-94-3829104',
-        logoUrl: '',
-        bankDetails: 'Bank: Silicon Horizon Bank\nRouting (ABA): 121000358\nAccount: 4892019482\nSWIFT: SHBKUS6S\nIBAN: US44SHBK1210003584892019482'
-      },
-      defaultCurrency: 'USD',
-      defaultTaxRate: 10,
-      defaultPaymentTerms: 'Payment due within 30 days of invoice date. Late payments accrue 1.5% interest per month.',
-      defaultFormalTemplate: 'modern',
-      defaultReceiptTemplate: 'thermal-80mm',
-      paperSize: 'a4',
-      prefixes: {
-        'invoices': { prefix: 'INV', nextNumber: 1001, padding: 4 },
-        'proforma-invoices': { prefix: 'PRO', nextNumber: 101, padding: 4 },
-        'commercial-invoices': { prefix: 'COM', nextNumber: 201, padding: 4 },
-        'quotes': { prefix: 'QUO', nextNumber: 501, padding: 4 },
-        'purchase-orders': { prefix: 'PO', nextNumber: 301, padding: 4 },
-        'receipts': { prefix: 'RCT', nextNumber: 2001, padding: 4 },
-        'credit-notes': { prefix: 'CRN', nextNumber: 101, padding: 4 },
-        'delivery-notes': { prefix: 'DLV', nextNumber: 401, padding: 4 },
-        'timesheet-invoices': { prefix: 'TSH', nextNumber: 101, padding: 4 },
-        'work-orders': { prefix: 'WO', nextNumber: 101, padding: 4 },
-        'statements': { prefix: 'STMT', nextNumber: 101, padding: 4 },
-        'service-agreements': { prefix: 'SA', nextNumber: 101, padding: 4 },
-        'retainer-invoices': { prefix: 'RET', nextNumber: 101, padding: 4 },
-        'bills-of-lading': { prefix: 'BOL', nextNumber: 101, padding: 4 },
-        'custom-documents': { prefix: 'DOC', nextNumber: 101, padding: 4 }
-      },
+      ...DEFAULT_BUSINESS_SETTINGS,
       updatedAt: new Date().toISOString()
     };
     await db.settings.put(defaultSettings);

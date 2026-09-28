@@ -1,11 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  PLATFORM_ID,
   inject,
   signal,
   OnInit
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { SettingsService } from '../../../../core/services/settings.service';
@@ -36,6 +37,8 @@ export interface PrefixEditItem {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SettingsHubPage implements OnInit {
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
   private settingsService = inject(SettingsService);
   readonly currencyService = inject(CurrencyService);
   readonly themeService = inject(ThemeService);
@@ -107,22 +110,29 @@ export class SettingsHubPage implements OnInit {
 
   ngOnInit(): void {
     this.loadCurrentSettings();
-    this.refreshMetrics();
+    if (this.isBrowser) {
+      this.refreshMetrics();
+    }
   }
 
   async refreshMetrics(): Promise<void> {
-    const [docs, clients, products, sales, ledger] = await Promise.all([
-      db.documents.count(),
-      db.clients.count(),
-      db.products.count(),
-      db.posSales.count(),
-      db.ledgerEntries.count()
-    ]);
-    this.docCount.set(docs);
-    this.clientCount.set(clients);
-    this.productCount.set(products);
-    this.posSalesCount.set(sales);
-    this.ledgerCount.set(ledger);
+    if (!this.isBrowser || typeof indexedDB === 'undefined') return;
+    try {
+      const [docs, clients, products, sales, ledger] = await Promise.all([
+        db.documents.count(),
+        db.clients.count(),
+        db.products.count(),
+        db.posSales.count(),
+        db.ledgerEntries.count()
+      ]);
+      this.docCount.set(docs);
+      this.clientCount.set(clients);
+      this.productCount.set(products);
+      this.posSalesCount.set(sales);
+      this.ledgerCount.set(ledger);
+    } catch {
+      // Ignore if DB not ready
+    }
   }
 
   async loadCurrentSettings(): Promise<void> {

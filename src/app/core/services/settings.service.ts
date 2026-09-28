@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
-import { db, seedInitialDataIfNeeded } from '../db/app-database';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { db, seedInitialDataIfNeeded, DEFAULT_BUSINESS_SETTINGS } from '../db/app-database';
 import { BusinessProfileSettings } from '../models/settings.model';
 import { getDocConfig } from '../config/document-type-config';
 
@@ -7,21 +8,39 @@ import { getDocConfig } from '../config/document-type-config';
   providedIn: 'root'
 })
 export class SettingsService {
-  readonly settings = signal<BusinessProfileSettings | null>(null);
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
+
+  readonly settings = signal<BusinessProfileSettings | null>(DEFAULT_BUSINESS_SETTINGS);
 
   constructor() {
-    this.loadSettings();
+    if (this.isBrowser) {
+      this.loadSettings();
+    } else {
+      this.settings.set(DEFAULT_BUSINESS_SETTINGS);
+    }
   }
 
   async loadSettings(): Promise<BusinessProfileSettings> {
-    await seedInitialDataIfNeeded();
-    let current = await db.settings.get('current');
-    if (!current) {
-      await seedInitialDataIfNeeded();
-      current = (await db.settings.get('current'))!;
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      this.settings.set(DEFAULT_BUSINESS_SETTINGS);
+      return DEFAULT_BUSINESS_SETTINGS;
     }
-    this.settings.set(current);
-    return current;
+
+    try {
+      await seedInitialDataIfNeeded();
+      let current = await db.settings.get('current');
+      if (!current) {
+        await seedInitialDataIfNeeded();
+        current = (await db.settings.get('current'))!;
+      }
+      const result = current || DEFAULT_BUSINESS_SETTINGS;
+      this.settings.set(result);
+      return result;
+    } catch {
+      this.settings.set(DEFAULT_BUSINESS_SETTINGS);
+      return DEFAULT_BUSINESS_SETTINGS;
+    }
   }
 
   async updateSettings(updated: Partial<BusinessProfileSettings>): Promise<BusinessProfileSettings> {

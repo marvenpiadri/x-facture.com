@@ -110,14 +110,14 @@
               [class.dragging]="draggedPage() === $index"
               (cdkDragStarted)="onDragStarted($index)"
               (cdkDragEnded)="onDragEnded()"
-              [class.rotated]="(pageRotations()[pageOrder()[$index]] ?? 0) % 180 !== 0"
+              [class.rotated]="isRotated(pageOrder()[$index])"
             >
               <button type="button" class="page-preview" (click)="togglePage($index)" [attr.aria-label]="'Select page ' + ($index + 1)">
                 <img
                   [src]="thumbnail"
                   [alt]="'Page ' + ($index + 1)"
                   loading="lazy"
-                  [style.transform]="'rotate(' + (pageRotations()[pageOrder()[$index]] ?? 0) + 'deg)'"
+                  [style.transform]="'rotate(' + getPageRotation(pageOrder()[$index]) + 'deg)'"
                 />
                 @if (isSelected($index)) {
                   <span class="selection-mark material-icons">check</span>

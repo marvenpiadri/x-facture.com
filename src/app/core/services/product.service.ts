@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { db, seedInitialDataIfNeeded } from '../db/app-database';
 import { Product } from '../models/product.model';
 
@@ -6,27 +7,49 @@ import { Product } from '../models/product.model';
   providedIn: 'root'
 })
 export class ProductService {
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
+
   readonly products = signal<Product[]>([]);
 
   constructor() {
-    this.loadProducts();
+    if (this.isBrowser) {
+      this.loadProducts();
+    }
   }
 
   async loadProducts(): Promise<Product[]> {
-    await seedInitialDataIfNeeded();
-    const list = await db.products.orderBy('name').toArray();
-    this.products.set(list);
-    return list;
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      return [];
+    }
+    try {
+      await seedInitialDataIfNeeded();
+      const list = await db.products.orderBy('name').toArray();
+      this.products.set(list);
+      return list;
+    } catch {
+      return [];
+    }
   }
 
   async getProductById(id: string): Promise<Product | undefined> {
-    return await db.products.get(id);
+    if (!this.isBrowser || typeof indexedDB === 'undefined') return undefined;
+    try {
+      return await db.products.get(id);
+    } catch {
+      return undefined;
+    }
   }
 
   async getProductBySlug(slug: string): Promise<Product | undefined> {
-    const cleaned = slug.trim().toLowerCase();
-    const all = await db.products.toArray();
-    return all.find(p => p.slug.toLowerCase() === cleaned || p.id === slug);
+    if (!this.isBrowser || typeof indexedDB === 'undefined') return undefined;
+    try {
+      const cleaned = slug.trim().toLowerCase();
+      const all = await db.products.toArray();
+      return all.find(p => p.slug.toLowerCase() === cleaned || p.id === slug);
+    } catch {
+      return undefined;
+    }
   }
 
   async saveProduct(product: Partial<Product>): Promise<Product> {

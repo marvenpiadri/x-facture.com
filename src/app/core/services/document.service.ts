@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { db } from '../db/app-database';
 import { BusinessDocument, DocumentStatus } from '../models/document.model';
 import { SettingsService } from './settings.service';
@@ -10,32 +11,57 @@ import { LedgerEntry } from '../models/ledger.model';
   providedIn: 'root'
 })
 export class DocumentService {
+  private platformId = inject(PLATFORM_ID);
+  private isBrowser = isPlatformBrowser(this.platformId);
   private settingsService = inject(SettingsService);
   private calculationService = inject(CalculationService);
 
   readonly documents = signal<BusinessDocument[]>([]);
 
+  constructor() {
+    if (this.isBrowser) {
+      this.loadDocuments();
+    }
+  }
+
   async loadDocuments(): Promise<BusinessDocument[]> {
-    const list = await db.documents.orderBy('createdAt').reverse().toArray();
-    this.documents.set(list);
-    return list;
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      return [];
+    }
+    try {
+      const list = await db.documents.orderBy('createdAt').reverse().toArray();
+      this.documents.set(list);
+      return list;
+    } catch {
+      return [];
+    }
   }
 
   async getDocumentById(id: string): Promise<BusinessDocument | undefined> {
-    return await db.documents.get(id);
+    if (!this.isBrowser || typeof indexedDB === 'undefined') return undefined;
+    try {
+      return await db.documents.get(id);
+    } catch {
+      return undefined;
+    }
   }
 
   /**
    * Look up by docNumber or slug (case-insensitive)
    */
   async getDocumentByNumberOrSlug(param: string): Promise<BusinessDocument | undefined> {
-    const cleaned = param.trim().toLowerCase();
-    const all = await db.documents.toArray();
-    return all.find(d => 
-      d.docNumber.toLowerCase() === cleaned || 
-      d.slug.toLowerCase() === cleaned ||
-      d.id === param
-    );
+    if (!this.isBrowser || typeof indexedDB === 'undefined') return undefined;
+    try {
+      const cleaned = param.trim().toLowerCase();
+      const all = await db.documents.toArray();
+      return all.find(d => 
+        d.docNumber.toLowerCase() === cleaned || 
+        d.slug.toLowerCase() === cleaned ||
+        d.id === param
+      );
+    } catch {
+      return undefined;
+    }
   }
 
   /**

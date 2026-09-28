@@ -36,7 +36,8 @@ export class SeoService {
   }
 
   updateMetadata(data: SeoMetadata): void {
-    const url = this.normalizeUrl(data.url || `${this.siteUrl}${this.document.location.pathname}`);
+    const pathname = this.document?.location?.pathname || this.router.url || '';
+    const url = this.normalizeUrl(data.url || `${this.siteUrl}${pathname}`);
     const image = data.image || this.defaultImage;
     const robots = data.robots || 'index, follow';
     const title = this.normalizeTitle(data.title);

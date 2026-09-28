@@ -272,6 +272,14 @@ export class PdfStudioPage {
     this.pageRotations.set(rotations);
   }
 
+  getPageRotation(index: number): number {
+    return this.pageRotations()[index] ?? 0;
+  }
+
+  isRotated(index: number): boolean {
+    return (this.getPageRotation(index) % 180) !== 0;
+  }
+
   isSelected(index: number): boolean {
     return this.selectedPages().includes(index);
   }
