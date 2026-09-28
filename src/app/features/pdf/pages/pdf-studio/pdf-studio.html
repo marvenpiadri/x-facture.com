@@ -13,9 +13,15 @@
         <section class="tool-category">
           <div class="category-title">{{ categoryLabels[category] }}</div>
           @for (tool of toolsFor(category); track tool.id) {
-            <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route" [class.coming-soon]="tool.available === false">
-              <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong>@if (tool.available === false) { <small>Coming soon</small> }</span>
-            </a>
+            @if (tool.available === false) {
+              <button type="button" class="tool-link coming-soon" disabled>
+                <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong><small>Coming soon</small></span>
+              </button>
+            } @else {
+              <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route">
+                <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong></span>
+              </a>
+            }
           }
         </section>
       }
@@ -149,7 +155,7 @@
           <small>Files stay in your browser during this local processing phase.</small>
         </div>
       } @else if (isProcessing() && !thumbnails().length) {
-        <div class="loading-sheet"><span class="material-icons spin">progress_activity</span><strong>Preparing document preview</strong><span>Rendering PDF pages locally…</span></div>
+        <div class="loading-sheet"><span class="material-icons spin">progress_activity</span><strong>Preparing document preview</strong><span>Rendering PDF pages locally...</span></div>
       } @else {
         <div class="page-grid" [class.drop-active]="isPageDropActive()" cdkDropList cdkDropListOrientation="mixed" [cdkDropListData]="pageOrder()" (cdkDropListDropped)="onPageDrop($event)">
           @for (thumbnail of thumbnails(); track $index) {
@@ -207,6 +213,12 @@
         @if (splitMode() === 'every-page') {
           <label class="field-label">Pages per part<input type="number" min="1" max="100" [value]="splitChunkSize()" (input)="onSplitChunkSize($event)" /></label>
         }
+      } @else if (activeTool() === 'remove-pages') {
+        <div class="tool-panel"><span class="panel-kicker">REMOVE PAGES</span><h2>Remove selected pages</h2><p>Select the pages you want to remove. The original PDF stays unchanged and a new copy is exported.</p><div class="selection-summary"><strong>{{ selectedPages().length }}</strong><span>pages selected for removal</span></div></div>
+        <div class="option-actions"><button type="button" (click)="selectAll()">Select all pages</button><button type="button" (click)="deselectAll()">Clear selection</button></div>
+      } @else if (activeTool() === 'extract-pages') {
+        <div class="tool-panel"><span class="panel-kicker">EXTRACT PAGES</span><h2>Build a new PDF from selected pages</h2><p>Select the pages to keep. Their current visual order will be preserved in the exported document.</p><div class="selection-summary"><strong>{{ selectedPages().length }}</strong><span>pages selected</span></div></div>
+        <div class="option-actions"><button type="button" (click)="selectAll()">Select all pages</button><button type="button" (click)="deselectAll()">Clear selection</button></div>
       } @else if (activeTool() === 'organize-pdf') {
         <div class="tool-panel">
           <span class="panel-kicker">PAGE WORKSPACE</span><h2>Arrange your document</h2>
@@ -258,7 +270,7 @@
           <h2>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</h2>
           <p>{{ tools.find(t => t.id === activeTool())?.description || 'Work with your document in the shared PDF workspace.' }}</p>
           @if (tools.find(t => t.id === activeTool())?.available === false) {
-            <div class="coming-soon-subtitle"><span class="material-icons">construction</span><span>Coming soon — this product requires the next processing phase.</span></div>
+            <div class="coming-soon-subtitle"><span class="material-icons">construction</span><span>Coming soon: this product requires the next processing phase.</span></div>
           }
         </div>
       }
@@ -271,21 +283,25 @@
 
     <div class="options-footer">
       @if (activeTool() === 'merge-pdf') {
-        <button type="button" class="execute-button" [disabled]="mergeDocuments().length < 2 || !mergePageCount() || isProcessing()" (click)="mergeSelectedFiles()"><span class="material-icons">merge_type</span><span>{{ isProcessing() ? 'Building…' : 'Build merged PDF' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="mergeDocuments().length < 2 || !mergePageCount() || isProcessing()" (click)="mergeSelectedFiles()"><span class="material-icons">merge_type</span><span>{{ isProcessing() ? 'Building...' : 'Build merged PDF' }}</span></button>
+      } @else if (activeTool() === 'remove-pages') {
+        <button type="button" class="execute-button" [disabled]="!file() || !canDeleteSelected() || isProcessing()" (click)="removeSelectedPages()"><span class="material-icons">delete_sweep</span><span>{{ isProcessing() ? 'Removing...' : 'Export without selected pages' }}</span></button>
+      } @else if (activeTool() === 'extract-pages') {
+        <button type="button" class="execute-button" [disabled]="!file() || !selectedPages().length || isProcessing()" (click)="extractSelected()"><span class="material-icons">content_copy</span><span>{{ isProcessing() ? 'Extracting...' : 'Extract selected pages' }}</span></button>
       } @else if (activeTool() === 'organize-pdf') {
-        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="downloadOrganized()"><span class="material-icons">download</span><span>{{ isProcessing() ? 'Processing…' : 'Download organized PDF' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="downloadOrganized()"><span class="material-icons">download</span><span>{{ isProcessing() ? 'Processing...' : 'Download organized PDF' }}</span></button>
       } @else if (activeTool() === 'split-pdf') {
-        <button type="button" class="execute-button" [disabled]="!file() || !selectedPages().length || isProcessing()" (click)="splitPdf()"><span class="material-icons">content_cut</span><span>{{ isProcessing() ? 'Splitting…' : 'Split PDF' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="!file() || (splitMode() === 'selected' && !selectedPages().length) || isProcessing()" (click)="splitPdf()"><span class="material-icons">content_cut</span><span>{{ isProcessing() ? 'Splitting...' : 'Split PDF' }}</span></button>
       } @else if (activeTool() === 'rotate-pdf') {
-        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="rotatePdf()"><span class="material-icons">rotate_right</span><span>{{ isProcessing() ? 'Rotating…' : 'Export rotated PDF' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="rotatePdf()"><span class="material-icons">rotate_right</span><span>{{ isProcessing() ? 'Rotating...' : 'Export rotated PDF' }}</span></button>
       } @else if (activeTool() === 'flatten-pdf') {
-        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="flattenPdf()"><span class="material-icons">layers_clear</span><span>{{ isProcessing() ? 'Flattening…' : 'Flatten PDF' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="flattenPdf()"><span class="material-icons">layers_clear</span><span>{{ isProcessing() ? 'Flattening...' : 'Flatten PDF' }}</span></button>
       } @else if (activeTool() === 'pdf-metadata') {
-        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="saveMetadata()"><span class="material-icons">save</span><span>{{ isProcessing() ? 'Saving…' : 'Export with metadata' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="saveMetadata()"><span class="material-icons">save</span><span>{{ isProcessing() ? 'Saving...' : 'Export with metadata' }}</span></button>
       } @else if (activeTool() === 'image-to-pdf') {
-        <button type="button" class="execute-button" [disabled]="!imageFiles().length || isProcessing()" (click)="createPdfFromImages()"><span class="material-icons">picture_as_pdf</span><span>{{ isProcessing() ? 'Creating…' : 'Create PDF' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="!imageFiles().length || isProcessing()" (click)="createPdfFromImages()"><span class="material-icons">picture_as_pdf</span><span>{{ isProcessing() ? 'Creating...' : 'Create PDF' }}</span></button>
       } @else if (activeTool() === 'pdf-to-image') {
-        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="exportPdfToImages()"><span class="material-icons">photo_library</span><span>{{ isProcessing() ? 'Exporting…' : 'Export PNG pages' }}</span></button>
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="exportPdfToImages()"><span class="material-icons">photo_library</span><span>{{ isProcessing() ? 'Exporting...' : 'Export PNG pages' }}</span></button>
       } @else {
         <button type="button" class="execute-button" disabled><span class="material-icons">schedule</span><span>Available in a later phase</span></button>
       }
