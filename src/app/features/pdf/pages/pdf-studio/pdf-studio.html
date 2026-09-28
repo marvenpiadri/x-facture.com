@@ -111,7 +111,7 @@
                     (cdkDropListExited)="isMergeDropActive.set(false)"
                   >
                     @for (page of document.pages; track page.id; let pageIndex = $index) {
-                      <article class="merge-page" cdkDrag>
+                      <article class="merge-page" cdkDrag [cdkDragData]="{ documentId: document.id, pageId: page.id }">
                         <div class="merge-page-preview">
                           <img [src]="page.thumbnail" [alt]="document.file.name + ' page ' + (pageIndex + 1)" loading="lazy" [style.transform]="'rotate(' + page.rotation + 'deg)'" />
                           <span class="merge-page-number">{{ pageIndex + 1 }}</span>
@@ -190,7 +190,7 @@
         <div class="tool-panel">
           <span class="panel-kicker">COMPOSITION</span>
           <h2>Build the final document</h2>
-          <p>Use the arrows to move whole PDFs before or after each other. Drag individual pages between PDFs when you need page-level composition.</p>
+          <p>Use the arrows to move whole PDFs before or after each other. Drag pages between any PDFs to compose the exact final sequence.</p>
           <div class="selection-summary"><strong>{{ mergePageCount() }}</strong><span>pages in final composition</span></div>
         </div>
         <div class="option-actions">
