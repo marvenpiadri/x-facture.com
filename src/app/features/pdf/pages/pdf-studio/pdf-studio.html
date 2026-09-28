@@ -63,7 +63,29 @@
     </div>
 
     <div class="canvas-content">
-      @if (!file()) {
+      @if (activeTool() === 'merge-pdf') {
+        <div class="merge-workspace">
+          <div class="merge-upload" (click)="triggerUpload(pdfInput)">
+            <span class="material-icons">library_add</span>
+            <strong>Add PDF files</strong>
+            <span>Choose two or more PDFs to merge in order.</span>
+          </div>
+          @if (mergeFiles().length) {
+            <div class="merge-file-list">
+              @for (mergeFile of mergeFiles(); track mergeFile.name + $index) {
+                <div class="merge-file-row">
+                  <span class="merge-position">{{ $index + 1 }}</span>
+                  <span class="material-icons">picture_as_pdf</span>
+                  <span class="merge-file-name">{{ mergeFile.name }}</span>
+                  <button type="button" (click)="removeMergeFile($index)" aria-label="Remove PDF">
+                    <span class="material-icons">close</span>
+                  </button>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      } @else if (!file()) {
         <div class="upload-sheet" (click)="triggerUpload(pdfInput)">
           <div class="upload-icon"><span class="material-icons">upload_file</span></div>
           <h2>Drop a PDF here</h2>
@@ -120,7 +142,7 @@
       </div>
     }
 
-    <input #pdfInput type="file" accept="application/pdf,.pdf" hidden (change)="onFileSelected($event)" />
+    <input #pdfInput type="file" accept="application/pdf,.pdf" [multiple]="activeTool() === 'merge-pdf'" hidden (change)="onFileSelected($event)" />
   </main>
 
   <aside class="pdf-options">
@@ -176,7 +198,12 @@
     </div>
 
     <div class="options-footer">
-      @if (activeTool() === 'organize-pdf') {
+      @if (activeTool() === 'merge-pdf') {
+        <button type="button" class="execute-button" [disabled]="mergeFiles().length < 2 || isProcessing()" (click)="mergeSelectedFiles()">
+          <span class="material-icons">merge_type</span>
+          <span>{{ isProcessing() ? 'Merging…' : 'Merge PDF files' }}</span>
+        </button>
+      } @else if (activeTool() === 'organize-pdf') {
         <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="downloadOrganized()">
           <span class="material-icons">download</span>
           <span>{{ isProcessing() ? 'Processing…' : 'Download organized PDF' }}</span>
