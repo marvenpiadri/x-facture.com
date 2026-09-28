@@ -188,7 +188,7 @@ export class PdfEngineService {
 
   async cropPages(
     file: File,
-    options: { margin: number; pageIndices?: number[] }
+    options: { top?: number; right?: number; bottom?: number; left?: number; margin?: number; pageIndices?: number[] }
   ): Promise<Uint8Array> {
     const pdf = await this.load(file);
     const selected = options.pageIndices ? new Set(options.pageIndices) : null;
@@ -197,8 +197,16 @@ export class PdfEngineService {
       if (selected && !selected.has(index)) return;
       const width = page.getWidth();
       const height = page.getHeight();
-      const margin = Math.max(0, Math.min(options.margin, Math.min(width, height) / 2 - 1));
-      page.setCropBox(margin, margin, width - margin * 2, height - margin * 2);
+      const fallback = Math.max(0, options.margin ?? 0);
+      const left = Math.max(0, options.left ?? fallback);
+      const right = Math.max(0, options.right ?? fallback);
+      const top = Math.max(0, options.top ?? fallback);
+      const bottom = Math.max(0, options.bottom ?? fallback);
+      const safeLeft = Math.min(left, Math.max(0, width - 2));
+      const safeRight = Math.min(right, Math.max(0, width - safeLeft - 1));
+      const safeBottom = Math.min(bottom, Math.max(0, height - 2));
+      const safeTop = Math.min(top, Math.max(0, height - safeBottom - 1));
+      page.setCropBox(safeLeft, safeBottom, Math.max(1, width - safeLeft - safeRight), Math.max(1, height - safeBottom - safeTop));
     });
 
     return pdf.save();
