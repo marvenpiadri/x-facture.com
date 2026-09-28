@@ -206,9 +206,7 @@ export class PdfStudioPage {
     order.splice(position, 0, movedPage);
     thumbnails.splice(position, 0, movedThumbnail);
 
-    const selected = new Set(this.selectedPages());
     const selectedOriginalPages = this.selectedPages().map(index => this.pageOrder()[index]);
-    const nextSelectedOriginalPages = selectedOriginalPages;
     const nextSelectedPositions = nextSelectedOriginalPages
       .map(original => order.indexOf(original))
       .filter(index => index >= 0)
@@ -218,7 +216,6 @@ export class PdfStudioPage {
     this.thumbnails.set(thumbnails);
     this.selectedPages.set(nextSelectedPositions);
     this.draggedPage.set(null);
-    void selected;
   }
 
   selectAll(): void {
