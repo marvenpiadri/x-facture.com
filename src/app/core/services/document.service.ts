@@ -127,6 +127,9 @@ export class DocumentService {
    * Save (create or update) document and sync Smart Ledger if paid
    */
   async saveDocument(doc: BusinessDocument): Promise<BusinessDocument> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Document storage is unavailable outside the browser.');
+    }
     // 1. Recompute authoritative totals to eliminate any mathematical drift
     const totals = this.calculationService.calculateDocumentTotals(
       doc.items,
@@ -170,6 +173,9 @@ export class DocumentService {
    * Update status directly and reconcile ledger
    */
   async updateStatus(id: string, newStatus: DocumentStatus): Promise<void> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Document storage is unavailable outside the browser.');
+    }
     const doc = await db.documents.get(id);
     if (!doc) return;
 
@@ -191,6 +197,9 @@ export class DocumentService {
    * Duplicate existing document as a new draft
    */
   async duplicateDocument(id: string): Promise<BusinessDocument | undefined> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Document storage is unavailable outside the browser.');
+    }
     const source = await db.documents.get(id);
     if (!source) return undefined;
 
@@ -220,6 +229,9 @@ export class DocumentService {
    * Delete document and remove associated ledger entry
    */
   async deleteDocument(id: string): Promise<void> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Document storage is unavailable outside the browser.');
+    }
     await db.documents.delete(id);
     // Remove linked ledger entry if any
     const linkedEntries = await db.ledgerEntries.where('docId').equals(id).toArray();
