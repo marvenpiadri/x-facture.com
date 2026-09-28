@@ -258,9 +258,9 @@
           <label class="field-label">Font size<input type="number" min="10" max="120" [value]="watermarkFontSize()" (input)="setWatermarkFontSize($event)" /></label>
           <label class="field-label">Angle<input type="number" min="-180" max="180" [value]="watermarkAngle()" (input)="setWatermarkAngle($event)" /></label>
         </div>
-        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be stamped' }}</span></div>
+        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be numbered' }}</span></div>
       } @else if (activeTool() === 'add-page-numbers') {
-        <div class="tool-panel"><span class="panel-kicker">PAGE NUMBERS</span><h2>Number the document</h2><p>Add sequential page numbers with a chosen starting number and placement.</p></div>
+        <div class="tool-panel"><span class="panel-kicker">PAGE NUMBERS</span><h2>Number the document</h2><p>Add sequential page numbers to all pages or only the pages selected on the canvas.</p></div>
         <div class="field-grid">
           <label class="field-label">Start number<input type="number" min="1" [value]="pageNumberStart()" (input)="setPageNumberStart($event)" /></label>
           <label class="field-label">Font size<input type="number" min="6" max="36" [value]="pageNumberFontSize()" (input)="setPageNumberFontSize($event)" /></label>
