@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { degrees, PDFDocument } from 'pdf-lib';
+import { degrees, PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 export interface PdfPageSelection { pageIndex: number; }
 export interface PdfMergeInput { file: File; rotation?: number; }
@@ -95,6 +95,123 @@ export class PdfEngineService {
       output.addPage(page);
     });
     return output.save();
+  }
+
+
+  async addWatermark(
+    file: File,
+    text: string,
+    options: { opacity: number; fontSize: number; angle: number; position: 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right'; pageIndices?: number[] } = {
+      opacity: 0.25,
+      fontSize: 42,
+      angle: 45,
+      position: 'center',
+    }
+  ): Promise<Uint8Array> {
+    const pdf = await this.load(file);
+    const font = await pdf.embedFont(StandardFonts.HelveticaBold);
+    const selected = options.pageIndices ? new Set(options.pageIndices) : null;
+
+    pdf.getPages().forEach((page, index) => {
+      if (selected && !selected.has(index)) return;
+      const width = page.getWidth();
+      const height = page.getHeight();
+      const textWidth = font.widthOfTextAtSize(text, options.fontSize);
+      const margin = 24;
+      let x = (width - textWidth) / 2;
+      let y = (height - options.fontSize) / 2;
+
+      if (options.position === 'top-left') { x = margin; y = height - options.fontSize - margin; }
+      if (options.position === 'top-right') { x = width - textWidth - margin; y = height - options.fontSize - margin; }
+      if (options.position === 'bottom-left') { x = margin; y = margin; }
+      if (options.position === 'bottom-right') { x = width - textWidth - margin; y = margin; }
+
+      page.drawText(text, {
+        x,
+        y,
+        size: options.fontSize,
+        font,
+        color: rgb(0.35, 0.35, 0.35),
+        opacity: Math.min(1, Math.max(0.05, options.opacity)),
+        rotate: degrees(options.angle),
+      });
+    });
+
+    return pdf.save();
+  }
+
+  async addPageNumbers(
+    file: File,
+    options: { start: number; position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'; fontSize: number } = {
+      start: 1,
+      position: 'bottom-center',
+      fontSize: 10,
+    }
+  ): Promise<Uint8Array> {
+    const pdf = await this.load(file);
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    const pages = pdf.getPages();
+
+    pages.forEach((page, index) => {
+      const label = String(options.start + index);
+      const width = page.getWidth();
+      const height = page.getHeight();
+      const textWidth = font.widthOfTextAtSize(label, options.fontSize);
+      const margin = 24;
+      let x = (width - textWidth) / 2;
+      let y = margin;
+
+      if (options.position === 'top-left') { x = margin; y = height - options.fontSize - margin; }
+      if (options.position === 'top-center') { x = (width - textWidth) / 2; y = height - options.fontSize - margin; }
+      if (options.position === 'top-right') { x = width - textWidth - margin; y = height - options.fontSize - margin; }
+      if (options.position === 'bottom-left') { x = margin; y = margin; }
+      if (options.position === 'bottom-right') { x = width - textWidth - margin; y = margin; }
+
+      page.drawText(label, { x, y, size: options.fontSize, font, color: rgb(0.25, 0.25, 0.25) });
+    });
+
+    return pdf.save();
+  }
+
+  async cropPages(
+    file: File,
+    options: { margin: number; pageIndices?: number[] }
+  ): Promise<Uint8Array> {
+    const pdf = await this.load(file);
+    const selected = options.pageIndices ? new Set(options.pageIndices) : null;
+
+    pdf.getPages().forEach((page, index) => {
+      if (selected && !selected.has(index)) return;
+      const width = page.getWidth();
+      const height = page.getHeight();
+      const margin = Math.max(0, Math.min(options.margin, Math.min(width, height) / 2 - 1));
+      page.setCropBox(margin, margin, width - margin * 2, height - margin * 2);
+    });
+
+    return pdf.save();
+  }
+
+  async addText(
+    file: File,
+    text: string,
+    options: { fontSize: number; x: number; y: number; pageIndices?: number[] }
+  ): Promise<Uint8Array> {
+    const pdf = await this.load(file);
+    const font = await pdf.embedFont(StandardFonts.Helvetica);
+    const selected = options.pageIndices ? new Set(options.pageIndices) : null;
+
+    pdf.getPages().forEach((page, index) => {
+      if (selected && !selected.has(index)) return;
+      page.drawText(text, {
+        x: options.x,
+        y: options.y,
+        size: options.fontSize,
+        font,
+        color: rgb(0.1, 0.1, 0.1),
+      });
+    });
+
+    return pdf.save();
   }
 
   async flatten(file: File): Promise<Uint8Array> {
