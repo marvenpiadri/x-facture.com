@@ -36,6 +36,7 @@ export class PdfStudioPage {
   readonly selectedPages = signal<number[]>([]);
   readonly pageRotations = signal<Record<number, number>>({});
   readonly zoom = signal(0.72);
+  readonly Math = Math;
 
   readonly tools: PdfTool[] = [
     { id: 'organize-pdf', name: 'Organize Pages', description: 'Reorder, rotate and remove pages.', icon: 'view_carousel', category: 'organize', route: '/pdf/organize-pdf' },
