@@ -84,18 +84,20 @@
 
             <div class="merge-document-list" cdkDropList (cdkDropListDropped)="onMergeDocumentDrop($event)" cdkDropListOrientation="vertical">
               @for (document of mergeDocuments(); track document.id; let documentIndex = $index) {
-                <section class="merge-document" cdkDrag>
-                  <header class="merge-document-header" cdkDragHandle>
-                    <div class="merge-document-grip"><span class="material-icons">drag_indicator</span></div>
+                <section class="merge-document">
+                  <header class="merge-document-header">
+                    
                     <div class="merge-document-number">{{ documentIndex + 1 }}</div>
                     <span class="material-icons">picture_as_pdf</span>
                     <div class="merge-document-title">
                       <strong>{{ document.file.name }}</strong>
                       <span>{{ document.pages.length }} {{ document.pages.length === 1 ? 'page' : 'pages' }}</span>
                     </div>
-                    <button type="button" (click)="removeMergeFile(documentIndex); $event.stopPropagation()" aria-label="Remove document">
-                      <span class="material-icons">close</span>
-                    </button>
+                    <div class="merge-document-actions">
+                      <button type="button" (click)="moveMergeDocument(document.id, -1)" [disabled]="documentIndex === 0" aria-label="Move PDF left"><span class="material-icons">arrow_back</span></button>
+                      <button type="button" (click)="moveMergeDocument(document.id, 1)" [disabled]="documentIndex === mergeDocuments().length - 1" aria-label="Move PDF right"><span class="material-icons">arrow_forward</span></button>
+                      <button type="button" (click)="removeMergeFile(documentIndex); $event.stopPropagation()" aria-label="Remove document"><span class="material-icons">close</span></button>
+                    </div>
                   </header>
 
                   <div
@@ -188,7 +190,7 @@
         <div class="tool-panel">
           <span class="panel-kicker">COMPOSITION</span>
           <h2>Build the final document</h2>
-          <p>Reorder whole PDFs with the document handle. Drag any page into another PDF to change its place in the final document.</p>
+          <p>Use the arrows to move whole PDFs before or after each other. Drag individual pages between PDFs when you need page-level composition.</p>
           <div class="selection-summary"><strong>{{ mergePageCount() }}</strong><span>pages in final composition</span></div>
         </div>
         <div class="option-actions">
