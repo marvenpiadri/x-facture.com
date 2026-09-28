@@ -254,7 +254,12 @@ export class PdfEngineService {
     return pdf.save();
   }
 
-  async imagesToPdf(files: File[], pageSize: ImagePdfPageSize = 'a4'): Promise<Uint8Array> {
+  async imagesToPdf(
+    files: File[],
+    pageSize: ImagePdfPageSize = 'a4',
+    orientation: 'auto' | 'portrait' | 'landscape' = 'auto',
+    fit: 'contain' | 'fill' = 'contain'
+  ): Promise<Uint8Array> {
     const output = await PDFDocument.create();
     const sizes = {
       a4: [595.28, 841.89],
@@ -275,16 +280,18 @@ export class PdfEngineService {
         height = imageHeight;
       } else {
         const [portraitWidth, portraitHeight] = sizes[pageSize];
-        const landscape = imageWidth > imageHeight;
-        width = landscape ? portraitHeight : portraitWidth;
-        height = landscape ? portraitWidth : portraitHeight;
+        const isLandscape = orientation === 'landscape' || (orientation === 'auto' && imageWidth > imageHeight);
+        width = isLandscape ? portraitHeight : portraitWidth;
+        height = isLandscape ? portraitWidth : portraitHeight;
       }
 
       const page = output.addPage([width, height]);
       const margin = pageSize === 'fit' ? 0 : 24;
       const maxWidth = Math.max(1, width - margin * 2);
       const maxHeight = Math.max(1, height - margin * 2);
-      const scale = Math.min(maxWidth / imageWidth, maxHeight / imageHeight, 1);
+      const scale = fit === 'fill'
+        ? Math.max(maxWidth / imageWidth, maxHeight / imageHeight)
+        : Math.min(maxWidth / imageWidth, maxHeight / imageHeight, 1);
       const drawWidth = imageWidth * scale;
       const drawHeight = imageHeight * scale;
 
