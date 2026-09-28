@@ -722,6 +722,12 @@ export class PdfStudioPage {
     }
   }
 
+  reversePages(): void {
+    const order = [...this.pageOrder()].reverse();
+    this.pageOrder.set(order);
+    this.selectedPages.set(order.map((_, index) => index));
+  }
+
   setPdfToImageScale(scale: number): void {
     this.pdfToImageScale.set(scale);
   }
