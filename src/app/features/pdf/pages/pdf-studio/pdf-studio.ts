@@ -76,6 +76,8 @@ export class PdfStudioPage {
   readonly editText = signal('');
   readonly editTextFontSize = signal(18);
   readonly editTextPosition = signal<'top-left' | 'center' | 'bottom-left'>('top-left');
+  readonly editTextX = signal(8);
+  readonly editTextY = signal(8);
   readonly metadata = signal({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
   readonly imageFiles = signal<File[]>([]);
   readonly imagePageSize = signal<'a4' | 'letter' | 'fit'>('a4');
@@ -647,6 +649,10 @@ export class PdfStudioPage {
   setEditText(event: Event): void { this.editText.set((event.target as HTMLInputElement).value); }
   setEditTextFontSize(event: Event): void { this.editTextFontSize.set(Math.max(6, Math.min(72, Math.floor(Number((event.target as HTMLInputElement).value) || 18)))); }
   setEditTextPosition(position: 'top-left' | 'center' | 'bottom-left'): void { this.editTextPosition.set(position); }
+  setEditTextCoordinate(axis: 'x' | 'y', event: Event): void {
+    const value = Math.max(0, Math.min(100, Number((event.target as HTMLInputElement).value) || 0));
+    if (axis === 'x') this.editTextX.set(value); else this.editTextY.set(value);
+  }
 
   async addTextToPdf(): Promise<void> {
     const currentFile = this.file();
@@ -659,6 +665,8 @@ export class PdfStudioPage {
       const bytes = await this.pdfEngine.addText(currentFile, text, {
         fontSize: this.editTextFontSize(),
         position: this.editTextPosition(),
+        xPercent: this.editTextX(),
+        yPercent: this.editTextY(),
         pageIndices,
       });
       this.pdfEngine.download(bytes, 'x-facture-edited.pdf');
