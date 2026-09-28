@@ -6,6 +6,8 @@ import { PdfEngineService } from '../../../../core/services/pdf-engine.service';
 
 type PdfCategory = 'organize' | 'edit' | 'convert' | 'security' | 'intelligence';
 type SplitMode = 'selected' | 'ranges' | 'every-page';
+type WatermarkPosition = 'center' | 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+type PageNumberPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
 
 interface PdfTool {
   id: string;
@@ -55,6 +57,18 @@ export class PdfStudioPage {
   readonly splitChunkSize = signal(1);
   readonly rotateAngle = signal(90);
   readonly rotateScope = signal<'all' | 'selected'>('all');
+  readonly watermarkText = signal('CONFIDENTIAL');
+  readonly watermarkOpacity = signal(0.25);
+  readonly watermarkFontSize = signal(42);
+  readonly watermarkAngle = signal(45);
+  readonly watermarkPosition = signal<WatermarkPosition>('center');
+  readonly pageNumberStart = signal(1);
+  readonly pageNumberFontSize = signal(10);
+  readonly pageNumberPosition = signal<PageNumberPosition>('bottom-center');
+  readonly cropMargin = signal(24);
+  readonly editText = signal('');
+  readonly editTextFontSize = signal(18);
+  readonly editTextPosition = signal<'top-left' | 'center' | 'bottom-left'>('top-left');
   readonly metadata = signal({ title: '', author: '', subject: '', keywords: '', creator: '', producer: '' });
   readonly imageFiles = signal<File[]>([]);
   readonly imagePageSize = signal<'a4' | 'letter' | 'fit'>('a4');
@@ -78,9 +92,9 @@ export class PdfStudioPage {
     { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive content into a clean document.', icon: 'layers_clear', category: 'organize', route: '/pdf/flatten-pdf', available: true },
     { id: 'remove-pages', name: 'Remove Pages', description: 'Remove selected pages while preserving the rest of the document.', icon: 'delete_sweep', category: 'organize', route: '/pdf/remove-pages', available: true },
     { id: 'extract-pages', name: 'Extract Pages', description: 'Build a new PDF from selected pages.', icon: 'content_copy', category: 'organize', route: '/pdf/extract-pages', available: true },
-    { id: 'crop-pdf', name: 'Crop PDF', description: 'Trim page boundaries with a visual crop workspace.', icon: 'crop', category: 'edit', route: '/pdf/crop-pdf', available: false },
-    { id: 'pdf-editor', name: 'PDF Editor', description: 'Edit and annotate PDF content.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' , available: false },
-    { id: 'add-watermark', name: 'Watermark', description: 'Stamp text or branding onto pages.', icon: 'branding_watermark', category: 'edit', route: '/pdf/add-watermark' , available: false },
+    { id: 'crop-pdf', name: 'Crop PDF', description: 'Trim page boundaries with controlled crop margins.', icon: 'crop', category: 'edit', route: '/pdf/crop-pdf', available: true },
+    { id: 'pdf-editor', name: 'PDF Editor', description: 'Add text overlays to PDF pages.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' , available: true },
+    { id: 'add-watermark', name: 'Watermark', description: 'Stamp configurable text onto selected or all pages.', icon: 'branding_watermark', category: 'edit', route: '/pdf/add-watermark' , available: true },
     { id: 'add-page-numbers', name: 'Page Numbers', description: 'Add configurable page numbering.', icon: 'format_list_numbered', category: 'edit', route: '/pdf/add-page-numbers', available: false },
     { id: 'pdf-forms', name: 'PDF Forms', description: 'Create, fill and manage interactive PDF forms.', icon: 'assignment', category: 'edit', route: '/pdf/pdf-forms', available: false },
     { id: 'redact-pdf', name: 'Redact PDF', description: 'Permanently remove sensitive content from a document.', icon: 'visibility_off', category: 'edit', route: '/pdf/redact-pdf', available: false },
@@ -520,6 +534,98 @@ export class PdfStudioPage {
     } finally {
       this.isProcessing.set(false);
     }
+  }
+
+  setWatermarkText(event: Event): void { this.watermarkText.set((event.target as HTMLInputElement).value); }
+  setWatermarkOpacity(event: Event): void { this.watermarkOpacity.set(Number((event.target as HTMLInputElement).value)); }
+  setWatermarkFontSize(event: Event): void { this.watermarkFontSize.set(Number((event.target as HTMLInputElement).value)); }
+  setWatermarkAngle(event: Event): void { this.watermarkAngle.set(Number((event.target as HTMLInputElement).value)); }
+  setWatermarkPosition(position: WatermarkPosition): void { this.watermarkPosition.set(position); }
+
+  async watermarkPdf(): Promise<void> {
+    const currentFile = this.file();
+    const text = this.watermarkText().trim();
+    if (!currentFile || !text) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const pageIndices = this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined;
+      const bytes = await this.pdfEngine.addWatermark(currentFile, text, {
+        opacity: this.watermarkOpacity(),
+        fontSize: this.watermarkFontSize(),
+        angle: this.watermarkAngle(),
+        position: this.watermarkPosition(),
+        pageIndices,
+      });
+      this.pdfEngine.download(bytes, 'x-facture-watermarked.pdf');
+    } catch { this.error.set('The watermark could not be added.'); }
+    finally { this.isProcessing.set(false); }
+  }
+
+  setPageNumberStart(event: Event): void { this.pageNumberStart.set(Math.max(1, Math.floor(Number((event.target as HTMLInputElement).value) || 1))); }
+  setPageNumberFontSize(event: Event): void { this.pageNumberFontSize.set(Math.max(6, Math.min(36, Math.floor(Number((event.target as HTMLInputElement).value) || 10)))); }
+  setPageNumberPosition(position: PageNumberPosition): void { this.pageNumberPosition.set(position); }
+
+  async numberPages(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const bytes = await this.pdfEngine.addPageNumbers(currentFile, {
+        start: this.pageNumberStart(),
+        position: this.pageNumberPosition(),
+        fontSize: this.pageNumberFontSize(),
+      });
+      this.pdfEngine.download(bytes, 'x-facture-numbered.pdf');
+    } catch { this.error.set('Page numbers could not be added.'); }
+    finally { this.isProcessing.set(false); }
+  }
+
+  setCropMargin(margin: number): void { this.cropMargin.set(margin); }
+
+  async cropPdf(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const pageIndices = this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined;
+      const bytes = await this.pdfEngine.cropPages(currentFile, { margin: this.cropMargin(), pageIndices });
+      this.pdfEngine.download(bytes, 'x-facture-cropped.pdf');
+    } catch { this.error.set('The PDF pages could not be cropped.'); }
+    finally { this.isProcessing.set(false); }
+  }
+
+  setEditText(event: Event): void { this.editText.set((event.target as HTMLInputElement).value); }
+  setEditTextFontSize(event: Event): void { this.editTextFontSize.set(Math.max(6, Math.min(72, Math.floor(Number((event.target as HTMLInputElement).value) || 18)))); }
+  setEditTextPosition(position: 'top-left' | 'center' | 'bottom-left'): void { this.editTextPosition.set(position); }
+
+  async addTextToPdf(): Promise<void> {
+    const currentFile = this.file();
+    const text = this.editText().trim();
+    if (!currentFile || !text) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const pageIndices = this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined;
+      const firstPage = (await this.pdfEngine.getPageCount(currentFile)) > 0 ? 0 : 0;
+      const positions = {
+        'top-left': { x: 24, y: 760 },
+        center: { x: 220, y: 400 },
+        'bottom-left': { x: 24, y: 24 },
+      } as const;
+      const position = positions[this.editTextPosition()];
+      const bytes = await this.pdfEngine.addText(currentFile, text, {
+        fontSize: this.editTextFontSize(),
+        x: position.x,
+        y: position.y,
+        pageIndices,
+      });
+      void firstPage;
+      this.pdfEngine.download(bytes, 'x-facture-edited.pdf');
+    } catch { this.error.set('The text could not be added to the PDF.'); }
+    finally { this.isProcessing.set(false); }
   }
 
   setRotateAngle(angle: number): void {
