@@ -697,6 +697,7 @@ export class PdfStudioPage {
     this.selectedPages.set([]);
     this.mergeFiles.set([]);
     this.mergeDocuments.set([]);
+    this.imageFiles.set([]);
     this.draggedPage.set(null);
     this.isFileDragActive.set(false);
     this.isMergeDropActive.set(false);
