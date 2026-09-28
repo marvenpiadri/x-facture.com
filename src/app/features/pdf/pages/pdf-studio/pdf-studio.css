@@ -96,6 +96,9 @@
 }
 
 .tool-link {
+  appearance: none;
+  font: inherit;
+  text-align: left;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -1351,7 +1354,8 @@
   font-size: 8px;
   font-weight: 700;
 }
-.tool-link.coming-soon { opacity: .68; }
+.tool-link.coming-soon { opacity: .68; cursor: not-allowed; }
+.tool-link.coming-soon:disabled { opacity: .68; }
 .tool-link.coming-soon:hover { opacity: .9; }
 .coming-soon-subtitle {
   display: flex;
