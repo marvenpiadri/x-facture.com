@@ -120,12 +120,6 @@
         <span>PDF</span>
       </button>
 
-      @if (document().docType === 'invoices') {
-        <button type="button" class="btn-action xml-btn" (click)="onDownloadXml()" title="Download structured invoice XML">
-          <span class="material-icons btn-icon">data_object</span>
-          <span>XML</span>
-        </button>
-      }
 
       <button type="button" class="btn-action print-btn" (click)="onPrint()" title="Send to printer">
         <span class="material-icons btn-icon">print</span>
