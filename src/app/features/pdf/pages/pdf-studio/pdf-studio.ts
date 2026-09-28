@@ -108,7 +108,6 @@ export class PdfStudioPage {
     { id: 'ai-summarizer', name: 'AI Summarizer', description: 'Turn long PDFs into useful structured summaries.', icon: 'auto_awesome', category: 'intelligence', route: '/pdf/ai-summarizer', available: false },
     { id: 'translate-pdf', name: 'Translate PDF', description: 'Translate document content while preserving structure.', icon: 'translate', category: 'intelligence', route: '/pdf/translate-pdf', available: false },
     { id: 'pdf-metadata', name: 'PDF Metadata', description: 'Inspect and clean document metadata.', icon: 'info', category: 'security', route: '/pdf/pdf-metadata', available: true },
-    { id: 'compress-pdf', name: 'Compress PDF', description: 'Reduce file size while preserving quality.', icon: 'compress', category: 'security', route: '/pdf/compress-pdf', available: false },
   ];
 
   readonly categories: PdfCategory[] = ['organize', 'edit', 'convert', 'security', 'intelligence'];
