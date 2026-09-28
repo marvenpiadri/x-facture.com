@@ -592,6 +592,51 @@ export class PdfStudioPage {
     }
   }
 
+  setPdfToImageScale(scale: number): void {
+    this.pdfToImageScale.set(scale);
+  }
+
+  async exportPdfToImages(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile || typeof window === 'undefined') return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+      pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/6.3.289/pdf.worker.min.mjs';
+      const document = await pdfjs.getDocument({ data: new Uint8Array(await currentFile.arrayBuffer()) }).promise;
+      const indices = this.selectedPages().length
+        ? this.selectedPages().map(position => this.pageOrder()[position])
+        : Array.from({ length: document.numPages }, (_, index) => index);
+
+      for (const index of indices) {
+        const page = await document.getPage(index + 1);
+        const viewport = page.getViewport({ scale: this.pdfToImageScale() });
+        const canvas = window.document.createElement('canvas');
+        const context = canvas.getContext('2d', { alpha: false });
+        if (!context) continue;
+        canvas.width = Math.ceil(viewport.width);
+        canvas.height = Math.ceil(viewport.height);
+        await page.render({ canvas, canvasContext: context, viewport }).promise;
+        const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const anchor = window.document.createElement('a');
+          anchor.href = url;
+          anchor.download = `x-facture-page-${String(index + 1).padStart(2, '0')}.png`;
+          anchor.click();
+          setTimeout(() => URL.revokeObjectURL(url), 3000);
+        }
+        page.cleanup();
+      }
+      document.cleanup();
+    } catch {
+      this.error.set('The PDF pages could not be exported as images.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
   async downloadOrganized(): Promise<void> {
     const currentFile = this.file();
     if (!currentFile) return;
