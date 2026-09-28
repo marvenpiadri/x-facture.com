@@ -28,6 +28,7 @@ export class PdfStudioPage {
   readonly pdfEngine = inject(PdfEngineService);
   readonly activeTool = signal<string>('organize-pdf');
   readonly file = signal<File | null>(null);
+  readonly mergeFiles = signal<File[]>([]);
   readonly pageCount = signal<number | null>(null);
   readonly error = signal<string | null>(null);
   readonly isProcessing = signal(false);
@@ -100,11 +101,48 @@ export class PdfStudioPage {
 
   async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
-    const selected = input.files?.[0];
+    const selected = Array.from(input.files ?? []);
 
-    if (!selected) return;
-    await this.loadFile(selected);
+    if (!selected.length) return;
+
+    if (this.activeTool() === 'merge-pdf') {
+      this.addMergeFiles(selected);
+    } else {
+      await this.loadFile(selected[0]);
+    }
+
     input.value = '';
+  }
+
+  addMergeFiles(files: File[]): void {
+    const pdfs = files.filter(file => file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf'));
+    if (!pdfs.length) return;
+    this.mergeFiles.set([...this.mergeFiles(), ...pdfs]);
+    this.file.set(this.mergeFiles()[0] ?? pdfs[0]);
+    this.error.set(null);
+  }
+
+  removeMergeFile(index: number): void {
+    const files = this.mergeFiles().filter((_, fileIndex) => fileIndex !== index);
+    this.mergeFiles.set(files);
+    this.file.set(files[0] ?? null);
+  }
+
+  async mergeSelectedFiles(): Promise<void> {
+    const files = this.mergeFiles();
+    if (files.length < 2) return;
+
+    this.isProcessing.set(true);
+    this.error.set(null);
+
+    try {
+      const bytes = await this.pdfEngine.merge(files.map(file => ({ file })));
+      this.pdfEngine.download(bytes, 'x-facture-merged.pdf');
+    } catch {
+      this.error.set('The selected PDF files could not be merged.');
+    } finally {
+      this.isProcessing.set(false);
+    }
   }
 
   triggerUpload(input: HTMLInputElement): void {
@@ -113,15 +151,21 @@ export class PdfStudioPage {
 
   async onDrop(event: DragEvent): Promise<void> {
     event.preventDefault();
-    const dropped = event.dataTransfer?.files?.[0];
-    if (!dropped) return;
-    await this.loadFile(dropped);
+    const dropped = Array.from(event.dataTransfer?.files ?? []);
+    if (!dropped.length) return;
+
+    if (this.activeTool() === 'merge-pdf') {
+      this.addMergeFiles(dropped);
+    } else {
+      await this.loadFile(dropped[0]);
+    }
   }
 
   private async loadFile(selected: File): Promise<void> {
     this.error.set(null);
     this.isProcessing.set(true);
     this.file.set(selected);
+    this.mergeFiles.set([]);
     this.pageCount.set(null);
     this.thumbnails.set([]);
     this.pageOrder.set([]);
