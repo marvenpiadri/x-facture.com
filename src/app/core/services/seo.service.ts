@@ -27,6 +27,8 @@ export class SeoService {
   private readonly defaultImage = `${this.siteUrl}/x-facture-LOGO-PFP.png`;
 
   constructor() {
+    this.guardDocumentTitle();
+
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe(event => this.updateForUrl(event.urlAfterRedirects));
@@ -37,15 +39,16 @@ export class SeoService {
     const url = this.normalizeUrl(data.url || `${this.siteUrl}${this.document.location.pathname}`);
     const image = data.image || this.defaultImage;
     const robots = data.robots || 'index, follow';
+    const title = this.normalizeTitle(data.title);
 
-    this.titleService.setTitle(data.title);
+    this.titleService.setTitle(title);
     this.metaService.updateTag({ name: 'description', content: data.description });
     this.metaService.updateTag({ name: 'robots', content: robots });
     this.metaService.updateTag({ name: 'googlebot', content: robots });
     if (data.keywords) this.metaService.updateTag({ name: 'keywords', content: data.keywords });
     else this.metaService.removeTag('name="keywords"');
 
-    this.metaService.updateTag({ property: 'og:title', content: data.title });
+    this.metaService.updateTag({ property: 'og:title', content: title });
     this.metaService.updateTag({ property: 'og:description', content: data.description });
     this.metaService.updateTag({ property: 'og:url', content: url });
     this.metaService.updateTag({ property: 'og:type', content: data.type || 'website' });
@@ -84,7 +87,7 @@ export class SeoService {
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
             { '@type': 'ListItem', position: 2, name: 'Business Calculators', item: `${this.siteUrl}/calculators` },
-            { '@type': 'ListItem', position: 3, name: calculator.name, item: url }
+            { '@type': 'ListItem', position: 3, name: this.normalizeTitle(calculator.name), item: url }
           ]
         }
       ]
@@ -155,6 +158,34 @@ export class SeoService {
     else this.setSiteSchema(metadata.url || this.siteUrl, metadata.title);
   }
 
+  private normalizeTitle(title: string): string {
+    return title
+      .replace(/[—–]/g, '•')
+      .replace(/\s*•\s*/g, ' • ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  private guardDocumentTitle(): void {
+    if (typeof MutationObserver === 'undefined') return;
+
+    const sanitize = (): void => {
+      const titleElement = this.document.querySelector('title');
+      if (!titleElement) return;
+
+      const currentTitle = titleElement.textContent || '';
+      const normalizedTitle = this.normalizeTitle(currentTitle);
+      if (currentTitle !== normalizedTitle) {
+        titleElement.textContent = normalizedTitle;
+      }
+    };
+
+    sanitize();
+
+    const observer = new MutationObserver(sanitize);
+    observer.observe(this.document.head, { childList: true, subtree: true, characterData: true });
+  }
+
   private setHomepageSchema(): void {
     this.setJsonLd({
       '@context': 'https://schema.org',
@@ -171,13 +202,15 @@ export class SeoService {
   }
 
   private setSiteSchema(url: string, pageName: string): void {
+    const normalizedPageName = this.normalizeTitle(pageName);
+
     this.setJsonLd({
       '@context': 'https://schema.org',
       '@graph': [
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
-        { '@type': 'WebPage', '@id': `${url}#webpage`, name: pageName, url, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } },
-        { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl }, { '@type': 'ListItem', position: 2, name: pageName, item: url }] }
+        { '@type': 'WebPage', '@id': `${url}#webpage`, name: normalizedPageName, url, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } },
+        { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl }, { '@type': 'ListItem', position: 2, name: normalizedPageName, item: url }] }
       ]
     });
   }
