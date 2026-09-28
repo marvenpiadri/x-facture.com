@@ -34,13 +34,20 @@
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
-            "ssr": {"entry": "src/server.ts"}
+            "ssr": {"entry": "src/server.ts"},
+            "allowedCommonJsDependencies": [
+              "html2pdf.js",
+              "pako",
+              "jspdf",
+              "canvg",
+              "html2canvas"
+            ]
           },
           "configurations": {
             "production": {
               "budgets": [
-                {"type": "initial", "maximumWarning": "1MB", "maximumError": "2MB"},
-                {"type": "anyComponentStyle", "maximumWarning": "40kB", "maximumError": "80kB"}
+                {"type": "initial", "maximumWarning": "3MB", "maximumError": "5MB"},
+                {"type": "anyComponentStyle", "maximumWarning": "50kB", "maximumError": "100kB"}
               ],
               "outputHashing": "all"
             },

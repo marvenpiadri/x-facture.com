@@ -24,7 +24,7 @@ app.use(
   }),
 );
 
-app.get('*', (req, res, next) => {
+app.use((req, res, next) => {
   angularApp
     .handle(req)
     .then((response) =>
