@@ -1,30 +1,25 @@
 import { Injectable } from '@angular/core';
 import { degrees, PDFDocument } from 'pdf-lib';
 
-export interface PdfPageSelection {
-  pageIndex: number;
+export interface PdfPageSelection { pageIndex: number; }
+export interface PdfMergeInput { file: File; rotation?: number; }
+export interface PdfComposePage { pageIndex: number; rotation?: number; }
+export interface PdfComposeInput { file: File; pages: PdfComposePage[]; }
+
+export interface PdfMetadata {
+  title: string;
+  author: string;
+  subject: string;
+  keywords: string;
+  creator: string;
+  producer: string;
 }
 
-export interface PdfMergeInput {
-  file: File;
-  rotation?: number;
-}
-
-export interface PdfComposePage {
-  pageIndex: number;
-  rotation?: number;
-}
-
-export interface PdfComposeInput {
-  file: File;
-  pages: PdfComposePage[];
-}
+export type ImagePdfPageSize = 'a4' | 'letter' | 'fit';
 
 @Injectable({ providedIn: 'root' })
 export class PdfEngineService {
-  async read(file: File): Promise<ArrayBuffer> {
-    return file.arrayBuffer();
-  }
+  async read(file: File): Promise<ArrayBuffer> { return file.arrayBuffer(); }
 
   async load(file: File): Promise<PDFDocument> {
     return PDFDocument.load(await file.arrayBuffer(), { ignoreEncryption: true });
@@ -36,33 +31,23 @@ export class PdfEngineService {
   }
 
   async merge(files: PdfMergeInput[]): Promise<Uint8Array> {
-    return this.composePages(
-      files.map(item => ({
-        file: item.file,
-        pages: [],
-      })),
-    );
+    return this.composePages(files.map(item => ({ file: item.file, pages: [] })));
   }
 
   async composePages(inputs: PdfComposeInput[]): Promise<Uint8Array> {
     const output = await PDFDocument.create();
-
     for (const input of inputs) {
       const source = await this.load(input.file);
       const indices = input.pages.length
         ? input.pages.map(page => page.pageIndex).filter(index => index >= 0 && index < source.getPageCount())
         : source.getPageIndices();
       const pages = await output.copyPages(source, indices);
-
       pages.forEach((page, position) => {
         const rotation = input.pages[position]?.rotation ?? 0;
-        if (rotation) {
-          page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
-        }
+        if (rotation) page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
         output.addPage(page);
       });
     }
-
     return output.save();
   }
 
@@ -75,31 +60,110 @@ export class PdfEngineService {
     return output.save();
   }
 
-  async reorderPages(
-    file: File,
-    orderedIndices: number[],
-    rotations: Record<number, number> = {},
-  ): Promise<Uint8Array> {
+  async reorderPages(file: File, orderedIndices: number[], rotations: Record<number, number> = {}): Promise<Uint8Array> {
     const source = await this.load(file);
     const output = await PDFDocument.create();
     const validIndices = orderedIndices.filter(index => index >= 0 && index < source.getPageCount());
     const pages = await output.copyPages(source, validIndices);
-
     pages.forEach((page, position) => {
       const rotation = rotations[validIndices[position]] ?? 0;
       if (rotation) page.setRotation(degrees((page.getRotation().angle + rotation) % 360));
       output.addPage(page);
     });
-
     return output.save();
   }
 
   async rotatePages(file: File, angle: number): Promise<Uint8Array> {
     const pdf = await this.load(file);
-    pdf.getPages().forEach(page => {
-      page.setRotation(degrees((page.getRotation().angle + angle) % 360));
-    });
+    pdf.getPages().forEach(page => page.setRotation(degrees((page.getRotation().angle + angle) % 360)));
     return pdf.save();
+  }
+
+  async rotateSelectedPages(file: File, pageIndices: number[], angle: number): Promise<Uint8Array> {
+    const source = await this.load(file);
+    const selected = new Set(pageIndices);
+    const output = await PDFDocument.create();
+    const indices = source.getPageIndices();
+    const pages = await output.copyPages(source, indices);
+    pages.forEach((page, index) => {
+      if (selected.has(index)) page.setRotation(degrees((page.getRotation().angle + angle) % 360));
+      output.addPage(page);
+    });
+    return output.save();
+  }
+
+  async flatten(file: File): Promise<Uint8Array> {
+    const pdf = await this.load(file);
+    pdf.getForm().flatten();
+    return pdf.save();
+  }
+
+  async getMetadata(file: File): Promise<PdfMetadata> {
+    const pdf = await this.load(file);
+    return {
+      title: pdf.getTitle() ?? '',
+      author: pdf.getAuthor() ?? '',
+      subject: pdf.getSubject() ?? '',
+      keywords: pdf.getKeywords() ?? '',
+      creator: pdf.getCreator() ?? '',
+      producer: pdf.getProducer() ?? '',
+    };
+  }
+
+  async updateMetadata(file: File, metadata: Partial<PdfMetadata>): Promise<Uint8Array> {
+    const pdf = await this.load(file);
+    if (metadata.title !== undefined) pdf.setTitle(metadata.title);
+    if (metadata.author !== undefined) pdf.setAuthor(metadata.author);
+    if (metadata.subject !== undefined) pdf.setSubject(metadata.subject);
+    if (metadata.keywords !== undefined) pdf.setKeywords(metadata.keywords.split(',').map(value => value.trim()).filter(Boolean));
+    if (metadata.creator !== undefined) pdf.setCreator(metadata.creator);
+    if (metadata.producer !== undefined) pdf.setProducer(metadata.producer);
+    return pdf.save();
+  }
+
+  async imagesToPdf(files: File[], pageSize: ImagePdfPageSize = 'a4'): Promise<Uint8Array> {
+    const output = await PDFDocument.create();
+    const sizes = {
+      a4: [595.28, 841.89],
+      letter: [612, 792],
+    } as const;
+
+    for (const file of files) {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+      const image = isPng ? await output.embedPng(bytes) : await output.embedJpg(bytes);
+      const imageWidth = image.width;
+      const imageHeight = image.height;
+      let width: number;
+      let height: number;
+
+      if (pageSize === 'fit') {
+        width = imageWidth;
+        height = imageHeight;
+      } else {
+        const [portraitWidth, portraitHeight] = sizes[pageSize];
+        const landscape = imageWidth > imageHeight;
+        width = landscape ? portraitHeight : portraitWidth;
+        height = landscape ? portraitWidth : portraitHeight;
+      }
+
+      const page = output.addPage([width, height]);
+      const margin = pageSize === 'fit' ? 0 : 24;
+      const maxWidth = Math.max(1, width - margin * 2);
+      const maxHeight = Math.max(1, height - margin * 2);
+      const scale = Math.min(maxWidth / imageWidth, maxHeight / imageHeight, 1);
+      const drawWidth = imageWidth * scale;
+      const drawHeight = imageHeight * scale;
+
+      page.drawImage(image, {
+        x: (width - drawWidth) / 2,
+        y: (height - drawHeight) / 2,
+        width: drawWidth,
+        height: drawHeight,
+      });
+    }
+
+    return output.save();
   }
 
   download(bytes: Uint8Array, fileName: string): void {
