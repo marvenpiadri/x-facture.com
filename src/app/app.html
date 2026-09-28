@@ -80,62 +80,29 @@
                   <span class="pdf-menu-kicker">DOCUMENT ENGINE</span>
                   <strong class="pdf-menu-title">PDF Workspace</strong>
                 </div>
-                <span class="pdf-menu-count">PHASE 1</span>
+                <span class="pdf-menu-count">{{ pdfNavTools.length }} TOOLS</span>
               </div>
 
               <div class="pdf-menu-grid">
-                <a routerLink="/pdf" class="pdf-menu-item pdf-menu-featured" (click)="closeMenus()">
-                  <span class="material-icons pdf-item-icon">picture_as_pdf</span>
-                  <div class="item-text">
-                    <strong class="item-title">Open PDF Studio</strong>
-                    <span class="item-desc">One workspace for every PDF operation</span>
-                  </div>
-                  <span class="material-icons pdf-item-arrow">arrow_forward</span>
-                </a>
-
-                <a routerLink="/pdf/merge-pdf" class="pdf-menu-item" (click)="closeMenus()">
-                  <span class="material-icons pdf-item-icon">merge_type</span>
-                  <div class="item-text">
-                    <strong class="item-title">Merge PDFs</strong>
-                    <span class="item-desc">Combine files and control page order</span>
-                  </div>
-                </a>
-
-                <a routerLink="/pdf/split-pdf" class="pdf-menu-item" (click)="closeMenus()">
-                  <span class="material-icons pdf-item-icon">content_cut</span>
-                  <div class="item-text">
-                    <strong class="item-title">Split PDF</strong>
-                    <span class="item-desc">Extract pages or page ranges</span>
-                  </div>
-                </a>
-
-                <a routerLink="/pdf/organize-pdf" class="pdf-menu-item" (click)="closeMenus()">
-                  <span class="material-icons pdf-item-icon">view_carousel</span>
-                  <div class="item-text">
-                    <strong class="item-title">Organize Pages</strong>
-                    <span class="item-desc">Reorder, rotate and remove pages</span>
-                  </div>
-                </a>
-
-                <a routerLink="/pdf/compress-pdf" class="pdf-menu-item" (click)="closeMenus()">
-                  <span class="material-icons pdf-item-icon">compress</span>
-                  <div class="item-text">
-                    <strong class="item-title">Compress PDF</strong>
-                    <span class="item-desc">Optimize document size and quality</span>
-                  </div>
-                </a>
-
-                <a routerLink="/pdf/image-to-pdf" class="pdf-menu-item" (click)="closeMenus()">
-                  <span class="material-icons pdf-item-icon">image</span>
-                  <div class="item-text">
-                    <strong class="item-title">Image to PDF</strong>
-                    <span class="item-desc">Turn images into paginated PDFs</span>
-                  </div>
-                </a>
+                @for (tool of pdfNavTools; track tool.id) {
+                  <a
+                    [routerLink]="['/pdf', tool.id]"
+                    class="pdf-menu-item"
+                    [class.pdf-menu-featured]="tool.id === 'organize-pdf'"
+                    (click)="closeMenus()"
+                  >
+                    <span class="material-icons pdf-item-icon">{{ tool.icon }}</span>
+                    <div class="item-text">
+                      <strong class="item-title">{{ tool.name }}</strong>
+                      <span class="item-desc">{{ tool.description }}</span>
+                    </div>
+                    <span class="pdf-tool-category">{{ tool.category }}</span>
+                  </a>
+                }
               </div>
 
               <div class="pdf-menu-footer">
-                <span>More tools are being built into the shared PDF Engine.</span>
+                <span>Every PDF service opens in the shared workspace.</span>
                 <a routerLink="/pdf" (click)="closeMenus()">View all <span class="material-icons">arrow_forward</span></a>
               </div>
             </div>
