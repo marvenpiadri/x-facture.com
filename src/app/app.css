@@ -1105,3 +1105,23 @@
     flex-direction: column;
   }
 }
+
+
+.pdf-tool-category {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  margin-left: auto;
+  padding: 2px 5px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-muted);
+  font-size: 8px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .pdf-menu-item .pdf-tool-category {
+    display: none;
+  }
+}
