@@ -24,7 +24,6 @@ import { InventoryTurnoverHoldingCalculatorComponent } from './calculators/inven
 import { CurrencyExchangeFeeCalculatorComponent } from './calculators/currency-exchange-fee-calculator/currency-exchange-fee-calculator.component';
 import { CashRegisterChangeCalculatorComponent } from './calculators/cash-register-change-calculator/cash-register-change-calculator.component';
 import { CompoundWorkingCapitalCalculatorComponent } from './calculators/compound-working-capital-calculator/compound-working-capital-calculator.component';
-import { PdfStudioPage } from './features/pdf/pages/pdf-studio/pdf-studio';
 
 const SPECIALIZED_CALCULATOR_ROUTES: Routes = [
   { path: 'calculators/stripe-paypal-fee-calculator', component: StripePaypalFeeCalculatorComponent },
@@ -56,8 +55,6 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsHubPage },
 
   { path: 'calculators', component: CalculatorsHubPage },
-  { path: 'pdf', component: PdfStudioPage },
-  { path: 'pdf/:tool', component: PdfStudioPage },
   ...SPECIALIZED_CALCULATOR_ROUTES,
   ...SIMPLE_CALCULATOR_ROUTES,
 
