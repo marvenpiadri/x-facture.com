@@ -327,13 +327,25 @@
           <button type="button" (click)="setImagePageSize('letter')" [class.active]="imagePageSize() === 'letter'"><strong>Letter</strong><span>US Letter page format.</span></button>
           <button type="button" (click)="setImagePageSize('fit')" [class.active]="imagePageSize() === 'fit'"><strong>Fit image</strong><span>Use image dimensions as the page.</span></button>
         </div>
+        <div class="split-methods">
+          <button type="button" (click)="setImageOrientation('auto')" [class.active]="imageOrientation() === 'auto'"><strong>Auto orientation</strong><span>Match each page to the image shape.</span></button>
+          <button type="button" (click)="setImageOrientation('portrait')" [class.active]="imageOrientation() === 'portrait'"><strong>Portrait</strong><span>Keep every standard page vertical.</span></button>
+          <button type="button" (click)="setImageOrientation('landscape')" [class.active]="imageOrientation() === 'landscape'"><strong>Landscape</strong><span>Keep every standard page horizontal.</span></button>
+          <button type="button" (click)="setImageFit('contain')" [class.active]="imageFit() === 'contain'"><strong>Contain</strong><span>Keep the complete image visible.</span></button>
+          <button type="button" (click)="setImageFit('fill')" [class.active]="imageFit() === 'fill'"><strong>Fill</strong><span>Fill the page, cropping overflow.</span></button>
+        </div>
       } @else if (activeTool() === 'pdf-to-image') {
-        <div class="tool-panel"><span class="panel-kicker">IMAGE EXPORT</span><h2>Export pages as PNG</h2><p>Choose a render scale. If pages are selected on the canvas, only those pages are exported; otherwise the whole document is exported.</p></div>
+        <div class="tool-panel"><span class="panel-kicker">IMAGE EXPORT</span><h2>Export pages as images</h2><p>Choose quality and format. If pages are selected on the canvas, only those pages are exported; otherwise the whole document is exported.</p></div>
         <div class="split-methods">
           <button type="button" (click)="setPdfToImageScale(1)" [class.active]="pdfToImageScale() === 1"><strong>Standard</strong><span>Fast, compact PNG output.</span></button>
           <button type="button" (click)="setPdfToImageScale(1.5)" [class.active]="pdfToImageScale() === 1.5"><strong>High quality</strong><span>Sharper output for normal sharing.</span></button>
           <button type="button" (click)="setPdfToImageScale(2)" [class.active]="pdfToImageScale() === 2"><strong>Print quality</strong><span>Larger PNGs with more detail.</span></button>
         </div>
+        <div class="split-methods">
+          <button type="button" (click)="setPdfToImageFormat('png')" [class.active]="pdfToImageFormat() === 'png'"><strong>PNG</strong><span>Lossless, best for documents.</span></button>
+          <button type="button" (click)="setPdfToImageFormat('jpeg')" [class.active]="pdfToImageFormat() === 'jpeg'"><strong>JPEG</strong><span>Smaller files for photos and sharing.</span></button>
+        </div>
+        <label class="field-label">JPEG quality<input type="range" min="0.5" max="1" step="0.01" [value]="pdfToImageQuality()" (input)="setPdfToImageQuality(+$any($event.target).value)" /></label>
       } @else {
         <div class="tool-panel">
           <span class="panel-kicker">{{ tools.find(t => t.id === activeTool())?.available === false ? 'COMING SOON' : categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
