@@ -514,6 +514,21 @@
     </div>
   }
 
+  @if (currentBreadcrumbs().length) {
+    <nav class="global-breadcrumbs no-print" aria-label="Breadcrumb">
+      @for (crumb of currentBreadcrumbs(); track crumb.label + '-' + $index; let isLast = $last) {
+        @if (crumb.url && !isLast) {
+          <a [routerLink]="crumb.url">{{ crumb.label }}</a>
+        } @else {
+          <span [class.current]="isLast">{{ crumb.label }}</span>
+        }
+        @if (!isLast) {
+          <span class="material-icons breadcrumb-separator" aria-hidden="true">chevron_right</span>
+        }
+      }
+    </nav>
+  }
+
   <!-- Router Outlet Canvas -->
   <main class="main-content-viewport">
     <router-outlet />
