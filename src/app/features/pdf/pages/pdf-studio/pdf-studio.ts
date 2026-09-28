@@ -458,7 +458,7 @@ export class PdfStudioPage {
     this.error.set(null);
     try {
       const indices = positions.map(position => this.pageOrder()[position]);
-      const bytes = await this.pdfEngine.extractPages(currentFile, indices);
+      const bytes = await this.pdfEngine.extractPages(currentFile, indices, this.pageRotations());
       this.pdfEngine.download(bytes, 'x-facture-extracted.pdf');
     } catch {
       this.error.set('The selected pages could not be extracted.');
@@ -506,7 +506,7 @@ export class PdfStudioPage {
       const ordered = this.pageOrder();
       for (let start = 0, part = 1; start < count; start += chunkSize, part += 1) {
         const indices = ordered.slice(start, start + chunkSize);
-        const bytes = await this.pdfEngine.extractPages(currentFile, indices);
+        const bytes = await this.pdfEngine.extractPages(currentFile, indices, this.pageRotations());
         this.pdfEngine.download(bytes, `x-facture-part-${String(part).padStart(2, '0')}.pdf`);
       }
     } catch (error) {
@@ -530,10 +530,16 @@ export class PdfStudioPage {
     this.isProcessing.set(true);
     this.error.set(null);
     try {
-      const indices = this.selectedPages().map(position => this.pageOrder()[position]);
-      const bytes = this.rotateScope() === 'selected' && indices.length
-        ? await this.pdfEngine.rotateSelectedPages(currentFile, indices, this.rotateAngle())
-        : await this.pdfEngine.rotatePages(currentFile, this.rotateAngle());
+      const order = this.pageOrder();
+      const selected = new Set(this.selectedPages().map(position => order[position]));
+      const rotations = Object.fromEntries(
+        order.map(index => {
+          const current = this.pageRotations()[index] ?? 0;
+          const shouldRotate = this.rotateScope() === 'all' || selected.has(index);
+          return [index, shouldRotate ? (current + this.rotateAngle()) % 360 : current];
+        })
+      );
+      const bytes = await this.pdfEngine.reorderPages(currentFile, order, rotations);
       this.pdfEngine.download(bytes, 'x-facture-rotated.pdf');
     } catch {
       this.error.set('The PDF could not be rotated.');
