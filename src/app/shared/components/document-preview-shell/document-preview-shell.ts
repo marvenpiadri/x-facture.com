@@ -13,7 +13,6 @@ import { BusinessDocument, DocumentStatus, PaperSize } from '../../../core/model
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { TemplateRendererComponent } from '../template-renderer/template-renderer';
 import { DocumentService } from '../../../core/services/document.service';
-import { InvoiceXmlService } from '../../../core/services/invoice-xml.service';
 
 @Component({
   selector: 'app-document-preview-shell',
@@ -30,7 +29,6 @@ import { InvoiceXmlService } from '../../../core/services/invoice-xml.service';
 export class DocumentPreviewShellComponent implements OnInit {
   private router = inject(Router);
   private documentService = inject(DocumentService);
-  private invoiceXmlService = inject(InvoiceXmlService);
 
   document = input.required<BusinessDocument>();
   config = input.required<DocumentTypeConfig>();
@@ -61,10 +59,6 @@ export class DocumentPreviewShellComponent implements OnInit {
     this.selectedPaperSize.set(size);
   }
 
-  onDownloadXml(): void {
-    if (this.document().docType !== 'invoices') return;
-    this.invoiceXmlService.downloadInvoiceXml(this.document());
-  }
 
   onPrint(): void {
     window.print();
