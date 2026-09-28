@@ -87,7 +87,7 @@ export class PdfEngineService {
   }
 
   download(bytes: Uint8Array, fileName: string): void {
-    const blob = new Blob([bytes], { type: 'application/pdf' });
+    const buffer = new ArrayBuffer(bytes.byteLength);\n    new Uint8Array(buffer).set(bytes);\n    const blob = new Blob([buffer], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
 
