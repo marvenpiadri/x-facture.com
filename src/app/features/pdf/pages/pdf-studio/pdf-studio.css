@@ -914,3 +914,427 @@
   outline: 1px dashed var(--color-money-green);
   outline-offset: 8px;
 }
+
+.merge-composer {
+  width: min(1180px, 100%);
+  display: grid;
+  gap: 12px;
+}
+
+.merge-upload.drop-active,
+.upload-sheet.drop-active {
+  border-color: var(--color-money-green);
+  background: var(--color-money-green-light);
+  box-shadow: 0 0 0 3px var(--color-money-green-light);
+}
+
+.merge-upload {
+  min-height: 130px;
+}
+
+.merge-upload span:last-child {
+  max-width: 620px;
+  line-height: 1.45;
+}
+
+.merge-workspace-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 2px;
+}
+
+.merge-workspace-head > div {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.merge-workspace-head strong {
+  font-size: 12px;
+}
+
+.merge-workspace-head span {
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+.merge-hint {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.merge-hint .material-icons {
+  color: var(--color-money-green);
+  font-size: 16px;
+}
+
+.merge-document-list {
+  display: grid;
+  gap: 14px;
+  padding-bottom: 20px;
+}
+
+.merge-document {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.merge-document.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 14px;
+  box-shadow: var(--shadow-md);
+  opacity: .94;
+}
+
+.merge-document.cdk-drag-placeholder {
+  min-height: 90px;
+  border: 2px dashed var(--color-money-green);
+  background: var(--color-money-green-light);
+  box-shadow: none;
+}
+
+.merge-document.cdk-drag-placeholder::after {
+  content: 'DROP PDF HERE';
+  display: grid;
+  min-height: 90px;
+  place-items: center;
+  color: var(--color-money-green);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.merge-document-header {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-surface-subtle);
+  cursor: grab;
+}
+
+.merge-document-header:active {
+  cursor: grabbing;
+}
+
+.merge-document-grip {
+  color: var(--color-text-muted);
+}
+
+.merge-document-grip .material-icons {
+  font-size: 18px;
+}
+
+.merge-document-number {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--color-money-green-light);
+  color: var(--color-money-green);
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.merge-document-header > .material-icons {
+  color: var(--color-money-green);
+  font-size: 20px;
+}
+
+.merge-document-title {
+  min-width: 0;
+  flex: 1;
+  display: grid;
+  gap: 2px;
+}
+
+.merge-document-title strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.merge-document-title span {
+  color: var(--color-text-muted);
+  font-size: 9px;
+}
+
+.merge-document-header > button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.merge-document-header > button:hover {
+  color: var(--color-danger);
+  background: var(--color-danger-light);
+}
+
+.merge-page-grid {
+  min-height: 154px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  align-items: start;
+  gap: 10px;
+  padding: 12px;
+  background: var(--color-canvas);
+  transition: outline .12s ease, background .12s ease;
+}
+
+.merge-page-grid.cdk-drop-list-dragging {
+  outline: 2px dashed var(--color-money-green);
+  outline-offset: -4px;
+  background: var(--color-money-green-light);
+}
+
+.merge-page {
+  min-width: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  cursor: grab;
+}
+
+.merge-page:active {
+  cursor: grabbing;
+}
+
+.merge-page.cdk-drag-preview {
+  box-sizing: border-box;
+  width: 128px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-md);
+  opacity: .94;
+}
+
+.merge-page.cdk-drag-placeholder {
+  min-height: 174px;
+  border: 2px dashed var(--color-money-green);
+  background: var(--color-money-green-light);
+  opacity: 1;
+}
+
+.merge-page.cdk-drag-placeholder::after {
+  content: 'DROP PAGE HERE';
+  display: grid;
+  height: 100%;
+  min-height: 174px;
+  place-items: center;
+  color: var(--color-money-green);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: .06em;
+}
+
+.merge-page-preview {
+  position: relative;
+  display: grid;
+  min-height: 144px;
+  place-items: center;
+  padding: 8px;
+  background: #e9eaec;
+}
+
+.merge-page-preview img {
+  display: block;
+  width: 100%;
+  max-height: 142px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 7px rgba(0,0,0,.12);
+  transition: transform .15s ease;
+}
+
+.merge-page-number {
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  min-width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: rgba(20,20,20,.72);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 850;
+}
+
+.merge-page-drag {
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255,255,255,.88);
+  color: var(--color-text-muted);
+}
+
+.merge-page-drag .material-icons {
+  font-size: 15px;
+}
+
+.merge-page footer {
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 3px 6px 3px 8px;
+  color: var(--color-text-muted);
+  font-size: 9px;
+  font-weight: 750;
+}
+
+.merge-page footer div {
+  display: flex;
+  gap: 1px;
+}
+
+.merge-page footer button {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.merge-page footer button:hover {
+  color: var(--color-money-green);
+  background: var(--color-surface-subtle);
+}
+
+.merge-page footer button:last-child:hover {
+  color: var(--color-danger);
+}
+
+.merge-empty-pages {
+  grid-column: 1 / -1;
+  min-height: 130px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 4px;
+  border: 1px dashed var(--color-border-dark);
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.merge-empty-pages .material-icons,
+.merge-empty .material-icons {
+  color: var(--color-money-green);
+  font-size: 28px;
+}
+
+.merge-empty-pages strong,
+.merge-empty strong {
+  color: var(--color-text-main);
+  font-size: 11px;
+}
+
+.merge-empty-pages span:last-child,
+.merge-empty span:last-child {
+  max-width: 380px;
+  font-size: 9px;
+  line-height: 1.4;
+}
+
+.merge-empty {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 6px;
+  border: 1px dashed var(--color-border-dark);
+  border-radius: 14px;
+  background: var(--color-surface);
+  text-align: center;
+}
+
+.merge-rule {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+.merge-rule .material-icons {
+  flex: 0 0 auto;
+  color: var(--color-money-green);
+  font-size: 17px;
+}
+
+.field-label {
+  display: grid;
+  gap: 5px;
+  margin: 0 0 12px;
+  color: var(--color-text-muted);
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.field-label input {
+  width: 100%;
+  min-height: 34px;
+  box-sizing: border-box;
+  padding: 7px 9px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text-main);
+  font: inherit;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.field-label input:focus {
+  outline: 2px solid var(--color-money-green-light);
+  border-color: var(--color-money-green);
+}
+
+@media (max-width: 720px) {
+  .merge-page-grid {
+    grid-template-columns: repeat(2, minmax(105px, 1fr));
+  }
+
+  .merge-workspace-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
