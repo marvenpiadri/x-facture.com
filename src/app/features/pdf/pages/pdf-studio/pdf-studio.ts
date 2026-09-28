@@ -34,6 +34,11 @@ export class PdfStudioPage {
   readonly error = signal<string | null>(null);
   readonly isProcessing = signal(false);
   readonly searchQuery = signal('');
+  readonly splitMode = signal<'selected' | 'ranges' | 'every-page'>('selected');
+  readonly splitRanges = signal('');
+  readonly splitChunkSize = signal(1);
+  readonly isFileDragActive = signal(false);
+  readonly isPageDropActive = signal(false);
   readonly thumbnails = signal<string[]>([]);
   readonly pageOrder = signal<number[]>([]);
   readonly selectedPages = signal<number[]>([]);
@@ -96,6 +101,37 @@ export class PdfStudioPage {
     return this.filteredTools.filter(tool => tool.category === category);
   }
 
+  setSplitMode(mode: 'selected' | 'ranges' | 'every-page'): void {
+    this.splitMode.set(mode);
+    this.error.set(null);
+  }
+
+  onSplitRanges(event: Event): void {
+    this.splitRanges.set((event.target as HTMLInputElement).value);
+  }
+
+  onSplitChunkSize(event: Event): void {
+    const value = Number((event.target as HTMLInputElement).value);
+    this.splitChunkSize.set(Number.isFinite(value) ? Math.max(1, Math.min(100, Math.floor(value))) : 1);
+  }
+
+  onFileDragEnter(event: DragEvent): void {
+    event.preventDefault();
+    this.isFileDragActive.set(true);
+  }
+
+  onFileDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    const currentTarget = event.currentTarget as HTMLElement;
+    const relatedTarget = event.relatedTarget as Node | null;
+    if (!relatedTarget || !currentTarget.contains(relatedTarget)) this.isFileDragActive.set(false);
+  }
+
+  onFileDragOver(event: DragEvent): void {
+    event.preventDefault();
+    this.isFileDragActive.set(true);
+  }
+
   onSearch(event: Event): void {
     this.searchQuery.set((event.target as HTMLInputElement).value);
   }
@@ -152,6 +188,7 @@ export class PdfStudioPage {
 
   async onDrop(event: DragEvent): Promise<void> {
     event.preventDefault();
+    this.isFileDragActive.set(false);
     const dropped = Array.from(event.dataTransfer?.files ?? []);
     if (!dropped.length) return;
 
@@ -230,6 +267,7 @@ export class PdfStudioPage {
   }
 
   onPageDrop(event: CdkDragDrop<number[]>): void {
+    this.isPageDropActive.set(false);
     if (event.previousIndex === event.currentIndex) return;
 
     const order = [...this.pageOrder()];
@@ -251,10 +289,12 @@ export class PdfStudioPage {
 
   onDragStarted(position: number): void {
     this.draggedPage.set(position);
+    this.isPageDropActive.set(true);
   }
 
   onDragEnded(): void {
     this.draggedPage.set(null);
+    this.isPageDropActive.set(false);
   }
 
   selectAll(): void {
@@ -297,6 +337,57 @@ export class PdfStudioPage {
       this.pdfEngine.download(bytes, 'x-facture-extracted.pdf');
     } catch {
       this.error.set('The selected pages could not be extracted.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
+  private parseSplitRanges(): number[] {
+    const count = this.pageCount() ?? 0;
+    const pages = new Set<number>();
+    for (const token of this.splitRanges().split(',').map(value => value.trim()).filter(Boolean)) {
+      const match = token.match(/^(\\d+)(?:\\s*-\\s*(\\d+))?$/);
+      if (!match) throw new Error('Use ranges such as 1-3, 5, 8-10.');
+      const start = Number(match[1]);
+      const end = Number(match[2] ?? match[1]);
+      if (start < 1 || end < start || end > count) throw new Error('A split range is outside the document page count.');
+      for (let page = start; page <= end; page += 1) pages.add(page - 1);
+    }
+    return [...pages].sort((a, b) => a - b);
+  }
+
+  async splitPdf(): Promise<void> {
+    const currentFile = this.file();
+    if (!currentFile) return;
+
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      if (this.splitMode() === 'selected') {
+        await this.extractSelected();
+        return;
+      }
+
+      const count = this.pageCount() ?? 0;
+      if (this.splitMode() === 'ranges') {
+        const indices = this.parseSplitRanges();
+        if (!indices.length) throw new Error('Enter at least one page or range.');
+        const bytes = await this.pdfEngine.extractPages(currentFile, indices);
+        this.pdfEngine.download(bytes, 'x-facture-split-selection.pdf');
+        return;
+      }
+
+      const chunkSize = this.splitChunkSize();
+      const ordered = this.pageOrder();
+      let part = 1;
+      for (let start = 0; start < count; start += chunkSize) {
+        const indices = ordered.slice(start, start + chunkSize);
+        const bytes = await this.pdfEngine.extractPages(currentFile, indices);
+        this.pdfEngine.download(bytes, `x-facture-part-${String(part).padStart(2, '0')}.pdf`);
+        part += 1;
+      }
+    } catch (error) {
+      this.error.set(error instanceof Error ? error.message : 'The PDF could not be split.');
     } finally {
       this.isProcessing.set(false);
     }
@@ -374,5 +465,7 @@ export class PdfStudioPage {
     this.pageRotations.set({});
     this.mergeFiles.set([]);
     this.draggedPage.set(null);
+    this.isFileDragActive.set(false);
+    this.isPageDropActive.set(false);
   }
 }
