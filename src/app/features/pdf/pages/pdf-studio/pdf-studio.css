@@ -493,6 +493,35 @@
   box-shadow: 0 0 0 2px var(--color-money-green-light), var(--shadow-sm);
 }
 
+.page-card.unselected {
+  opacity: .68;
+  border-color: var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.page-card.unselected:hover {
+  opacity: .9;
+}
+
+.page-card.selected {
+  opacity: 1;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  opacity: .92;
+}
+
+.cdk-drag-placeholder {
+  opacity: .25;
+}
+
+.cdk-drop-list-dragging .page-card:not(.cdk-drag-placeholder) {
+  transition: transform .16s ease;
+}
+
 .page-preview {
   position: relative;
   display: block;
