@@ -369,6 +369,7 @@ export class PdfStudioPage {
     this.pageCount.set(null);
     this.error.set(null);
     this.thumbnails.set([]);
+    this.pageOrder.set([]);
     this.selectedPages.set([]);
     this.pageRotations.set({});
     this.mergeFiles.set([]);
