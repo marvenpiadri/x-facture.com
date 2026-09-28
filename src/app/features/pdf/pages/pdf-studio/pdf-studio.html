@@ -13,8 +13,8 @@
         <section class="tool-category">
           <div class="category-title">{{ categoryLabels[category] }}</div>
           @for (tool of toolsFor(category); track tool.id) {
-            <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route">
-              <span class="material-icons">{{ tool.icon }}</span><span>{{ tool.name }}</span>
+            <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route" [class.coming-soon]="tool.available === false">
+              <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong>@if (tool.available === false) { <small>Coming soon</small> }</span>
             </a>
           }
         </section>
@@ -254,9 +254,12 @@
         </div>
       } @else {
         <div class="tool-panel">
-          <span class="panel-kicker">{{ categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
+          <span class="panel-kicker">{{ tools.find(t => t.id === activeTool())?.available === false ? 'COMING SOON' : categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
           <h2>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</h2>
           <p>{{ tools.find(t => t.id === activeTool())?.description || 'Work with your document in the shared PDF workspace.' }}</p>
+          @if (tools.find(t => t.id === activeTool())?.available === false) {
+            <div class="coming-soon-subtitle"><span class="material-icons">construction</span><span>Coming soon — this product requires the next processing phase.</span></div>
+          }
         </div>
       }
 
