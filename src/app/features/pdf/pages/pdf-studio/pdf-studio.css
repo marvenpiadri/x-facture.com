@@ -1332,15 +1332,18 @@
 
 .tool-link-copy {
   min-width: 0;
-  display: grid;
-  gap: 1px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
   line-height: 1.1;
 }
 .tool-link-copy strong { font: inherit; }
 .tool-link-copy small {
-  color: var(--color-text-muted);
+  flex: 0 0 auto;
+  color: var(--color-money-green);
   font-size: 8px;
-  font-weight: 700;
+  font-weight: 800;
+  white-space: nowrap;
 }
 .tool-link.coming-soon { opacity: .68; cursor: not-allowed; }
 .tool-link.coming-soon:disabled { opacity: .68; }
