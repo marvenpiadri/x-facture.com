@@ -497,7 +497,7 @@ export class PdfStudioPage {
       if (this.splitMode() === 'ranges') {
         const indices = this.parseSplitRanges();
         if (!indices.length) throw new Error('Enter at least one page or range.');
-        const bytes = await this.pdfEngine.extractPages(currentFile, indices);
+        const bytes = await this.pdfEngine.extractPages(currentFile, indices, this.pageRotations());
         this.pdfEngine.download(bytes, 'x-facture-split-selection.pdf');
         return;
       }
