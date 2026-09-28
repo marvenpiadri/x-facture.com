@@ -282,16 +282,30 @@
           <button type="button" (click)="setPageNumberPosition('top-right')" [class.active]="pageNumberPosition() === 'top-right'"><strong>Top right</strong><span>Right aligned header.</span></button>
         </div>
       } @else if (activeTool() === 'crop-pdf') {
-        <div class="tool-panel"><span class="panel-kicker">CROP</span><h2>Trim page boundaries</h2><p>Choose a precise margin preset. Apply it to every page or only the pages selected on the canvas.</p></div>
-        <div class="split-methods">
-          <button type="button" (click)="setCropMargin(0)" [class.active]="cropMargin() === 0"><strong>No crop</strong><span>Restore the full page box.</span></button>
-          <button type="button" (click)="setCropMargin(12)" [class.active]="cropMargin() === 12"><strong>12 pt</strong><span>Light trim around the edges.</span></button>
-          <button type="button" (click)="setCropMargin(24)" [class.active]="cropMargin() === 24"><strong>24 pt</strong><span>Standard document trim.</span></button>
-          <button type="button" (click)="setCropMargin(48)" [class.active]="cropMargin() === 48"><strong>48 pt</strong><span>Strong edge reduction.</span></button>
-          <button type="button" (click)="setCropMargin(72)" [class.active]="cropMargin() === 72"><strong>72 pt</strong><span>Heavy one-inch trim.</span></button>
+        <div class="tool-panel"><span class="panel-kicker">VISUAL CROP</span><h2>Trim each edge precisely</h2><p>Adjust the crop visually, then apply the same crop box to every page or only the selected pages.</p></div>
+        <div class="crop-preview-panel">
+          @if (thumbnails().length) {
+            <div class="crop-preview">
+              <img [src]="thumbnails()[pageOrder()[0] ?? 0]" alt="Crop preview" />
+              <div class="crop-mask"></div>
+              <div class="crop-frame" [ngStyle]="cropPreviewStyle()"></div>
+            </div>
+            <small>Preview of page {{ (pageOrder()[0] ?? 0) + 1 }}</small>
+          }
         </div>
-        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be cropped' }}</span></div>
-      } @else if (activeTool() === 'pdf-editor') {
+        <div class="split-methods crop-presets">
+          <button type="button" (click)="setCropMargin(0)" [class.active]="cropTop() === 0 && cropRight() === 0 && cropBottom() === 0 && cropLeft() === 0"><strong>Full page</strong><span>Reset all edges.</span></button>
+          <button type="button" (click)="setCropMargin(12)" [class.active]="cropTop() === 12 && cropRight() === 12 && cropBottom() === 12 && cropLeft() === 12"><strong>12 pt</strong><span>Light trim.</span></button>
+          <button type="button" (click)="setCropMargin(24)" [class.active]="cropTop() === 24 && cropRight() === 24 && cropBottom() === 24 && cropLeft() === 24"><strong>24 pt</strong><span>Standard trim.</span></button>
+          <button type="button" (click)="setCropMargin(48)" [class.active]="cropTop() === 48 && cropRight() === 48 && cropBottom() === 48 && cropLeft() === 48"><strong>48 pt</strong><span>Strong trim.</span></button>
+        </div>
+        <div class="field-grid crop-fields">
+          <label class="field-label">Top (pt)<input type="number" min="0" [value]="cropTop()" (input)="setCropSide('top', $event)" /></label>
+          <label class="field-label">Right (pt)<input type="number" min="0" [value]="cropRight()" (input)="setCropSide('right', $event)" /></label>
+          <label class="field-label">Bottom (pt)<input type="number" min="0" [value]="cropBottom()" (input)="setCropSide('bottom', $event)" /></label>
+          <label class="field-label">Left (pt)<input type="number" min="0" [value]="cropLeft()" (input)="setCropSide('left', $event)" /></label>
+        </div>
+        <div class="selection-summary"><strong>{{ selectedPages().length || (pageCount() || 0) }}</strong><span>{{ selectedPages().length ? 'selected pages' : 'pages will be cropped' }}</span></div>      } @else if (activeTool() === 'pdf-editor') {
         <div class="tool-panel"><span class="panel-kicker">EDIT</span><h2>Add text to the document</h2><p>This browser-first editor adds new text overlays without pretending to rewrite existing PDF text. Select pages on the canvas to target only those pages.</p></div>
         <label class="field-label">Text<input type="text" [value]="editText()" (input)="setEditText($event)" placeholder="Add a note, label or heading" /></label>
         <label class="field-label">Font size<input type="number" min="6" max="72" [value]="editTextFontSize()" (input)="setEditTextFontSize($event)" /></label>
