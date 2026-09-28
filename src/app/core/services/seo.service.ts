@@ -125,18 +125,18 @@ export class SeoService {
 
     if (segments[0] === 'pdf') {
       const pdfTools: Record<string, { title: string; description: string; keywords: string }> = {
-        'organize-pdf': { title: 'Organize PDF Pages Online', description: 'Reorder, rotate and manage PDF pages directly in your browser with X-Facture.', keywords: 'organize PDF, reorder PDF pages, rotate PDF pages, PDF page organizer' },
-        'merge-pdf': { title: 'Merge PDF Files Online', description: 'Combine PDF files and move individual pages between documents with X-Facture.', keywords: 'merge PDF, combine PDF files, merge PDF pages' },
-        'split-pdf': { title: 'Split PDF Online', description: 'Split PDFs by selected pages, ranges or page groups directly in your browser.', keywords: 'split PDF, extract PDF pages, PDF splitter' },
-        'rotate-pdf': { title: 'Rotate PDF Pages Online', description: 'Rotate PDF pages and export the corrected document directly in your browser.', keywords: 'rotate PDF, rotate PDF pages' },
-        'flatten-pdf': { title: 'Flatten PDF Online', description: 'Flatten PDF content into a clean document with X-Facture.', keywords: 'flatten PDF, flatten PDF forms' },
-        'crop-pdf': { title: 'Crop PDF Online', description: 'Crop PDF pages with independent top, right, bottom and left controls.', keywords: 'crop PDF, PDF cropper, crop PDF pages' },
-        'pdf-editor': { title: 'PDF Editor Online', description: 'Add positioned text to PDF pages directly in your browser with X-Facture.', keywords: 'PDF editor, edit PDF, add text to PDF' },
-        'add-watermark': { title: 'Add Watermark to PDF', description: 'Add configurable text watermarks to PDF pages directly in your browser.', keywords: 'PDF watermark, add watermark to PDF' },
-        'add-page-numbers': { title: 'Add Page Numbers to PDF', description: 'Add customizable page numbers, prefixes and suffixes to PDF pages.', keywords: 'PDF page numbers, number PDF pages' },
-        'image-to-pdf': { title: 'Image to PDF Converter', description: 'Convert and arrange images into a PDF with page size, orientation and fit controls.', keywords: 'image to PDF, JPG to PDF, PNG to PDF' },
-        'pdf-to-image': { title: 'PDF to Image Converter', description: 'Export PDF pages as PNG or JPEG images directly in your browser.', keywords: 'PDF to image, PDF to JPG, PDF to PNG' },
-        'pdf-metadata': { title: 'PDF Metadata Tool', description: 'Inspect and update PDF metadata such as title, author, subject and keywords.', keywords: 'PDF metadata, edit PDF metadata' }
+        'organize-pdf': { title: 'Free PDF Organizer Online', description: 'Organize PDF pages for free directly in your browser with X-Facture. Reorder, rotate and manage documents without installation.', keywords: 'free PDF organizer, organize PDF, reorder PDF pages, rotate PDF pages, PDF page organizer' },
+        'merge-pdf': { title: 'Free PDF Merger Online', description: 'Merge PDF files for free directly in your browser. Combine documents and move individual pages between PDFs with X-Facture.', keywords: 'free PDF merger, merge PDF, combine PDF files, merge PDF pages' },
+        'split-pdf': { title: 'Free PDF Splitter Online', description: 'Split PDF files for free directly in your browser by selected pages, ranges or page groups.', keywords: 'free PDF splitter, split PDF, extract PDF pages, PDF splitter' },
+        'rotate-pdf': { title: 'Free PDF Rotator Online', description: 'Rotate PDF pages for free and export the corrected document directly in your browser.', keywords: 'free PDF rotator, rotate PDF, rotate PDF pages' },
+        'flatten-pdf': { title: 'Free PDF Flatten Tool Online', description: 'Flatten PDF files for free into a clean document directly in your browser with X-Facture.', keywords: 'free PDF flatten tool, flatten PDF, flatten PDF forms' },
+        'crop-pdf': { title: 'Free PDF Cropper Online', description: 'Crop PDF pages for free with an interactive crop box and independent edge controls.', keywords: 'free PDF cropper, crop PDF, PDF cropper, crop PDF pages' },
+        'pdf-editor': { title: 'Free PDF Editor Online', description: 'Edit PDFs for free in your browser by adding positioned text to PDF pages with X-Facture.', keywords: 'free PDF editor, PDF editor, edit PDF, add text to PDF' },
+        'add-watermark': { title: 'Free PDF Watermark Tool', description: 'Add watermarks to PDF files for free directly in your browser with configurable text controls.', keywords: 'free PDF watermark, PDF watermark, add watermark to PDF' },
+        'add-page-numbers': { title: 'Free PDF Page Number Tool', description: 'Add page numbers to PDF files for free with customizable prefixes, suffixes and positioning.', keywords: 'free PDF page numbers, PDF page numbers, number PDF pages' },
+        'image-to-pdf': { title: 'Free Image to PDF Converter', description: 'Convert images to PDF for free and arrange pages with size, orientation and fit controls.', keywords: 'free image to PDF, image to PDF, JPG to PDF, PNG to PDF' },
+        'pdf-to-image': { title: 'Free PDF to Image Converter', description: 'Convert PDF pages to PNG or JPEG images for free directly in your browser.', keywords: 'free PDF to image, PDF to image, PDF to JPG, PDF to PNG' },
+        'pdf-metadata': { title: 'Free PDF Metadata Tool', description: 'Inspect and update PDF metadata for free, including title, author, subject and keywords.', keywords: 'free PDF metadata, PDF metadata, edit PDF metadata' }
       };
 
       const tool = segments[1] ? pdfTools[segments[1]] : undefined;
@@ -150,9 +150,9 @@ export class SeoService {
       if (segments.length === 1) {
         const url = `${this.siteUrl}/pdf`;
         this.updateMetadata({
-          title: 'X-Facture • PDF Tools & Document Engine',
-          description: 'Browser-first PDF tools for organizing, merging, splitting, editing, converting and managing documents with X-Facture.',
-          keywords: 'PDF tools, PDF editor, merge PDF, split PDF, PDF converter, document engine',
+          title: 'X-Facture • Free PDF Tools & Document Engine',
+          description: '100% free browser-first PDF tools for organizing, merging, splitting, editing and converting documents with X-Facture.',
+          keywords: 'free PDF tools, 100% free PDF tools, free PDF editor, free PDF merger, free PDF splitter, PDF converter, document engine',
           url
         });
         this.setPdfSchema(url, 'PDF Tools & Document Engine');
@@ -175,7 +175,7 @@ export class SeoService {
     }
 
     const routeSeo: Record<string, SeoMetadata> = {
-      '/': { title: 'X-Facture • Free Business Tools, Financial Calculators & Invoicing', description: 'Free business tools for entrepreneurs and companies: invoicing, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'business tools, financial calculators, invoice generator, free invoicing, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
+      '/': { title: 'X-Facture • Free Invoicing & PDF Tools, Business Calculators', description: '100% free business tools for entrepreneurs and companies: invoicing, free PDF tools, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'free business tools, free invoicing, free PDF tools, free PDF editor, free PDF merger, invoice generator, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
       '/home': { title: 'X-Facture • Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
       '/dashboard': { title: 'X-Facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in X-Facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
       '/store/pos': { title: 'X-Facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
@@ -230,7 +230,7 @@ export class SeoService {
       '@graph': [
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
-        { '@type': 'WebPage', '@id': `${this.siteUrl}#webpage`, name: 'X-Facture | Free Business Tools, Financial Calculators & Invoicing', url: this.siteUrl, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } }
+        { '@type': 'WebPage', '@id': `${this.siteUrl}#webpage`, name: 'X-Facture | Free Invoicing & PDF Tools, Business Calculators', url: this.siteUrl, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } }
       ]
     });
   }
