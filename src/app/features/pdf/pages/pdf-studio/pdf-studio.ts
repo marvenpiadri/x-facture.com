@@ -76,8 +76,8 @@ export class PdfStudioPage {
     { id: 'split-pdf', name: 'Split PDF', description: 'Extract pages, ranges or evenly sized parts.', icon: 'content_cut', category: 'organize', route: '/pdf/split-pdf' },
     { id: 'rotate-pdf', name: 'Rotate PDF', description: 'Rotate pages permanently.', icon: 'rotate_right', category: 'organize', route: '/pdf/rotate-pdf' },
     { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive content into a clean document.', icon: 'layers_clear', category: 'organize', route: '/pdf/flatten-pdf', available: true },
-    { id: 'remove-pages', name: 'Remove Pages', description: 'Remove selected pages while preserving the rest of the document.', icon: 'delete_sweep', category: 'organize', route: '/pdf/remove-pages', available: false },
-    { id: 'extract-pages', name: 'Extract Pages', description: 'Build a new PDF from selected pages.', icon: 'content_copy', category: 'organize', route: '/pdf/extract-pages', available: false },
+    { id: 'remove-pages', name: 'Remove Pages', description: 'Remove selected pages while preserving the rest of the document.', icon: 'delete_sweep', category: 'organize', route: '/pdf/remove-pages', available: true },
+    { id: 'extract-pages', name: 'Extract Pages', description: 'Build a new PDF from selected pages.', icon: 'content_copy', category: 'organize', route: '/pdf/extract-pages', available: true },
     { id: 'crop-pdf', name: 'Crop PDF', description: 'Trim page boundaries with a visual crop workspace.', icon: 'crop', category: 'edit', route: '/pdf/crop-pdf', available: false },
     { id: 'pdf-editor', name: 'PDF Editor', description: 'Edit and annotate PDF content.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' , available: false },
     { id: 'add-watermark', name: 'Watermark', description: 'Stamp text or branding onto pages.', icon: 'branding_watermark', category: 'edit', route: '/pdf/add-watermark' , available: false },
@@ -478,7 +478,7 @@ export class PdfStudioPage {
       if (start < 1 || end < start || end > count) throw new Error('A split range is outside the document page count.');
       for (let page = start; page <= end; page += 1) pages.add(page - 1);
     }
-    return [...pages].sort((a, b) => a - b);
+    return [...pages].sort((a, b) => a - b).map(position => this.pageOrder()[position]);
   }
 
   async splitPdf(): Promise<void> {
@@ -664,6 +664,24 @@ export class PdfStudioPage {
       this.pdfEngine.download(bytes, 'x-facture-organized.pdf');
     } catch {
       this.error.set('The organized PDF could not be created.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+
+  async removeSelectedPages(): Promise<void> {
+    const currentFile = this.file();
+    const positions = this.selectedPages();
+    if (!currentFile || !positions.length || positions.length >= (this.pageCount() ?? 0)) return;
+    this.isProcessing.set(true);
+    this.error.set(null);
+    try {
+      const deleted = new Set(positions);
+      const remaining = this.pageOrder().filter((_, position) => !deleted.has(position));
+      const bytes = await this.pdfEngine.reorderPages(currentFile, remaining, this.pageRotations());
+      this.pdfEngine.download(bytes, 'x-facture-pages-removed.pdf');
+    } catch {
+      this.error.set('The selected pages could not be removed.');
     } finally {
       this.isProcessing.set(false);
     }
