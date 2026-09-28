@@ -215,7 +215,7 @@ export class PdfEngineService {
   async addText(
     file: File,
     text: string,
-    options: { fontSize: number; position: 'top-left' | 'center' | 'bottom-left'; pageIndices?: number[] }
+    options: { fontSize: number; position: 'top-left' | 'center' | 'bottom-left'; xPercent?: number; yPercent?: number; pageIndices?: number[] }
   ): Promise<Uint8Array> {
     const pdf = await this.load(file);
     const font = await pdf.embedFont(StandardFonts.Helvetica);
@@ -227,9 +227,15 @@ export class PdfEngineService {
       const height = page.getHeight();
       const textWidth = font.widthOfTextAtSize(text, options.fontSize);
       const margin = 24;
-      const x = options.position === 'center' ? Math.max(margin, (width - textWidth) / 2) : margin;
-      const y = options.position === 'bottom-left' ? margin : options.position === 'center'
-        ? Math.max(margin, (height - options.fontSize) / 2)
+      const customX = Math.max(0, Math.min(100, options.xPercent ?? 8));
+      const customY = Math.max(0, Math.min(100, options.yPercent ?? 8));
+      const x = options.xPercent !== undefined
+        ? Math.max(margin, Math.min(width - textWidth - margin, (width - textWidth) * customX / 100))
+        : options.position === 'center' ? Math.max(margin, (width - textWidth) / 2) : margin;
+      const y = options.yPercent !== undefined
+        ? Math.max(margin, Math.min(height - options.fontSize - margin, (height - options.fontSize) * (100 - customY) / 100))
+        : options.position === 'bottom-left' ? margin
+        : options.position === 'center' ? Math.max(margin, (height - options.fontSize) / 2)
         : height - options.fontSize - margin;
       page.drawText(text, {
         x,
