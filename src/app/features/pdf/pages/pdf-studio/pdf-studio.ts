@@ -736,8 +736,13 @@ export class PdfStudioPage {
 
   reversePages(): void {
     const order = [...this.pageOrder()].reverse();
+    const count = order.length;
+    const selected = this.selectedPages()
+      .map(position => count - 1 - position)
+      .filter(position => position >= 0 && position < count)
+      .sort((a, b) => a - b);
     this.pageOrder.set(order);
-    this.selectedPages.set(order.map((_, index) => index));
+    this.selectedPages.set(selected);
   }
 
   setPdfToImageScale(scale: number): void {
