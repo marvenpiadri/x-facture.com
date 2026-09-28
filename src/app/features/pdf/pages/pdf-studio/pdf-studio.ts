@@ -609,20 +609,11 @@ export class PdfStudioPage {
     this.error.set(null);
     try {
       const pageIndices = this.selectedPages().length ? this.selectedPages().map(position => this.pageOrder()[position]) : undefined;
-      const firstPage = (await this.pdfEngine.getPageCount(currentFile)) > 0 ? 0 : 0;
-      const positions = {
-        'top-left': { x: 24, y: 760 },
-        center: { x: 220, y: 400 },
-        'bottom-left': { x: 24, y: 24 },
-      } as const;
-      const position = positions[this.editTextPosition()];
       const bytes = await this.pdfEngine.addText(currentFile, text, {
         fontSize: this.editTextFontSize(),
-        x: position.x,
-        y: position.y,
+        position: this.editTextPosition(),
         pageIndices,
       });
-      void firstPage;
       this.pdfEngine.download(bytes, 'x-facture-edited.pdf');
     } catch { this.error.set('The text could not be added to the PDF.'); }
     finally { this.isProcessing.set(false); }
