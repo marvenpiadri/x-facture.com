@@ -170,7 +170,7 @@
           <button type="button" (click)="selectAll()">Select all pages</button>
           <button type="button" (click)="deselectAll()">Clear selection</button>
           <button type="button" (click)="duplicateSelected()" [disabled]="!selectedPages().length">Duplicate selected</button>
-          <button type="button" (click)="deleteSelected()" [disabled]="!selectedPages().length || selectedPages().length >= (pageCount() ?? 0)">Delete selected</button>
+          <button type="button" (click)="deleteSelected()" [disabled]="!selectedPages().length || selectedPages().length >= pageCount()">Delete selected</button>
         </div>
       } @else {
         <div class="tool-panel">
