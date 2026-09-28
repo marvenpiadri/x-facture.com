@@ -194,7 +194,7 @@ export class PdfEngineService {
   async addText(
     file: File,
     text: string,
-    options: { fontSize: number; x: number; y: number; pageIndices?: number[] }
+    options: { fontSize: number; position: 'top-left' | 'center' | 'bottom-left'; pageIndices?: number[] }
   ): Promise<Uint8Array> {
     const pdf = await this.load(file);
     const font = await pdf.embedFont(StandardFonts.Helvetica);
@@ -202,9 +202,17 @@ export class PdfEngineService {
 
     pdf.getPages().forEach((page, index) => {
       if (selected && !selected.has(index)) return;
+      const width = page.getWidth();
+      const height = page.getHeight();
+      const textWidth = font.widthOfTextAtSize(text, options.fontSize);
+      const margin = 24;
+      const x = options.position === 'center' ? Math.max(margin, (width - textWidth) / 2) : margin;
+      const y = options.position === 'bottom-left' ? margin : options.position === 'center'
+        ? Math.max(margin, (height - options.fontSize) / 2)
+        : height - options.fontSize - margin;
       page.drawText(text, {
-        x: options.x,
-        y: options.y,
+        x,
+        y,
         size: options.fontSize,
         font,
         color: rgb(0.1, 0.1, 0.1),
