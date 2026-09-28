@@ -51,6 +51,8 @@ export class PdfStudioPage {
     { id: 'repair-pdf', name: 'Repair PDF', description: 'Recover and sanitize damaged PDFs.', icon: 'build', category: 'security', route: '/pdf/repair-pdf' },
   ];
 
+  readonly categories: PdfCategory[] = ['organize', 'edit', 'convert', 'security'];
+
   readonly categoryLabels: Record<PdfCategory, string> = {
     organize: 'Organize',
     edit: 'Edit & Content',
