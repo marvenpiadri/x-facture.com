@@ -4,7 +4,7 @@ import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { PdfEngineService } from '../../../../core/services/pdf-engine.service';
 
-type PdfCategory = 'organize' | 'edit' | 'convert' | 'security';
+type PdfCategory = 'organize' | 'edit' | 'convert' | 'security' | 'intelligence';
 type SplitMode = 'selected' | 'ranges' | 'every-page';
 
 interface PdfTool {
@@ -14,6 +14,7 @@ interface PdfTool {
   icon: string;
   category: PdfCategory;
   route: string;
+  available?: boolean;
 }
 
 interface MergePage {
@@ -74,10 +75,15 @@ export class PdfStudioPage {
     { id: 'merge-pdf', name: 'Merge PDF', description: 'Compose several PDFs at document and page level.', icon: 'merge_type', category: 'organize', route: '/pdf/merge-pdf' },
     { id: 'split-pdf', name: 'Split PDF', description: 'Extract pages, ranges or evenly sized parts.', icon: 'content_cut', category: 'organize', route: '/pdf/split-pdf' },
     { id: 'rotate-pdf', name: 'Rotate PDF', description: 'Rotate pages permanently.', icon: 'rotate_right', category: 'organize', route: '/pdf/rotate-pdf' },
-    { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive content into a clean document.', icon: 'layers_clear', category: 'organize', route: '/pdf/flatten-pdf' },
+    { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive content into a clean document.', icon: 'layers_clear', category: 'organize', route: '/pdf/flatten-pdf', available: true },
+    { id: 'remove-pages', name: 'Remove Pages', description: 'Remove selected pages while preserving the rest of the document.', icon: 'delete_sweep', category: 'organize', route: '/pdf/remove-pages', available: true },
+    { id: 'extract-pages', name: 'Extract Pages', description: 'Build a new PDF from selected pages.', icon: 'content_copy', category: 'organize', route: '/pdf/extract-pages', available: true },
+    { id: 'crop-pdf', name: 'Crop PDF', description: 'Trim page boundaries with a visual crop workspace.', icon: 'crop', category: 'edit', route: '/pdf/crop-pdf', available: false },
     { id: 'pdf-editor', name: 'PDF Editor', description: 'Edit and annotate PDF content.', icon: 'edit', category: 'edit', route: '/pdf/pdf-editor' },
     { id: 'add-watermark', name: 'Watermark', description: 'Stamp text or branding onto pages.', icon: 'branding_watermark', category: 'edit', route: '/pdf/add-watermark' },
-    { id: 'add-page-numbers', name: 'Page Numbers', description: 'Add configurable page numbering.', icon: 'format_list_numbered', category: 'edit', route: '/pdf/add-page-numbers' },
+    { id: 'add-page-numbers', name: 'Page Numbers', description: 'Add configurable page numbering.', icon: 'format_list_numbered', category: 'edit', route: '/pdf/add-page-numbers', available: false },
+    { id: 'pdf-forms', name: 'PDF Forms', description: 'Create, fill and manage interactive PDF forms.', icon: 'assignment', category: 'edit', route: '/pdf/pdf-forms', available: false },
+    { id: 'redact-pdf', name: 'Redact PDF', description: 'Permanently remove sensitive content from a document.', icon: 'visibility_off', category: 'edit', route: '/pdf/redact-pdf', available: false },
     { id: 'image-to-pdf', name: 'Image to PDF', description: 'Create PDFs from images.', icon: 'image', category: 'convert', route: '/pdf/image-to-pdf' },
     { id: 'pdf-to-word', name: 'PDF to Word', description: 'Convert PDF content to editable documents.', icon: 'description', category: 'convert', route: '/pdf/pdf-to-word' },
     { id: 'word-to-pdf', name: 'Word to PDF', description: 'Convert office documents to PDF.', icon: 'upload_file', category: 'convert', route: '/pdf/word-to-pdf' },
@@ -86,22 +92,32 @@ export class PdfStudioPage {
     { id: 'epub-to-pdf', name: 'EPUB to PDF', description: 'Turn ebooks into PDF documents.', icon: 'menu_book', category: 'convert', route: '/pdf/epub-to-pdf' },
     { id: 'excel-to-pdf', name: 'Excel to PDF', description: 'Turn spreadsheets into polished PDFs.', icon: 'table_view', category: 'convert', route: '/pdf/excel-to-pdf' },
     { id: 'markdown-to-pdf', name: 'Markdown to PDF', description: 'Render Markdown as a clean document.', icon: 'code', category: 'convert', route: '/pdf/markdown-to-pdf' },
-    { id: 'csv-to-pdf', name: 'CSV to PDF', description: 'Turn tabular data into a PDF report.', icon: 'table_chart', category: 'convert', route: '/pdf/csv-to-pdf' },
+    { id: 'csv-to-pdf', name: 'CSV to PDF', description: 'Turn tabular data into a PDF report.', icon: 'table_chart', category: 'convert', route: '/pdf/csv-to-pdf', available: true },
+    { id: 'pdf-to-powerpoint', name: 'PDF to PowerPoint', description: 'Convert PDF pages into editable presentations.', icon: 'slideshow', category: 'convert', route: '/pdf/pdf-to-powerpoint', available: false },
+    { id: 'powerpoint-to-pdf', name: 'PowerPoint to PDF', description: 'Convert presentations into PDF documents.', icon: 'present_to_all', category: 'convert', route: '/pdf/powerpoint-to-pdf', available: false },
+    { id: 'pdf-to-pdfa', name: 'PDF to PDF/A', description: 'Prepare PDFs for long-term archival workflows.', icon: 'archive', category: 'convert', route: '/pdf/pdf-to-pdfa', available: false },
+    { id: 'html-to-pdf', name: 'HTML to PDF', description: 'Render web content into a PDF document.', icon: 'language', category: 'convert', route: '/pdf/html-to-pdf', available: false },
+    { id: 'pdf-to-markdown', name: 'PDF to Markdown', description: 'Extract structured document content as Markdown.', icon: 'code', category: 'convert', route: '/pdf/pdf-to-markdown', available: false },
     { id: 'compress-pdf', name: 'Compress PDF', description: 'Reduce size while preserving quality.', icon: 'compress', category: 'security', route: '/pdf/compress-pdf' },
     { id: 'protect-pdf', name: 'Protect PDF', description: 'Secure PDFs with password protection.', icon: 'lock', category: 'security', route: '/pdf/protect-pdf' },
     { id: 'sign-pdf', name: 'Sign PDF', description: 'Prepare documents for signing.', icon: 'draw', category: 'security', route: '/pdf/sign-pdf' },
     { id: 'repair-pdf', name: 'Repair PDF', description: 'Recover and sanitize damaged PDFs.', icon: 'build', category: 'security', route: '/pdf/repair-pdf' },
     { id: 'unlock-pdf', name: 'Unlock PDF', description: 'Remove PDF password protection when permitted.', icon: 'key', category: 'security', route: '/pdf/unlock-pdf' },
-    { id: 'pdf-ocr', name: 'PDF OCR & Text', description: 'Extract searchable text from PDF documents.', icon: 'text_snippet', category: 'security', route: '/pdf/pdf-ocr' },
-    { id: 'pdf-metadata', name: 'PDF Metadata', description: 'Inspect and clean document metadata.', icon: 'info', category: 'security', route: '/pdf/pdf-metadata' },
+    { id: 'pdf-ocr', name: 'PDF OCR & Text', description: 'Extract searchable text from PDF documents.', icon: 'text_snippet', category: 'security', route: '/pdf/pdf-ocr', available: false },
+    { id: 'compare-pdf', name: 'Compare PDF', description: 'Compare two document versions and reveal changes.', icon: 'compare', category: 'intelligence', route: '/pdf/compare-pdf', available: false },
+    { id: 'ai-summarizer', name: 'AI Summarizer', description: 'Turn long PDFs into useful structured summaries.', icon: 'auto_awesome', category: 'intelligence', route: '/pdf/ai-summarizer', available: false },
+    { id: 'translate-pdf', name: 'Translate PDF', description: 'Translate document content while preserving structure.', icon: 'translate', category: 'intelligence', route: '/pdf/translate-pdf', available: false },
+    { id: 'pdf-metadata', name: 'PDF Metadata', description: 'Inspect and clean document metadata.', icon: 'info', category: 'security', route: '/pdf/pdf-metadata', available: true },
+    { id: 'compress-pdf', name: 'Compress PDF', description: 'Reduce file size while preserving quality.', icon: 'compress', category: 'security', route: '/pdf/compress-pdf', available: false },
   ];
 
-  readonly categories: PdfCategory[] = ['organize', 'edit', 'convert', 'security'];
+  readonly categories: PdfCategory[] = ['organize', 'edit', 'convert', 'security', 'intelligence'];
   readonly categoryLabels: Record<PdfCategory, string> = {
     organize: 'Organize',
     edit: 'Edit & Content',
     convert: 'Convert',
     security: 'Security & Utilities',
+    intelligence: 'Document Intelligence',
   };
 
   constructor() {
