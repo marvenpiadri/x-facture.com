@@ -245,6 +245,13 @@
           <button type="button" (click)="setImagePageSize('letter')" [class.active]="imagePageSize() === 'letter'"><strong>Letter</strong><span>US Letter page format.</span></button>
           <button type="button" (click)="setImagePageSize('fit')" [class.active]="imagePageSize() === 'fit'"><strong>Fit image</strong><span>Use image dimensions as the page.</span></button>
         </div>
+      } @else if (activeTool() === 'pdf-to-image') {
+        <div class="tool-panel"><span class="panel-kicker">IMAGE EXPORT</span><h2>Export pages as PNG</h2><p>Choose a render scale. If pages are selected on the canvas, only those pages are exported; otherwise the whole document is exported.</p></div>
+        <div class="split-methods">
+          <button type="button" (click)="setPdfToImageScale(1)" [class.active]="pdfToImageScale() === 1"><strong>Standard</strong><span>Fast, compact PNG output.</span></button>
+          <button type="button" (click)="setPdfToImageScale(1.5)" [class.active]="pdfToImageScale() === 1.5"><strong>High quality</strong><span>Sharper output for normal sharing.</span></button>
+          <button type="button" (click)="setPdfToImageScale(2)" [class.active]="pdfToImageScale() === 2"><strong>Print quality</strong><span>Larger PNGs with more detail.</span></button>
+        </div>
       } @else {
         <div class="tool-panel">
           <span class="panel-kicker">{{ categoryLabels[tools.find(t => t.id === activeTool())?.category || 'organize'] }}</span>
@@ -274,6 +281,8 @@
         <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="saveMetadata()"><span class="material-icons">save</span><span>{{ isProcessing() ? 'Saving…' : 'Export with metadata' }}</span></button>
       } @else if (activeTool() === 'image-to-pdf') {
         <button type="button" class="execute-button" [disabled]="!imageFiles().length || isProcessing()" (click)="createPdfFromImages()"><span class="material-icons">picture_as_pdf</span><span>{{ isProcessing() ? 'Creating…' : 'Create PDF' }}</span></button>
+      } @else if (activeTool() === 'pdf-to-image') {
+        <button type="button" class="execute-button" [disabled]="!file() || isProcessing()" (click)="exportPdfToImages()"><span class="material-icons">photo_library</span><span>{{ isProcessing() ? 'Exporting…' : 'Export PNG pages' }}</span></button>
       } @else {
         <button type="button" class="execute-button" disabled><span class="material-icons">schedule</span><span>Available in a later phase</span></button>
       }
