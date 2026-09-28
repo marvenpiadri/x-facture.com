@@ -53,6 +53,9 @@ export class ClientService {
   }
 
   async saveClient(client: Partial<Client>): Promise<Client> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Client storage is unavailable outside the browser.');
+    }
     const name = (client.name || 'New Client').trim();
     const slug = (client.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
     const now = new Date().toISOString();
@@ -82,6 +85,9 @@ export class ClientService {
   }
 
   async deleteClient(id: string): Promise<void> {
+    if (!this.isBrowser || typeof indexedDB === 'undefined') {
+      throw new Error('Client storage is unavailable outside the browser.');
+    }
     await db.clients.delete(id);
     await this.loadClients();
   }
