@@ -308,6 +308,7 @@ export class PdfStudioPage {
     if (!dropped.length) return;
 
     if (this.activeTool() === 'merge-pdf') await this.addMergeFiles(dropped);
+    else if (this.activeTool() === 'image-to-pdf') this.imageFiles.set(dropped.filter(file => file.type.startsWith('image/')));
     else await this.loadFile(dropped[0]);
   }
 
