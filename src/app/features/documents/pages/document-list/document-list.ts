@@ -30,14 +30,14 @@ export class DocumentListPage {
 
   readonly allDocuments = this.documentService.documents;
 
-  docTypeSlug = signal<string>('invoices');
+  docTypeSlug = signal<string>('');
   selectedStatus = signal<string>('all');
   searchQuery = signal<string>('');
 
   // Configuration for current document route
   currentConfig = computed<DocumentTypeConfig>(() => {
     const slug = this.docTypeSlug();
-    return DOCUMENT_TYPE_CONFIGS[slug] || DOCUMENT_TYPE_CONFIGS['invoices'];
+    return DOCUMENT_TYPE_CONFIGS[slug];
   });
 
   // Filtered documents for this specific type
@@ -65,9 +65,11 @@ export class DocumentListPage {
   });
 
   constructor() {
-    this.route.paramMap.subscribe(params => {
-      const type = params.get('docType') || 'invoices';
-      this.docTypeSlug.set(type);
+    this.route.data.subscribe(data => {
+      const type = data['docType'];
+      if (typeof type === 'string' && type in DOCUMENT_TYPE_CONFIGS) {
+        this.docTypeSlug.set(type);
+      }
     });
   }
 
