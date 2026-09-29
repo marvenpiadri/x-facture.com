@@ -26,7 +26,7 @@ export class DocumentEditPage {
   private router = inject(Router);
   private documentService = inject(DocumentService);
 
-  docTypeSlug = signal<string>('');
+  docTypeSlug = signal<string>('invoices');
   docNumber = signal<string | null>(null);
   isNew = signal<boolean>(true);
   loading = signal<boolean>(true);
