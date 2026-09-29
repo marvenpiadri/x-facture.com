@@ -30,7 +30,7 @@ export class DocumentListPage {
 
   readonly allDocuments = this.documentService.documents;
 
-  docTypeSlug = signal<string>('');
+  docTypeSlug = signal<string>('invoices');
   selectedStatus = signal<string>('all');
   searchQuery = signal<string>('');
 
