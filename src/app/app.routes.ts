@@ -28,10 +28,10 @@ import { CashRegisterChangeCalculatorComponent } from './calculators/cash-regist
 import { CompoundWorkingCapitalCalculatorComponent } from './calculators/compound-working-capital-calculator/compound-working-capital-calculator.component';
 
 const DOCUMENT_ROUTES: Routes = ALL_DOCUMENT_TYPES.flatMap(({ routeSegment }) => [
-  { path: routeSegment, component: DocumentListPage },
-  { path: `${routeSegment}/new`, component: DocumentEditPage },
-  { path: `${routeSegment}/:docNumber/edit`, component: DocumentEditPage },
-  { path: `${routeSegment}/:docNumber/preview`, component: DocumentPreviewPage },
+  { path: routeSegment, component: DocumentListPage, data: { docType: routeSegment } },
+  { path: `${routeSegment}/new`, component: DocumentEditPage, data: { docType: routeSegment } },
+  { path: `${routeSegment}/:docNumber/edit`, component: DocumentEditPage, data: { docType: routeSegment } },
+  { path: `${routeSegment}/:docNumber/preview`, component: DocumentPreviewPage, data: { docType: routeSegment } },
   { path: `${routeSegment}/:docNumber`, redirectTo: `${routeSegment}/:docNumber/preview`, pathMatch: 'full' },
 ]);
 
