@@ -26,6 +26,7 @@ import { InventoryTurnoverHoldingCalculatorComponent } from './calculators/inven
 import { CurrencyExchangeFeeCalculatorComponent } from './calculators/currency-exchange-fee-calculator/currency-exchange-fee-calculator.component';
 import { CashRegisterChangeCalculatorComponent } from './calculators/cash-register-change-calculator/cash-register-change-calculator.component';
 import { CompoundWorkingCapitalCalculatorComponent } from './calculators/compound-working-capital-calculator/compound-working-capital-calculator.component';
+import { XFacturePage } from './features/xfacture/pages/xfacture-page/xfacture-page';
 
 const DOCUMENT_ROUTES: Routes = ALL_DOCUMENT_TYPES.flatMap(({ routeSegment }) => [
   { path: routeSegment, component: DocumentListPage, data: { docType: routeSegment } },
@@ -67,6 +68,9 @@ export const routes: Routes = [
   { path: 'calculators', component: CalculatorsHubPage },
   ...SPECIALIZED_CALCULATOR_ROUTES,
   ...SIMPLE_CALCULATOR_ROUTES,
+
+  { path: 'invoice/xfacture', component: XFacturePage },
+  { path: 'xfacture', redirectTo: 'invoice/xfacture', pathMatch: 'full' },
 
   { path: 'pdf', component: PdfStudioPage },
   { path: 'pdf/:tool', component: PdfStudioPage },
