@@ -69,7 +69,7 @@ export const routes: Routes = [
   ...SPECIALIZED_CALCULATOR_ROUTES,
   ...SIMPLE_CALCULATOR_ROUTES,
 
-  { path: 'invoice/xfacture', component: XFacturePage },
+  { path: 'invoice/xfacture', component: XFacturePage, title: 'XFacture Invoice Generator | CII & UBL XML | X-Facture', data: { description: 'Generate structured invoice XML with X-Facture. Export CII and UBL invoice data locally from your invoice.' } },
   { path: 'xfacture', redirectTo: 'invoice/xfacture', pathMatch: 'full' },
 
   { path: 'pdf', component: PdfStudioPage },
