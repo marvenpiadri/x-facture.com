@@ -9,6 +9,7 @@ import { SettingsHubPage } from './features/settings/pages/settings-hub/settings
 import { DocumentListPage } from './features/documents/pages/document-list/document-list';
 import { DocumentEditPage } from './features/documents/pages/document-edit/document-edit';
 import { DocumentPreviewPage } from './features/documents/pages/document-preview/document-preview';
+import { ALL_DOCUMENT_TYPES } from './core/config/document-type-config';
 import { CalculatorsHubPage } from './calculators/calculators-hub';
 import { PdfStudioPage } from './features/pdf/pages/pdf-studio/pdf-studio';
 import { SimpleFinanceCalculatorComponent } from './calculators/simple-finance-calculator/simple-finance-calculator';
@@ -26,6 +27,14 @@ import { CurrencyExchangeFeeCalculatorComponent } from './calculators/currency-e
 import { CashRegisterChangeCalculatorComponent } from './calculators/cash-register-change-calculator/cash-register-change-calculator.component';
 import { CompoundWorkingCapitalCalculatorComponent } from './calculators/compound-working-capital-calculator/compound-working-capital-calculator.component';
 
+const DOCUMENT_ROUTES: Routes = ALL_DOCUMENT_TYPES.flatMap(({ routeSegment }) => [
+  { path: routeSegment, component: DocumentListPage },
+  { path: `${routeSegment}/new`, component: DocumentEditPage },
+  { path: `${routeSegment}/:docNumber/edit`, component: DocumentEditPage },
+  { path: `${routeSegment}/:docNumber/preview`, component: DocumentPreviewPage },
+  { path: `${routeSegment}/:docNumber`, redirectTo: `${routeSegment}/:docNumber/preview`, pathMatch: 'full' },
+]);
+
 const SPECIALIZED_CALCULATOR_ROUTES: Routes = [
   { path: 'calculators/stripe-paypal-fee-calculator', component: StripePaypalFeeCalculatorComponent },
   { path: 'calculators/cash-burn-runway-calculator', component: CashBurnRunwayCalculatorComponent },
@@ -41,8 +50,8 @@ const SPECIALIZED_CALCULATOR_ROUTES: Routes = [
   { path: 'calculators/compound-working-capital-calculator', component: CompoundWorkingCapitalCalculatorComponent },
 ];
 
-const SIMPLE_CALCULATOR_ROUTES: Routes = ADDITIONAL_CALCULATORS.map(calculator => ({
-  path: `calculators/${calculator.slug}`,
+const SIMPLE_CALCULATOR_ROUTES: Routes = ADDITIONAL_CALCULATORS.map(({ slug }) => ({
+  path: `calculators/${slug}`,
   component: SimpleFinanceCalculatorComponent,
 }));
 
@@ -56,17 +65,13 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsHubPage },
 
   { path: 'calculators', component: CalculatorsHubPage },
-
-  // PDF Engine — intentionally before the generic document routes.
-  { path: 'pdf', component: PdfStudioPage },
-  { path: 'pdf/:tool', component: PdfStudioPage },
   ...SPECIALIZED_CALCULATOR_ROUTES,
   ...SIMPLE_CALCULATOR_ROUTES,
 
-  { path: ':docType', component: DocumentListPage },
-  { path: ':docType/new', component: DocumentEditPage },
-  { path: ':docType/:docNumber/edit', component: DocumentEditPage },
-  { path: ':docType/:docNumber/preview', component: DocumentPreviewPage },
-  { path: ':docType/:docNumber', redirectTo: ':docType/:docNumber/preview', pathMatch: 'full' },
-  { path: '**', redirectTo: 'dashboard' }
+  { path: 'pdf', component: PdfStudioPage },
+  { path: 'pdf/:tool', component: PdfStudioPage },
+
+  ...DOCUMENT_ROUTES,
+
+  { path: '**', redirectTo: '' },
 ];
