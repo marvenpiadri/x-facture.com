@@ -13,6 +13,7 @@ import { BusinessDocument, DocumentStatus, PaperSize } from '../../../core/model
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { TemplateRendererComponent } from '../template-renderer/template-renderer';
 import { DocumentService } from '../../../core/services/document.service';
+import { StructuredInvoiceService } from '../../../core/services/structured-invoice.service';
 
 @Component({
   selector: 'app-document-preview-shell',
@@ -29,6 +30,7 @@ import { DocumentService } from '../../../core/services/document.service';
 export class DocumentPreviewShellComponent implements OnInit {
   private router = inject(Router);
   private documentService = inject(DocumentService);
+  private structuredInvoiceService = inject(StructuredInvoiceService);
 
   document = input.required<BusinessDocument>();
   config = input.required<DocumentTypeConfig>();
@@ -122,6 +124,12 @@ export class DocumentPreviewShellComponent implements OnInit {
     } finally {
       this.isGeneratingPdf.set(false);
     }
+  }
+
+  downloadStructured(format: 'ubl' | 'cii'): void {
+    const doc = this.document();
+    if (doc.docType !== 'invoices' && doc.docType !== 'credit-notes') return;
+    this.structuredInvoiceService.download(doc, format);
   }
 
   async onDuplicate(): Promise<void> {
