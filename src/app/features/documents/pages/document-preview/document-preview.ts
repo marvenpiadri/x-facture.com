@@ -26,7 +26,7 @@ export class DocumentPreviewPage {
   private router = inject(Router);
   private documentService = inject(DocumentService);
 
-  docTypeSlug = signal<string>('');
+  docTypeSlug = signal<string>('invoices');
   docNumber = signal<string>('');
   loading = signal<boolean>(true);
   currentDocument = signal<BusinessDocument | null>(null);
