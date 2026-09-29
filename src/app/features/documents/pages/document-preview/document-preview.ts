@@ -26,23 +26,25 @@ export class DocumentPreviewPage {
   private router = inject(Router);
   private documentService = inject(DocumentService);
 
-  docTypeSlug = signal<string>('invoices');
+  docTypeSlug = signal<string>('');
   docNumber = signal<string>('');
   loading = signal<boolean>(true);
   currentDocument = signal<BusinessDocument | null>(null);
 
   currentConfig = computed<DocumentTypeConfig>(() => {
     const slug = this.docTypeSlug();
-    return DOCUMENT_TYPE_CONFIGS[slug] || DOCUMENT_TYPE_CONFIGS['invoices'];
+    return DOCUMENT_TYPE_CONFIGS[slug];
   });
 
   constructor() {
-    this.route.paramMap.subscribe(params => {
-      const type = params.get('docType') || 'invoices';
-      const num = params.get('docNumber') || '';
-      this.docTypeSlug.set(type);
-      this.docNumber.set(num);
-      this.loadDoc(num);
+    this.route.data.subscribe(data => {
+      const type = data['docType'];
+      if (typeof type === 'string' && type in DOCUMENT_TYPE_CONFIGS) {
+        this.docTypeSlug.set(type);
+        const num = this.route.snapshot.paramMap.get('docNumber') || '';
+        this.docNumber.set(num);
+        void this.loadDoc(num);
+      }
     });
   }
 
