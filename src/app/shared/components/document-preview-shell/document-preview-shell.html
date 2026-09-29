@@ -120,6 +120,20 @@
         <span>PDF</span>
       </button>
 
+      @if (document().docType === 'invoices' || document().docType === 'credit-notes') {
+        <div class="structured-export-group" title="Generate structured invoice XML locally">
+          <span class="structured-label">XFacture</span>
+          <button type="button" class="btn-action structured-btn" (click)="downloadStructured('cii')" title="Download CII XML">
+            <span class="material-icons btn-icon">data_object</span>
+            <span>CII</span>
+          </button>
+          <button type="button" class="btn-action structured-btn" (click)="downloadStructured('ubl')" title="Download UBL XML">
+            <span class="material-icons btn-icon">code</span>
+            <span>UBL</span>
+          </button>
+        </div>
+      }
+
 
       <button type="button" class="btn-action print-btn" (click)="onPrint()" title="Send to printer">
         <span class="material-icons btn-icon">print</span>
