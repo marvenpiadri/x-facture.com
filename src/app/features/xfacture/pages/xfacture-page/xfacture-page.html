@@ -1,0 +1,40 @@
+<main class="xfacture-page">
+  <section class="xfacture-hero">
+    <span class="eyebrow">XFacture · Structured invoicing</span>
+    <h1>XFacture invoice exports with X-Facture</h1>
+    <p class="lead">
+      Turn the invoice you already create in X-Facture into structured CII or UBL XML directly in your browser.
+      No account server, database or Gotenberg service is required for these local exports.
+    </p>
+    <div class="actions">
+      <a routerLink="/invoices/new" class="primary-action">Create an invoice</a>
+      <a routerLink="/invoices" class="secondary-action">Open invoices</a>
+    </div>
+  </section>
+
+  <section class="format-grid" aria-label="Structured invoice formats">
+    <article class="format-card">
+      <span class="format-code">CII</span>
+      <h2>Cross Industry Invoice</h2>
+      <p>Generate a CII XML representation from your invoice data. This is the structured XML layer used by formats such as ZUGFeRD / Factur-X.</p>
+    </article>
+    <article class="format-card">
+      <span class="format-code">UBL</span>
+      <h2>Universal Business Language</h2>
+      <p>Generate a UBL 2.1 invoice XML representation suitable as a foundation for European structured invoicing workflows.</p>
+    </article>
+  </section>
+
+  <section class="explanation">
+    <h2>What happens when you export?</h2>
+    <ol>
+      <li>Your invoice remains the single source of truth inside X-Facture.</li>
+      <li>The local structured-invoice engine maps that data to CII or UBL XML.</li>
+      <li>The XML file is generated and downloaded in your browser.</li>
+      <li>Server-side PDF/A-3 packaging and network exchange can be added separately as the X-Facture platform evolves.</li>
+    </ol>
+    <p class="note">
+      XML export is a structured data feature. Country-specific legal compliance, validation profiles and electronic-invoicing network exchange may require additional rules or infrastructure.
+    </p>
+  </section>
+</main>
