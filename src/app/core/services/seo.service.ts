@@ -312,18 +312,4 @@ export class SeoService {
     script.textContent = JSON.stringify(data);
   }
 
-  private setBreadcrumbSchema(itemListElement: Array<Record<string, unknown>>): void {
-    let script = this.document.querySelector('script[type="application/ld+json"]#dynamic-breadcrumb-json-ld');
-    if (!script) {
-      script = this.document.createElement('script');
-      script.setAttribute('type', 'application/ld+json');
-      script.setAttribute('id', 'dynamic-breadcrumb-json-ld');
-      this.document.head.appendChild(script);
-    }
-    script.textContent = JSON.stringify({
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement
-    });
-  }
 }
