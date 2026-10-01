@@ -83,16 +83,14 @@ export class SeoService {
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
           provider: { '@id': `${this.siteUrl}#organization` }
         },
-        {
-          '@type': 'BreadcrumbList',
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
-            { '@type': 'ListItem', position: 2, name: 'Business Calculators', item: `${this.siteUrl}/calculators` },
-            { '@type': 'ListItem', position: 3, name: this.normalizeTitle(calculator.name), item: url }
-          ]
-        }
+
       ]
     });
+    this.setBreadcrumbSchema([
+      { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'Business Calculators', item: `${this.siteUrl}/calculators` },
+      { '@type': 'ListItem', position: 3, name: this.normalizeTitle(calculator.name), item: url }
+    ]);
   }
 
   updateCalculatorMetadataBySlug(slug: string): void {
@@ -242,13 +240,14 @@ export class SeoService {
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
         { '@type': 'WebPage', '@id': `${url}#webpage`, name: pageName, url, isPartOf: { '@id': `${this.siteUrl}/pdf#webpage` } },
-        { '@type': 'BreadcrumbList', itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
-          { '@type': 'ListItem', position: 2, name: 'PDF', item: `${this.siteUrl}/pdf` },
-          ...(url === `${this.siteUrl}/pdf` ? [] : [{ '@type': 'ListItem', position: 3, name: pageName, item: url }])
-        ] }
+
       ]
     });
+    this.setBreadcrumbSchema([
+      { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+      { '@type': 'ListItem', position: 2, name: 'PDF', item: `${this.siteUrl}/pdf` },
+      ...(url === `${this.siteUrl}/pdf` ? [] : [{ '@type': 'ListItem', position: 3, name: pageName, item: url }])
+    ]);
   }
 
   private organizationSchema(): Record<string, unknown> {
@@ -264,9 +263,13 @@ export class SeoService {
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
         { '@type': 'WebPage', '@id': `${url}#webpage`, name: normalizedPageName, url, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } },
-        { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl }, { '@type': 'ListItem', position: 2, name: normalizedPageName, item: url }] }
+
       ]
     });
+    this.setBreadcrumbSchema([
+      { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+      { '@type': 'ListItem', position: 2, name: normalizedPageName, item: url }
+    ]);
   }
 
   private normalizeUrl(url: string): string {
@@ -298,5 +301,20 @@ export class SeoService {
       this.document.head.appendChild(script);
     }
     script.textContent = JSON.stringify(data);
+  }
+
+  private setBreadcrumbSchema(itemListElement: Array<Record<string, unknown>>): void {
+    let script = this.document.querySelector('script[type="application/ld+json"]#dynamic-breadcrumb-json-ld');
+    if (!script) {
+      script = this.document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.setAttribute('id', 'dynamic-breadcrumb-json-ld');
+      this.document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement
+    });
   }
 }
