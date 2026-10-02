@@ -2,6 +2,8 @@ name: IndexNow
 on:
   push:
     branches: [main]
+    paths:
+      - 'public/sitemap.xml'
   workflow_dispatch:
 jobs:
   submit:
@@ -12,3 +14,5 @@ jobs:
         with:
           node-version: 22
       - run: node scripts/indexnow.mjs
+        env:
+          INDEXNOW_FULL: ${{ github.event_name == 'workflow_dispatch' && 'true' || 'false' }}
