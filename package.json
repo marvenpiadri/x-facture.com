@@ -10,7 +10,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "serve:ssr:x-facture": "node dist/server/server.mjs"
+    "serve:ssr:x-facture": "node dist/server/server.mjs",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@angular/cdk": "22.2.0",
