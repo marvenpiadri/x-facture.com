@@ -27,7 +27,6 @@ import { CurrencyExchangeFeeCalculatorComponent } from './calculators/currency-e
 import { CashRegisterChangeCalculatorComponent } from './calculators/cash-register-change-calculator/cash-register-change-calculator.component';
 import { CompoundWorkingCapitalCalculatorComponent } from './calculators/compound-working-capital-calculator/compound-working-capital-calculator.component';
 import { XFacturePage } from './features/xfacture/pages/xfacture-page/xfacture-page';
-import { QrStudioPage } from './features/qr/pages/qr-studio/qr-studio';
 
 const DOCUMENT_ROUTES: Routes = ALL_DOCUMENT_TYPES.flatMap(({ routeSegment }) => [
   { path: routeSegment, component: DocumentListPage, data: { docType: routeSegment } },
