@@ -167,8 +167,9 @@ export class QrStudioPage {
       })
     ).then(svg => {
       const blob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
-      this.triggerDownload(URL.createObjectURL(blob), 'x-facture-qr.svg');
-      setTimeout(() => URL.revokeObjectURL(blob.size ? URL.createObjectURL(blob) : ''), 0);
+      const url = URL.createObjectURL(blob);
+      this.triggerDownload(url, 'x-facture-qr.svg');
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
     });
   }
 
