@@ -298,13 +298,15 @@
           <span>Show footer on document</span>
         </label>
       </div>
-      <textarea
-        class="form-textarea document-footer-textarea"
-        rows="4"
-        [value]="document().footerText || ''"
-        (input)="onHeaderFieldChange('footerText', $any($event.target).value)"
-        placeholder="Business registration information&#10;mail@example.com&#10;+1 555 000 0000&#10;Tax ID&#10;Website&#10;Payment or legal information"
-      ></textarea>
+      @if (document().footerEnabled) {
+        <textarea
+          class="form-textarea document-footer-textarea"
+          rows="4"
+          [value]="document().footerText || ''"
+          (input)="onHeaderFieldChange('footerText', $any($event.target).value)"
+          placeholder="Business registration information&#10;mail@example.com&#10;+1 555 000 0000&#10;Tax ID&#10;Website&#10;Payment or legal information"
+        ></textarea>
+      }
     </div>
 
     <!-- Action Bar at bottom -->
