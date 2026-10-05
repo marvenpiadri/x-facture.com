@@ -19,7 +19,7 @@
 
   <div class="client-fields-grid">
     <div class="field-item full-width">
-      <label class="field-label">Client / Contact Name</label>
+      <label class="field-label">Client Name</label>
       <input
         type="text"
         class="form-input"
@@ -30,58 +30,14 @@
       />
     </div>
 
-    <div class="field-item">
-      <label class="field-label">Company / Legal Entity</label>
-      <input
-        type="text"
-        class="form-input"
-        [value]="client().legalName || ''"
-        (input)="onFieldChange('legalName', $any($event.target).value)"
-        placeholder="Company Name (Optional)"
-      />
-    </div>
-
-    <div class="field-item">
-      <label class="field-label">Tax ID / VAT Reg</label>
-      <input
-        type="text"
-        class="form-input"
-        [value]="client().taxId || ''"
-        (input)="onFieldChange('taxId', $any($event.target).value)"
-        placeholder="e.g. US-82-990142"
-      />
-    </div>
-
-    <div class="field-item">
-      <label class="field-label">Email Address</label>
-      <input
-        type="email"
-        class="form-input"
-        [value]="client().email || ''"
-        (input)="onFieldChange('email', $any($event.target).value)"
-        placeholder="billing@client.com"
-      />
-    </div>
-
-    <div class="field-item">
-      <label class="field-label">Phone Number</label>
-      <input
-        type="tel"
-        class="form-input"
-        [value]="client().phone || ''"
-        (input)="onFieldChange('phone', $any($event.target).value)"
-        placeholder="+1 (555) 000-0000"
-      />
-    </div>
-
     <div class="field-item full-width">
-      <label class="field-label">Billing Address & Location</label>
+      <label class="field-label">Client Information</label>
       <textarea
         class="form-textarea"
-        rows="2"
+        rows="6"
         [value]="client().address || ''"
         (input)="onFieldChange('address', $any($event.target).value)"
-        placeholder="Street address, city, state, postal code, country..."
+        placeholder="Company name, address, email, phone, tax ID, website, or any other client information..."
       ></textarea>
     </div>
   </div>
