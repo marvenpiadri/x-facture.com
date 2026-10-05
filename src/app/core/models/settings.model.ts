@@ -9,7 +9,6 @@ export interface NumberingPrefixConfig {
 export interface RegisteredBusinessProfile {
   id: string;
   company: DocumentParty;
-  registeredBusinesses?: RegisteredBusinessProfile[];
   createdAt: string;
   updatedAt: string;
 }
@@ -17,6 +16,7 @@ export interface RegisteredBusinessProfile {
 export interface BusinessProfileSettings {
   id: string; // 'current'
   company: DocumentParty;
+  registeredBusinesses?: RegisteredBusinessProfile[];
   defaultCurrency: string;
   defaultTaxRate: number;
   defaultPaymentTerms: string;
