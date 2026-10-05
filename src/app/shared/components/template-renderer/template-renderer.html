@@ -143,9 +143,6 @@
           <div class="simulated-barcode"></div>
           <span class="barcode-number">{{ document().docNumber }}</span>
         </div>
-        @if (document().footerEnabled && document().footerText) {
-          <div class="thermal-configured-footer">{{ document().footerText }}</div>
-        }
       </div>
     </div>
   }
