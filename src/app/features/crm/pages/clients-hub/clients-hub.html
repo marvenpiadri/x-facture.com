@@ -8,7 +8,7 @@
       <div>
         <h1 class="page-title">Client Directory & CRM</h1>
         <p class="page-subtitle">
-          Manage corporate contacts, default currencies, billing addresses, and tax identifiers.
+          Manage saved clients and their billing information.
         </p>
       </div>
     </div>
@@ -28,7 +28,7 @@
       <input
         type="text"
         class="crm-search-input"
-        placeholder="Search clients by name, legal entity, or email..."
+        placeholder="Search clients by name..."
         [value]="searchQuery()"
         (input)="searchQuery.set($any($event.target).value)"
       />
@@ -45,10 +45,8 @@
       <table class="clients-table">
         <thead>
           <tr>
-            <th>Client / Company</th>
-            <th>Contact</th>
-            <th>Location</th>
-            <th>Tax ID / VAT</th>
+            <th>Client</th>
+            <th>Information</th>
             <th>Currency</th>
             <th class="text-right">Actions</th>
           </tr>
@@ -63,38 +61,12 @@
                   </div>
                   <div>
                     <strong class="client-primary-name">{{ client.name }}</strong>
-                    @if (client.companyName) {
-                      <div class="legal-sub">{{ client.companyName }}</div>
-                    }
                   </div>
                 </div>
               </td>
 
               <td>
-                <div class="contact-details">
-                  @if (client.email) {
-                    <span class="contact-line">
-                      <span class="material-icons icon-tiny">email</span>
-                      {{ client.email }}
-                    </span>
-                  }
-                  @if (client.phone) {
-                    <span class="contact-line">
-                      <span class="material-icons icon-tiny">phone</span>
-                      {{ client.phone }}
-                    </span>
-                  }
-                </div>
-              </td>
-
-              <td>
-                <span class="location-text">
-                  {{ client.city || '' }} {{ client.country ? '(' + client.country + ')' : '—' }}
-                </span>
-              </td>
-
-              <td>
-                <span class="tax-tag font-mono">{{ client.taxId || '—' }}</span>
+                <span class="location-text">{{ client.address || '—' }}</span>
               </td>
 
               <td>
@@ -134,7 +106,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="6" class="empty-cell">
+              <td colspan="4" class="empty-cell">
                 <div class="empty-box">
                   <span class="material-icons">people_outline</span>
                   <h3>No Clients Found</h3>
@@ -166,7 +138,7 @@
         <div class="modal-body">
           <div class="form-field">
             <label class="field-label">Client Name *</label>
-            <input type="text" class="form-input" [(ngModel)]="activeClient.name" placeholder="Client or representative name" required />
+            <input type="text" class="form-input" [(ngModel)]="activeClient.name" placeholder="Client name" required />
           </div>
           <div class="form-field">
             <label class="field-label">Client Information</label>
@@ -174,21 +146,7 @@
               class="form-input"
               rows="8"
               [(ngModel)]="activeClient.address"
-              placeholder="Company name
-
-Address
-
-Email
-
-Phone
-
-Tax ID
-
-Website
-
-Other client information
-
-Leave any line blank if you do not need it."
+              placeholder="Client information"
             ></textarea>
           </div>
         </div>
