@@ -473,7 +473,7 @@ label, .field-label, .form-label {
   color: var(--color-header-text);
   letter-spacing: -0.03em;
   line-height: 1;
-
+}
 
 .brand-sub {
   font-size: 9px;
