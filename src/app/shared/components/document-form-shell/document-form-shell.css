@@ -174,7 +174,7 @@
 
 .party-card {
   min-width: 0;
-  background-color: var(--color-surface-subtle);
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
