@@ -123,16 +123,15 @@
               <span>From / Issuer</span>
             </label>
 
-            @if (registeredBusinesses().length > 0) {
-              <div class="quick-party-select">
-                <select class="party-dropdown" [value]="selectedBusinessId()" (change)="onBusinessSelect($event)" aria-label="Select registered business">
-                  <option value="">Load registered business...</option>
-                  @for (business of registeredBusinesses(); track business.id) {
-                    <option [value]="business.id">{{ business.company.name || 'Unnamed business' }}</option>
-                  }
-                </select>
-              </div>
-            }
+            <div class="quick-party-select">
+              <select class="party-dropdown" [value]="selectedBusinessId()" (change)="onBusinessSelect($event)" aria-label="Select registered business">
+                <option value="">Choose registered business...</option>
+                @for (business of registeredBusinesses(); track business.id) {
+                  <option [value]="business.id">{{ business.company.name || 'Unnamed business' }}</option>
+                }
+              </select>
+              <a routerLink="/settings" [queryParams]="{ tab: 'businesses' }" class="manage-party-link">Manage businesses</a>
+            </div>
           </div>
 
           <div class="party-fields-grid">
