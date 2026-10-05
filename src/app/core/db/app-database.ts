@@ -112,15 +112,23 @@ export async function seedInitialDataIfNeeded(): Promise<void> {
     // Strip fields removed from the current client model without deleting client records.
     const clients = await db.clients.toArray();
     for (const client of clients) {
-      const legacyClient = client as Client & Record<string, unknown>;
-      const cleanedClient = { ...legacyClient };
-      delete cleanedClient.companyName;
-      delete cleanedClient.email;
-      delete cleanedClient.phone;
-      delete cleanedClient.city;
-      delete cleanedClient.postalCode;
-      delete cleanedClient.country;
-      delete cleanedClient.taxId;
+      const {
+        companyName: _companyName,
+        email: _email,
+        phone: _phone,
+        city: _city,
+        postalCode: _postalCode,
+        country: _country,
+        taxId: _taxId,
+        ...cleanedClient
+      } = client as Client & Record<string, unknown>;
+      void _companyName;
+      void _email;
+      void _phone;
+      void _city;
+      void _postalCode;
+      void _country;
+      void _taxId;
       await db.clients.put(cleanedClient as Client);
     }
     await Promise.all([
