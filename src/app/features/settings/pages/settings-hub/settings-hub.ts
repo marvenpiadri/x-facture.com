@@ -12,11 +12,11 @@ import { RouterModule } from '@angular/router';
 import { SettingsService } from '../../../../core/services/settings.service';
 import { CurrencyService } from '../../../../core/services/currency.service';
 import { ThemeService } from '../../../../core/services/theme.service';
-import { BusinessProfileSettings, NumberingPrefixConfig } from '../../../../core/models/settings.model';
+import { BusinessProfileSettings, NumberingPrefixConfig, RegisteredBusinessProfile } from '../../../../core/models/settings.model';
 import { ALL_DOCUMENT_TYPES } from '../../../../core/config/document-type-config';
 import { db } from '../../../../core/db/app-database';
 
-export type SettingsTab = 'profile' | 'numbering' | 'defaults' | 'appearance' | 'data';
+export type SettingsTab = 'businesses' | 'profile' | 'numbering' | 'defaults' | 'appearance' | 'data';
 
 export interface PrefixEditItem {
   docType: string;
@@ -57,7 +57,14 @@ export class SettingsHubPage implements OnInit {
   posSalesCount = signal<number>(0);
   ledgerCount = signal<number>(0);
 
-  // TAB 1: Profile & Company Signals
+  // TAB 1: Managed Businesses
+  readonly registeredBusinesses = this.settingsService.settings;
+  showBusinessModal = signal<boolean>(false);
+  isEditingBusiness = signal<boolean>(false);
+  activeBusinessId = signal<string | undefined>(undefined);
+  activeBusiness: BusinessProfileSettings['company'] = this.getBlankBusiness();
+
+  // TAB 2: Profile & Company Signals
   companyName = signal<string>('');
   legalName = signal<string>('');
   email = signal<string>('');
@@ -74,10 +81,10 @@ export class SettingsHubPage implements OnInit {
   signatoryTitle = signal<string>('');
   signatureUrl = signal<string>('');
 
-  // TAB 2: Numbering Prefixes
+  // TAB 3: Numbering Prefixes
   prefixList = signal<PrefixEditItem[]>([]);
 
-  // TAB 3: Financial & Tax Defaults
+  // TAB 4: Financial & Tax Defaults
   defaultCurrency = signal<string>('USD');
   defaultTaxRate = signal<number>(10);
   taxName = signal<string>('VAT');
@@ -86,7 +93,7 @@ export class SettingsHubPage implements OnInit {
   defaultNotes = signal<string>('');
   acceptedPaymentMethods = signal<string[]>(['bank_transfer', 'credit_card', 'paypal', 'cash']);
 
-  // TAB 4: Templates & Branding
+  // TAB 5: Templates & Branding
   defaultFormalTemplate = signal<'modern' | 'classic' | 'bold'>('modern');
   defaultReceiptTemplate = signal<'thermal-80mm' | 'thermal-58mm' | 'modern'>('thermal-80mm');
   paperSize = signal<'a4' | 'letter'>('a4');
@@ -95,6 +102,46 @@ export class SettingsHubPage implements OnInit {
   posSoundEffects = signal<boolean>(true);
 
   readonly documentTypesList = ALL_DOCUMENT_TYPES;
+
+  getBlankBusiness(): BusinessProfileSettings['company'] {
+    return {
+      name: '', legalName: '', email: '', phone: '', website: '', address: '',
+      city: '', postalCode: '', country: '', taxId: '', logoUrl: '', bankDetails: ''
+    };
+  }
+
+  openAddBusiness(): void {
+    this.activeBusiness = this.getBlankBusiness();
+    this.activeBusinessId.set(undefined);
+    this.isEditingBusiness.set(false);
+    this.showBusinessModal.set(true);
+  }
+
+  openEditBusiness(business: RegisteredBusinessProfile): void {
+    this.activeBusiness = { ...business.company };
+    this.activeBusinessId.set(business.id);
+    this.isEditingBusiness.set(true);
+    this.showBusinessModal.set(true);
+  }
+
+  async saveBusiness(): Promise<void> {
+    if (!this.activeBusiness.name?.trim()) return;
+    await this.settingsService.saveRegisteredBusiness(this.activeBusiness, this.activeBusinessId());
+    this.showBusinessModal.set(false);
+    await this.loadCurrentSettings();
+  }
+
+  async deleteBusiness(business: RegisteredBusinessProfile): Promise<void> {
+    if (!confirm(`Delete managed business "${business.company.name}"?`)) return;
+    await this.settingsService.deleteRegisteredBusiness(business.id);
+    if (this.activeBusinessId() === business.id) this.activeBusinessId.set(undefined);
+    await this.loadCurrentSettings();
+  }
+
+  onBusinessFieldChange(field: keyof BusinessProfileSettings['company'], value: string): void {
+    this.activeBusiness = { ...this.activeBusiness, [field]: value };
+  }
+
 
   readonly presetColors = [
     { label: 'Emerald Green', hex: '#059669' },
