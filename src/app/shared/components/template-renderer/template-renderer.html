@@ -164,17 +164,12 @@
             <img [src]="document().company.logoUrl" class="company-logo" alt="Company Logo" />
           }
           <div class="company-info-stack">
-            <h1 class="company-title">{{ document().company.name }}</h1>
-            @if (document().company.legalName && document().company.legalName !== document().company.name) {
-              <div class="company-subname">{{ document().company.legalName }}</div>
+            @if (document().company.name) {
+              <h1 class="company-title">{{ document().company.name }}</h1>
             }
-            <div class="company-contact-lines">
-              @if (document().company.address) { <span>{{ document().company.address }}</span> }
-              @if (document().company.city) { <span>{{ document().company.city }}, {{ document().company.postalCode }} {{ document().company.country }}</span> }
-              @if (document().company.taxId) { <span class="tax-pill">Tax ID: {{ document().company.taxId }}</span> }
-              @if (document().company.email) { <span>{{ document().company.email }}</span> }
-              @if (document().company.phone) { <span>{{ document().company.phone }}</span> }
-            </div>
+            @if (document().company.address) {
+              <div class="company-contact-lines">{{ document().company.address }}</div>
+            }
           </div>
         </div>
 
@@ -213,21 +208,11 @@
       <section class="doc-parties-section">
         <div class="party-card party-bill-to">
           <div class="party-role-title">BILL TO / CLIENT</div>
-          <div class="party-name">{{ document().client.name }}</div>
-          @if (document().client.legalName) {
-            <div class="party-legal">{{ document().client.legalName }}</div>
+          @if (document().client.name) {
+            <div class="party-name">{{ document().client.name }}</div>
           }
           @if (document().client.address) {
             <div class="party-address">{{ document().client.address }}</div>
-          }
-          @if (document().client.city) {
-            <div class="party-location">{{ document().client.city }}, {{ document().client.postalCode }} {{ document().client.country }}</div>
-          }
-          @if (document().client.taxId) {
-            <div class="party-tax">Tax ID: {{ document().client.taxId }}</div>
-          }
-          @if (document().client.email) {
-            <div class="party-contact">{{ document().client.email }}</div>
           }
         </div>
 
