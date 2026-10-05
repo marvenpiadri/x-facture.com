@@ -168,28 +168,93 @@ export class SeoService {
     if (docConfig && segments.length === 2 && segments[1] === 'new') {
       const url = `${this.siteUrl}/${docConfig.routeSegment}/new`;
       const singular = docConfig.singularName.replace(/\s*\/.*$/, '').trim();
-      const titleMap: Record<string, string> = {
-        'invoices': 'Create Free Invoices Online',
-        'proforma-invoices': 'Create Free Proforma Invoices Online',
-        'commercial-invoices': 'Create Free Commercial Invoices Online',
-        'quotes': 'Create Free Quotes & Estimates Online',
-        'purchase-orders': 'Create Free Purchase Orders Online',
-        'receipts': 'Create Free Sales Receipts Online',
-        'credit-notes': 'Create Free Credit Notes Online',
-        'delivery-notes': 'Create Free Delivery Notes Online',
-        'timesheet-invoices': 'Create Free Timesheet Invoices Online',
-        'work-orders': 'Create Free Work Orders Online',
-        'statements': 'Create Free Statements of Account Online',
-        'service-agreements': 'Create Free Service Agreements Online',
-        'retainer-invoices': 'Create Free Retainer Invoices Online',
-        'bills-of-lading': 'Create Free Bills of Lading Online',
-        'custom-documents': 'Create Free Business Documents Online'
+      const searchIntentMap: Record<string, { title: string; description: string; keywords: string }> = {
+        'invoices': {
+          title: 'Create Free Invoices Online',
+          description: 'Create a professional invoice online for free. Add business and client details, line items, taxes and payment terms, then save a print-ready invoice.',
+          keywords: 'free invoice generator, create invoice online, invoice maker, online invoice template, tax invoice generator, printable invoice'
+        },
+        'proforma-invoices': {
+          title: 'Create Free Proforma Invoices Online',
+          description: 'Create a proforma invoice online for free for quotes, pre-shipment billing and advance commercial documentation before a final sale.',
+          keywords: 'proforma invoice generator, create proforma invoice, proforma invoice template, free proforma invoice, preliminary invoice'
+        },
+        'commercial-invoices': {
+          title: 'Create Free Commercial Invoices Online',
+          description: 'Create a commercial invoice for international trade, customs paperwork and cross-border shipments with clear goods, values and party details.',
+          keywords: 'commercial invoice generator, customs invoice, international invoice, export invoice, import invoice, commercial invoice template'
+        },
+        'quotes': {
+          title: 'Create Free Quotes & Estimates Online',
+          description: 'Create a clear business quote or estimate online for free. Present services, quantities, pricing and terms before a customer approves the work.',
+          keywords: 'free quote generator, estimate maker, business quotation template, price quote, service estimate, sales quote'
+        },
+        'purchase-orders': {
+          title: 'Create Free Purchase Orders Online',
+          description: 'Create a purchase order online for free to authorize supplier purchases with item details, quantities, prices and delivery information.',
+          keywords: 'purchase order generator, create purchase order, free PO template, supplier purchase order, purchase order maker'
+        },
+        'receipts': {
+          title: 'Create Free Sales Receipts Online',
+          description: 'Create a sales receipt online for free as proof of payment for retail, service and counter transactions with clear buyer and transaction details.',
+          keywords: 'receipt generator, sales receipt maker, payment receipt template, free receipt generator, printable sales receipt'
+        },
+        'credit-notes': {
+          title: 'Create Free Credit Notes Online',
+          description: 'Create a credit note online for free to record refunds, returned goods, pricing corrections and reductions against a customer balance.',
+          keywords: 'credit note generator, credit memo maker, refund credit note, credit note template, sales return document'
+        },
+        'delivery-notes': {
+          title: 'Create Free Delivery Notes Online',
+          description: 'Create a delivery note or packing slip online for free to document goods shipped, quantities delivered and receiving details without showing prices.',
+          keywords: 'delivery note generator, packing slip maker, delivery note template, goods dispatch note, packing list'
+        },
+        'timesheet-invoices': {
+          title: 'Create Free Timesheet Invoices Online',
+          description: 'Create an hourly timesheet invoice online for free. Turn logged hours, billable rates and service work into a clear client invoice.',
+          keywords: 'timesheet invoice generator, hourly invoice maker, freelancer invoice, billable hours invoice, time tracking invoice'
+        },
+        'work-orders': {
+          title: 'Create Free Work Orders Online',
+          description: 'Create a work order or job ticket online for free to organize service requests, technician tasks, labor, materials and job instructions.',
+          keywords: 'work order generator, job ticket template, service work order, maintenance work order, technician job sheet'
+        },
+        'statements': {
+          title: 'Create Free Statements of Account Online',
+          description: 'Create a statement of account online for free to summarize customer charges, credits, payments and outstanding balances across a billing period.',
+          keywords: 'statement of account generator, customer statement, account statement template, outstanding balance statement, billing statement'
+        },
+        'service-agreements': {
+          title: 'Create Free Service Agreements Online',
+          description: 'Create a service agreement online for free to outline recurring services, deliverables, rates, responsibilities and commercial terms.',
+          keywords: 'service agreement generator, service contract template, SLA agreement, consulting agreement, service terms document'
+        },
+        'retainer-invoices': {
+          title: 'Create Free Retainer Invoices Online',
+          description: 'Create a retainer invoice online for free for advance deposits, recurring advisory work and reserved service capacity.',
+          keywords: 'retainer invoice generator, retainer billing, advance invoice, recurring retainer invoice, consulting retainer'
+        },
+        'bills-of-lading': {
+          title: 'Create Free Bills of Lading Online',
+          description: 'Create a bill of lading online for free to organize cargo, shipper, consignee, carrier and freight details for commercial transport.',
+          keywords: 'bill of lading generator, BOL template, freight document, shipping document, cargo bill of lading'
+        },
+        'custom-documents': {
+          title: 'Create Free Business Documents Online',
+          description: 'Create a flexible business document online for free when a standard invoice, quote or order is not the right format for your workflow.',
+          keywords: 'business document generator, custom business document, free business document template, custom document maker, business form generator'
+        }
       };
-      const pageTitle = titleMap[docConfig.routeSegment] || `Create Free ${docConfig.singularName} Online`;
+      const intent = searchIntentMap[docConfig.routeSegment] || {
+        title: `Create Free ${docConfig.singularName} Online`,
+        description: `Create a ${docConfig.singularName.toLowerCase()} online for free with x-facture. Add the details your business needs and prepare a print-ready document.`,
+        keywords: `free ${docConfig.singularName.toLowerCase()} generator, create ${docConfig.singularName.toLowerCase()} online, ${docConfig.singularName.toLowerCase()} template`
+      };
+      const pageTitle = intent.title;
       this.updateMetadata({
         title: `${pageTitle} • x-facture`,
-        description: `Create ${singular.toLowerCase()}s online for free with x-facture. Add your business, client, items, pricing and document details, then save your document.`,
-        keywords: `create free ${singular.toLowerCase()} online, free ${singular.toLowerCase()} generator, online ${singular.toLowerCase()} maker, create ${singular.toLowerCase()}, x-facture`,
+        description: intent.description,
+        keywords: `${intent.keywords}, x-facture`,
         url
       });
       this.setDocumentCreationSchema(url, pageTitle, docConfig.routeSegment);
