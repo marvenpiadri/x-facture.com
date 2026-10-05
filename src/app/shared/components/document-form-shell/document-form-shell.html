@@ -165,6 +165,7 @@
       <section class="party-card client-card">
         <app-client-picker
           [client]="document().client"
+          [clientId]="document().clientId"
           (clientChange)="onClientChange($event)"
           (clientIdChange)="onClientIdChange($event)"
         ></app-client-picker>
