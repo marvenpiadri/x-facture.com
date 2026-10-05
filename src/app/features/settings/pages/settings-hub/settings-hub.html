@@ -238,31 +238,6 @@
             }
           </div>
 
-          <div class="settings-inline-panel footer-settings-panel">
-            <div class="section-header">
-              <span class="material-icons text-money">notes</span>
-              <div>
-                <h3 class="section-title">Optional Document Footer</h3>
-                <p class="section-desc">Add company information or other text to the bottom of documents. Nothing is shown unless you enable it and enter your own text.</p>
-              </div>
-            </div>
-            <label class="toggle-row">
-              <input type="checkbox" [checked]="footerEnabled()" (change)="footerEnabled.set($any($event.target).checked)" />
-              <span>Show footer on documents</span>
-            </label>
-            <div class="field-wrap">
-              <label class="field-label">Footer Information</label>
-              <textarea
-                class="input-field"
-                rows="4"
-                [value]="footerText()"
-                (input)="footerText.set($any($event.target).value)"
-                placeholder="Footer information"
-                [disabled]="!footerEnabled()"
-              ></textarea>
-            </div>
-          </div>
-
           <div class="form-row-2">
             <div class="field-wrap">
               <label class="field-label">Trading Name *</label>
@@ -643,7 +618,7 @@
             <span class="material-icons text-money">credit_card</span>
             <div>
               <h3 class="section-title">Accepted Payment Channels</h3>
-              <p class="section-desc">Select supported payment methods displayed in document footers.</p>
+              <p class="section-desc">Select the payment methods your business accepts.</p>
             </div>
           </div>
 
