@@ -34,17 +34,12 @@ export class ClientsHubPage {
   showModal = signal<boolean>(false);
   isEditing = signal<boolean>(false);
 
-  // Form State
   activeClient: Partial<Client> = this.getBlankClient();
 
   filteredClients = computed(() => {
     const q = this.searchQuery().trim().toLowerCase();
     if (!q) return this.clients();
-    return this.clients().filter(c =>
-      c.name.toLowerCase().includes(q) ||
-      (c.email && c.email.toLowerCase().includes(q)) ||
-      (c.companyName && c.companyName.toLowerCase().includes(q))
-    );
+    return this.clients().filter(c => c.name.toLowerCase().includes(q));
   });
 
   formatCurrency(val: number, curr?: string): string {
@@ -54,15 +49,9 @@ export class ClientsHubPage {
   getBlankClient(): Partial<Client> {
     return {
       name: '',
-      companyName: '',
-      email: '',
-      phone: '',
       address: '',
-      city: '',
-      postalCode: '',
-      country: '',
-      taxId: '',
       defaultCurrency: '',
+      defaultTaxRate: 0,
       notes: ''
     };
   }
