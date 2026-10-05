@@ -90,7 +90,9 @@ export class SettingsHubPage implements OnInit {
   defaultTaxRate = signal<number>(10);
   taxName = signal<string>('VAT');
   taxInclusive = signal<boolean>(false);
-  defaultPaymentTerms = signal<string>('net30');
+  defaultPaymentTerms = signal<string>('');
+  footerEnabled = signal<boolean>(false);
+  footerText = signal<string>('');
   defaultNotes = signal<string>('');
   acceptedPaymentMethods = signal<string[]>(['bank_transfer', 'credit_card', 'paypal', 'cash']);
 
@@ -214,7 +216,9 @@ export class SettingsHubPage implements OnInit {
       this.defaultTaxRate.set(s.defaultTaxRate ?? 10);
       this.taxName.set(s.taxName || 'VAT');
       this.taxInclusive.set(s.taxInclusive ?? false);
-      this.defaultPaymentTerms.set(s.defaultPaymentTerms || 'net30');
+      this.defaultPaymentTerms.set(s.defaultPaymentTerms || '');
+      this.footerEnabled.set(s.footerEnabled ?? false);
+      this.footerText.set(s.footerText || '');
       this.defaultNotes.set(s.defaultNotes || 'Thank you for your business. Payment is due within agreed terms.');
       this.acceptedPaymentMethods.set(s.acceptedPaymentMethods || ['bank_transfer', 'credit_card', 'paypal', 'cash']);
 
@@ -325,6 +329,8 @@ export class SettingsHubPage implements OnInit {
       taxName: this.taxName(),
       taxInclusive: this.taxInclusive(),
       defaultPaymentTerms: this.defaultPaymentTerms(),
+      footerEnabled: this.footerEnabled(),
+      footerText: this.footerText(),
       defaultNotes: this.defaultNotes(),
       acceptedPaymentMethods: this.acceptedPaymentMethods(),
       defaultFormalTemplate: this.defaultFormalTemplate(),
