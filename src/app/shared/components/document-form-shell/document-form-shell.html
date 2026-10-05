@@ -116,35 +116,48 @@
     <!-- Parties Split: Issuer and Client -->
     <div class="form-parties-split">
       <section class="party-card issuer-card">
-        <div class="party-card-header">
-          <div class="party-card-title">
-            <span class="material-icons party-icon">business</span>
-            <span>From / Issuer</span>
-          </div>
-        </div>
+        <div class="party-picker-panel">
+          <div class="panel-header-row">
+            <label class="panel-title-label">
+              <span class="material-icons title-icon">business</span>
+              <span>From / Issuer</span>
+            </label>
 
-        <div class="party-card-body">
-          <div class="party-field">
-            <label class="field-label">Company Name</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.name || ''"
-              (input)="onCompanyFieldChange('name', $any($event.target).value)"
-              placeholder="Your business name"
-              autocomplete="organization"
-            />
+            @if (registeredBusinesses().length > 0) {
+              <div class="quick-party-select">
+                <select class="party-dropdown" [value]="selectedBusinessId()" (change)="onBusinessSelect($event)" aria-label="Select registered business">
+                  <option value="">Load registered business...</option>
+                  @for (business of registeredBusinesses(); track business.id) {
+                    <option [value]="business.id">{{ business.company.name || 'Unnamed business' }}</option>
+                  }
+                </select>
+              </div>
+            }
           </div>
 
-          <div class="party-field">
-            <label class="field-label">Company Information</label>
-            <textarea
-              class="form-textarea party-details-textarea"
-              rows="6"
-              [value]="document().company.address || ''"
-              (input)="onCompanyFieldChange('address', $any($event.target).value)"
-              placeholder="Address, email, phone, tax ID, website, registration details, or any other information..."
-            ></textarea>
+          <div class="party-fields-grid">
+            <div class="party-field full-width">
+              <label class="field-label">Company Name</label>
+              <input
+                type="text"
+                class="form-input"
+                [value]="document().company.name || ''"
+                (input)="onCompanyFieldChange('name', $any($event.target).value)"
+                placeholder="Your business name"
+                autocomplete="organization"
+              />
+            </div>
+
+            <div class="party-field full-width">
+              <label class="field-label">Company Information</label>
+              <textarea
+                class="form-textarea party-details-textarea"
+                rows="6"
+                [value]="document().company.address || ''"
+                (input)="onCompanyFieldChange('address', $any($event.target).value)"
+                placeholder="Address, email, phone, tax ID, website, registration details, or any other information..."
+              ></textarea>
+            </div>
           </div>
         </div>
       </section>
