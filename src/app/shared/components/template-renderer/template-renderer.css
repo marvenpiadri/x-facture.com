@@ -114,7 +114,7 @@
   font-size: 11.5px;
   color: var(--color-text-secondary);
   line-height: 1.4;
-  white-space: pre-wrap;
+  white-space: break-spaces;
   overflow-wrap: anywhere;
 }
 
