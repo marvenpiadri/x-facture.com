@@ -29,7 +29,8 @@ export class DocumentService {
       return [];
     }
     try {
-      const list = await db.documents.orderBy('createdAt').reverse().toArray();
+      const rawList = await db.documents.orderBy('createdAt').reverse().toArray();
+      const list = rawList.map(doc => this.normalizePartyFields(doc));
       this.documents.set(list);
       return list;
     } catch {
@@ -40,7 +41,8 @@ export class DocumentService {
   async getDocumentById(id: string): Promise<BusinessDocument | undefined> {
     if (!this.isBrowser || typeof indexedDB === 'undefined') return undefined;
     try {
-      return await db.documents.get(id);
+      const doc = await db.documents.get(id);
+      return doc ? this.normalizePartyFields(doc) : undefined;
     } catch {
       return undefined;
     }
@@ -54,11 +56,12 @@ export class DocumentService {
     try {
       const cleaned = param.trim().toLowerCase();
       const all = await db.documents.toArray();
-      return all.find(d => 
-        d.docNumber.toLowerCase() === cleaned || 
+      const doc = all.find(d =>
+        d.docNumber.toLowerCase() === cleaned ||
         d.slug.toLowerCase() === cleaned ||
         d.id === param
       );
+      return doc ? this.normalizePartyFields(doc) : undefined;
     } catch {
       return undefined;
     }
@@ -86,21 +89,8 @@ export class DocumentService {
       currency: s.defaultCurrency || '',
       issueDate,
       dueDate,
-      company: {
-        name: '',
-        legalName: '',
-        email: '',
-        phone: '',
-        website: '',
-        address: '',
-        city: '',
-        postalCode: '',
-        country: '',
-        taxId: '',
-        logoUrl: '',
-        bankDetails: ''
-      },
-      client: { name: '' },
+      company: { name: '', address: '' },
+      client: { name: '', address: '' },
       lineLayoutMode: config.defaultLineLayoutMode,
       templateId: s.defaultFormalTemplate || config.defaultTemplateId,
       paperSize: s.paperSize || 'a4',
@@ -136,6 +126,20 @@ export class DocumentService {
     return newDoc;
   }
 
+  private normalizePartyFields(doc: BusinessDocument): BusinessDocument {
+    return {
+      ...doc,
+      company: {
+        name: doc.company?.name || '',
+        address: doc.company?.address || ''
+      },
+      client: {
+        name: doc.client?.name || '',
+        address: doc.client?.address || ''
+      }
+    };
+  }
+
   /**
    * Save (create or update) document and sync Smart Ledger if paid
    */
@@ -153,7 +157,7 @@ export class DocumentService {
     );
 
     const updatedDoc: BusinessDocument = {
-      ...doc,
+      ...this.normalizePartyFields(doc),
       subtotal: totals.subtotal,
       taxAmount: totals.taxAmount,
       discountAmount: totals.discountAmount,
