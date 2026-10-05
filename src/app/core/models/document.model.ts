@@ -25,8 +25,6 @@ export interface DocumentParty {
   taxId?: string;       // VAT / Tax Reg / Business No.
   logoUrl?: string;
   bankDetails?: string;
-  footerEnabled?: boolean;
-  footerText?: string;
 }
 
 export type PaperSize = 'a4' | 'letter' | 'thermal-80mm' | 'thermal-58mm';
@@ -74,6 +72,8 @@ export interface BusinessDocument {
   bankDetails?: string;
   shippingInstructions?: string; // for PO & Delivery notes
   specialFields?: Record<string, any>; // For Bill of Lading, custom documents
+  footerEnabled?: boolean;
+  footerText?: string;
 
   createdAt: string;
   updatedAt: string;
