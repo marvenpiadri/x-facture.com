@@ -39,6 +39,7 @@ export class DocumentFormShellComponent {
   private settingsService = inject(SettingsService);
   private clientService = inject(ClientService);
   private clientSaveTimer: ReturnType<typeof setTimeout> | undefined;
+  private activeBusinessId: string | undefined;
 
   // Inputs
   document = input.required<BusinessDocument>();
@@ -50,6 +51,7 @@ export class DocumentFormShellComponent {
   saveAndPreview = output<BusinessDocument>();
 
   readonly availableCurrencies = this.currencyService.CURRENCIES;
+  readonly registeredBusinesses = computed(() => this.settingsService.settings()?.registeredBusinesses || []);
 
   currencySymbol = computed(() => {
     return this.currencyService.getSymbol(this.document().currency);
@@ -118,19 +120,29 @@ export class DocumentFormShellComponent {
   }
 
   onCompanyFieldChange(field: keyof DocumentParty, value: string): void {
-    const company: DocumentParty = {
-      ...this.document().company,
-      [field]: value
-    };
-
-    const updated: BusinessDocument = {
-      ...this.document(),
-      company
-    };
-
+    const company: DocumentParty = { ...this.document().company, [field]: value };
+    const updated: BusinessDocument = { ...this.document(), company };
     this.save.emit(updated);
-    void this.settingsService.updateSettings({ company }).catch(() => {
-      // The document itself remains editable even if profile persistence is unavailable.
+    void this.settingsService.saveRegisteredBusiness(company, this.activeBusinessId).then(profile => {
+      this.activeBusinessId = profile.id;
+    }).catch(() => {
+      // The document remains editable even if local profile persistence fails.
+    });
+  }
+
+  onBusinessSelect(event: Event): void {
+    const id = (event.target as HTMLSelectElement).value;
+    if (!id) {
+      this.activeBusinessId = undefined;
+      return;
+    }
+    const profile = this.registeredBusinesses().find(b => b.id === id);
+    if (!profile) return;
+    this.activeBusinessId = profile.id;
+    const updated: BusinessDocument = { ...this.document(), company: { ...profile.company } };
+    this.save.emit(updated);
+    void this.settingsService.selectRegisteredBusiness(profile.id).catch(() => {
+      // The selected company remains applied to the current document.
     });
   }
 
