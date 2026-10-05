@@ -124,128 +124,26 @@
 
         <div class="company-editor-grid">
           <div class="company-editor-field company-editor-field-wide">
-            <label class="field-label">Business / Name</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.name || ''"
-              (change)="onCompanyFieldChange('name', $any($event.target).value)"
-              placeholder="Your business name"
-              autocomplete="organization"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">Legal Name</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.legalName || ''"
-              (change)="onCompanyFieldChange('legalName', $any($event.target).value)"
-              placeholder="Legal business name"
-              autocomplete="organization"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">Tax ID / Registration</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.taxId || ''"
-              (change)="onCompanyFieldChange('taxId', $any($event.target).value)"
-              placeholder="Tax or registration number"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">Email</label>
-            <input
-              type="email"
-              class="form-input"
-              [value]="document().company.email || ''"
-              (change)="onCompanyFieldChange('email', $any($event.target).value)"
-              placeholder="billing@company.com"
-              autocomplete="email"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">Phone</label>
-            <input
-              type="tel"
-              class="form-input"
-              [value]="document().company.phone || ''"
-              (change)="onCompanyFieldChange('phone', $any($event.target).value)"
-              placeholder="+1 555 000 0000"
-              autocomplete="tel"
-            />
-          </div>
-
-          <div class="company-editor-field company-editor-field-wide">
-            <label class="field-label">Address</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.address || ''"
-              (change)="onCompanyFieldChange('address', $any($event.target).value)"
-              placeholder="Street address"
-              autocomplete="street-address"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">City</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.city || ''"
-              (change)="onCompanyFieldChange('city', $any($event.target).value)"
-              placeholder="City"
-              autocomplete="address-level2"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">Postal Code</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.postalCode || ''"
-              (change)="onCompanyFieldChange('postalCode', $any($event.target).value)"
-              placeholder="Postal code"
-              autocomplete="postal-code"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">Country</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="document().company.country || ''"
-              (change)="onCompanyFieldChange('country', $any($event.target).value)"
-              placeholder="Country"
-              autocomplete="country-name"
-            />
-          </div>
-
-          <div class="company-editor-field">
-            <label class="field-label">Website</label>
-            <input
-              type="url"
-              class="form-input"
-              [value]="document().company.website || ''"
-              (change)="onCompanyFieldChange('website', $any($event.target).value)"
-              placeholder="https://company.com"
-              autocomplete="url"
-            />
-          </div>
+          <label class="field-label">Company Name</label>
+          <input
+            type="text"
+            class="form-input"
+            [value]="document().company.name || ''"
+            (change)="onCompanyFieldChange('name', $any($event.target).value)"
+            placeholder="Your business name"
+            autocomplete="organization"
+          />
         </div>
 
-        <div class="company-editor-hint">
-          <span class="material-icons">info</span>
-          <span>Your issuer details are saved as your business profile and reused on new documents.</span>
+        <div class="company-editor-field company-editor-field-wide">
+          <label class="field-label">Company Information</label>
+          <textarea
+            class="form-textarea"
+            rows="6"
+            [value]="document().company.address || ''"
+            (input)="onCompanyFieldChange('address', $any($event.target).value)"
+            placeholder="Address, email, phone, tax ID, website, registration details, or any other information..."
+          ></textarea>
         </div>
       </div>
 
