@@ -86,6 +86,8 @@
   min-width: 0;
 }
 
+.party-details-textarea::placeholder { white-space: pre-line; }
+
 .party-details-textarea {
   min-height: 132px;
 }
