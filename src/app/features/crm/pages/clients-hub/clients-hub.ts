@@ -62,7 +62,7 @@ export class ClientsHubPage {
       postalCode: '',
       country: '',
       taxId: '',
-      defaultCurrency: 'USD',
+      defaultCurrency: '',
       notes: ''
     };
   }
@@ -109,7 +109,7 @@ export class ClientsHubPage {
       postalCode: client.postalCode,
       country: client.country
     };
-    newDoc.currency = client.defaultCurrency || 'USD';
+    newDoc.currency = client.defaultCurrency || '';
     await this.documentService.saveDocument(newDoc);
     this.router.navigate([`/${newDoc.docType}/${newDoc.docNumber}/edit`]);
   }
