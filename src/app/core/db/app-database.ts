@@ -84,6 +84,51 @@ export async function seedInitialDataIfNeeded(): Promise<void> {
   }
   try {
     const existingSettings = await db.settings.get('current');
+
+    // Remove the original demo issuer profile from existing browser databases.
+    // Never overwrite a profile that the user has already customized.
+    if (
+      existingSettings &&
+      existingSettings.company?.name === 'x-facture Studio SARL' &&
+      existingSettings.company?.taxId === 'US-94-3829104'
+    ) {
+      const blankCompany: BusinessProfileSettings['company'] = {
+        name: '',
+        legalName: '',
+        email: '',
+        phone: '',
+        website: '',
+        address: '',
+        city: '',
+        postalCode: '',
+        country: '',
+        taxId: '',
+        logoUrl: '',
+        bankDetails: ''
+      };
+
+      await db.settings.put({
+        ...existingSettings,
+        company: blankCompany,
+        updatedAt: new Date().toISOString()
+      });
+
+      const demoDocuments = await db.documents.toArray();
+      for (const document of demoDocuments) {
+        if (
+          document.company?.name === 'x-facture Studio SARL' &&
+          document.company?.taxId === 'US-94-3829104'
+        ) {
+          await db.documents.update(document.id, {
+            company: blankCompany,
+            bankDetails: ''
+          });
+        }
+      }
+
+      return;
+    }
+
     if (existingSettings) return;
 
     // 1. Initial Business Settings
