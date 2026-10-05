@@ -1,15 +1,8 @@
 export interface Client {
   id: string;
-  slug: string;            // e.g. acme-corporation
+  slug: string;
   name: string;
-  companyName?: string;
-  email: string;
-  phone?: string;
   address?: string;
-  city?: string;
-  postalCode?: string;
-  country?: string;
-  taxId?: string;
   defaultCurrency?: string;
   defaultTaxRate?: number;
   notes?: string;
