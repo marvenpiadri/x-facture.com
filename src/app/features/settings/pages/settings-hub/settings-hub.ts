@@ -91,8 +91,6 @@ export class SettingsHubPage implements OnInit {
   taxName = signal<string>('');
   taxInclusive = signal<boolean>(false);
   defaultPaymentTerms = signal<string>('');
-  footerEnabled = signal<boolean>(false);
-  footerText = signal<string>('');
   defaultNotes = signal<string>('');
   acceptedPaymentMethods = signal<string[]>([]);
 
@@ -217,8 +215,6 @@ export class SettingsHubPage implements OnInit {
       this.taxName.set(s.taxName || '');
       this.taxInclusive.set(s.taxInclusive ?? false);
       this.defaultPaymentTerms.set(s.defaultPaymentTerms || '');
-      this.footerEnabled.set(s.footerEnabled ?? false);
-      this.footerText.set(s.footerText || '');
       this.defaultNotes.set(s.defaultNotes || '');
       this.acceptedPaymentMethods.set(s.acceptedPaymentMethods || []);
 
@@ -329,8 +325,6 @@ export class SettingsHubPage implements OnInit {
       taxName: this.taxName(),
       taxInclusive: this.taxInclusive(),
       defaultPaymentTerms: this.defaultPaymentTerms(),
-      footerEnabled: this.footerEnabled(),
-      footerText: this.footerText(),
       defaultNotes: this.defaultNotes(),
       acceptedPaymentMethods: this.acceptedPaymentMethods(),
       defaultFormalTemplate: this.defaultFormalTemplate(),
