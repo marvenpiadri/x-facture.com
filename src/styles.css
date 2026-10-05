@@ -252,7 +252,7 @@ label, .field-label, .form-label {
 
 .page-title {
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 400;
   color: var(--color-text-main);
   letter-spacing: -0.02em;
   margin: 0;
