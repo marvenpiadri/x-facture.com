@@ -92,7 +92,7 @@
                         <strong class="item-title">{{ tool.name }}</strong>
                         <span class="item-desc">{{ tool.description }}</span>
                       </div>
-                      <span class="pdf-tool-category">{{ tool.category }}</span>
+                      <span class="pdf-tool-category">{{ tool.available === false ? 'none' : tool.category }}</span>
                     </button>
                   } @else {
                     <a
