@@ -43,15 +43,8 @@ export class ClientPickerComponent {
     const found = this.savedClients().find(c => c.id === clientId);
     if (found) {
       const party: DocumentParty = {
-        name: found.name,
-        legalName: found.companyName,
-        email: found.email,
-        phone: found.phone,
-        address: found.address,
-        city: found.city,
-        postalCode: found.postalCode,
-        country: found.country,
-        taxId: found.taxId
+        name: found.name || '',
+        address: found.address || ''
       };
       this.clientSelected.emit({ client: party, clientId: found.id });
     }
