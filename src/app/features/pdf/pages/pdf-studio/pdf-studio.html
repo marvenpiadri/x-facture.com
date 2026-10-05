@@ -2,7 +2,7 @@
   <aside class="pdf-sidebar">
     <div class="sidebar-heading">
       <span class="material-icons">picture_as_pdf</span>
-      <div><span class="eyebrow">PDFeus</span><strong>PDF Workspace</strong></div>
+      <div><span class="eyebrow">x-facture</span><strong>PDF Studio</strong></div>
     </div>
     <label class="sidebar-search">
       <span class="material-icons">search</span>
@@ -15,7 +15,7 @@
           @for (tool of toolsFor(category); track tool.id) {
             @if (tool.available === false) {
               <button type="button" class="tool-link coming-soon" disabled>
-                <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong><small>Coming soon</small></span>
+                <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong></span>
               </button>
             } @else {
               <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route">
@@ -30,16 +30,16 @@
 
   <main class="pdf-canvas">
     <nav class="pdf-breadcrumbs" aria-label="Breadcrumb">
-      <a routerLink="/"><span class="material-icons">home</span><span>X-Facture</span></a>
+      <a routerLink="/"><span class="material-icons">home</span><span>x-facture</span></a>
       <span class="material-icons">chevron_right</span>
-      <a routerLink="/pdf">PDFeus</a>
+      <a routerLink="/pdf">x-facture PDF Studio</a>
       <span class="material-icons">chevron_right</span>
       <span>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</span>
     </nav>
     <div class="canvas-topbar">
       <div class="document-title">
         <span class="eyebrow">DOCUMENT WORKSPACE</span>
-        <h1>{{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</h1>
+        <h1>x-facture {{ tools.find(t => t.id === activeTool())?.name || 'PDF Studio' }}</h1>
       </div>
       @if (activeTool() !== 'merge-pdf' && file(); as currentFile) {
         <div class="active-file-pill">
