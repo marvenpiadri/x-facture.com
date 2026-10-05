@@ -36,17 +36,18 @@ export const db = new AppDatabase();
 export const DEFAULT_BUSINESS_SETTINGS: BusinessProfileSettings = {
   id: 'current',
   company: {
-    name: 'x-facture Studio SARL',
-    legalName: 'x-facture Studio SARL',
-    email: 'billing@x-facture.com',
-    phone: '+1 (555) 234-8900',
-    address: '100 Innovation Boulevard, Suite 400',
-    city: 'San Francisco',
-    postalCode: '94107',
-    country: 'United States',
-    taxId: 'US-94-3829104',
+    name: '',
+    legalName: '',
+    email: '',
+    phone: '',
+    website: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    country: '',
+    taxId: '',
     logoUrl: '',
-    bankDetails: 'Bank: Silicon Horizon Bank\nRouting (ABA): 121000358\nAccount: 4892019482\nSWIFT: SHBKUS6S\nIBAN: US44SHBK1210003584892019482'
+    bankDetails: ''
   },
   defaultCurrency: 'USD',
   defaultTaxRate: 10,
