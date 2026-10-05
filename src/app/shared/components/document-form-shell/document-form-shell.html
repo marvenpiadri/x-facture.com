@@ -282,33 +282,6 @@
       </div>
     </div>
 
-    <!-- Optional Document Footer -->
-    <div class="document-footer-form-section">
-      <div class="footer-form-header">
-        <div>
-          <label class="field-label">Document Footer</label>
-          <p class="footer-form-hint">Add information that should appear at the bottom of this document.</p>
-        </div>
-        <label class="footer-toggle-row">
-          <input
-            type="checkbox"
-            [checked]="document().footerEnabled ?? false"
-            (change)="onHeaderFieldChange('footerEnabled', $any($event.target).checked)"
-          />
-          <span>Show footer on document</span>
-        </label>
-      </div>
-      @if (document().footerEnabled) {
-        <textarea
-          class="form-textarea document-footer-textarea"
-          rows="4"
-          [value]="document().footerText || ''"
-          (input)="onHeaderFieldChange('footerText', $any($event.target).value)"
-          placeholder="Business registration information&#10;mail@example.com&#10;+1 555 000 0000&#10;Tax ID&#10;Website&#10;Payment or legal information"
-        ></textarea>
-      }
-    </div>
-
     <!-- Action Bar at bottom -->
     <div class="form-footer-action-bar">
       <button type="button" class="btn-secondary" (click)="triggerSave()">
