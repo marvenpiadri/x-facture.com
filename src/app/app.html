@@ -85,19 +85,30 @@
 
               <div class="pdf-menu-grid">
                 @for (tool of pdfNavTools; track tool.id) {
-                  <a
-                    [routerLink]="['/pdf', tool.id]"
-                    class="pdf-menu-item"
-                    [class.pdf-menu-featured]="tool.id === 'organize-pdf'"
-                    (click)="closeMenus()"
-                  >
-                    <span class="material-icons pdf-item-icon">{{ tool.icon }}</span>
-                    <div class="item-text">
-                      <strong class="item-title">{{ tool.name }}</strong>
-                      <span class="item-desc">{{ tool.description }}</span>
-                    </div>
-                    <span class="pdf-tool-category">{{ tool.category }}</span>
-                  </a>
+                  @if (tool.available === false) {
+                    <button type="button" class="pdf-menu-item pdf-menu-item-disabled" [class.pdf-menu-featured]="tool.id === 'organize-pdf'" disabled>
+                      <span class="material-icons pdf-item-icon">{{ tool.icon }}</span>
+                      <div class="item-text">
+                        <strong class="item-title">{{ tool.name }}</strong>
+                        <span class="item-desc">{{ tool.description }}</span>
+                      </div>
+                      <span class="pdf-tool-category">{{ tool.category }}</span>
+                    </button>
+                  } @else {
+                    <a
+                      [routerLink]="['/pdf', tool.id]"
+                      class="pdf-menu-item"
+                      [class.pdf-menu-featured]="tool.id === 'organize-pdf'"
+                      (click)="closeMenus()"
+                    >
+                      <span class="material-icons pdf-item-icon">{{ tool.icon }}</span>
+                      <div class="item-text">
+                        <strong class="item-title">{{ tool.name }}</strong>
+                        <span class="item-desc">{{ tool.description }}</span>
+                      </div>
+                      <span class="pdf-tool-category">{{ tool.category }}</span>
+                    </a>
+                  }
                 }
               </div>
 
