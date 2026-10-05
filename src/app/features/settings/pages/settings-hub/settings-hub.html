@@ -88,6 +88,10 @@
 
   <!-- Tab Navigation Bar -->
   <div class="settings-tabs-bar">
+    <button type="button" class="tab-btn" [class.active]="activeTab() === 'businesses'" (click)="setTab('businesses')">
+      <span class="material-icons tab-icon">business_center</span>
+      <span>1. Managed Businesses</span>
+    </button>
     <button
       type="button"
       class="tab-btn"
@@ -95,7 +99,7 @@
       (click)="setTab('profile')"
     >
       <span class="material-icons tab-icon">business</span>
-      <span>1. Company Profile</span>
+      <span>2. Company Profile</span>
     </button>
 
     <button
@@ -105,7 +109,7 @@
       (click)="setTab('numbering')"
     >
       <span class="material-icons tab-icon">tag</span>
-      <span>2. Document Prefixes</span>
+      <span>3. Document Prefixes</span>
     </button>
 
     <button
@@ -115,7 +119,7 @@
       (click)="setTab('defaults')"
     >
       <span class="material-icons tab-icon">account_balance</span>
-      <span>3. Financial & Tax</span>
+      <span>4. Financial & Tax</span>
     </button>
 
     <button
@@ -125,7 +129,7 @@
       (click)="setTab('appearance')"
     >
       <span class="material-icons tab-icon">palette</span>
-      <span>4. Branding & Templates</span>
+      <span>5. Branding & Templates</span>
     </button>
 
     <button
@@ -135,14 +139,76 @@
       (click)="setTab('data')"
     >
       <span class="material-icons tab-icon">cloud_sync</span>
-      <span>5. Data Backup & Reset</span>
+      <span>6. Data Backup & Reset</span>
     </button>
   </div>
 
   <!-- Tab Contents -->
   <div class="settings-content-card">
 
-    <!-- TAB 1: COMPANY PROFILE -->
+    <!-- TAB 1: MANAGED BUSINESSES -->
+    @if (activeTab() === 'businesses') {
+      <div class="managed-directory">
+        <div class="section-header-flex">
+          <div class="section-header">
+            <span class="material-icons text-money">business_center</span>
+            <div>
+              <h3 class="section-title">Managed Businesses</h3>
+              <p class="section-desc">Store the businesses you manage so you can load the correct issuer into any document.</p>
+            </div>
+          </div>
+          <button type="button" class="btn-save" (click)="openAddBusiness()">
+            <span class="material-icons">add_business</span>
+            <span>Add Business</span>
+          </button>
+        </div>
+
+        <div class="managed-business-grid">
+          @for (business of registeredBusinesses()?.registeredBusinesses || []; track business.id) {
+            <article class="managed-business-card">
+              <div class="managed-business-icon"><span class="material-icons">business</span></div>
+              <div class="managed-business-main">
+                <h4>{{ business.company.name || 'Unnamed business' }}</h4>
+                @if (business.company.legalName) { <p>{{ business.company.legalName }}</p> }
+                @if (business.company.email) { <span>{{ business.company.email }}</span> }
+                @if (business.company.taxId) { <span class="font-mono">{{ business.company.taxId }}</span> }
+              </div>
+              <div class="managed-business-actions">
+                <button type="button" class="btn-secondary-action" (click)="openEditBusiness(business)" title="Edit business">
+                  <span class="material-icons">edit</span>
+                </button>
+                <button type="button" class="btn-secondary-action danger-action" (click)="deleteBusiness(business)" title="Delete business">
+                  <span class="material-icons">delete_outline</span>
+                </button>
+              </div>
+            </article>
+          } @empty {
+            <div class="managed-empty-state">
+              <span class="material-icons">business_center</span>
+              <h3>No managed businesses yet</h3>
+              <p>Add the businesses you manage here. They will appear in the From / Issuer selector when creating documents.</p>
+              <button type="button" class="btn-save" (click)="openAddBusiness()">
+                <span class="material-icons">add_business</span>
+                <span>Add Your First Business</span>
+              </button>
+            </div>
+          }
+        </div>
+
+        <div class="directory-link-card">
+          <div>
+            <strong>Client Directory</strong>
+            <p>Keep reusable client information in one place and load clients into documents later.</p>
+          </div>
+          <a routerLink="/clients" class="btn-secondary-action">
+            <span class="material-icons">people</span>
+            <span>Manage Clients</span>
+          </a>
+        </div>
+      </div>
+    }
+
+    <!-- TAB 2: COMPANY PROFILE -->
     @if (activeTab() === 'profile') {
       <form class="settings-form" (ngSubmit)="saveSettings()">
         <div class="form-section">
@@ -940,3 +1006,78 @@
 
   </div>
 </div>
+
+  @if (showBusinessModal()) {
+    <div class="modal-backdrop" (click)="showBusinessModal.set(false)">
+      <div class="modal-card modal-business" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-title-lockup">
+            <span class="material-icons modal-icon">business</span>
+            <h3>{{ isEditingBusiness() ? 'Edit Managed Business' : 'Add Managed Business' }}</h3>
+          </div>
+          <button type="button" class="btn-close-modal" (click)="showBusinessModal.set(false)">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row-2">
+            <div class="field-wrap">
+              <label class="field-label">Business Name *</label>
+              <input type="text" class="input-field" [value]="activeBusiness.name || ''" (input)="onBusinessFieldChange('name', $any($event.target).value)" placeholder="Business or trading name" required />
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Legal Name</label>
+              <input type="text" class="input-field" [value]="activeBusiness.legalName || ''" (input)="onBusinessFieldChange('legalName', $any($event.target).value)" placeholder="Registered legal entity name" />
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="field-wrap">
+              <label class="field-label">Email</label>
+              <input type="email" class="input-field" [value]="activeBusiness.email || ''" (input)="onBusinessFieldChange('email', $any($event.target).value)" placeholder="Business email address" />
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Phone</label>
+              <input type="text" class="input-field" [value]="activeBusiness.phone || ''" (input)="onBusinessFieldChange('phone', $any($event.target).value)" placeholder="Business phone number" />
+            </div>
+          </div>
+          <div class="field-wrap">
+            <label class="field-label">Website</label>
+            <input type="url" class="input-field" [value]="activeBusiness.website || ''" (input)="onBusinessFieldChange('website', $any($event.target).value)" placeholder="Business website" />
+          </div>
+          <div class="field-wrap">
+            <label class="field-label">Business Information</label>
+            <textarea class="input-field" rows="5" [value]="activeBusiness.address || ''" (input)="onBusinessFieldChange('address', $any($event.target).value)" placeholder="Address, city, postal code, country, tax ID, registration details, bank information, or other business information..."></textarea>
+          </div>
+          <div class="form-row-3">
+            <div class="field-wrap">
+              <label class="field-label">City</label>
+              <input type="text" class="input-field" [value]="activeBusiness.city || ''" (input)="onBusinessFieldChange('city', $any($event.target).value)" placeholder="City" />
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Postal Code</label>
+              <input type="text" class="input-field" [value]="activeBusiness.postalCode || ''" (input)="onBusinessFieldChange('postalCode', $any($event.target).value)" placeholder="Postal or ZIP code" />
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Country</label>
+              <input type="text" class="input-field" [value]="activeBusiness.country || ''" (input)="onBusinessFieldChange('country', $any($event.target).value)" placeholder="Country" />
+            </div>
+          </div>
+          <div class="form-row-2">
+            <div class="field-wrap">
+              <label class="field-label">Tax ID / VAT / Business Number</label>
+              <input type="text" class="input-field font-mono" [value]="activeBusiness.taxId || ''" (input)="onBusinessFieldChange('taxId', $any($event.target).value)" placeholder="Tax or registration identifier" />
+            </div>
+            <div class="field-wrap">
+              <label class="field-label">Bank Information</label>
+              <input type="text" class="input-field" [value]="activeBusiness.bankDetails || ''" (input)="onBusinessFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank account or payment details" />
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" (click)="showBusinessModal.set(false)">Cancel</button>
+          <button type="button" class="btn-save" (click)="saveBusiness()" [disabled]="!activeBusiness.name?.trim()">
+            <span class="material-icons">check</span>
+            <span>Save Business</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
