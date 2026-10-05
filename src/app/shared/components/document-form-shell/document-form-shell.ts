@@ -40,6 +40,7 @@ export class DocumentFormShellComponent {
   private clientService = inject(ClientService);
   private clientSaveTimer: ReturnType<typeof setTimeout> | undefined;
   private activeBusinessId: string | undefined;
+  private businessSaveTimer: ReturnType<typeof setTimeout> | undefined;
 
   // Inputs
   document = input.required<BusinessDocument>();
@@ -124,14 +125,19 @@ export class DocumentFormShellComponent {
     const company: DocumentParty = { ...this.document().company, [field]: value };
     const updated: BusinessDocument = { ...this.document(), company };
     this.save.emit(updated);
-    void this.settingsService.saveRegisteredBusiness(company, this.activeBusinessId).then(profile => {
-      this.activeBusinessId = profile.id;
-    }).catch(() => {
-      // The document remains editable even if local profile persistence fails.
-    });
+
+    if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
+    this.businessSaveTimer = setTimeout(() => {
+      void this.settingsService.saveRegisteredBusiness(company, this.activeBusinessId).then(profile => {
+        this.activeBusinessId = profile.id;
+      }).catch(() => {
+        // The document remains editable even if local profile persistence fails.
+      });
+    }, 600);
   }
 
   onBusinessSelect(event: Event): void {
+    if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
     const id = (event.target as HTMLSelectElement).value;
     if (!id) {
       this.activeBusinessId = undefined;
