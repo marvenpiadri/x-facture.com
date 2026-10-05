@@ -167,7 +167,6 @@ export class SeoService {
     const docConfig = docType ? DOCUMENT_TYPE_CONFIGS[docType] : undefined;
     if (docConfig && segments.length === 2 && segments[1] === 'new') {
       const url = `${this.siteUrl}/${docConfig.routeSegment}/new`;
-      const singular = docConfig.singularName.replace(/\s*\/.*$/, '').trim();
       const searchIntentMap: Record<string, { title: string; description: string; keywords: string }> = {
         'invoices': {
           title: 'Create Free Invoices Online',
