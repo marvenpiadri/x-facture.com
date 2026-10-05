@@ -90,6 +90,8 @@
 
 .party-details-textarea {
   min-height: 132px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .field-label {
