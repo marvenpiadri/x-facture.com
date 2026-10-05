@@ -1043,57 +1043,31 @@
           <button type="button" class="btn-close-modal" (click)="showBusinessModal.set(false)">&times;</button>
         </div>
         <div class="modal-body">
-          <div class="form-row-2">
-            <div class="field-wrap">
-              <label class="field-label">Business Name *</label>
-              <input type="text" class="input-field" [value]="activeBusiness.name || ''" (input)="onBusinessFieldChange('name', $any($event.target).value)" placeholder="Business or trading name" required />
-            </div>
-            <div class="field-wrap">
-              <label class="field-label">Legal Name</label>
-              <input type="text" class="input-field" [value]="activeBusiness.legalName || ''" (input)="onBusinessFieldChange('legalName', $any($event.target).value)" placeholder="Registered legal entity name" />
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="field-wrap">
-              <label class="field-label">Email</label>
-              <input type="email" class="input-field" [value]="activeBusiness.email || ''" (input)="onBusinessFieldChange('email', $any($event.target).value)" placeholder="Business email address" />
-            </div>
-            <div class="field-wrap">
-              <label class="field-label">Phone</label>
-              <input type="text" class="input-field" [value]="activeBusiness.phone || ''" (input)="onBusinessFieldChange('phone', $any($event.target).value)" placeholder="Business phone number" />
-            </div>
-          </div>
           <div class="field-wrap">
-            <label class="field-label">Website</label>
-            <input type="url" class="input-field" [value]="activeBusiness.website || ''" (input)="onBusinessFieldChange('website', $any($event.target).value)" placeholder="Business website" />
+            <label class="field-label">Business Name *</label>
+            <input type="text" class="input-field" [value]="activeBusiness.name || ''" (input)="onBusinessFieldChange('name', $any($event.target).value)" placeholder="Your business or trading name" required />
           </div>
           <div class="field-wrap">
             <label class="field-label">Business Information</label>
-            <textarea class="input-field" rows="5" [value]="activeBusiness.address || ''" (input)="onBusinessFieldChange('address', $any($event.target).value)" placeholder="Address, city, postal code, country, tax ID, registration details, bank information, or other business information..."></textarea>
-          </div>
-          <div class="form-row-3">
-            <div class="field-wrap">
-              <label class="field-label">City</label>
-              <input type="text" class="input-field" [value]="activeBusiness.city || ''" (input)="onBusinessFieldChange('city', $any($event.target).value)" placeholder="City" />
-            </div>
-            <div class="field-wrap">
-              <label class="field-label">Postal Code</label>
-              <input type="text" class="input-field" [value]="activeBusiness.postalCode || ''" (input)="onBusinessFieldChange('postalCode', $any($event.target).value)" placeholder="Postal or ZIP code" />
-            </div>
-            <div class="field-wrap">
-              <label class="field-label">Country</label>
-              <input type="text" class="input-field" [value]="activeBusiness.country || ''" (input)="onBusinessFieldChange('country', $any($event.target).value)" placeholder="Country" />
-            </div>
-          </div>
-          <div class="form-row-2">
-            <div class="field-wrap">
-              <label class="field-label">Tax ID / VAT / Business Number</label>
-              <input type="text" class="input-field font-mono" [value]="activeBusiness.taxId || ''" (input)="onBusinessFieldChange('taxId', $any($event.target).value)" placeholder="Tax or registration identifier" />
-            </div>
-            <div class="field-wrap">
-              <label class="field-label">Bank Information</label>
-              <input type="text" class="input-field" [value]="activeBusiness.bankDetails || ''" (input)="onBusinessFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank account or payment details" />
-            </div>
+            <textarea
+              class="input-field"
+              rows="8"
+              [value]="activeBusiness.address || ''"
+              (input)="onBusinessFieldChange('address', $any($event.target).value)"
+              placeholder="Address
+
+Email
+
+Phone
+
+Tax ID
+
+Website
+
+Other business information
+
+Leave any line blank if you do not need it."
+            ></textarea>
           </div>
         </div>
         <div class="modal-footer">
