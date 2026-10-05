@@ -20,6 +20,8 @@ export interface BusinessProfileSettings {
   defaultCurrency: string;
   defaultTaxRate: number;
   defaultPaymentTerms: string;
+  footerEnabled?: boolean;
+  footerText?: string;
   defaultFormalTemplate: 'modern' | 'classic' | 'bold';
   defaultReceiptTemplate: 'thermal-80mm' | 'thermal-58mm' | 'modern';
   paperSize: 'a4' | 'letter';
