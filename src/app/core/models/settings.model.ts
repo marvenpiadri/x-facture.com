@@ -6,6 +6,14 @@ export interface NumberingPrefixConfig {
   padding: number;
 }
 
+export interface RegisteredBusinessProfile {
+  id: string;
+  company: DocumentParty;
+  registeredBusinesses?: RegisteredBusinessProfile[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface BusinessProfileSettings {
   id: string; // 'current'
   company: DocumentParty;
