@@ -148,11 +148,33 @@ export class DocumentFormShellComponent {
   }
 
   onClientIdChange(clientId: string | undefined): void {
+    if (this.clientSaveTimer) {
+      clearTimeout(this.clientSaveTimer);
+      this.clientSaveTimer = undefined;
+    }
+
     const updated: BusinessDocument = {
       ...this.document(),
       clientId
     };
     this.save.emit(updated);
+
+    if (!clientId || !updated.client.name?.trim()) return;
+
+    void this.clientService.saveClient({
+      id: clientId,
+      name: updated.client.name.trim(),
+      companyName: updated.client.legalName || '',
+      email: updated.client.email || '',
+      phone: updated.client.phone || '',
+      address: updated.client.address || '',
+      city: updated.client.city || '',
+      postalCode: updated.client.postalCode || '',
+      country: updated.client.country || '',
+      taxId: updated.client.taxId || ''
+    }).catch(() => {
+      // The selected client remains applied to the current document.
+    });
   }
 
   onItemsChange(items: DocumentLineItem[]): void {
