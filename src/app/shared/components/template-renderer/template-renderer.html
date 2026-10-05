@@ -139,11 +139,13 @@
         @if (document().notes) {
           <p class="thermal-note">{{ document().notes }}</p>
         }
-        <p class="thermal-greeting">Thank you for your visit!</p>
         <div class="thermal-barcode-box">
           <div class="simulated-barcode"></div>
           <span class="barcode-number">{{ document().docNumber }}</span>
         </div>
+        @if (document().footerEnabled && document().footerText) {
+          <div class="thermal-configured-footer">{{ document().footerText }}</div>
+        }
       </div>
     </div>
   }
