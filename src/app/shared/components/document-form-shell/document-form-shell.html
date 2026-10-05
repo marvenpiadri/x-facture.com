@@ -101,18 +101,6 @@
       </div>
     </div>
 
-    <!-- Optional Subject / Title banner -->
-    <div class="form-subject-row">
-      <label class="field-label">Subject / Scope of Work</label>
-      <input
-        type="text"
-        class="form-input"
-        [value]="document().title || ''"
-        (input)="onHeaderFieldChange('title', $any($event.target).value)"
-        placeholder="e.g. Enterprise Cloud Engineering & Architecture Sprint"
-      />
-    </div>
-
     <!-- Parties Split: Issuer and Client -->
     <div class="form-parties-split">
       <section class="party-card issuer-card">
