@@ -16,6 +16,7 @@ export class ClientPickerComponent {
   private clientService = inject(ClientService);
 
   client = input.required<DocumentParty>();
+  clientId = input<string | undefined>(undefined);
   clientChange = output<DocumentParty>();
   clientIdChange = output<string | undefined>();
 
