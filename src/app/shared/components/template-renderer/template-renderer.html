@@ -23,7 +23,7 @@
         @if (document().company.logoUrl) {
           <img [src]="document().company.logoUrl" class="thermal-logo" alt="Logo" />
         } @else {
-          <h2 class="thermal-brand-name">{{ document().company.name || 'STORE SALE' }}</h2>
+          <h2 class="thermal-brand-name">{{ document().company.name }}</h2>
         }
         @if (document().company.address) {
           <div class="thermal-address">{{ document().company.address }}, {{ document().company.city }}</div>
@@ -54,7 +54,7 @@
             <span>{{ document().specialFields?.['cashier'] }}</span>
           </div>
         }
-        @if (document().client.name && document().client.name !== 'Walk-in Customer') {
+        @if (document().client.name) {
           <div class="meta-row">
             <span>Customer:</span>
             <span>{{ document().client.name }}</span>
@@ -77,7 +77,7 @@
         <tbody>
           @for (item of document().items; track item.id) {
             <tr>
-              <td class="text-left item-name">{{ item.description || 'Item' }}</td>
+              <td class="text-left item-name">{{ item.description }}</td>
               <td class="text-center">{{ item.quantity }}</td>
               <td class="text-right">{{ formatCurrency(item.unitCost) }}</td>
               <td class="text-right font-bold">{{ formatCurrency(item.amount) }}</td>
@@ -162,7 +162,7 @@
             <img [src]="document().company.logoUrl" class="company-logo" alt="Company Logo" />
           }
           <div class="company-info-stack">
-            <h1 class="company-title">{{ document().company.name || 'Your Company Name' }}</h1>
+            <h1 class="company-title">{{ document().company.name }}</h1>
             @if (document().company.legalName && document().company.legalName !== document().company.name) {
               <div class="company-subname">{{ document().company.legalName }}</div>
             }
@@ -211,7 +211,7 @@
       <section class="doc-parties-section">
         <div class="party-card party-bill-to">
           <div class="party-role-title">BILL TO / CLIENT</div>
-          <div class="party-name">{{ document().client.name || 'Client Name' }}</div>
+          <div class="party-name">{{ document().client.name }}</div>
           @if (document().client.legalName) {
             <div class="party-legal">{{ document().client.legalName }}</div>
           }
@@ -273,7 +273,7 @@
               <tr class="print-item-row">
                 <td class="col-num text-center">{{ i + 1 }}</td>
                 <td class="col-desc">
-                  <div class="item-desc-text">{{ item.description || 'Line Item' }}</div>
+                  <div class="item-desc-text">{{ item.description }}</div>
                 </td>
 
                 @if (document().hasPricing) {
@@ -380,14 +380,12 @@
         }
       </section>
 
-      <!-- Institutional Footer Indicator -->
-      <footer class="doc-page-footer">
-        <div class="footer-left-col">
-          <span>{{ document().docNumber }}</span>
-          <span>•</span>
-          <span>{{ document().docTypeLabel }}</span>
-        </div>
-      </footer>
+      <!-- Optional user-configured footer -->
+      @if (document().footerEnabled && document().footerText) {
+        <footer class="doc-page-footer configured-document-footer">
+          <div class="footer-custom-text">{{ document().footerText }}</div>
+        </footer>
+      }
 
     </div>
   }
