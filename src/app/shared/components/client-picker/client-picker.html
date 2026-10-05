@@ -12,7 +12,6 @@
           <option [value]="c.id">{{ c.name }}{{ c.companyName ? ' (' + c.companyName + ')' : '' }}</option>
         }
       </select>
-      <a routerLink="/clients" class="manage-party-link">Manage clients</a>
     </div>
   </div>
 
@@ -27,4 +26,6 @@
       <textarea class="form-textarea party-details-textarea" rows="6" [value]="client().address || ''" (input)="onFieldChange('address', $any($event.target).value)" placeholder="Company name, address, email, phone, tax ID, website, or any other client information..."></textarea>
     </div>
   </div>
+
+  <a routerLink="/clients" class="manage-party-link">Manage clients</a>
 </div>
