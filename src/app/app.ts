@@ -21,6 +21,7 @@ interface PdfNavTool {
   description: string;
   icon: string;
   category: string;
+  available?: boolean;
 }
 
 @Component({
@@ -44,25 +45,25 @@ export class App {
     { id: 'merge-pdf', name: 'Merge PDF', description: 'Combine files and control page order', icon: 'merge_type', category: 'Organize' },
     { id: 'split-pdf', name: 'Split PDF', description: 'Extract pages or page ranges', icon: 'content_cut', category: 'Organize' },
     { id: 'rotate-pdf', name: 'Rotate PDF', description: 'Rotate pages permanently', icon: 'rotate_right', category: 'Organize' },
-    { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive PDF content', icon: 'layers_clear', category: 'Organize' },
-    { id: 'pdf-editor', name: 'PDF Editor', description: 'Edit and annotate PDF content', icon: 'edit', category: 'Edit' },
-    { id: 'add-watermark', name: 'Watermark', description: 'Stamp text or branding onto pages', icon: 'branding_watermark', category: 'Edit' },
+    { id: 'flatten-pdf', name: 'Flatten PDF', description: 'Flatten interactive PDF content', icon: 'layers_clear', category: 'Organize', available: false },
+    { id: 'pdf-editor', name: 'PDF Editor', description: 'Edit and annotate PDF content', icon: 'edit', category: 'Edit', available: false },
+    { id: 'add-watermark', name: 'Watermark', description: 'Stamp text or branding onto pages', icon: 'branding_watermark', category: 'Edit', available: false },
     { id: 'add-page-numbers', name: 'Page Numbers', description: 'Add configurable page numbering', icon: 'format_list_numbered', category: 'Edit' },
     { id: 'image-to-pdf', name: 'Image to PDF', description: 'Turn images into paginated PDFs', icon: 'image', category: 'Convert' },
-    { id: 'pdf-to-word', name: 'PDF to Word', description: 'Convert PDF content to editable documents', icon: 'description', category: 'Convert' },
-    { id: 'word-to-pdf', name: 'Word to PDF', description: 'Convert office documents to PDF', icon: 'upload_file', category: 'Convert' },
-    { id: 'pdf-to-excel', name: 'PDF to Excel', description: 'Extract structured tables', icon: 'table_chart', category: 'Convert' },
+    { id: 'pdf-to-word', name: 'PDF to Word', description: 'Convert PDF content to editable documents', icon: 'description', category: 'Convert', available: false },
+    { id: 'word-to-pdf', name: 'Word to PDF', description: 'Convert office documents to PDF', icon: 'upload_file', category: 'Convert', available: false },
+    { id: 'pdf-to-excel', name: 'PDF to Excel', description: 'Extract structured tables', icon: 'table_chart', category: 'Convert', available: false },
     { id: 'pdf-to-image', name: 'PDF to Image', description: 'Export pages as images', icon: 'photo_library', category: 'Convert' },
-    { id: 'epub-to-pdf', name: 'EPUB to PDF', description: 'Turn ebooks into PDF documents', icon: 'menu_book', category: 'Convert' },
-    { id: 'excel-to-pdf', name: 'Excel to PDF', description: 'Turn spreadsheets into polished PDFs', icon: 'table_view', category: 'Convert' },
-    { id: 'markdown-to-pdf', name: 'Markdown to PDF', description: 'Render Markdown as a clean document', icon: 'code', category: 'Convert' },
-    { id: 'csv-to-pdf', name: 'CSV to PDF', description: 'Turn tabular data into a PDF report', icon: 'table_chart', category: 'Convert' },
-    { id: 'compress-pdf', name: 'Compress PDF', description: 'Optimize document size and quality', icon: 'compress', category: 'Security' },
-    { id: 'protect-pdf', name: 'Protect PDF', description: 'Secure PDFs with password protection', icon: 'lock', category: 'Security' },
-    { id: 'unlock-pdf', name: 'Unlock PDF', description: 'Remove permitted PDF password protection', icon: 'key', category: 'Security' },
-    { id: 'sign-pdf', name: 'Sign PDF', description: 'Prepare documents for signing', icon: 'draw', category: 'Security' },
-    { id: 'repair-pdf', name: 'Repair PDF', description: 'Recover and sanitize damaged PDFs', icon: 'build', category: 'Security' },
-    { id: 'pdf-ocr', name: 'PDF OCR & Text', description: 'Extract searchable text from PDFs', icon: 'text_snippet', category: 'Security' },
+    { id: 'epub-to-pdf', name: 'EPUB to PDF', description: 'Turn ebooks into PDF documents', icon: 'menu_book', category: 'Convert', available: false },
+    { id: 'excel-to-pdf', name: 'Excel to PDF', description: 'Turn spreadsheets into polished PDFs', icon: 'table_view', category: 'Convert', available: false },
+    { id: 'markdown-to-pdf', name: 'Markdown to PDF', description: 'Render Markdown as a clean document', icon: 'code', category: 'Convert', available: false },
+    { id: 'csv-to-pdf', name: 'CSV to PDF', description: 'Turn tabular data into a PDF report', icon: 'table_chart', category: 'Convert', available: false },
+    { id: 'compress-pdf', name: 'Compress PDF', description: 'Optimize document size and quality', icon: 'compress', category: 'Security', available: false },
+    { id: 'protect-pdf', name: 'Protect PDF', description: 'Secure PDFs with password protection', icon: 'lock', category: 'Security', available: false },
+    { id: 'unlock-pdf', name: 'Unlock PDF', description: 'Remove permitted PDF password protection', icon: 'key', category: 'Security', available: false },
+    { id: 'sign-pdf', name: 'Sign PDF', description: 'Prepare documents for signing', icon: 'draw', category: 'Security', available: false },
+    { id: 'repair-pdf', name: 'Repair PDF', description: 'Recover and sanitize damaged PDFs', icon: 'build', category: 'Security', available: false },
+    { id: 'pdf-ocr', name: 'PDF OCR & Text', description: 'Extract searchable text from PDFs', icon: 'text_snippet', category: 'Security', available: false },
     { id: 'pdf-metadata', name: 'PDF Metadata', description: 'Inspect and clean document metadata', icon: 'info', category: 'Security' },
   ];
   readonly currentTheme = this.themeService.theme;
