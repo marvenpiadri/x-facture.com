@@ -1,7 +1,7 @@
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { db, seedInitialDataIfNeeded, DEFAULT_BUSINESS_SETTINGS } from '../db/app-database';
-import { BusinessProfileSettings } from '../models/settings.model';
+import { BusinessProfileSettings, RegisteredBusinessProfile } from '../models/settings.model';
 import { getDocConfig } from '../config/document-type-config';
 
 @Injectable({
@@ -41,6 +41,35 @@ export class SettingsService {
       this.settings.set(DEFAULT_BUSINESS_SETTINGS);
       return DEFAULT_BUSINESS_SETTINGS;
     }
+  }
+
+  getRegisteredBusinesses(): RegisteredBusinessProfile[] {
+    return this.settings().registeredBusinesses || [];
+  }
+
+  async saveRegisteredBusiness(company: BusinessProfileSettings['company'], id?: string): Promise<RegisteredBusinessProfile> {
+    const current = await this.loadSettings();
+    const businesses = [...(current.registeredBusinesses || [])];
+    const now = new Date().toISOString();
+    const existingIndex = id ? businesses.findIndex(b => b.id === id) : -1;
+    const profile: RegisteredBusinessProfile = {
+      id: id || `business-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      company: { ...company },
+      createdAt: existingIndex >= 0 ? businesses[existingIndex].createdAt : now,
+      updatedAt: now
+    };
+    if (existingIndex >= 0) businesses[existingIndex] = profile;
+    else businesses.push(profile);
+    await this.updateSettings({ company: profile.company, registeredBusinesses: businesses });
+    return profile;
+  }
+
+  async selectRegisteredBusiness(id: string): Promise<RegisteredBusinessProfile | undefined> {
+    const current = await this.loadSettings();
+    const profile = (current.registeredBusinesses || []).find(b => b.id === id);
+    if (!profile) return undefined;
+    await this.updateSettings({ company: { ...profile.company } });
+    return profile;
   }
 
   async updateSettings(updated: Partial<BusinessProfileSettings>): Promise<BusinessProfileSettings> {
