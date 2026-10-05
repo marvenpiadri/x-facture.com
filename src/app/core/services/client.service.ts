@@ -56,7 +56,12 @@ export class ClientService {
     if (!this.isBrowser || typeof indexedDB === 'undefined') {
       throw new Error('Client storage is unavailable outside the browser.');
     }
-    const name = (client.name || 'New Client').trim();
+
+    const name = (client.name || '').trim();
+    if (!name) {
+      throw new Error('Client name is required.');
+    }
+
     const slug = (client.slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''));
     const now = new Date().toISOString();
 
