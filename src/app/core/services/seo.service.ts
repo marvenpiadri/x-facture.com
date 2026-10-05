@@ -143,7 +143,7 @@ export class SeoService {
       const tool = segments[1] ? pdfTools[segments[1]] : undefined;
       if (tool) {
         const url = `${this.siteUrl}/pdf/${segments[1]}`;
-        this.updateMetadata({ title: `PDFeus • ${tool.title}`, description: tool.description, keywords: tool.keywords, url });
+        this.updateMetadata({ title: `x-facture • ${tool.title}`, description: tool.description, keywords: tool.keywords, url });
         this.setPdfSchema(url, tool.title);
         return;
       }
@@ -151,9 +151,9 @@ export class SeoService {
       if (segments.length === 1) {
         const url = `${this.siteUrl}/pdf`;
         this.updateMetadata({
-          title: 'PDFeus • Free PDF Tools & Document Engine',
-          description: '100% free browser-first PDF tools for organizing, merging, splitting, editing and converting documents with PDFeus.',
-          keywords: 'PDFeus, free PDF tools, 100% free PDF tools, free PDF editor, free PDF merger, free PDF splitter, PDF converter, document engine',
+          title: 'x-facture • Free PDF Tools & Document Engine',
+          description: '100% free browser-first PDF tools for organizing, merging, splitting, editing and converting documents with x-facture.',
+          keywords: 'x-facture, free PDF tools, 100% free PDF tools, free PDF editor, free PDF merger, free PDF splitter, PDF converter, document engine',
           url
         });
         this.setPdfSchema(url, 'PDF Tools & Document Engine');
@@ -305,7 +305,7 @@ export class SeoService {
           '@id': `${url}#breadcrumbs`,
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
-            { '@type': 'ListItem', position: 2, name: 'PDFeus', item: `${this.siteUrl}/pdf` },
+            { '@type': 'ListItem', position: 2, name: 'x-facture', item: `${this.siteUrl}/pdf` },
             ...(url === `${this.siteUrl}/pdf` ? [] : [{ '@type': 'ListItem', position: 3, name: pageName, item: url }])
           ]
         }
