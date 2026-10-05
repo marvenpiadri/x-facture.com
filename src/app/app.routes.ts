@@ -31,7 +31,6 @@ import { XFacturePage } from './features/xfacture/pages/xfacture-page/xfacture-p
 const DOCUMENT_ROUTES: Routes = ALL_DOCUMENT_TYPES.flatMap(({ routeSegment }) => [
   { path: routeSegment, component: DocumentListPage, data: { docType: routeSegment } },
   { path: `${routeSegment}/create`, component: DocumentEditPage, data: { docType: routeSegment } },
-  { path: `${routeSegment}/new`, redirectTo: `${routeSegment}/create`, pathMatch: 'full' },
   { path: `${routeSegment}/:docNumber/edit`, component: DocumentEditPage, data: { docType: routeSegment } },
   { path: `${routeSegment}/:docNumber/preview`, component: DocumentPreviewPage, data: { docType: routeSegment } },
   { path: `${routeSegment}/:docNumber`, redirectTo: `${routeSegment}/:docNumber/preview`, pathMatch: 'full' },
