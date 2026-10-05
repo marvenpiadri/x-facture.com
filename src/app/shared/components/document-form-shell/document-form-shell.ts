@@ -13,6 +13,7 @@ import { BusinessDocument, DocumentLineItem, DocumentParty, LineLayoutMode } fro
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService } from '../../../core/services/calculation.service';
+import { SettingsService } from '../../../core/services/settings.service';
 import { LineItemsTableComponent } from '../line-items-table/line-items-table';
 import { ClientPickerComponent } from '../client-picker/client-picker';
 
@@ -34,6 +35,7 @@ export class DocumentFormShellComponent {
   private router = inject(Router);
   private currencyService = inject(CurrencyService);
   private calculationService = inject(CalculationService);
+  private settingsService = inject(SettingsService);
 
   // Inputs
   document = input.required<BusinessDocument>();
@@ -76,6 +78,23 @@ export class DocumentFormShellComponent {
       client
     };
     this.save.emit(updated);
+  }
+
+  onCompanyFieldChange(field: keyof DocumentParty, value: string): void {
+    const company: DocumentParty = {
+      ...this.document().company,
+      [field]: value
+    };
+
+    const updated: BusinessDocument = {
+      ...this.document(),
+      company
+    };
+
+    this.save.emit(updated);
+    void this.settingsService.updateSettings({ company }).catch(() => {
+      // The document itself remains editable even if profile persistence is unavailable.
+    });
   }
 
   onClientIdChange(clientId: string | undefined): void {
