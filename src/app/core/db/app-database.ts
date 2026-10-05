@@ -64,8 +64,6 @@ export const DEFAULT_BUSINESS_SETTINGS: BusinessProfileSettings = {
   defaultCurrency: '',
   defaultTaxRate: 0,
   defaultPaymentTerms: '',
-  footerEnabled: false,
-  footerText: '',
   defaultFormalTemplate: 'modern',
   defaultReceiptTemplate: 'thermal-80mm',
   paperSize: 'a4',
