@@ -153,6 +153,20 @@ export class DocumentFormShellComponent {
     });
   }
 
+  onSavedClientSelect(selection: { client: DocumentParty; clientId: string }): void {
+    if (this.clientSaveTimer) {
+      clearTimeout(this.clientSaveTimer);
+      this.clientSaveTimer = undefined;
+    }
+
+    const updated: BusinessDocument = {
+      ...this.document(),
+      client: { ...selection.client },
+      clientId: selection.clientId
+    };
+    this.save.emit(updated);
+  }
+
   onClientIdChange(clientId: string | undefined): void {
     if (this.clientSaveTimer) {
       clearTimeout(this.clientSaveTimer);
