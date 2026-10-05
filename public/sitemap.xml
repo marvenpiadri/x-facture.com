@@ -40,35 +40,35 @@
     <lastmod>2026-09-28</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://x-facture.com/invoice/xfacture</loc>
     <lastmod>2026-09-29</lastmod><changefreq>weekly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://x-facture.com/invoices/new</loc>
+  <url><loc>https://x-facture.com/invoices/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.95</priority></url>
-  <url><loc>https://x-facture.com/proforma-invoices/new</loc>
+  <url><loc>https://x-facture.com/proforma-invoices/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://x-facture.com/commercial-invoices/new</loc>
+  <url><loc>https://x-facture.com/commercial-invoices/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://x-facture.com/quotes/new</loc>
+  <url><loc>https://x-facture.com/quotes/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://x-facture.com/purchase-orders/new</loc>
+  <url><loc>https://x-facture.com/purchase-orders/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://x-facture.com/receipts/new</loc>
+  <url><loc>https://x-facture.com/receipts/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.85</priority></url>
-  <url><loc>https://x-facture.com/credit-notes/new</loc>
+  <url><loc>https://x-facture.com/credit-notes/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://x-facture.com/delivery-notes/new</loc>
+  <url><loc>https://x-facture.com/delivery-notes/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://x-facture.com/timesheet-invoices/new</loc>
+  <url><loc>https://x-facture.com/timesheet-invoices/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://x-facture.com/work-orders/new</loc>
+  <url><loc>https://x-facture.com/work-orders/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://x-facture.com/statements/new</loc>
+  <url><loc>https://x-facture.com/statements/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://x-facture.com/service-agreements/new</loc>
+  <url><loc>https://x-facture.com/service-agreements/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://x-facture.com/retainer-invoices/new</loc>
+  <url><loc>https://x-facture.com/retainer-invoices/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://x-facture.com/bills-of-lading/new</loc>
+  <url><loc>https://x-facture.com/bills-of-lading/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
-  <url><loc>https://x-facture.com/custom-documents/new</loc>
+  <url><loc>https://x-facture.com/custom-documents/create</loc>
     <lastmod>2026-10-05</lastmod><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://x-facture.com/invoices</loc>
     <lastmod>2026-09-28</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
