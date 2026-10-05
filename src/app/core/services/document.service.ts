@@ -73,10 +73,8 @@ export class DocumentService {
     const nextNumber = await this.settingsService.getNextDocumentNumber(docType);
 
     const now = new Date();
-    const issueDate = now.toISOString().split('T')[0];
-    const dueDateObj = new Date();
-    dueDateObj.setDate(dueDateObj.getDate() + 30);
-    const dueDate = dueDateObj.toISOString().split('T')[0];
+    const issueDate = '';
+    const dueDate = '';
 
     const newDoc: BusinessDocument = {
       id: `doc-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -85,7 +83,7 @@ export class DocumentService {
       docType: config.docType,
       docTypeLabel: config.singularName,
       status: 'draft',
-      currency: s.defaultCurrency || 'USD',
+      currency: s.defaultCurrency || '',
       issueDate,
       dueDate,
       company: { ...s.company },
@@ -115,7 +113,7 @@ export class DocumentService {
       balanceDue: 0,
       notes: '',
       terms: s.defaultPaymentTerms || '',
-      bankDetails: s.company.bankDetails || '',
+      bankDetails: '',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString()
     };
