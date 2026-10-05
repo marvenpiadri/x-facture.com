@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../core/services/client.service';
 import { DocumentParty } from '../../../core/models/document.model';
 
 @Component({
   selector: 'app-client-picker',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './client-picker.html',
   styleUrl: './client-picker.css',
   changeDetection: ChangeDetectionStrategy.OnPush
