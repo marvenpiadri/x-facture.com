@@ -99,15 +99,8 @@ export class ClientsHubPage {
     const newDoc = await this.documentService.createDraft('invoices');
     newDoc.clientId = client.id;
     newDoc.client = {
-      name: client.name,
-      legalName: client.companyName,
-      email: client.email,
-      phone: client.phone,
-      taxId: client.taxId,
-      address: client.address,
-      city: client.city,
-      postalCode: client.postalCode,
-      country: client.country
+      name: client.name || '',
+      address: client.address || ''
     };
     newDoc.currency = client.defaultCurrency || '';
     await this.documentService.saveDocument(newDoc);
