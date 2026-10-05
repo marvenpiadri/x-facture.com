@@ -47,7 +47,7 @@
           class="form-input serial-input"
           [value]="document().docNumber"
           (input)="onHeaderFieldChange('docNumber', $any($event.target).value)"
-          placeholder="e.g. INV-2026-0001"
+          placeholder="Document number"
           required
         />
       </div>
@@ -96,7 +96,7 @@
           class="form-input"
           [value]="document().purchaseOrderRef || ''"
           (input)="onHeaderFieldChange('purchaseOrderRef', $any($event.target).value)"
-          placeholder="e.g. PO-99882"
+          placeholder="Purchase order reference"
         />
       </div>
     </div>
@@ -141,7 +141,7 @@
                 class="form-input"
                 [value]="document().company.name || ''"
                 (input)="onCompanyFieldChange('name', $any($event.target).value)"
-                placeholder="Your business name"
+                placeholder="Business name"
                 autocomplete="organization"
               />
             </div>
@@ -153,7 +153,7 @@
                 rows="6"
                 [value]="document().company.address || ''"
                 (input)="onCompanyFieldChange('address', $any($event.target).value)"
-                placeholder="Address&#10;&#10;Email&#10;&#10;Phone&#10;&#10;Tax ID&#10;&#10;Website&#10;&#10;Other business information&#10;&#10;Leave any line blank if you do not need it."
+                placeholder="Business information"
               ></textarea>
             </div>
           </div>
