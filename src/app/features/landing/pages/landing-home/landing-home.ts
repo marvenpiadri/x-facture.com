@@ -62,7 +62,7 @@ export class LandingHomePage implements OnInit {
 
   ngOnInit(): void {
     this.seoService.updateMetadata({
-      title: 'X-Facture — Free Business Tools, Financial Calculators & Invoicing',
+      title: 'x-facture • Free Business Tools, Financial Calculators & Invoicing',
       description: 'X-Facture is a free business toolkit for invoicing, receipts, POS, financial calculators, pricing, taxes, payments, cash flow and everyday business operations.',
       keywords: 'business tools, financial calculators, invoice generator, free invoicing, POS, business finance, pricing tools, cash flow, tax calculator, payment fee calculator',
       url: 'https://x-facture.com/'
