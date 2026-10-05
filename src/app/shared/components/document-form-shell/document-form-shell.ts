@@ -52,6 +52,7 @@ export class DocumentFormShellComponent {
 
   readonly availableCurrencies = this.currencyService.CURRENCIES;
   readonly registeredBusinesses = computed(() => this.settingsService.settings()?.registeredBusinesses || []);
+  readonly selectedBusinessId = computed(() => this.activeBusinessId || this.registeredBusinesses().find(b => b.company.name === this.document().company.name && b.company.address === this.document().company.address)?.id || '');
 
   currencySymbol = computed(() => {
     return this.currencyService.getSymbol(this.document().currency);
