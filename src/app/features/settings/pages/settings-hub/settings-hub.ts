@@ -435,18 +435,14 @@ export class SettingsHubPage implements OnInit {
 
   async exportClientsCsv(): Promise<void> {
     const clients = await db.clients.toArray();
-    const headers = ['ID', 'Name', 'CompanyName', 'Email', 'Phone', 'TaxId', 'Address', 'City', 'Country', 'DefaultCurrency'];
+    const headers = ['ID', 'Name', 'Information', 'DefaultCurrency', 'DefaultTaxRate', 'Notes'];
     const rows = clients.map(c => [
       c.id,
       `"${(c.name || '').replace(/"/g, '""')}"`,
-      `"${(c.companyName || '').replace(/"/g, '""')}"`,
-      c.email || '',
-      c.phone || '',
-      c.taxId || '',
       `"${(c.address || '').replace(/"/g, '""')}"`,
-      c.city || '',
-      c.country || '',
-      c.defaultCurrency || ''
+      c.defaultCurrency || '',
+      c.defaultTaxRate ?? 0,
+      `"${(c.notes || '').replace(/"/g, '""')}"`
     ]);
 
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
