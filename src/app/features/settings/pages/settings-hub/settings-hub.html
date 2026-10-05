@@ -1098,7 +1098,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-secondary" (click)="showBusinessModal.set(false)">Cancel</button>
-          <button type="button" class="btn-save" (click)="saveBusiness()" [disabled]="!activeBusiness.name?.trim()">
+          <button type="button" class="btn-save" (click)="saveBusiness()" [disabled]="!activeBusiness.name.trim()">
             <span class="material-icons">check</span>
             <span>Save Business</span>
           </button>
