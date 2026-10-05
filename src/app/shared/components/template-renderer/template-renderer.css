@@ -450,24 +450,6 @@
   font-size: 15px;
 }
 
-/* Page footer */
-.doc-page-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 16px;
-  margin-top: auto;
-  border-top: 1px solid var(--color-border);
-  font-size: 10px;
-  color: var(--color-text-muted);
-}
-
-.footer-left-col {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
 /* ==========================================================================
    TEMPLATE STYLES VARIANTS (Classic, Bold)
    ========================================================================== */
@@ -697,18 +679,3 @@
   }
 }
 
-
-
-.footer-custom-text {
-  white-space: pre-line;
-  font-size: 10px;
-  line-height: 1.5;
-  color: var(--color-text-secondary, #64748b);
-}
-
-.thermal-configured-footer {
-  margin-top: 10px;
-  white-space: pre-line;
-  font-size: 9px;
-  line-height: 1.4;
-}
