@@ -100,14 +100,7 @@ export class DocumentFormShellComponent {
       void this.clientService.saveClient({
         id: updated.clientId,
         name: client.name.trim(),
-        companyName: client.legalName || '',
-        email: client.email || '',
-        phone: client.phone || '',
-        address: client.address || '',
-        city: client.city || '',
-        postalCode: client.postalCode || '',
-        country: client.country || '',
-        taxId: client.taxId || ''
+        address: client.address || ''
       }).then(saved => {
         if (updated.clientId !== saved.id) {
           this.save.emit({
@@ -193,14 +186,7 @@ export class DocumentFormShellComponent {
     void this.clientService.saveClient({
       id: clientId,
       name: updated.client.name.trim(),
-      companyName: updated.client.legalName || '',
-      email: updated.client.email || '',
-      phone: updated.client.phone || '',
-      address: updated.client.address || '',
-      city: updated.client.city || '',
-      postalCode: updated.client.postalCode || '',
-      country: updated.client.country || '',
-      taxId: updated.client.taxId || ''
+      address: updated.client.address || ''
     }).catch(() => {
       // The selected client remains applied to the current document.
     });
