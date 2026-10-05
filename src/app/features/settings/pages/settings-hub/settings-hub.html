@@ -257,7 +257,7 @@
                 rows="4"
                 [value]="footerText()"
                 (input)="footerText.set($any($event.target).value)"
-                placeholder="Company address, contact details, registration information, website, or other footer information..."
+                placeholder="Footer information"
                 [disabled]="!footerEnabled()"
               ></textarea>
             </div>
@@ -283,7 +283,7 @@
                 class="input-field"
                 [value]="legalName()"
                 (input)="legalName.set($any($event.target).value)"
-                placeholder="e.g. Acme Global Services Ltd"
+                placeholder="Legal company name"
               />
             </div>
           </div>
@@ -296,7 +296,7 @@
                 class="input-field"
                 [value]="email()"
                 (input)="email.set($any($event.target).value)"
-                placeholder="billing@acme.com"
+                placeholder="Billing email"
               />
             </div>
 
@@ -307,7 +307,7 @@
                 class="input-field"
                 [value]="phone()"
                 (input)="phone.set($any($event.target).value)"
-                placeholder="+1 (555) 019-2834"
+                placeholder="Phone number"
               />
             </div>
 
@@ -318,7 +318,7 @@
                 class="input-field"
                 [value]="website()"
                 (input)="website.set($any($event.target).value)"
-                placeholder="https://www.acme.com"
+                placeholder="Website"
               />
             </div>
           </div>
@@ -331,7 +331,7 @@
                 class="input-field font-mono"
                 [value]="taxId()"
                 (input)="taxId.set($any($event.target).value)"
-                placeholder="VAT-GB999999999 or EIN 12-3456789"
+                placeholder="Tax or registration identifier"
               />
             </div>
 
@@ -342,7 +342,7 @@
                 class="input-field"
                 [value]="address()"
                 (input)="address.set($any($event.target).value)"
-                placeholder="100 Innovation Way, Suite 400"
+                placeholder="Street address"
               />
             </div>
           </div>
@@ -355,7 +355,7 @@
                 class="input-field"
                 [value]="city()"
                 (input)="city.set($any($event.target).value)"
-                placeholder="New York"
+                placeholder="City"
               />
             </div>
 
@@ -366,7 +366,7 @@
                 class="input-field font-mono"
                 [value]="postalCode()"
                 (input)="postalCode.set($any($event.target).value)"
-                placeholder="10001"
+                placeholder="Postal or ZIP code"
               />
             </div>
 
@@ -377,7 +377,7 @@
                 class="input-field"
                 [value]="country()"
                 (input)="country.set($any($event.target).value)"
-                placeholder="United States"
+                placeholder="Country"
               />
             </div>
           </div>
@@ -399,7 +399,7 @@
               rows="3"
               [value]="bankDetails()"
               (input)="bankDetails.set($any($event.target).value)"
-              placeholder="Bank: Chase Manhattan Bank&#10;Account Name: Acme Global Services Ltd&#10;IBAN: US33 0210 0002 1123 4567 89&#10;SWIFT/BIC: CHASUS33XXX"
+              placeholder="Bank and wire transfer information"
             ></textarea>
           </div>
         </div>
@@ -421,7 +421,7 @@
                 class="input-field"
                 [value]="signatoryName()"
                 (input)="signatoryName.set($any($event.target).value)"
-                placeholder="e.g. Jane H. Smith"
+                placeholder="Signatory name"
               />
             </div>
 
@@ -432,7 +432,7 @@
                 class="input-field"
                 [value]="signatoryTitle()"
                 (input)="signatoryTitle.set($any($event.target).value)"
-                placeholder="e.g. Chief Financial Officer"
+                placeholder="Signatory title"
               />
             </div>
           </div>
@@ -588,7 +588,7 @@
                 class="input-field"
                 [value]="taxName()"
                 (input)="taxName.set($any($event.target).value)"
-                placeholder="e.g. VAT, GST, Sales Tax, IVA"
+                placeholder="Tax name"
               />
             </div>
 
@@ -695,7 +695,7 @@
               rows="4"
               [value]="defaultNotes()"
               (input)="defaultNotes.set($any($event.target).value)"
-              placeholder="e.g. Payment is due within agreed terms. Late payments subject to 1.5% interest per month."
+              placeholder="Default payment notes"
             ></textarea>
           </div>
         </div>
@@ -856,7 +856,7 @@
                     </div>
                   }
                   <div class="preview-company-details">
-                    <h4 class="preview-company-name">{{ companyName() || 'YOUR COMPANY NAME' }}</h4>
+                    <h4 class="preview-company-name">{{ companyName() }}</h4>
                     @if (legalName()) { <p class="preview-sub">{{ legalName() }}</p> }
                     @if (taxId()) { <p class="preview-sub font-mono">Tax ID: {{ taxId() }}</p> }
                     <p class="preview-sub">{{ address() || '123 Business Way' }}, {{ city() || 'City' }} {{ postalCode() }}</p>
@@ -866,9 +866,9 @@
 
                 <div class="preview-doc-side">
                   <span class="preview-doc-title" [style.color]="brandColor()">TAX INVOICE</span>
-                  <span class="preview-doc-num font-mono">INV-{{ previewYear }}-1001</span>
+                  <span class="preview-doc-num font-mono">{{ prefixList()[0]?.prefix || '' }}</span>
                   <div class="preview-meta-grid font-mono">
-                    <div><span>Date:</span> {{ previewYear }}-09-17</div>
+                    <div><span>Date:</span> </div>
                     <div><span>Terms:</span> {{ defaultPaymentTerms() | uppercase }}</div>
                   </div>
                 </div>
