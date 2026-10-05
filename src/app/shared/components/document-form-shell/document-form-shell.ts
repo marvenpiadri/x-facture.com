@@ -146,7 +146,13 @@ export class DocumentFormShellComponent {
     const profile = this.registeredBusinesses().find(b => b.id === id);
     if (!profile) return;
     this.activeBusinessId = profile.id;
-    const updated: BusinessDocument = { ...this.document(), company: { ...profile.company } };
+    const updated: BusinessDocument = {
+      ...this.document(),
+      company: {
+        name: profile.company.name || '',
+        address: profile.company.address || ''
+      }
+    };
     this.save.emit(updated);
     void this.settingsService.selectRegisteredBusiness(profile.id).catch(() => {
       // The selected company remains applied to the current document.
@@ -161,7 +167,10 @@ export class DocumentFormShellComponent {
 
     const updated: BusinessDocument = {
       ...this.document(),
-      client: { ...selection.client },
+      client: {
+        name: selection.client.name || '',
+        address: selection.client.address || ''
+      },
       clientId: selection.clientId
     };
     this.save.emit(updated);
