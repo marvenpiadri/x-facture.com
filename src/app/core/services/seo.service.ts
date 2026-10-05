@@ -55,10 +55,12 @@ export class SeoService {
     this.metaService.updateTag({ property: 'og:type', content: data.type || 'website' });
     this.metaService.updateTag({ property: 'og:site_name', content: this.siteName });
     this.metaService.updateTag({ property: 'og:image', content: image });
+    this.metaService.updateTag({ property: 'og:image:alt', content: `${this.siteName} logo` });
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
     this.metaService.updateTag({ name: 'twitter:title', content: data.title });
     this.metaService.updateTag({ name: 'twitter:description', content: data.description });
     this.metaService.updateTag({ name: 'twitter:image', content: image });
+    this.metaService.updateTag({ name: 'twitter:image:alt', content: `${this.siteName} logo` });
     this.updateCanonicalLink(url);
   }
 
