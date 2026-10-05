@@ -19,6 +19,7 @@ export class ClientPickerComponent {
   clientId = input<string | undefined>(undefined);
   clientChange = output<DocumentParty>();
   clientIdChange = output<string | undefined>();
+  clientSelected = output<{ client: DocumentParty; clientId: string }>();
 
   readonly savedClients = this.clientService.clients;
 
@@ -51,8 +52,7 @@ export class ClientPickerComponent {
         country: found.country,
         taxId: found.taxId
       };
-      this.clientChange.emit(party);
-      this.clientIdChange.emit(found.id);
+      this.clientSelected.emit({ client: party, clientId: found.id });
     }
   }
 }
