@@ -72,6 +72,14 @@ export class SettingsService {
     return profile;
   }
 
+  async deleteRegisteredBusiness(id: string): Promise<void> {
+    const current = await this.loadSettings();
+    const businesses = (current.registeredBusinesses || []).filter(b => b.id !== id);
+    await this.updateSettings({
+      registeredBusinesses: businesses
+    });
+  }
+
   async updateSettings(updated: Partial<BusinessProfileSettings>): Promise<BusinessProfileSettings> {
     if (!this.isBrowser || typeof indexedDB === 'undefined') {
       throw new Error('Settings storage is unavailable outside the browser.');
