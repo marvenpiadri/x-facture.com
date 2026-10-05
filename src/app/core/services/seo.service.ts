@@ -23,7 +23,7 @@ export class SeoService {
   private readonly document = inject(DOCUMENT);
   private readonly router = inject(Router);
   private readonly siteUrl = 'https://x-facture.com';
-  private readonly siteName = 'X-Facture';
+  private readonly siteName = 'x-facture';
   private readonly defaultImage = `${this.siteUrl}/x-facture-LOGO-PFP.png`;
 
   constructor() {
@@ -87,7 +87,7 @@ export class SeoService {
           '@type': 'BreadcrumbList',
           '@id': `${url}#breadcrumbs`,
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+            { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
             { '@type': 'ListItem', position: 2, name: 'Business Calculators', item: `${this.siteUrl}/calculators` },
             { '@type': 'ListItem', position: 3, name: this.normalizeTitle(calculator.name), item: url }
           ]
@@ -115,7 +115,7 @@ export class SeoService {
 
     if (segments[0] === 'calculators') {
       this.updateMetadata({
-        title: 'X-Facture • Business Calculators & Financial Tools',
+        title: 'x-facture • Business Calculators & Financial Tools',
         description: 'Free business calculators for pricing, margins, taxes, payments, loans, cash flow, inventory, marketing and everyday financial decisions.',
         keywords: 'business calculators, financial calculators, pricing calculator, profit calculator, cash flow calculator, tax calculator, loan calculator, invoice calculator',
         url: `${this.siteUrl}/calculators`
@@ -126,13 +126,13 @@ export class SeoService {
 
     if (segments[0] === 'pdf') {
       const pdfTools: Record<string, { title: string; description: string; keywords: string }> = {
-        'organize-pdf': { title: 'Free PDF Organizer Online', description: 'Organize PDF pages for free directly in your browser with X-Facture. Reorder, rotate and manage documents without installation.', keywords: 'free PDF organizer, organize PDF, reorder PDF pages, rotate PDF pages, PDF page organizer' },
-        'merge-pdf': { title: 'Free PDF Merger Online', description: 'Merge PDF files for free directly in your browser. Combine documents and move individual pages between PDFs with X-Facture.', keywords: 'free PDF merger, merge PDF, combine PDF files, merge PDF pages' },
+        'organize-pdf': { title: 'Free PDF Organizer Online', description: 'Organize PDF pages for free directly in your browser with x-facture. Reorder, rotate and manage documents without installation.', keywords: 'free PDF organizer, organize PDF, reorder PDF pages, rotate PDF pages, PDF page organizer' },
+        'merge-pdf': { title: 'Free PDF Merger Online', description: 'Merge PDF files for free directly in your browser. Combine documents and move individual pages between PDFs with x-facture.', keywords: 'free PDF merger, merge PDF, combine PDF files, merge PDF pages' },
         'split-pdf': { title: 'Free PDF Splitter Online', description: 'Split PDF files for free directly in your browser by selected pages, ranges or page groups.', keywords: 'free PDF splitter, split PDF, extract PDF pages, PDF splitter' },
         'rotate-pdf': { title: 'Free PDF Rotator Online', description: 'Rotate PDF pages for free and export the corrected document directly in your browser.', keywords: 'free PDF rotator, rotate PDF, rotate PDF pages' },
-        'flatten-pdf': { title: 'Free PDF Flatten Tool Online', description: 'Flatten PDF files for free into a clean document directly in your browser with X-Facture.', keywords: 'free PDF flatten tool, flatten PDF, flatten PDF forms' },
+        'flatten-pdf': { title: 'Free PDF Flatten Tool Online', description: 'Flatten PDF files for free into a clean document directly in your browser with x-facture.', keywords: 'free PDF flatten tool, flatten PDF, flatten PDF forms' },
         'crop-pdf': { title: 'Free PDF Cropper Online', description: 'Crop PDF pages for free with an interactive crop box and independent edge controls.', keywords: 'free PDF cropper, crop PDF, PDF cropper, crop PDF pages' },
-        'pdf-editor': { title: 'Free PDF Editor Online', description: 'Edit PDFs for free in your browser by adding positioned text to PDF pages with X-Facture.', keywords: 'free PDF editor, PDF editor, edit PDF, add text to PDF' },
+        'pdf-editor': { title: 'Free PDF Editor Online', description: 'Edit PDFs for free in your browser by adding positioned text to PDF pages with x-facture.', keywords: 'free PDF editor, PDF editor, edit PDF, add text to PDF' },
         'add-watermark': { title: 'Free PDF Watermark Tool', description: 'Add watermarks to PDF files for free directly in your browser with configurable text controls.', keywords: 'free PDF watermark, PDF watermark, add watermark to PDF' },
         'add-page-numbers': { title: 'Free PDF Page Number Tool', description: 'Add page numbers to PDF files for free with customizable prefixes, suffixes and positioning.', keywords: 'free PDF page numbers, PDF page numbers, number PDF pages' },
         'image-to-pdf': { title: 'Free Image to PDF Converter', description: 'Convert images to PDF for free and arrange pages with size, orientation and fit controls.', keywords: 'free image to PDF, image to PDF, JPG to PDF, PNG to PDF' },
@@ -166,8 +166,8 @@ export class SeoService {
     if (docConfig && segments.length === 1) {
       const url = `${this.siteUrl}/${docConfig.routeSegment}`;
       this.updateMetadata({
-        title: `X-Facture • ${docConfig.pluralName} | Free Business Documents`,
-        description: `${docConfig.description} Create and manage ${docConfig.pluralName.toLowerCase()} with X-Facture's free business document tools.`,
+        title: `x-facture • ${docConfig.pluralName} | Free Business Documents`,
+        description: `${docConfig.description} Create and manage ${docConfig.pluralName.toLowerCase()} with x-facture's free business document tools.`,
         keywords: `${docConfig.pluralName.toLowerCase()}, ${docConfig.singularName.toLowerCase()}, business documents, invoicing, free business tools`,
         url
       });
@@ -176,18 +176,18 @@ export class SeoService {
     }
 
     const routeSeo: Record<string, SeoMetadata> = {
-      '/': { title: 'X-Facture • Free Invoicing & PDF Tools, Business Calculators', description: '100% free business tools for entrepreneurs and companies: invoicing, free PDF tools, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'free business tools, free invoicing, free PDF tools, free PDF editor, free PDF merger, invoice generator, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
-      '/home': { title: 'X-Facture • Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
-      '/dashboard': { title: 'X-Facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in X-Facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
-      '/store/pos': { title: 'X-Facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
-      '/ledger': { title: 'X-Facture • Business Financial Ledger', description: 'Track business revenue, expenses and payment records with X-Facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
-      '/clients': { title: 'X-Facture • Client Directory & CRM', description: 'Organize customer accounts, billing contacts and client information for everyday business operations.', keywords: 'client management, CRM, customer directory, billing contacts', url: `${this.siteUrl}/clients` },
-      '/products': { title: 'X-Facture • Products & Services Catalog', description: 'Manage products, services, pricing, SKUs and inventory information for your business.', keywords: 'product catalog, service catalog, SKU management, inventory, business products', url: `${this.siteUrl}/products` },
-      '/settings': { title: 'X-Facture • Company & Business Settings', description: 'Configure company details, tax settings, currency and business preferences in X-Facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
+      '/': { title: 'x-facture • Free Invoicing & PDF Tools, Business Calculators', description: '100% free business tools for entrepreneurs and companies: invoicing, free PDF tools, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'free business tools, free invoicing, free PDF tools, free PDF editor, free PDF merger, invoice generator, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
+      '/home': { title: 'x-facture • Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
+      '/dashboard': { title: 'x-facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in x-facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
+      '/store/pos': { title: 'x-facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
+      '/ledger': { title: 'x-facture • Business Financial Ledger', description: 'Track business revenue, expenses and payment records with x-facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
+      '/clients': { title: 'x-facture • Client Directory & CRM', description: 'Organize customer accounts, billing contacts and client information for everyday business operations.', keywords: 'client management, CRM, customer directory, billing contacts', url: `${this.siteUrl}/clients` },
+      '/products': { title: 'x-facture • Products & Services Catalog', description: 'Manage products, services, pricing, SKUs and inventory information for your business.', keywords: 'product catalog, service catalog, SKU management, inventory, business products', url: `${this.siteUrl}/products` },
+      '/settings': { title: 'x-facture • Company & Business Settings', description: 'Configure company details, tax settings, currency and business preferences in x-facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
     };
 
     const metadata = routeSeo[path] ?? {
-      title: 'X-Facture • Free Business Tools',
+      title: 'x-facture • Free Business Tools',
       description: 'Practical free business tools for invoicing, finance, pricing, taxes, payments and operations.',
       url: `${this.siteUrl}${path}`,
       robots: 'noindex, nofollow'
@@ -231,7 +231,7 @@ export class SeoService {
       '@graph': [
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
-        { '@type': 'WebPage', '@id': `${this.siteUrl}#webpage`, name: 'X-Facture | Free Invoicing & PDF Tools, Business Calculators', url: this.siteUrl, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } }
+        { '@type': 'WebPage', '@id': `${this.siteUrl}#webpage`, name: 'x-facture | Free Invoicing & PDF Tools, Business Calculators', url: this.siteUrl, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } }
       ]
     });
   }
@@ -247,7 +247,7 @@ export class SeoService {
           '@type': 'BreadcrumbList',
           '@id': `${url}#breadcrumbs`,
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+            { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
             { '@type': 'ListItem', position: 2, name: 'PDFeus', item: `${this.siteUrl}/pdf` },
             ...(url === `${this.siteUrl}/pdf` ? [] : [{ '@type': 'ListItem', position: 3, name: pageName, item: url }])
           ]
@@ -273,7 +273,7 @@ export class SeoService {
           '@type': 'BreadcrumbList',
           '@id': `${url}#breadcrumbs`,
           itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'X-Facture', item: this.siteUrl },
+            { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
             { '@type': 'ListItem', position: 2, name: normalizedPageName, item: url }
           ]
         }
