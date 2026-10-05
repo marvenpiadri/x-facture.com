@@ -6,8 +6,8 @@
     </label>
 
     @if (savedClients().length > 0) {
-      <div class="quick-client-select">
-        <select class="client-dropdown" (change)="onSelectExisting($event)">
+      <div class="quick-party-select">
+        <select class="party-dropdown" [value]="clientId() || ''" (change)="onSelectExisting($event)" aria-label="Select saved client">
           <option value="">Load saved client...</option>
           @for (c of savedClients(); track c.id) {
             <option [value]="c.id">{{ c.name }}{{ c.companyName ? ' (' + c.companyName + ')' : '' }}</option>
@@ -17,8 +17,8 @@
     }
   </div>
 
-  <div class="client-fields-grid">
-    <div class="field-item full-width">
+  <div class="party-fields-grid">
+    <div class="party-field full-width">
       <label class="field-label">Client Name</label>
       <input
         type="text"
