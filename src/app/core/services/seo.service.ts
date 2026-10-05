@@ -277,7 +277,7 @@ export class SeoService {
       '/dashboard': { title: 'x-facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in x-facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
       '/store/pos': { title: 'x-facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
       '/ledger': { title: 'x-facture • Business Financial Ledger', description: 'Track business revenue, expenses and payment records with x-facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
-      '/invoices/new': { title: 'Create Free Invoices Online • x-facture', description: 'Create professional invoices online for free with x-facture. Add your business and client details, line items, taxes and payment information, then save your invoice.', keywords: 'create free invoices online, free invoice generator, online invoice maker, create invoice, free invoice template, business invoice', url: `${this.siteUrl}/invoices/create` },
+      '/invoices/create': { title: 'Create Free Invoices Online • x-facture', description: 'Create professional invoices online for free with x-facture. Add your business and client details, line items, taxes and payment information, then save your invoice.', keywords: 'create free invoices online, free invoice generator, online invoice maker, create invoice, free invoice template, business invoice', url: `${this.siteUrl}/invoices/create` },
       '/clients': { title: 'x-facture • Client Directory & CRM', description: 'Organize customer accounts, billing contacts and client information for everyday business operations.', keywords: 'client management, CRM, customer directory, billing contacts', url: `${this.siteUrl}/clients` },
       '/products': { title: 'x-facture • Products & Services Catalog', description: 'Manage products, services, pricing, SKUs and inventory information for your business.', keywords: 'product catalog, service catalog, SKU management, inventory, business products', url: `${this.siteUrl}/products` },
       '/settings': { title: 'x-facture • Company & Business Settings', description: 'Configure company details, tax settings, currency and business preferences in x-facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
@@ -291,7 +291,7 @@ export class SeoService {
     };
     this.updateMetadata(metadata);
     if (path === '/') this.setHomepageSchema();
-    else if (path === '/invoices/new') this.setInvoiceCreationSchema(metadata.url || `${this.siteUrl}/invoices/new`);
+    else if (path === '/invoices/create') this.setInvoiceCreationSchema(metadata.url || `${this.siteUrl}/invoices/create`);
     else this.setSiteSchema(metadata.url || this.siteUrl, metadata.title);
   }
 
