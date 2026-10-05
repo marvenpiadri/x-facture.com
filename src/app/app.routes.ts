@@ -72,7 +72,6 @@ export const routes: Routes = [
   { path: 'invoice/xfacture', component: XFacturePage, title: 'XFacture Invoice Generator | CII & UBL XML | X-Facture', data: { description: 'Generate structured invoice XML with X-Facture. Export CII and UBL invoice data locally from your invoice.' } },
   { path: 'xfacture', redirectTo: 'invoice/xfacture', pathMatch: 'full' },
 
-  { path: 'qr', component: QrStudioPage, title: 'QR Code Generator | X-Facture', data: { description: 'Create customizable QR codes for websites, text, Wi-Fi, contacts, email, phone, SMS and locations.' } },
   { path: 'pdf', component: PdfStudioPage },
   { path: 'pdf/:tool', component: PdfStudioPage },
 
