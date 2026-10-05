@@ -72,8 +72,8 @@ export class ClientService {
       postalCode: client.postalCode || '',
       country: client.country || '',
       taxId: client.taxId || '',
-      defaultCurrency: client.defaultCurrency || 'USD',
-      defaultTaxRate: client.defaultTaxRate ?? 10,
+      defaultCurrency: client.defaultCurrency || '',
+      defaultTaxRate: client.defaultTaxRate ?? 0,
       notes: client.notes || '',
       createdAt: client.createdAt || now,
       updatedAt: now
