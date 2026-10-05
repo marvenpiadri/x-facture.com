@@ -1345,16 +1345,15 @@
   line-height: 1.1;
 }
 .tool-link-copy strong { font: inherit; }
-.tool-link-copy small {
-  flex: 0 0 auto;
-  color: var(--color-money-green);
-  font-size: 8px;
-  font-weight: 800;
-  white-space: nowrap;
+.tool-link:disabled {
+  opacity: .55;
+  cursor: not-allowed;
 }
-.tool-link.coming-soon { opacity: .68; cursor: not-allowed; }
-.tool-link.coming-soon:disabled { opacity: .68; }
-.tool-link.coming-soon:hover { opacity: .9; }
+.tool-link:disabled:hover {
+  color: var(--color-text-secondary);
+  background: transparent;
+  border-color: transparent;
+}
 .coming-soon-subtitle {
   display: flex;
   align-items: center;
