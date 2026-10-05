@@ -163,6 +163,36 @@ export class SeoService {
 
     const docType = segments[0];
     const docConfig = docType ? DOCUMENT_TYPE_CONFIGS[docType] : undefined;
+    if (docConfig && segments.length === 2 && segments[1] === 'new') {
+      const url = `${this.siteUrl}/${docConfig.routeSegment}/new`;
+      const singular = docConfig.singularName.replace(/\s*\/.*$/, '').trim();
+      const titleMap: Record<string, string> = {
+        'invoices': 'Create Free Invoices Online',
+        'proforma-invoices': 'Create Free Proforma Invoices Online',
+        'commercial-invoices': 'Create Free Commercial Invoices Online',
+        'quotes': 'Create Free Quotes & Estimates Online',
+        'purchase-orders': 'Create Free Purchase Orders Online',
+        'receipts': 'Create Free Sales Receipts Online',
+        'credit-notes': 'Create Free Credit Notes Online',
+        'delivery-notes': 'Create Free Delivery Notes Online',
+        'timesheet-invoices': 'Create Free Timesheet Invoices Online',
+        'work-orders': 'Create Free Work Orders Online',
+        'statements': 'Create Free Statements of Account Online',
+        'service-agreements': 'Create Free Service Agreements Online',
+        'retainer-invoices': 'Create Free Retainer Invoices Online',
+        'bills-of-lading': 'Create Free Bills of Lading Online',
+        'custom-documents': 'Create Free Business Documents Online'
+      };
+      const pageTitle = titleMap[docConfig.routeSegment] || `Create Free ${docConfig.singularName} Online`;
+      this.updateMetadata({
+        title: `${pageTitle} • x-facture`,
+        description: `Create ${singular.toLowerCase()}s online for free with x-facture. Add your business, client, items, pricing and document details, then save your document.`,
+        keywords: `create free ${singular.toLowerCase()} online, free ${singular.toLowerCase()} generator, online ${singular.toLowerCase()} maker, create ${singular.toLowerCase()}, x-facture`,
+        url
+      });
+      this.setDocumentCreationSchema(url, pageTitle, docConfig.routeSegment);
+      return;
+    }
     if (docConfig && segments.length === 1) {
       const url = `${this.siteUrl}/${docConfig.routeSegment}`;
       this.updateMetadata({
@@ -239,19 +269,24 @@ export class SeoService {
   }
 
   private setInvoiceCreationSchema(url: string): void {
+    this.setDocumentCreationSchema(url, 'Create Free Invoices Online', 'invoices');
+  }
+
+  private setDocumentCreationSchema(url: string, pageTitle: string, routeSegment: string): void {
+    const collectionUrl = `${this.siteUrl}/${routeSegment}`;
     this.setJsonLd({
       '@context': 'https://schema.org',
       '@graph': [
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
-        { '@type': 'WebPage', '@id': `${url}#webpage`, name: 'Create Free Invoices Online', url, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } },
+        { '@type': 'WebPage', '@id': `${url}#webpage`, name: pageTitle, url, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } },
         {
           '@type': 'BreadcrumbList',
           '@id': `${url}#breadcrumbs`,
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
-            { '@type': 'ListItem', position: 2, name: 'Invoices', item: `${this.siteUrl}/invoices` },
-            { '@type': 'ListItem', position: 3, name: 'Create Free Invoices Online', item: url }
+            { '@type': 'ListItem', position: 2, name: this.normalizeTitle(DOCUMENT_TYPE_CONFIGS[routeSegment]?.pluralName || routeSegment), item: collectionUrl },
+            { '@type': 'ListItem', position: 3, name: pageTitle, item: url }
           ]
         }
       ]
