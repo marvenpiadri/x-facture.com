@@ -14,8 +14,8 @@
           <div class="category-title">{{ categoryLabels[category] }}</div>
           @for (tool of toolsFor(category); track tool.id) {
             @if (tool.available === false) {
-              <button type="button" class="tool-link coming-soon" disabled>
-                <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong></span>
+              <button type="button" class="tool-link" disabled>
+                <span class="material-icons">{{ tool.icon }}</span><span class="tool-link-copy"><strong>{{ tool.name }}</strong></span><span class="tool-link-status">none</span>
               </button>
             } @else {
               <a class="tool-link" [class.active]="activeTool() === tool.id" [routerLink]="tool.route">
