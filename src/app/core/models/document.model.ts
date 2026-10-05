@@ -72,8 +72,6 @@ export interface BusinessDocument {
   bankDetails?: string;
   shippingInstructions?: string; // for PO & Delivery notes
   specialFields?: Record<string, any>; // For Bill of Lading, custom documents
-  footerEnabled?: boolean;
-  footerText?: string;
 
   createdAt: string;
   updatedAt: string;
