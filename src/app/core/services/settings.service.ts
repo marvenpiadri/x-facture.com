@@ -44,7 +44,7 @@ export class SettingsService {
   }
 
   getRegisteredBusinesses(): RegisteredBusinessProfile[] {
-    return this.settings().registeredBusinesses || [];
+    return this.settings()?.registeredBusinesses || [];
   }
 
   async saveRegisteredBusiness(company: BusinessProfileSettings['company'], id?: string): Promise<RegisteredBusinessProfile> {
