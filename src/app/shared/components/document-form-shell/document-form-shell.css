@@ -174,12 +174,43 @@
 .company-summary-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-3);
+  gap: var(--space-4);
   padding: var(--space-4);
   background-color: var(--color-surface-subtle);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+}
+
+.company-editor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.company-editor-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.company-editor-field-wide {
+  grid-column: span 2;
+}
+
+.company-editor-hint {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+}
+
+.company-editor-hint .material-icons {
+  flex: 0 0 auto;
+  font-size: 15px;
+  margin-top: 1px;
 }
 
 .card-header-bar {
@@ -384,6 +415,14 @@
   }
   .form-parties-split {
     grid-template-columns: 1fr;
+  }
+
+  .company-editor-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .company-editor-field-wide {
+    grid-column: span 1;
   }
   .totals-calculation-shelf {
     grid-template-columns: repeat(2, 1fr);
