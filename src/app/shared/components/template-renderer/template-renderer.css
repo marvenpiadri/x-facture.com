@@ -246,7 +246,7 @@
 }
 
 .party-address {
-  white-space: pre-wrap;
+  white-space: break-spaces;
   overflow-wrap: anywhere;
 }
 
