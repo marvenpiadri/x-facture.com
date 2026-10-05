@@ -130,7 +130,6 @@
                   <option [value]="business.id">{{ business.company.name || 'Unnamed business' }}</option>
                 }
               </select>
-              <a routerLink="/settings" [queryParams]="{ tab: 'businesses' }" class="manage-party-link">Manage businesses</a>
             </div>
           </div>
 
@@ -158,6 +157,7 @@
               ></textarea>
             </div>
           </div>
+          <a routerLink="/settings" [queryParams]="{ tab: 'businesses' }" class="manage-party-link">Manage businesses</a>
         </div>
       </section>
 
