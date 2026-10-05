@@ -114,6 +114,8 @@ export class DocumentService {
       notes: '',
       terms: s.defaultPaymentTerms || '',
       bankDetails: '',
+      footerEnabled: s.footerEnabled ?? false,
+      footerText: s.footerText || '',
       createdAt: now.toISOString(),
       updatedAt: now.toISOString()
     };
