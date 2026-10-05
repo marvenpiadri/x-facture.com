@@ -86,15 +86,15 @@ export class SettingsHubPage implements OnInit {
   prefixList = signal<PrefixEditItem[]>([]);
 
   // TAB 4: Financial & Tax Defaults
-  defaultCurrency = signal<string>('USD');
-  defaultTaxRate = signal<number>(10);
-  taxName = signal<string>('VAT');
+  defaultCurrency = signal<string>('');
+  defaultTaxRate = signal<number>(0);
+  taxName = signal<string>('');
   taxInclusive = signal<boolean>(false);
   defaultPaymentTerms = signal<string>('');
   footerEnabled = signal<boolean>(false);
   footerText = signal<string>('');
   defaultNotes = signal<string>('');
-  acceptedPaymentMethods = signal<string[]>(['bank_transfer', 'credit_card', 'paypal', 'cash']);
+  acceptedPaymentMethods = signal<string[]>([]);
 
   // TAB 5: Templates & Branding
   defaultFormalTemplate = signal<'modern' | 'classic' | 'bold'>('modern');
@@ -102,7 +102,7 @@ export class SettingsHubPage implements OnInit {
   paperSize = signal<'a4' | 'letter'>('a4');
   brandColor = signal<string>('#059669');
   posAutoPrint = signal<boolean>(false);
-  posSoundEffects = signal<boolean>(true);
+  posSoundEffects = signal<boolean>(false);
 
   readonly documentTypesList = ALL_DOCUMENT_TYPES;
 
@@ -212,21 +212,21 @@ export class SettingsHubPage implements OnInit {
       this.signatureUrl.set(s.signatureUrl || '');
 
       // Financial & Tax Defaults
-      this.defaultCurrency.set(s.defaultCurrency || 'USD');
-      this.defaultTaxRate.set(s.defaultTaxRate ?? 10);
-      this.taxName.set(s.taxName || 'VAT');
+      this.defaultCurrency.set(s.defaultCurrency || '');
+      this.defaultTaxRate.set(s.defaultTaxRate ?? 0);
+      this.taxName.set(s.taxName || '');
       this.taxInclusive.set(s.taxInclusive ?? false);
       this.defaultPaymentTerms.set(s.defaultPaymentTerms || '');
       this.footerEnabled.set(s.footerEnabled ?? false);
       this.footerText.set(s.footerText || '');
-      this.defaultNotes.set(s.defaultNotes || 'Thank you for your business. Payment is due within agreed terms.');
-      this.acceptedPaymentMethods.set(s.acceptedPaymentMethods || ['bank_transfer', 'credit_card', 'paypal', 'cash']);
+      this.defaultNotes.set(s.defaultNotes || '');
+      this.acceptedPaymentMethods.set(s.acceptedPaymentMethods || []);
 
       // Template & Branding
       this.defaultFormalTemplate.set(s.defaultFormalTemplate || 'modern');
       this.defaultReceiptTemplate.set(s.defaultReceiptTemplate || 'thermal-80mm');
       this.paperSize.set(s.paperSize || 'a4');
-      this.brandColor.set(s.brandColor || '#059669');
+      this.brandColor.set(s.brandColor || '');
       this.posAutoPrint.set(s.posAutoPrint ?? false);
       this.posSoundEffects.set(s.posSoundEffects ?? true);
 
