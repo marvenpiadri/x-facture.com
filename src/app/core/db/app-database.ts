@@ -18,10 +18,21 @@ export class AppDatabase extends Dexie {
   constructor() {
     super('XFactureBusinessDB');
 
-    // Schema definition — version 1
+    // Schema definition - version 1
     this.version(1).stores({
       documents: 'id, docNumber, slug, docType, status, issueDate, dueDate, clientId, createdAt, updatedAt',
       clients: 'id, slug, name, email, companyName, createdAt',
+      products: 'id, slug, sku, name, category, isArchived, createdAt',
+      posSessions: 'id, sessionNumber, status, openedAt, closedAt',
+      posSales: 'id, receiptNumber, sessionId, date, docId',
+      ledgerEntries: 'id, date, type, category, docId, docNumber, status, createdAt',
+      settings: 'id'
+    });
+
+    // Version 2 removes legacy client indexes while preserving existing records.
+    this.version(2).stores({
+      documents: 'id, docNumber, slug, docType, status, issueDate, dueDate, clientId, createdAt, updatedAt',
+      clients: 'id, slug, name, createdAt',
       products: 'id, slug, sku, name, category, isArchived, createdAt',
       posSessions: 'id, sessionNumber, status, openedAt, closedAt',
       posSales: 'id, receiptNumber, sessionId, date, docId',
@@ -97,6 +108,21 @@ export async function seedInitialDataIfNeeded(): Promise<void> {
 
     // Remove only the sample records shipped by older versions of x-facture.
     // User-created records are never cleared by this migration.
+
+    // Strip fields removed from the current client model without deleting client records.
+    const clients = await db.clients.toArray();
+    for (const client of clients) {
+      const legacyClient = client as Client & Record<string, unknown>;
+      const cleanedClient = { ...legacyClient };
+      delete cleanedClient.companyName;
+      delete cleanedClient.email;
+      delete cleanedClient.phone;
+      delete cleanedClient.city;
+      delete cleanedClient.postalCode;
+      delete cleanedClient.country;
+      delete cleanedClient.taxId;
+      await db.clients.put(cleanedClient as Client);
+    }
     await Promise.all([
       db.clients.bulkDelete(['client-acme', 'client-lumina', 'client-globex']),
       db.products.bulkDelete([
