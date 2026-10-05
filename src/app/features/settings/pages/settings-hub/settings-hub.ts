@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { SettingsService } from '../../../../core/services/settings.service';
 import { CurrencyService } from '../../../../core/services/currency.service';
 import { ThemeService } from '../../../../core/services/theme.service';
@@ -40,6 +40,7 @@ export class SettingsHubPage implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private isBrowser = isPlatformBrowser(this.platformId);
   private settingsService = inject(SettingsService);
+  private route = inject(ActivatedRoute);
   readonly currencyService = inject(CurrencyService);
   readonly themeService = inject(ThemeService);
 
@@ -156,6 +157,12 @@ export class SettingsHubPage implements OnInit {
   previewYear = new Date().getFullYear();
 
   ngOnInit(): void {
+    const requestedTab = this.route.snapshot.queryParamMap.get('tab');
+    const validTabs: SettingsTab[] = ['businesses', 'profile', 'numbering', 'defaults', 'appearance', 'data'];
+    if (requestedTab && validTabs.includes(requestedTab as SettingsTab)) {
+      this.activeTab.set(requestedTab as SettingsTab);
+    }
+
     this.loadCurrentSettings();
     if (this.isBrowser) {
       this.refreshMetrics();
