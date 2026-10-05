@@ -168,6 +168,7 @@
           [clientId]="document().clientId"
           (clientChange)="onClientChange($event)"
           (clientIdChange)="onClientIdChange($event)"
+          (clientSelected)="onSavedClientSelect($event)"
         ></app-client-picker>
       </section>
     </div>
