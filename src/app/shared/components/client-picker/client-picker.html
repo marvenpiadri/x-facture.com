@@ -1,4 +1,4 @@
-<div class="client-picker-panel">
+<div class="party-picker-panel">
   <div class="panel-header-row">
     <label class="panel-title-label">
       <span class="material-icons title-icon">person</span>
@@ -20,25 +20,12 @@
   <div class="party-fields-grid">
     <div class="party-field full-width">
       <label class="field-label">Client Name</label>
-      <input
-        type="text"
-        class="form-input"
-        [value]="client().name"
-        (input)="onFieldChange('name', $any($event.target).value)"
-        placeholder="Client or Representative Name"
-        required
-      />
+      <input type="text" class="form-input" [value]="client().name" (input)="onFieldChange('name', $any($event.target).value)" placeholder="Client or Representative Name" required />
     </div>
 
-    <div class="field-item full-width">
+    <div class="party-field full-width">
       <label class="field-label">Client Information</label>
-      <textarea
-        class="form-textarea"
-        rows="6"
-        [value]="client().address || ''"
-        (input)="onFieldChange('address', $any($event.target).value)"
-        placeholder="Company name, address, email, phone, tax ID, website, or any other client information..."
-      ></textarea>
+      <textarea class="form-textarea party-details-textarea" rows="6" [value]="client().address || ''" (input)="onFieldChange('address', $any($event.target).value)" placeholder="Company name, address, email, phone, tax ID, website, or any other client information..."></textarea>
     </div>
   </div>
 </div>
