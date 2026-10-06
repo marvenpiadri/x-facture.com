@@ -385,7 +385,7 @@ export class SeoService {
   }
 
   private buildBreadcrumbs(url: string, pageName: string): Record<string, unknown>[] {
-    const path = new URL(url, this.siteUrl).pathname.replace(/^\\/+|\\/+$ /g, '');
+    const path = new URL(url, this.siteUrl).pathname.replace(/^\/+|\/+$/g, '');
     const parts = path ? path.split('/') : [];
     if (!parts.length) return [];
 
