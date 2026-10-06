@@ -39,7 +39,7 @@ export class SeoService {
     const pathname = this.document?.location?.pathname || this.router.url || '';
     const url = this.normalizeUrl(data.url || `${this.siteUrl}${pathname}`);
     const image = data.image || this.defaultImage;
-    const robots = data.robots || 'index, follow';
+    const robots = data.robots || 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
     const title = this.normalizeTitle(data.title);
 
     this.titleService.setTitle(title);
@@ -54,10 +54,11 @@ export class SeoService {
     this.metaService.updateTag({ property: 'og:url', content: url });
     this.metaService.updateTag({ property: 'og:type', content: data.type || 'website' });
     this.metaService.updateTag({ property: 'og:site_name', content: this.siteName });
+    this.metaService.updateTag({ property: 'og:locale', content: 'en_US' });
     this.metaService.updateTag({ property: 'og:image', content: image });
     this.metaService.updateTag({ property: 'og:image:alt', content: `${this.siteName} logo` });
     this.metaService.updateTag({ name: 'twitter:card', content: 'summary_large_image' });
-    this.metaService.updateTag({ name: 'twitter:title', content: data.title });
+    this.metaService.updateTag({ name: 'twitter:title', content: title });
     this.metaService.updateTag({ name: 'twitter:description', content: data.description });
     this.metaService.updateTag({ name: 'twitter:image', content: image });
     this.metaService.updateTag({ name: 'twitter:image:alt', content: `${this.siteName} logo` });
@@ -371,7 +372,7 @@ export class SeoService {
           '@id': `${url}#breadcrumbs`,
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
-            { '@type': 'ListItem', position: 2, name: 'x-facture', item: `${this.siteUrl}/pdf` },
+            { '@type': 'ListItem', position: 2, name: 'PDF Tools', item: `${this.siteUrl}/pdf` },
             ...(url === `${this.siteUrl}/pdf` ? [] : [{ '@type': 'ListItem', position: 3, name: pageName, item: url }])
           ]
         }
@@ -381,6 +382,29 @@ export class SeoService {
 
   private organizationSchema(): Record<string, unknown> {
     return { '@type': 'Organization', '@id': `${this.siteUrl}#organization`, name: this.siteName, url: this.siteUrl, logo: `${this.siteUrl}/x-facture-LOGO-PFP.png` };
+  }
+
+  private buildBreadcrumbs(url: string, pageName: string): Record<string, unknown>[] {
+    const path = new URL(url, this.siteUrl).pathname.replace(/^\\/+|\\/+$ /g, '');
+    const parts = path ? path.split('/') : [];
+    if (!parts.length) return [];
+
+    const labels: Record<string, string> = {
+      pdf: 'PDF Tools', calculators: 'Business Calculators', ledger: 'Financial Ledger', clients: 'Clients', products: 'Products & Services',
+      invoices: 'Invoices', 'proforma-invoices': 'Proforma Invoices', 'commercial-invoices': 'Commercial Invoices', quotes: 'Quotes',
+      'purchase-orders': 'Purchase Orders', receipts: 'Receipts', 'credit-notes': 'Credit Notes', 'delivery-notes': 'Delivery Notes',
+      'timesheet-invoices': 'Timesheet Invoices', 'work-orders': 'Work Orders', statements: 'Statements', 'service-agreements': 'Service Agreements',
+      'retainer-invoices': 'Retainer Invoices', 'bills-of-lading': 'Bills of Lading', 'custom-documents': 'Custom Documents',
+      store: 'Store', pos: 'POS', invoice: 'Invoice'
+    };
+    const items: Record<string, unknown>[] = [{ '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl }];
+    let current = '';
+    parts.forEach((part, index) => {
+      current += '/' + part;
+      const isLast = index === parts.length - 1;
+      items.push({ '@type': 'ListItem', position: index + 2, name: isLast ? this.normalizeTitle(pageName) : (labels[part] || part.replace(/-/g, ' ')), ...(isLast ? {} : { item: this.siteUrl + current }) });
+    });
+    return items;
   }
 
   private setSiteSchema(url: string, pageName: string): void {
@@ -395,10 +419,7 @@ export class SeoService {
         {
           '@type': 'BreadcrumbList',
           '@id': `${url}#breadcrumbs`,
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
-            { '@type': 'ListItem', position: 2, name: normalizedPageName, item: url }
-          ]
+          itemListElement: this.buildBreadcrumbs(url, normalizedPageName)
         }
       ]
     });
