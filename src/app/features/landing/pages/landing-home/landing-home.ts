@@ -9,7 +9,6 @@ import { RouterModule } from '@angular/router';
 import { SeoService } from '../../../../core/services/seo.service';
 import { DOCUMENT_TYPE_CONFIGS } from '../../../../core/config/document-type-config';
 import { DocumentTypeConfig } from '../../../../core/models/document-type-config.model';
-import { CurrencyService } from '../../../../core/services/currency.service';
 import { FooterComponent } from '../footer/footer.component';
 
 interface ProCalculatorCard {
@@ -32,7 +31,6 @@ interface ProCalculatorCard {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LandingHomePage implements OnInit {
-  private readonly currencyService = inject(CurrencyService);
   private readonly seoService = inject(SeoService);
 
   readonly docConfigs: DocumentTypeConfig[] = Object.values(DOCUMENT_TYPE_CONFIGS);
@@ -62,9 +60,9 @@ export class LandingHomePage implements OnInit {
 
   ngOnInit(): void {
     this.seoService.updateMetadata({
-      title: 'x-facture • Free Business Tools, Financial Calculators & Invoicing',
-      description: 'X-Facture is a free business toolkit for invoicing, receipts, POS, financial calculators, pricing, taxes, payments, cash flow and everyday business operations.',
-      keywords: 'business tools, financial calculators, invoice generator, free invoicing, POS, business finance, pricing tools, cash flow, tax calculator, payment fee calculator',
+      title: 'x-facture • Free Invoice Generator & Business Tools',
+      description: 'Create professional invoices, quotes and receipts for free with x-facture. Use business documents, financial calculators, POS and PDF tools without signing up.',
+      keywords: 'free invoice generator, invoice maker, create invoice online, free invoicing, quote generator, receipt generator, business tools, financial calculators, free POS, PDF tools',
       url: 'https://x-facture.com/'
     });
   }
