@@ -22,6 +22,7 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [{"glob": "**/*", "input": "public"}],
+            "security": {"allowedHosts": ["x-facture.com"]},
             "styles": [
               "src/styles.css",
               "src/styles/calculator-system.css",
