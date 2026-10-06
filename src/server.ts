@@ -24,6 +24,15 @@ app.use(
   }),
 );
 
+const publicSeoPagePattern = /^(?:\/(?:calculators(?:\/[^/?#]+)?|pdf(?:\/[^/?#]+)?|invoice\/xfacture|(?:invoices|proforma-invoices|commercial-invoices|quotes|purchase-orders|receipts|credit-notes|delivery-notes|timesheet-invoices|work-orders|statements|service-agreements|retainer-invoices|bills-of-lading|custom-documents)(?:\/create)?|store\/pos|ledger|clients|products)?)$/;
+
+app.use((req, res, next) => {
+  if (req.method === 'GET' && publicSeoPagePattern.test(req.path)) {
+    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300');
+  }
+  next();
+});
+
 app.use((req, res, next) => {
   angularApp
     .handle(req)
