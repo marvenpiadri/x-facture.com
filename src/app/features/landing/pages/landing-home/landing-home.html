@@ -1,315 +1,306 @@
 <div class="landing-page">
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-container">
-      <div class="hero-pill-badge">
-        <span>Local-First Financial & POS Operating System</span>
-      </div>
+  <main>
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-copy">
+          <span class="hero-eyebrow">FREE INVOICING FOR EVERY BUSINESS</span>
+          <h1>Create professional invoices.<br><span>Get your business moving.</span></h1>
+          <p class="hero-description">
+            Create invoices, quotes and receipts in your browser, then keep your business organized with
+            financial calculators, POS tools and more. <strong>100% free. No sign-up required.</strong>
+          </p>
 
-      <h1 class="hero-headline">
-        Modern Invoicing, Retail POS <br class="hidden-mobile">
-        <span class="text-money-gradient">& Pro Financial Calculators</span>
-      </h1>
-
-      <p class="hero-subtext">
-        Zero-friction invoicing, offline-first client data storage, multi-currency ledger, 
-        and high-precision financial engines for founders, freelancers, and retail merchants.
-      </p>
-
-      <div class="hero-cta-group">
-        <a routerLink="/invoices/new" class="btn-hero-primary" id="hero-create-invoice-btn">
-          <span class="material-icons">add_circle</span>
-          <span>Create Free Invoice</span>
-        </a>
-        <a routerLink="/dashboard" class="btn-hero-secondary" id="hero-dashboard-btn">
-          <span class="material-icons">dashboard</span>
-          <span>Open Dashboard</span>
-        </a>
-        <a routerLink="/store/pos" class="btn-hero-outline" id="hero-pos-btn">
-          <span class="material-icons">point_of_sale</span>
-          <span>POS Register</span>
-        </a>
-      </div>
-
-      <!-- Trust Badges Bar -->
-      <div class="hero-trust-bar">
-        <span class="trust-item">
-          <span class="material-icons text-green">verified_user</span>
-          <span>100% Client-Side Privacy</span>
-        </span>
-        <span class="trust-divider"></span>
-        <span class="trust-item">
-          <span class="material-icons text-green">no_accounts</span>
-          <span>No Sign-Up or Login Needed</span>
-        </span>
-        <span class="trust-divider"></span>
-        <span class="trust-item">
-          <span class="material-icons text-green">print</span>
-          <span>Print-Ready PDFs & Thermal Slips</span>
-        </span>
-        <span class="trust-divider"></span>
-        <span class="trust-item">
-          <span class="material-icons text-green">calculate</span>
-          <span>13 Standalone Master Calculators</span>
-        </span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Featured Standalone Master Calculators (SEO Hotspots) -->
-  <section class="calculators-showcase-section" id="calculators">
-    <div class="section-container">
-      <div class="section-header-centered">
-        <div class="badge-label">HIGH-PRECISION FINANCIAL ENGINES</div>
-        <h2 class="section-title">Standalone Master Financial Calculators</h2>
-        <p class="section-desc">
-          Dedicated, standalone calculation pages optimized for financial accuracy, 
-          tax compliance, and startup cash runway modeling.
-        </p>
-      </div>
-
-      <div class="pro-calculators-grid">
-        @for (calc of featuredCalculators; track calc.id) {
-          <div class="pro-calc-card">
-            <div class="pro-calc-top">
-              <div class="calc-icon-box">
-                <span class="material-icons">{{ calc.icon }}</span>
-              </div>
-              <span class="calc-badge">{{ calc.badge }}</span>
-            </div>
-
-            <h3 class="calc-card-title">{{ calc.title }}</h3>
-            <p class="calc-card-desc">{{ calc.description }}</p>
-
-            <div class="calc-highlight-box">
-              <span class="material-icons highlight-ico">bolt</span>
-              <span class="highlight-text">{{ calc.highlight }}</span>
-            </div>
-
-            <div class="calc-tag-pills">
-              @for (tag of calc.tags; track tag) {
-                <span class="calc-tag-pill">{{ tag }}</span>
-              }
-            </div>
-
-            <div class="calc-card-footer">
-              <a [routerLink]="['/calculators', calc.slug]" class="btn-open-calculator">
-                <span>Launch Calculator</span>
-                <span class="material-icons">arrow_forward</span>
-              </a>
-            </div>
+          <div class="hero-actions">
+            <a routerLink="/invoices/create" class="hero-primary">
+              <span class="material-icons">add_circle</span>
+              <span>Create a free invoice</span>
+            </a>
+            <a routerLink="/invoices" class="hero-secondary">
+              <span>Explore invoicing tools</span>
+              <span class="material-icons">arrow_forward</span>
+            </a>
           </div>
-        }
-      </div>
 
-      <!-- Quick Link to Full Tools Suite -->
-      <div class="all-tools-banner">
-        <div class="all-tools-content">
-          <span class="material-icons banner-ico">apps</span>
-          <div>
-            <strong>Professional Financial Utilities</strong>
-            <span>Explore our high-precision financial, loan, VAT, and retail margin tools.</span>
+          <div class="hero-proof">
+            <span><span class="material-icons">check_circle</span>Free to use</span>
+            <span><span class="material-icons">check_circle</span>No account required</span>
+            <span><span class="material-icons">check_circle</span>Print-ready documents</span>
+          </div>
+        </div>
+
+        <div class="hero-product">
+          <div class="product-window">
+            <div class="window-topbar">
+              <span class="window-brand">x-facture</span>
+              <span class="window-status"><span class="status-dot"></span>Ready to create</span>
+            </div>
+            <div class="invoice-preview">
+              <div class="invoice-preview-head">
+                <div class="invoice-logo-placeholder"></div>
+                <div class="invoice-title-block">
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+              <div class="invoice-meta-placeholder">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="invoice-party-row">
+                <div><span></span><span></span><span></span></div>
+                <div><span></span><span></span><span></span></div>
+              </div>
+              <div class="invoice-lines">
+                <div class="invoice-line invoice-line-head"><span></span><span></span><span></span></div>
+                <div class="invoice-line"><span></span><span></span><span></span></div>
+                <div class="invoice-line"><span></span><span></span><span></span></div>
+                <div class="invoice-line"><span></span><span></span><span></span></div>
+              </div>
+              <div class="invoice-total">
+                <span></span>
+                <strong></strong>
+              </div>
+            </div>
+            <div class="product-toolbar">
+              <span><span class="material-icons">description</span>Invoice</span>
+              <span><span class="material-icons">picture_as_pdf</span>Print / PDF</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Document Generation Suite Showcase -->
-  <section class="documents-suite-section">
-    <div class="section-container">
-      <div class="section-header-centered">
-        <div class="badge-label">10+ COMMERCIAL TEMPLATES</div>
-        <h2 class="section-title">Complete Commercial Invoicing Suite</h2>
-        <p class="section-desc">
-          Generate clean, formatted, tax-compliant documents with automatic line calculations, 
-          custom branding, and instant PDF download.
-        </p>
+    <section class="value-strip" aria-label="x-facture benefits">
+      <div class="section-container value-strip-inner">
+        <div class="value-item">
+          <span class="material-icons">bolt</span>
+          <div><strong>Start instantly</strong><span>No account or setup</span></div>
+        </div>
+        <div class="value-item">
+          <span class="material-icons">lock</span>
+          <div><strong>Work privately</strong><span>Your local business data stays in your browser</span></div>
+        </div>
+        <div class="value-item">
+          <span class="material-icons">print</span>
+          <div><strong>Ready to send</strong><span>Print and save professional documents</span></div>
+        </div>
       </div>
+    </section>
 
-      <div class="docs-showcase-grid">
-        @for (doc of docConfigs; track doc.docType) {
-          <div class="doc-card">
-            <div class="doc-card-head">
-              <span class="material-icons doc-ico">{{ doc.icon }}</span>
-              <div class="doc-titles">
-                <h4>{{ doc.singularName }}</h4>
-                <span class="doc-code font-mono">{{ doc.defaultPrefix }}</span>
-              </div>
-            </div>
-            <p class="doc-desc">{{ doc.description }}</p>
-            <div class="doc-actions">
-              <a [routerLink]="['/' + doc.routeSegment]" class="doc-link-list">
-                Browse {{ doc.pluralName }}
-              </a>
-              <a [routerLink]="['/' + doc.routeSegment, 'new']" class="doc-btn-create">
-                <span class="material-icons">add</span>
-                <span>Create</span>
-              </a>
-            </div>
-          </div>
-        }
-      </div>
-    </div>
-  </section>
+    <section class="section invoicing-section">
+      <div class="section-container">
+        <div class="section-heading">
+          <span class="section-eyebrow">START WITH INVOICING</span>
+          <h2>Everything you need to bill customers.</h2>
+          <p>Choose the document that matches the job. Build it in your browser and keep the workflow simple.</p>
+        </div>
 
-  <!-- Core Operating System Modules (POS & Ledger) -->
-  <section class="modules-section">
-    <div class="section-container">
-      <div class="modules-two-column">
-        <!-- POS Terminal Column -->
-        <div class="module-feature-card">
-          <div class="module-header">
-            <span class="material-icons module-ico text-green">point_of_sale</span>
-            <span class="module-badge">RETAIL ENGINE</span>
-          </div>
-          <h3 class="module-title">Retail Point-of-Sale (POS) Register</h3>
-          <p class="module-desc">
-            Complete live cash register for physical stores and popups. Features barcode scanning, 
-            cash till drawer reconciliation, split payment tender, and instant 80mm thermal receipt printing.
-          </p>
-          <ul class="feature-bullets">
-            <li><span class="material-icons">check_circle</span> Live Till Opening & Closing reconciliation</li>
-            <li><span class="material-icons">check_circle</span> Barcode scanner & quick SKU tap layout</li>
-            <li><span class="material-icons">check_circle</span> Split tender (Cash, Card, Transfer, QR)</li>
-            <li><span class="material-icons">check_circle</span> Offline thermal receipt generation</li>
-          </ul>
-          <a routerLink="/store/pos" class="btn-module-cta">
-            <span>Launch POS Register</span>
-            <span class="material-icons">arrow_forward</span>
+        <div class="document-focus-grid">
+          <a routerLink="/invoices/create" class="document-focus-card document-focus-primary">
+            <div class="card-icon"><span class="material-icons">receipt_long</span></div>
+            <div class="card-content">
+              <span class="card-kicker">MOST POPULAR</span>
+              <h3>Invoices</h3>
+              <p>Create a clear, professional invoice with your business, client, items, taxes and payment details.</p>
+              <span class="card-link">Create an invoice <span class="material-icons">arrow_forward</span></span>
+            </div>
+          </a>
+
+          <a routerLink="/quotes/create" class="document-focus-card">
+            <div class="card-icon"><span class="material-icons">request_quote</span></div>
+            <div class="card-content">
+              <span class="card-kicker">BEFORE THE SALE</span>
+              <h3>Quotes & estimates</h3>
+              <p>Present pricing and services clearly before your customer approves the work.</p>
+              <span class="card-link">Create a quote <span class="material-icons">arrow_forward</span></span>
+            </div>
+          </a>
+
+          <a routerLink="/receipts/create" class="document-focus-card">
+            <div class="card-icon"><span class="material-icons">point_of_sale</span></div>
+            <div class="card-content">
+              <span class="card-kicker">AFTER PAYMENT</span>
+              <h3>Receipts</h3>
+              <p>Give customers a clean record of a completed sale or payment.</p>
+              <span class="card-link">Create a receipt <span class="material-icons">arrow_forward</span></span>
+            </div>
           </a>
         </div>
 
-        <!-- Smart Financial Ledger Column -->
-        <div class="module-feature-card">
-          <div class="module-header">
-            <span class="material-icons module-ico text-green">account_balance_wallet</span>
-            <span class="module-badge">ACCOUNTING</span>
+        <div class="section-inline-link">
+          <a routerLink="/invoices">See all invoicing & business document tools <span class="material-icons">arrow_forward</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section workflow-section">
+      <div class="section-container">
+        <div class="section-heading compact">
+          <span class="section-eyebrow">ONE BUSINESS WORKFLOW</span>
+          <h2>From customer request to paid invoice.</h2>
+          <p>x-facture gives you the practical tools around the transaction, not just the document.</p>
+        </div>
+
+        <div class="workflow-grid">
+          <div class="workflow-step">
+            <span class="step-number">01</span>
+            <span class="material-icons">request_quote</span>
+            <h3>Quote the work</h3>
+            <p>Prepare a quote or estimate before the customer commits.</p>
           </div>
-          <h3 class="module-title">Real-Time Financial Ledger & CRM</h3>
-          <p class="module-desc">
-            Keep track of incoming revenue, operational expenses, cleared cash collections, 
-            and outstanding accounts receivable with complete customer contact profiles.
-          </p>
-          <ul class="feature-bullets">
-            <li><span class="material-icons">check_circle</span> Automatic invoice payment sync & P&L</li>
-            <li><span class="material-icons">check_circle</span> Expense categorization & receipt logging</li>
-            <li><span class="material-icons">check_circle</span> Client CRM with tax IDs and payment history</li>
-            <li><span class="material-icons">check_circle</span> Multi-currency conversion and cash summaries</li>
-          </ul>
-          <a routerLink="/ledger" class="btn-module-cta">
-            <span>Open Smart Ledger</span>
-            <span class="material-icons">arrow_forward</span>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <span class="step-number">02</span>
+            <span class="material-icons">receipt_long</span>
+            <h3>Invoice the sale</h3>
+            <p>Turn your work into a professional invoice with the details that matter.</p>
+          </div>
+          <div class="workflow-connector"></div>
+          <div class="workflow-step">
+            <span class="step-number">03</span>
+            <span class="material-icons">payments</span>
+            <h3>Track the money</h3>
+            <p>Use payment, ledger and finance tools to understand what is coming in and going out.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section tools-section">
+      <div class="section-container">
+        <div class="section-heading">
+          <span class="section-eyebrow">MORE THAN INVOICES</span>
+          <h2>Useful tools for the rest of the job.</h2>
+          <p>When the invoice is only one part of the work, x-facture has the tools around it.</p>
+        </div>
+
+        <div class="tools-grid">
+          <a routerLink="/store/pos" class="tool-card">
+            <div class="tool-icon"><span class="material-icons">point_of_sale</span></div>
+            <div><h3>POS & cash register</h3><p>Handle retail sales, payments and printable receipts.</p></div>
+            <span class="material-icons tool-arrow">arrow_forward</span>
+          </a>
+
+          <a routerLink="/ledger" class="tool-card">
+            <div class="tool-icon"><span class="material-icons">account_balance_wallet</span></div>
+            <div><h3>Business ledger</h3><p>Keep revenue, expenses and payment records together.</p></div>
+            <span class="material-icons tool-arrow">arrow_forward</span>
+          </a>
+
+          <a routerLink="/calculators" class="tool-card">
+            <div class="tool-icon"><span class="material-icons">calculate</span></div>
+            <div><h3>Financial calculators</h3><p>Calculate margins, ROI, cash flow, taxes, fees and more.</p></div>
+            <span class="material-icons tool-arrow">arrow_forward</span>
+          </a>
+
+          <a routerLink="/pdf" class="tool-card">
+            <div class="tool-icon"><span class="material-icons">picture_as_pdf</span></div>
+            <div><h3>PDF tools</h3><p>Organize, merge, split and work with documents in your browser.</p></div>
+            <span class="material-icons tool-arrow">arrow_forward</span>
           </a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Security & Privacy Guarantee Section -->
-  <section class="privacy-section">
-    <div class="section-container">
-      <div class="privacy-card">
-        <div class="privacy-lockup">
-          <div class="privacy-icon-circle">
-            <span class="material-icons">lock</span>
-          </div>
-          <div>
-            <h3 class="privacy-title">100% Local-First Data Privacy</h3>
-            <p class="privacy-text">
-              Your business financial records, customer details, invoices, and till sessions are stored 
-              exclusively in your browser's local storage and IndexedDB. Nothing is transmitted to external servers. 
-              Enjoy complete sovereign privacy and instant speed.
+    <section class="section calculator-section" id="calculators">
+      <div class="section-container">
+        <div class="section-heading calculator-heading">
+          <span class="section-eyebrow">BUSINESS FINANCE</span>
+          <h2>Make the numbers easier to understand.</h2>
+          <p>Standalone calculators for the decisions that come with running a business.</p>
+        </div>
+
+        <div class="calculator-grid">
+          @for (calc of featuredCalculators; track calc.id) {
+            <a [routerLink]="['/calculators', calc.slug]" class="calculator-card">
+              <div class="calculator-card-top">
+                <span class="calculator-icon material-icons">{{ calc.icon }}</span>
+                <span class="calculator-badge">{{ calc.badge }}</span>
+              </div>
+              <h3>{{ calc.title }}</h3>
+              <p>{{ calc.description }}</p>
+              <span class="calculator-link">Use calculator <span class="material-icons">arrow_forward</span></span>
+            </a>
+          }
+        </div>
+
+        <div class="section-inline-link">
+          <a routerLink="/calculators">Explore all financial calculators <span class="material-icons">arrow_forward</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section privacy-section">
+      <div class="section-container">
+        <div class="privacy-panel">
+          <div class="privacy-copy">
+            <span class="section-eyebrow">BUILT FOR PRIVATE BUSINESS WORK</span>
+            <h2>Your business data stays close to you.</h2>
+            <p>
+              x-facture is designed around browser-first work. Your invoices, clients and business records
+              can stay in your browser instead of requiring an account or a remote workspace.
             </p>
+            <a routerLink="/settings" class="privacy-link">Manage your local data <span class="material-icons">arrow_forward</span></a>
+          </div>
+          <div class="privacy-visual" aria-hidden="true">
+            <span class="material-icons privacy-main-icon">lock</span>
+            <div class="privacy-orbit orbit-one"></div>
+            <div class="privacy-orbit orbit-two"></div>
+            <span class="material-icons privacy-small-icon privacy-small-one">description</span>
+            <span class="material-icons privacy-small-icon privacy-small-two">account_balance_wallet</span>
           </div>
         </div>
-        <div class="privacy-actions">
-          <a routerLink="/settings" class="btn-privacy-settings">
-            <span class="material-icons">settings</span>
-            <span>Manage Local Data & Backups</span>
-          </a>
+      </div>
+    </section>
+
+    <section class="section faq-section">
+      <div class="section-container faq-layout">
+        <div class="section-heading compact">
+          <span class="section-eyebrow">COMMON QUESTIONS</span>
+          <h2>Simple answers before you start.</h2>
+          <p>x-facture is designed to get you from an empty page to useful business work quickly.</p>
+        </div>
+
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Is x-facture free?</summary>
+            <p>Yes. x-facture's invoicing, business document creation, financial calculators and currently available tools are free to use.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Do I need to create an account?</summary>
+            <p>No. You can start creating documents without signing up or logging in.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I create invoices and receipts for my business?</summary>
+            <p>Yes. x-facture includes invoice, quote, receipt and other business document workflows designed for everyday commercial use.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I use x-facture for financial calculations?</summary>
+            <p>Yes. Separate calculators cover practical business questions such as margins, pricing, ROI, cash flow, taxes and payment fees.</p>
+          </details>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- High-SEO Frequently Asked Questions Section -->
-  <section class="faq-section">
-    <div class="section-container">
-      <div class="section-header-centered">
-        <div class="badge-label">HELP & COMMON QUESTIONS</div>
-        <h2 class="section-title">Frequently Asked Questions</h2>
-        <p class="section-desc">Everything you need to know about x-facture and our free financial calculators.</p>
-      </div>
-
-      <div class="faq-accordion-grid">
-        <div class="faq-item">
-          <h4 class="faq-question">
-            <span class="material-icons">help_outline</span>
-            Is x-facture completely free to use?
-          </h4>
-          <p class="faq-answer">
-            Yes! All invoicing tools, commercial document generators, retail POS register sessions, 
-            and standalone financial calculators are 100% free with no monthly subscription or hidden fees.
-          </p>
-        </div>
-
-        <div class="faq-item">
-          <h4 class="faq-question">
-            <span class="material-icons">help_outline</span>
-            How do the standalone financial calculators work?
-          </h4>
-          <p class="faq-answer">
-            Each calculator operates as an isolated, mathematically validated tool with real-time reactive calculations, 
-            interactive Chart.js graphs, formula breakdowns, and preset parameters for Stripe, PayPal, VAT rates, and startup burn rates.
-          </p>
-        </div>
-
-        <div class="faq-item">
-          <h4 class="faq-question">
-            <span class="material-icons">help_outline</span>
-            Can I print thermal receipts and PDF invoices?
-          </h4>
-          <p class="faq-answer">
-            Yes! You can instantly print or save standard A4/Letter PDF invoices with professional styling, 
-            as well as 80mm/58mm thermal receipts from the POS register.
-          </p>
-        </div>
-
-        <div class="faq-item">
-          <h4 class="faq-question">
-            <span class="material-icons">help_outline</span>
-            Where is my data stored?
-          </h4>
-          <p class="faq-answer">
-            All data resides securely in your browser (LocalStorage and IndexedDB). You can export and backup your 
-            entire database anytime via JSON in the Settings tab.
-          </p>
+    <section class="final-cta-section">
+      <div class="section-container">
+        <div class="final-cta">
+          <span class="section-eyebrow">READY WHEN YOU ARE</span>
+          <h2>Make your next invoice in minutes.</h2>
+          <p>Open x-facture, enter your business details and get to work. No account. No subscription.</p>
+          <div class="final-actions">
+            <a routerLink="/invoices/create" class="final-primary">
+              <span class="material-icons">add_circle</span>
+              <span>Create a free invoice</span>
+            </a>
+            <a routerLink="/calculators" class="final-secondary">
+              <span>Browse business tools</span>
+              <span class="material-icons">arrow_forward</span>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- Bottom CTA Footer Banner -->
-  <section class="bottom-cta-section">
-    <div class="section-container">
-      <div class="bottom-cta-card">
-        <h2>Start Invoicing & Calculating in Seconds</h2>
-        <p>No credit card required. No email registration. Just open and work.</p>
-        <div class="bottom-cta-buttons">
-          <a routerLink="/invoices/new" class="btn-cta-white">
-            <span class="material-icons">add_circle</span>
-            <span>Create Invoice Now</span>
-          </a>
-          <a routerLink="/dashboard" class="btn-cta-trans">
-            <span class="material-icons">dashboard</span>
-            <span>Open Business Dashboard</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Landing Footer Component -->
   <app-footer></app-footer>
 </div>
