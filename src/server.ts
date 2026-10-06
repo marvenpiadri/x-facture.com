@@ -12,8 +12,32 @@ const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 export const app = express();
+app.set('trust proxy', true);
+
+// Enforce the single canonical public URL: https://x-facture.com.
+// Vercel terminates TLS before the function, so inspect the forwarded protocol.
+app.use((req, res, next) => {
+  const host = req.get('host')?.split(':')[0].toLowerCase() ?? '';
+  const forwardedProto = String(req.get('x-forwarded-proto') ?? '')
+    .split(',')[0]
+    .trim()
+    .toLowerCase();
+  const isCanonicalHost = host === 'x-facture.com';
+  const isAliasHost = host === 'www.x-facture.com';
+  const shouldRedirectToHttps = (isCanonicalHost || isAliasHost) && forwardedProto === 'http';
+
+  if (shouldRedirectToHttps || isAliasHost) {
+    const query = req.originalUrl.includes('?')
+      ? req.originalUrl.slice(req.originalUrl.indexOf('?'))
+      : '';
+    return res.redirect(308, `https://x-facture.com${req.path}${query}`);
+  }
+
+  next();
+});
+
 const angularApp = new AngularNodeAppEngine({
-  allowedHosts: ['*'],
+  allowedHosts: ['x-facture.com'],
 });
 
 app.use(
