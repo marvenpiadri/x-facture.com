@@ -619,31 +619,13 @@
 }
 
 .card-link,
-.calculator-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: auto;
-  padding-top: 22px;
-  color: var(--color-money-green);
-  font-size: 11px;
-  font-weight: 750;
-}
+
 
 .card-link .material-icons,
-.calculator-link .material-icons,
-.section-inline-link .material-icons,
-.privacy-link .material-icons {
-  font-size: 16px;
-  transition: transform var(--transition-fast);
-}
+
 
 .document-focus-card:hover .card-link .material-icons,
-.calculator-card:hover .calculator-link .material-icons,
-.section-inline-link a:hover .material-icons,
-.privacy-link:hover .material-icons {
-  transform: translateX(3px);
-}
+.calculator-card:hover 
 
 .section-inline-link {
   display: flex;
