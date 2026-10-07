@@ -2,34 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://x-facture.com/</loc>
     <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/organize-pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/merge-pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/split-pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/rotate-pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/flatten-pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/crop-pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/pdf-editor</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/add-watermark</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/add-page-numbers</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/image-to-pdf</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/pdf-to-image</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/pdf/pdf-metadata</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators</loc>
-    <lastmod>2026-10-06</lastmod></url>
   <url><loc>https://x-facture.com/store/pos</loc>
     <lastmod>2026-10-06</lastmod></url>
   <url><loc>https://x-facture.com/ledger</loc>
@@ -99,75 +71,5 @@
   <url><loc>https://x-facture.com/bills-of-lading</loc>
     <lastmod>2026-10-06</lastmod></url>
   <url><loc>https://x-facture.com/custom-documents</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/break-even-sales-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/cash-burn-runway-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/cash-register-change-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/commercial-loan-emi-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/compound-working-capital-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/currency-exchange-fee-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/gross-margin-markup-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/hourly-freelance-rate-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/inventory-turnover-holding-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/late-fee-interest-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/sales-tax-vat-splitter</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/stripe-paypal-fee-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/roi-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/roas-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/customer-acquisition-cost-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/customer-lifetime-value-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/cagr-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/discount-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/net-profit-margin-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/contribution-margin-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/percentage-change-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/price-increase-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/debt-to-income-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/loan-payoff-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/gross-profit-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/operating-margin-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/average-order-value-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/conversion-rate-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/churn-rate-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/customer-retention-rate-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/sales-commission-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/payback-period-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/revenue-growth-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/inventory-days-calculator</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/calculators/reorder-point-calculator</loc>
     <lastmod>2026-10-06</lastmod></url>
 </urlset>
