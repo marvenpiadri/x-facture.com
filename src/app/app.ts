@@ -91,7 +91,6 @@ export class App {
 
   private humanizeSegment(value: string): string {
     return value
-      .replace(/-calculator$/, '')
       .replace(/-/g, ' ')
       .replace(/\\b\\w/g, character => character.toUpperCase());
   }
