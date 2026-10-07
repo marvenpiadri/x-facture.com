@@ -136,7 +136,6 @@ export class App {
     this.showDocsDropdown.set(false);
     this.showOpsDropdown.set(false);
     this.showToolsDropdown.set(false);
-    this.showPdfDropdown.set(false);
   }
 
   createDoc(docType: string): void {
