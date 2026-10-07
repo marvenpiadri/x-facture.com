@@ -134,7 +134,6 @@ export class App {
     this.showProfileMenu.set(false);
     this.showDocsDropdown.set(false);
     this.showOpsDropdown.set(false);
-    this.showToolsDropdown.set(false);
   }
 
   createDoc(docType: string): void {
