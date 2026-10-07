@@ -7,7 +7,7 @@
           <h1>Create professional invoices.<br><span>Get your business moving.</span></h1>
           <p class="hero-description">
             Create invoices, quotes and receipts in your browser, then keep your business organized with
-            financial calculators, POS tools and more. <strong>100% free. No sign-up required.</strong>
+            POS, product, customer and business management tools. <strong>100% free. No sign-up required.</strong>
           </p>
 
           <div class="hero-actions">
@@ -186,45 +186,6 @@
             <span class="material-icons tool-arrow">arrow_forward</span>
           </a>
 
-          <a routerLink="/calculators" class="tool-card">
-            <div class="tool-icon"><span class="material-icons">calculate</span></div>
-            <div><h3>Financial calculators</h3><p>Calculate margins, ROI, cash flow, taxes, fees and more.</p></div>
-            <span class="material-icons tool-arrow">arrow_forward</span>
-          </a>
-
-          <a routerLink="/pdf" class="tool-card">
-            <div class="tool-icon"><span class="material-icons">picture_as_pdf</span></div>
-            <div><h3>PDF tools</h3><p>Organize, merge, split and work with documents in your browser.</p></div>
-            <span class="material-icons tool-arrow">arrow_forward</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="section calculator-section" id="calculators">
-      <div class="section-container">
-        <div class="section-heading calculator-heading">
-          <span class="section-eyebrow">BUSINESS FINANCE</span>
-          <h2>Make the numbers easier to understand.</h2>
-          <p>Standalone calculators for the decisions that come with running a business.</p>
-        </div>
-
-        <div class="calculator-grid">
-          @for (calc of featuredCalculators; track calc.id) {
-            <a [routerLink]="['/calculators', calc.slug]" class="calculator-card">
-              <div class="calculator-card-top">
-                <span class="calculator-icon material-icons">{{ calc.icon }}</span>
-                <span class="calculator-badge">{{ calc.badge }}</span>
-              </div>
-              <h3>{{ calc.title }}</h3>
-              <p>{{ calc.description }}</p>
-              <span class="calculator-link">Use calculator <span class="material-icons">arrow_forward</span></span>
-            </a>
-          }
-        </div>
-
-        <div class="section-inline-link">
-          <a routerLink="/calculators">Explore all financial calculators <span class="material-icons">arrow_forward</span></a>
         </div>
       </div>
     </section>
@@ -270,12 +231,8 @@
             <p>No. You can start creating documents without signing up or logging in.</p>
           </details>
           <details class="faq-item">
-            <summary>Can I create invoices and receipts for my business?</summary>
-            <p>Yes. x-facture includes invoice, quote, receipt and other business document workflows designed for everyday commercial use.</p>
-          </details>
-          <details class="faq-item">
-            <summary>Can I use x-facture for financial calculations?</summary>
-            <p>Yes. Separate calculators cover practical business questions such as margins, pricing, ROI, cash flow, taxes and payment fees.</p>
+            <summary>Can I create invoices, quotes and receipts for my business?</summary>
+            <p>Yes. x-facture connects invoicing and business documents with the broader sales and POS workflow.</p>
           </details>
         </div>
       </div>
@@ -293,7 +250,7 @@
               <span>Create a free invoice</span>
             </a>
             <a routerLink="/calculators" class="final-secondary">
-              <span>Browse business tools</span>
+              <span>Explore business management</span>
               <span class="material-icons">arrow_forward</span>
             </a>
           </div>
