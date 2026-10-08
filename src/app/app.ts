@@ -34,6 +34,7 @@ export class App {
 
   showDocsDropdown = signal<boolean>(false);
   showOpsDropdown = signal<boolean>(false);
+  showToolsDropdown = signal<boolean>(false);
   showProfileMenu = signal<boolean>(false);
 
   currentLang = signal<string>('EN');
@@ -104,9 +105,18 @@ export class App {
     if (this.showProfileMenu()) {
       this.showDocsDropdown.set(false);
       this.showOpsDropdown.set(false);
+      this.showToolsDropdown.set(false);
     }
   }
 
+  toggleToolsDropdown(): void {
+    this.showToolsDropdown.update(v => !v);
+    if (this.showToolsDropdown()) {
+      this.showProfileMenu.set(false);
+      this.showOpsDropdown.set(false);
+      this.showDocsDropdown.set(false);
+    }
+  }
 
   setLanguage(langCode: string): void {
     this.currentLang.set(langCode);
@@ -125,6 +135,7 @@ export class App {
     if (this.showOpsDropdown()) {
       this.showProfileMenu.set(false);
       this.showDocsDropdown.set(false);
+      this.showToolsDropdown.set(false);
     }
   }
 
@@ -134,6 +145,7 @@ export class App {
     this.showProfileMenu.set(false);
     this.showDocsDropdown.set(false);
     this.showOpsDropdown.set(false);
+    this.showToolsDropdown.set(false);
   }
 
   createDoc(docType: string): void {
