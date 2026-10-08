@@ -66,7 +66,7 @@ export class App {
 
     if (docConfig) {
       breadcrumbs.push({ label: docConfig.pluralName, url: '/' + docConfig.routeSegment });
-      if (segments[1] === 'new') {
+      if (segments[1] === 'create') {
         breadcrumbs.push({ label: 'New ' + docConfig.singularName });
       } else if (segments[2] === 'edit') {
         breadcrumbs.push({ label: segments[1], url: '/' + section + '/' + segments[1] + '/preview' });
@@ -151,7 +151,7 @@ export class App {
 
   createDoc(docType: string): void {
     this.closeMenus();
-    this.router.navigate([`/${docType}/new`]);
+    this.router.navigate([`/${docType}/create`]);
   }
 
 }
