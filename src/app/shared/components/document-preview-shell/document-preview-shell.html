@@ -1,5 +1,4 @@
- <div class="doc-preview-workspace">
-  <!-- Top Preview & Action Toolbar (Hidden in Print) -->
+<div class="doc-preview-workspace">
   <header class="preview-toolbar print-hide">
     <div class="toolbar-left">
       <a [routerLink]="'/' + config().routeSegment" class="back-link">
@@ -12,7 +11,6 @@
       </div>
     </div>
 
-    <!-- Template & Layout Controls -->
     <div class="toolbar-center">
       <div class="control-group">
         <span class="control-label">Template:</span>
@@ -35,7 +33,6 @@
       </div>
     </div>
 
-    <!-- Main Output & Management Actions -->
     <div class="toolbar-right">
       <button type="button" class="btn-action edit-btn" (click)="onEdit()" title="Edit document fields">
         <span class="material-icons btn-icon">edit</span>
@@ -61,28 +58,43 @@
         }
       </div>
 
-      <button type="button" class="btn-action download-btn" (click)="onDownloadPdf()" title="Save as PDF">
-        <span class="material-icons btn-icon">download</span>
-        <span>PDF</span>
-      </button>
+      <div class="download-choice-group" role="group" aria-label="Download invoice">
+        <button
+          type="button"
+          class="btn-action download-btn"
+          (click)="onDownloadPdf()"
+          [disabled]="isGeneratingPdf() || isGeneratingFacturX()"
+          [attr.aria-busy]="isGeneratingPdf()"
+          title="Download a standard PDF"
+        >
+          @if (isGeneratingPdf()) {
+            <span class="download-spinner" aria-hidden="true"></span>
+            <span>Preparing PDF…</span>
+          } @else {
+            <span class="material-icons btn-icon">picture_as_pdf</span>
+            <span>PDF</span>
+          }
+        </button>
 
-      @if (document().docType === 'invoices' || document().docType === 'credit-notes') {
-        <div class="structured-export-group" title="Generate structured invoice files">
-          <span class="structured-label">XFacture</span>
-          <button type="button" class="btn-action structured-btn" (click)="downloadStructured('cii')" title="Download CII XML">
-            <span class="material-icons btn-icon">data_object</span>
-            <span>CII</span>
+        @if (document().docType === 'invoices' || document().docType === 'credit-notes') {
+          <button
+            type="button"
+            class="btn-action facturx-btn"
+            (click)="onDownloadFacturX()"
+            [disabled]="isGeneratingFacturX() || isGeneratingPdf()"
+            [attr.aria-busy]="isGeneratingFacturX()"
+            title="Download a Factur-X hybrid PDF with structured invoice data"
+          >
+            @if (isGeneratingFacturX()) {
+              <span class="download-spinner" aria-hidden="true"></span>
+              <span>Preparing Factur-X…</span>
+            } @else {
+              <span class="material-icons btn-icon">picture_as_pdf</span>
+              <span>Factur-X</span>
+            }
           </button>
-          <button type="button" class="btn-action structured-btn" (click)="downloadStructured('ubl')" title="Download UBL XML">
-            <span class="material-icons btn-icon">code</span>
-            <span>UBL</span>
-          </button>
-          <button type="button" class="btn-action structured-btn" (click)="onDownloadFacturX()" [disabled]="isGeneratingFacturX()" title="Generate Factur-X PDF/A">
-            <span class="material-icons btn-icon">{{ isGeneratingFacturX() ? 'hourglass_top' : 'picture_as_pdf' }}</span>
-            <span>{{ isGeneratingFacturX() ? 'Generating…' : 'Factur-X' }}</span>
-          </button>
-        </div>
-      }
+        }
+      </div>
 
       <button type="button" class="btn-action print-btn" (click)="onPrint()" title="Send to printer">
         <span class="material-icons btn-icon">print</span>
@@ -102,7 +114,6 @@
     </div>
   }
 
-  <!-- Document Sheet Render Area -->
   <main class="preview-stage-container">
     <app-template-renderer
       [document]="document()"
