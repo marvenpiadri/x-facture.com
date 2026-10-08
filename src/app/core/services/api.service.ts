@@ -248,18 +248,18 @@ export class ApiService {
         discountPercent: item.discountPercent
       })),
       amountPaid: document.depositPaid,
-      transactionNature: document.specialFields?.transactionNature,
-      paymentMethod: document.specialFields?.paymentMethod,
-      iban: document.specialFields?.iban,
-      bic: document.specialFields?.bic,
-      buyerReference: document.specialFields?.buyerReference,
-      sellerSiren: document.specialFields?.sellerSiren,
-      buyerSiren: document.specialFields?.buyerSiren,
-      deliveryDate: document.specialFields?.deliveryDate,
-      deliveryAddressLine1: document.specialFields?.deliveryAddress,
-      deliveryCity: document.specialFields?.deliveryCity,
-      deliveryPostalCode: document.specialFields?.deliveryPostalCode,
-      deliveryCountry: document.specialFields?.deliveryCountry
+      transactionNature: document.specialFields?.['transactionNature'],
+      paymentMethod: document.specialFields?.['paymentMethod'],
+      iban: document.specialFields?.['iban'],
+      bic: document.specialFields?.['bic'],
+      buyerReference: document.specialFields?.['buyerReference'],
+      sellerSiren: document.specialFields?.['sellerSiren'],
+      buyerSiren: document.specialFields?.['buyerSiren'],
+      deliveryDate: document.specialFields?.['deliveryDate'],
+      deliveryAddressLine1: document.specialFields?.['deliveryAddress'],
+      deliveryCity: document.specialFields?.['deliveryCity'],
+      deliveryPostalCode: document.specialFields?.['deliveryPostalCode'],
+      deliveryCountry: document.specialFields?.['deliveryCountry']
     };
   }
 
