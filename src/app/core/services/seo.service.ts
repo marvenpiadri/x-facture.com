@@ -117,8 +117,8 @@ export class SeoService {
           keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, hybrid e-invoice, EN 16931, ZUGFeRD'
         },
         'invoices': {
-          title: 'Create Free Invoices Online with Factur-X • x-facture',
-          description: 'Create professional invoices online for free with x-facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML, plus CII and UBL structured invoice exports.',
+          title: 'Create Free Invoices Online',
+          description: 'Create professional invoices online for free with x-facture. Add seller, buyer, line-item, tax and payment details, then download a print-ready PDF or structured invoice data.',
           keywords: 'free invoice generator, create invoice online, invoice maker, Factur-X invoice, Factur-X PDF, electronic invoice, e-invoice, hybrid PDF XML invoice, CII invoice, UBL invoice, printable invoice'
         },
         'proforma-invoices': {
@@ -225,7 +225,7 @@ export class SeoService {
       '/dashboard': { title: 'x-facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in x-facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
       '/store/pos': { title: 'x-facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
       '/ledger': { title: 'x-facture • Business Financial Ledger', description: 'Track business revenue, expenses and payment records with x-facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
-      '/invoices/create': { title: 'Create Free Invoices Online with Factur-X • x-facture', description: 'Create professional invoices online for free with x-facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML, plus CII and UBL exports.', keywords: 'create free invoices online, free invoice generator, online invoice maker, Factur-X invoice, Factur-X PDF, electronic invoice, e-invoice, hybrid PDF XML invoice, CII invoice, UBL invoice, business invoice', url: `${this.siteUrl}/invoices/create` },
+      '/invoices/create': { title: 'Create Free Invoices Online with Factur-X • x-facture', description: 'Create professional invoices online for free with x-facture. Add seller, buyer, line-item, tax and payment details, then download a print-ready PDF or structured invoice data.', keywords: 'create free invoices online, free invoice generator, online invoice maker, Factur-X invoice, Factur-X PDF, electronic invoice, e-invoice, hybrid PDF XML invoice, CII invoice, UBL invoice, business invoice', url: `${this.siteUrl}/invoices/create` },
       '/clients': { title: 'x-facture • Client Directory & CRM', description: 'Organize customer accounts, billing contacts and client information for everyday business operations.', keywords: 'client management, CRM, customer directory, billing contacts', url: `${this.siteUrl}/clients` },
       '/products': { title: 'x-facture • Products & Services Catalog', description: 'Manage products, services, pricing, SKUs and inventory information for your business.', keywords: 'product catalog, service catalog, SKU management, inventory, business products', url: `${this.siteUrl}/products` },
       '/settings': { title: 'x-facture • Company & Business Settings', description: 'Configure company details, tax settings, currency and business preferences in x-facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
