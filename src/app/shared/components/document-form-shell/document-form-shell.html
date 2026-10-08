@@ -128,6 +128,10 @@
             <input type="date" class="form-input" [value]="document().specialFields?.deliveryDate || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
           </div>
           <div class="form-field-item">
+            <label class="field-label">Seller SIREN</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.sellerSiren || ''" (input)="onSpecialFieldChange('sellerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
+          </div>
+          <div class="form-field-item">
             <label class="field-label">Buyer SIREN</label>
             <input type="text" class="form-input" [value]="document().specialFields?.buyerSiren || ''" (input)="onSpecialFieldChange('buyerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
           </div>
