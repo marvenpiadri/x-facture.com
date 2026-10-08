@@ -283,9 +283,9 @@
   table-layout: fixed;
 }
 
-/* Repeating header in print engines */
+/* Keep the line-item heading attached to the first table fragment. The PDF should not repeat it on later pages. */
 .doc-items-table thead {
-  display: table-header-group;
+  display: table-row-group;
 }
 
 .doc-items-table tbody {
@@ -676,8 +676,9 @@
     page-break-inside: avoid !important;
   }
 
+  /* Do not repeat the line-item heading when Chromium fragments the table across pages. */
   .doc-items-table thead {
-    display: table-header-group !important;
+    display: table-row-group !important;
   }
 
   .doc-summary-footer-block {
