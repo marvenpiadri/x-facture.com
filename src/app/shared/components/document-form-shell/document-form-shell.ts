@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BusinessDocument, DocumentLineItem, DocumentParty, LineLayoutMode } from '../../../core/models/document.model';
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
+import { getCreatePageContent } from '../../../core/config/document-create-content';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService } from '../../../core/services/calculation.service';
 import { SettingsService } from '../../../core/services/settings.service';
@@ -60,6 +61,8 @@ export class DocumentFormShellComponent {
     )?.id ||
     ''
   );
+
+  createPageContent = computed(() => getCreatePageContent(this.config().routeSegment));
 
   currencySymbol = computed(() => this.currencyService.getSymbol(this.document().currency));
 
