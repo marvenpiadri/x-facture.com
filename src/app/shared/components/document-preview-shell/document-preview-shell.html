@@ -58,7 +58,7 @@
         }
       </div>
 
-      @if (document().docType === 'xfacture' || document().docType === 'invoices' || document().docType === 'credit-notes') {
+      @if (document().docType === 'xfacture' || document().docType === 'invoices' || document().docType === 'credit-notes' || document().docType === 'order-x') {
         <div class="output-control">
           <span class="material-icons">file_download</span>
           <select class="output-select" [value]="selectedOutput()" (change)="selectedOutput.set($any($event.target).value)" aria-label="Choose document output">
@@ -66,6 +66,7 @@
             <option value="factur-x">Factur-X PDF</option>
             <option value="cii">CII XML</option>
             <option value="ubl">UBL 2.1 XML</option>
+            @if (document().docType === 'order-x') { <option value="order-x">Order-X XML</option> }
           </select>
         </div>
         <button
