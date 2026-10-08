@@ -1,75 +1,77 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://x-facture.com/</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/store/pos</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/ledger</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/clients</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/products</loc>
-    <lastmod>2026-10-06</lastmod></url>
-  <url><loc>https://x-facture.com/invoice/xfacture</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://x-facture.com/xfacture</loc>
+    <lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://x-facture.com/xfacture/create</loc>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/invoices/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/proforma-invoices/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/commercial-invoices/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/quotes/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/purchase-orders/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/receipts/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/credit-notes/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/delivery-notes/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/timesheet-invoices/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/work-orders/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/statements/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/service-agreements/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/retainer-invoices/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/bills-of-lading/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/custom-documents/create</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/invoices</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/proforma-invoices</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/commercial-invoices</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/quotes</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/purchase-orders</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/receipts</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/credit-notes</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/delivery-notes</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/timesheet-invoices</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/work-orders</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/statements</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/service-agreements</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/retainer-invoices</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/bills-of-lading</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/custom-documents</loc>
-    <lastmod>2026-10-06</lastmod></url>
+    <lastmod>2026-10-08</lastmod></url>
 </urlset>
