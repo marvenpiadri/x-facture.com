@@ -56,7 +56,11 @@ export class DocumentEditPage {
     this.loading.set(true);
     if (!docNumber || docNumber === 'new') {
       this.isNew.set(true);
-      const newDoc = await this.documentService.createDraft(type);
+      let newDoc = await this.documentService.createDraft(type);
+      const output = this.route.snapshot.data['output'];
+      if (typeof output === 'string') {
+        newDoc = { ...newDoc, specialFields: { ...(newDoc.specialFields || {}), outputFormat: output } };
+      }
       this.currentDocument.set(newDoc);
       this.loading.set(false);
     } else {
