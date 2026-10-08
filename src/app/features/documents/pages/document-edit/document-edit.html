@@ -21,5 +21,57 @@
       (save)="onSave($event)"
       (saveAndPreview)="onSaveAndPreview($event)"
     ></app-document-form-shell>
+
+    @if (isNew()) {
+      <section class="create-page-content" aria-labelledby="create-page-guide-title">
+        <section class="how-it-works-section">
+          <div class="content-section-heading">
+            <span class="content-kicker">Simple guided workflow</span>
+            <h2>How it works</h2>
+            <p>Create your document in three straightforward steps, then review the finished result before downloading.</p>
+          </div>
+          <div class="how-it-works-grid">
+            @for (step of createPageContent().howItWorks; track step.title; let i = $index) {
+              <article class="how-step">
+                <div class="how-step-number">{{ i + 1 }}</div>
+                <div>
+                  <h3>{{ step.title }}</h3>
+                  <p>{{ step.text }}</p>
+                </div>
+              </article>
+            }
+          </div>
+        </section>
+
+        <section class="prepare-section">
+          <div class="prepare-copy">
+            <span class="content-kicker">Before you start</span>
+            <h2>What you should have ready</h2>
+            <p>Having these details nearby makes the form faster to complete and helps keep the final document accurate.</p>
+          </div>
+          <ul class="prepare-list">
+            @for (item of createPageContent().whatToPrepare; track item) {
+              <li><span class="material-icons" aria-hidden="true">check_circle</span><span>{{ item }}</span></li>
+            }
+          </ul>
+        </section>
+
+        <section class="guide-section" aria-labelledby="create-page-guide-title">
+          <div class="guide-copy">
+            <span class="content-kicker">Practical guide</span>
+            <h2 id="create-page-guide-title">{{ createPageContent().guideTitle }}</h2>
+            <p>{{ createPageContent().guideIntro }}</p>
+          </div>
+          <div class="guide-sections">
+            @for (section of createPageContent().guideSections; track section.title) {
+              <article class="guide-card">
+                <h3>{{ section.title }}</h3>
+                <p>{{ section.text }}</p>
+              </article>
+            }
+          </div>
+        </section>
+      </section>
+    }
   }
 </div>
