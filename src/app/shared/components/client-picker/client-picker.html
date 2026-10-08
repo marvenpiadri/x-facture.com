@@ -32,12 +32,7 @@
 
     <div class="party-field">
       <label class="field-label">Country</label>
-      <select class="form-select" [value]="client().country || ''" (change)="onFieldChange('country', $any($event.target).value)" autocomplete="country">
-        <option value="">Select country…</option>
-        @for (country of countries; track country.code) {
-          <option [value]="country.code">{{ country.name }} ({{ country.code }})</option>
-        }
-      </select>
+      <app-country-picker [value]="client().country || ''" (valueChange)="onFieldChange('country', $event)" ariaLabel="Client country"></app-country-picker>
     </div>
 
     <div class="party-field">
