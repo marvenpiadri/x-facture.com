@@ -25,9 +25,9 @@ interface ToolDefinition {
 }
 
 const TOOLS: ToolDefinition[] = [
-  { id: 'validate-factur-x', group: 'validate', title: 'Validate Factur-X', description: 'Check the embedded CII against the selected Factur-X profile XSD.', icon: 'verified', accepts: 'pdf' },
-  { id: 'validate-cii', group: 'validate', title: 'Validate CII XML', description: 'Validate standalone CII XML against the selected profile schema.', icon: 'fact_check', accepts: 'xml' },
-  { id: 'validate-order-x', group: 'validate', title: 'Validate Order-X', description: 'Inspect Order-X XML structure and report XML-level issues.', icon: 'rule', accepts: 'xml' },
+  { id: 'validate-factur-x', group: 'validate', title: 'Validate Factur-X', description: 'Check embedded CII against the selected Factur-X XSD profile and EN 16931 business rules.', icon: 'verified', accepts: 'pdf' },
+  { id: 'validate-cii', group: 'validate', title: 'Validate CII XML', description: 'Validate standalone CII XML against the selected profile XSD and EN 16931 business rules.', icon: 'fact_check', accepts: 'xml' },
+  { id: 'validate-order-x', group: 'validate', title: 'Validate Order-X', description: 'Validate Order-X XML against the Order-X schema and report structural errors.', icon: 'rule', accepts: 'xml' },
   { id: 'edit-factur-x', group: 'validate', title: 'Edit Factur-X Invoice', description: 'Extract the structured invoice so it can be brought back into the shared document workflow.', icon: 'edit_document', accepts: 'pdf' },
   { id: 'edit-cii', group: 'validate', title: 'Edit CII XML', description: 'Open CII XML for inspection and preparation for the shared invoice form.', icon: 'edit_note', accepts: 'xml' },
   { id: 'convert', group: 'convert', title: 'Conversion Studio', description: 'Choose a source and target syntax and run the appropriate document conversion.', icon: 'swap_horiz', accepts: 'none' },
