@@ -25,14 +25,14 @@ const TOOLS: ToolDefinition[] = [
   { id: 'edit-cii', group: 'validate', title: 'Edit CII XML', description: 'Open CII XML for inspection and preparation for the shared invoice form.', icon: 'edit_note', accepts: 'xml' },
   { id: 'convert', group: 'convert', title: 'Conversion Studio', description: 'Choose a source and target syntax and run the appropriate document conversion.', icon: 'swap_horiz', accepts: 'none' },
   { id: 'pdf-to-factur-x', group: 'convert', title: 'PDF to Factur-X', description: 'Prepare a legacy PDF for hybrid e-invoicing.', icon: 'picture_as_pdf', accepts: 'pdf-xml' },
-  { id: 'pdf-to-ubl', group: 'convert', title: 'PDF to UBL', description: 'Prepare PDF invoice data for EN 16931 UBL output.', icon: 'description', accepts: 'pdf' },
-  { id: 'pdf-to-cii', group: 'convert', title: 'PDF to CII', description: 'Prepare PDF invoice data for standalone CII output.', icon: 'data_object', accepts: 'pdf' },
+  { id: 'pdf-to-ubl', group: 'convert', title: 'PDF to UBL', description: 'Extract embedded CII from a hybrid PDF and convert it to UBL. Plain PDFs are not OCR-converted.', icon: 'description', accepts: 'pdf' },
+  { id: 'pdf-to-cii', group: 'convert', title: 'PDF to CII', description: 'Extract embedded CII from a hybrid PDF and export it as standalone CII. Plain PDFs are not OCR-converted.', icon: 'data_object', accepts: 'pdf' },
   { id: 'cii-to-factur-x', group: 'convert', title: 'CII to Factur-X', description: 'Embed existing CII into a PDF/A-3 Factur-X container.', icon: 'picture_as_pdf', accepts: 'pdf-xml' },
   { id: 'embed', group: 'convert', title: 'Embed XML to PDF', description: 'Embed existing CII XML into a PDF using the Factur-X engine.', icon: 'merge_type', accepts: 'pdf-xml' },
   { id: 'cii-to-ubl', group: 'convert', title: 'CII to UBL', description: 'Convert CII semantic data to UBL 2.1.', icon: 'swap_horiz', accepts: 'xml' },
   { id: 'ubl-to-cii', group: 'convert', title: 'UBL to CII', description: 'Convert UBL semantic data to CII.', icon: 'swap_horiz', accepts: 'xml' },
-  { id: 'cii-to-pdf', group: 'convert', title: 'CII to PDF', description: 'Render structured invoice data as a readable document.', icon: 'picture_as_pdf', accepts: 'xml' },
-  { id: 'ubl-to-pdf', group: 'convert', title: 'UBL to PDF', description: 'Render UBL invoice data as a readable document.', icon: 'picture_as_pdf', accepts: 'xml' },
+  { id: 'cii-to-pdf', group: 'convert', title: 'CII to PDF', description: 'Open CII in the shared X-Facture document renderer.', icon: 'picture_as_pdf', accepts: 'xml' },
+  { id: 'ubl-to-pdf', group: 'convert', title: 'UBL to PDF', description: 'Open UBL in the shared X-Facture document renderer.', icon: 'picture_as_pdf', accepts: 'xml' },
   { id: 'extract-xml', group: 'extract', title: 'Extract XML', description: 'Extract the embedded XML and detected profile from a Factur-X PDF.', icon: 'data_object', accepts: 'pdf' },
   { id: 'extract-attachments', group: 'extract', title: 'Extract Attachments', description: 'Inspect files embedded in a hybrid invoice.', icon: 'attach_file', accepts: 'pdf' },
   { id: 'cii-viewer', group: 'extract', title: 'CII / UBL Viewer', description: 'Read structured invoice XML directly in the browser.', icon: 'visibility', accepts: 'xml' }
@@ -115,6 +115,17 @@ export class EInvoiceToolsPage {
           const parsed = new DOMParser().parseFromString(xml, 'application/xml');
           const parseError = parsed.querySelector('parsererror');
           if (parseError) throw new Error('The XML is not well formed.');
+          const doc = this.parser.parse(xml, 'invoices');
+          this.result.set({
+            format: parsed.documentElement.localName === 'Invoice' ? 'UBL 2.1' : 'CII / Factur-X',
+            documentNumber: doc.docNumber,
+            issueDate: doc.issueDate,
+            currency: doc.currency,
+            seller: doc.company,
+            buyer: doc.client,
+            lines: doc.items,
+            totals: { subtotal: doc.subtotal, tax: doc.taxAmount, total: doc.total, balanceDue: doc.balanceDue }
+          });
           this.resultText.set(xml);
         } else if (tool.id === 'validate-order-x') {
           this.result.set(await this.api.validateOrderX(xml));
@@ -164,6 +175,30 @@ export class EInvoiceToolsPage {
         return;
       }
 
+      if (tool.id === 'pdf-to-cii' || tool.id === 'pdf-to-ubl') {
+        const file = this.selectedFile();
+        if (!file) throw new Error('Upload a PDF first.');
+        const base64 = await this.fileToBase64(file);
+        const extracted = await this.api.extractFacturXXml(base64);
+        const parsed = this.parser.parse(extracted.xml, 'invoices');
+        const output = tool.id === 'pdf-to-cii'
+          ? this.structured.generateCiiInvoice(parsed)
+          : this.structured.generateUblInvoice(parsed);
+        this.downloadText(output, parsed.docNumber + (tool.id === 'pdf-to-cii' ? '.cii.xml' : '.ubl.xml'));
+        this.result.set({ source: 'embedded XML', detectedProfile: extracted.profile, output: tool.id === 'pdf-to-cii' ? 'CII' : 'UBL 2.1' });
+        this.resultText.set(output);
+        return;
+      }
+
+      if (tool.id === 'extract-attachments') {
+        const file = this.selectedFile();
+        if (!file) throw new Error('Upload a Factur-X PDF first.');
+        const base64 = await this.fileToBase64(file);
+        const attachments = await this.api.extractFacturXAttachments(base64);
+        this.result.set(attachments as unknown as Record<string, unknown>);
+        return;
+      }
+
       if (tool.id === 'embed' || tool.id === 'cii-to-factur-x') {
         const file = this.selectedFile();
         const xml = this.selectedXml();
@@ -181,7 +216,7 @@ export class EInvoiceToolsPage {
         this.router.navigate(['/invoices', parsed.docNumber, 'edit']);
         return;
       }
-      this.resultText.set('This conversion uses the shared document model. PDF-to-structured conversion will use the server extraction/OCR pipeline when connected.');
+      this.resultText.set('');
     } catch (e) {
       this.error.set(e instanceof Error ? e.message : 'The operation failed.');
     } finally {
