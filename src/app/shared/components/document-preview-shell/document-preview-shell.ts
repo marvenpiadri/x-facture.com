@@ -31,6 +31,7 @@ export class DocumentPreviewShellComponent implements OnInit {
 
   selectedTemplate = signal<string>('modern');
   selectedPaperSize = signal<PaperSize>('a4');
+  selectedOutput = signal<'pdf' | 'factur-x' | 'cii' | 'ubl'>('pdf');
   isGeneratingPdf = signal<boolean>(false);
   isGeneratingFacturX = signal<boolean>(false);
   facturXError = signal<string | null>(null);
@@ -62,11 +63,19 @@ export class DocumentPreviewShellComponent implements OnInit {
     }
   }
 
+  async downloadSelectedOutput(): Promise<void> {
+    const output = this.selectedOutput();
+    if (output === 'pdf') return this.onDownloadPdf();
+    if (output === 'factur-x') return this.onDownloadFacturX();
+    if (output === 'cii') return this.downloadStructured('cii');
+    return this.downloadStructured('ubl');
+  }
+
   async onDownloadFacturX(): Promise<void> {
     const doc = this.document();
     this.facturXError.set(null);
 
-    if (doc.docType !== 'xfacture') return;
+    if (!['xfacture', 'invoices', 'credit-notes'].includes(doc.docType)) return;
 
     const missing: string[] = [];
     if (!doc.company.name?.trim()) missing.push('seller name');
