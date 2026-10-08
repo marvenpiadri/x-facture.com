@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BusinessDocument, DocumentLineItem, DocumentParty } from '../models/document.model';
 
-export type StructuredInvoiceFormat = 'ubl' | 'cii';
+export type StructuredInvoiceFormat = 'ubl' | 'cii' | 'order-x';
 
 @Injectable({ providedIn: 'root' })
 export class StructuredInvoiceService {
@@ -80,9 +80,15 @@ export class StructuredInvoiceService {
     ].filter(Boolean).join('\n');
   }
 
+  generateOrderX(doc: BusinessDocument): string {
+    const currency = this.currency(doc.currency);
+    const lines = doc.items.filter(item => item.description.trim() || item.amount > 0);
+    return ['<?xml version="1.0" encoding="UTF-8"?>','<Order xmlns="urn:oasis:names:specification:ubl:schema:xsd:Order-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">','<cbc:CustomizationID>urn:cen.eu:en16931:2017</cbc:CustomizationID>','<cbc:ID>'+this.esc(doc.docNumber)+'</cbc:ID>','<cbc:IssueDate>'+this.esc(doc.issueDate)+'</cbc:IssueDate>',doc.purchaseOrderRef?'<cbc:CustomerReference>'+this.esc(doc.purchaseOrderRef)+'</cbc:CustomerReference>':'','<cbc:DocumentCurrencyCode>'+currency+'</cbc:DocumentCurrencyCode>','<cac:BuyerCustomerParty>'+this.ublParty(doc.client)+'</cac:BuyerCustomerParty>','<cac:SellerSupplierParty>'+this.ublParty(doc.company)+'</cac:SellerSupplierParty>',lines.map((item,i)=>'<cac:OrderLine><cbc:LineItem><cbc:ID>'+String(i+1)+'</cbc:ID><cbc:Quantity unitCode="C62">'+this.number(item.quantity)+'</cbc:Quantity><cbc:LineExtensionAmount currencyID="'+currency+'">'+this.money(item.amount)+'</cbc:LineExtensionAmount><cac:Item><cbc:Name>'+this.esc(item.description||'Item')+'</cbc:Name></cac:Item><cac:Price><cbc:PriceAmount currencyID="'+currency+'">'+this.money(item.unitCost)+'</cbc:PriceAmount></cac:Price></cbc:LineItem></cac:OrderLine>').join(''),' </Order>'].join('').replace(' </Order>','</Order>');
+  }
+
   download(doc: BusinessDocument, format: StructuredInvoiceFormat): void {
-    const xml = format === 'ubl' ? this.generateUblInvoice(doc) : this.generateCiiInvoice(doc);
-    const suffix = format === 'ubl' ? 'ubl.xml' : 'cii.xml';
+    const xml = format === 'ubl' ? this.generateUblInvoice(doc) : format === 'order-x' ? this.generateOrderX(doc) : this.generateCiiInvoice(doc);
+    const suffix = format === 'ubl' ? 'ubl.xml' : format === 'order-x' ? 'order-x.xml' : 'cii.xml';
     const blob = new Blob([xml], { type: 'application/xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const anchor = window.document.createElement('a');
