@@ -49,29 +49,16 @@ export class DocumentPreviewShellComponent implements OnInit {
     this.isGeneratingPdf.set(true);
     try {
       const element = document.getElementById('document-pdf-root');
-      if (!element) { console.error('Document PDF root element not found'); window.print(); return; }
-      const lib = await import('html2pdf.js');
-      const html2pdf = (lib as any).default || lib;
-      const docName = this.document().docNumber || 'document';
-      const paperFormat = this.selectedPaperSize() === 'letter' ? 'letter' : 'a4';
-      const options = {
-        margin: 0, filename: docName + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2, useCORS: true, logging: false, backgroundColor: '#ffffff',
-          onclone: (clonedDoc: Document) => {
-            const style = clonedDoc.createElement('style');
-            style.innerHTML = '#document-pdf-root, .document-render-sheet, .document-preview-sheet, .printable-document-container { box-shadow:none!important; border:none!important; border-radius:0!important; min-height:auto!important; margin:0!important; padding:10mm!important; } .template-bold .doc-header-block { margin:-10mm -10mm 20px -10mm!important; }';
-            clonedDoc.head.appendChild(style);
-          }
-        },
-        jsPDF: { unit: 'mm', format: paperFormat, orientation: 'portrait' },
-        pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.print-item-row', '.doc-summary-footer-block', '.info-clause-box'] }
-      } as any;
-      await html2pdf().from(element).set(options).save();
-    } catch (err) {
-      console.error('Error generating PDF with html2pdf:', err);
-      window.print();
+      if (!element) {
+        console.error('Document PDF root element not found');
+        window.print();
+        return;
+      }
+
+      const htmlLayout = this.createSelfContainedHtml(element);
+      await this.apiService.downloadPdf(this.document(), htmlLayout);
+    } catch (error) {
+      console.error('PDF generation failed:', error);
     } finally {
       this.isGeneratingPdf.set(false);
     }
@@ -96,8 +83,16 @@ export class DocumentPreviewShellComponent implements OnInit {
   }
 
   private createSelfContainedHtml(element: HTMLElement): string {
-    const styles = Array.from(document.querySelectorAll('style')).map(style => style.textContent || '').filter(Boolean).join('\n');
-    return '<!doctype html><html><head><meta charset="utf-8"><style>' + styles + '</style></head><body>' + element.outerHTML + '</body></html>';
+    const styles = Array.from(document.querySelectorAll('style'))
+      .map(style => style.textContent || '')
+      .filter(Boolean)
+      .join('\n');
+
+    return '<!doctype html><html><head><meta charset="utf-8"><style>' +
+      styles +
+      '</style></head><body>' +
+      element.outerHTML +
+      '</body></html>';
   }
 
   downloadStructured(format: 'ubl' | 'cii'): void {
@@ -105,17 +100,23 @@ export class DocumentPreviewShellComponent implements OnInit {
     if (doc.docType !== 'invoices' && doc.docType !== 'credit-notes') return;
     this.structuredInvoiceService.download(doc, format);
   }
+
   async onDuplicate(): Promise<void> {
     const doc = this.document();
     const cloned = await this.documentService.duplicateDocument(doc.id);
     if (cloned) this.router.navigate(['/' + cloned.docType + '/' + cloned.docNumber + '/edit']);
   }
+
   onEdit(): void {
     const doc = this.document();
     this.router.navigate(['/' + doc.docType + '/' + doc.docNumber + '/edit']);
   }
+
   updateStatus(status: DocumentStatus): void { this.statusChange.emit(status); }
+
   confirmDelete(): void {
-    if (confirm('Are you sure you want to delete ' + this.document().docNumber + '? This cannot be undone.')) this.delete.emit();
+    if (confirm('Are you sure you want to delete ' + this.document().docNumber + '? This cannot be undone.')) {
+      this.delete.emit();
+    }
   }
 }
