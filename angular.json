@@ -3,7 +3,9 @@
   "version": 1,
   "cli": {
     "packageManager": "npm",
-    "schematicCollections": ["angular-eslint"]
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -21,34 +23,43 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
-            "assets": [{"glob": "**/*", "input": "public"}],
-            "security": {"allowedHosts": ["x-facture.com"]},
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "security": {
+              "allowedHosts": [
+                "x-facture.com"
+              ]
+            },
             "styles": [
-              "src/styles.css",
-              "src/styles/calculator-system.css",
-              "src/styles/calculator-presets.css",
-              "src/styles/calculator-universal.css",
-              "src/styles/calculator-components.css",
-              "src/styles/calculator-polish.css",
-              "src/styles/calculator-contract.css",
-              "src/styles/calculator-breakdown-polish.css"
+              "src/styles.css"
             ],
             "server": "src/main.server.ts",
             "outputMode": "server",
-            "ssr": {"entry": "src/server.ts"},
+            "ssr": {
+              "entry": "src/server.ts"
+            },
             "allowedCommonJsDependencies": [
-              "html2pdf.js",
               "pako",
-              "jspdf",
-              "canvg",
-              "html2canvas"
+              "canvg"
             ]
           },
           "configurations": {
             "production": {
               "budgets": [
-                {"type": "initial", "maximumWarning": "3MB", "maximumError": "5MB"},
-                {"type": "anyComponentStyle", "maximumWarning": "50kB", "maximumError": "100kB"}
+                {
+                  "type": "initial",
+                  "maximumWarning": "3MB",
+                  "maximumError": "5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "50kB",
+                  "maximumError": "100kB"
+                }
               ],
               "outputHashing": "all"
             },
@@ -56,7 +67,9 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
-              "externalDependencies": ["@google/genai"]
+              "externalDependencies": [
+                "@google/genai"
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -64,15 +77,26 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "configurations": {
-            "production": {"buildTarget": "app:build:production"},
-            "development": {"buildTarget": "app:build:development"}
+            "production": {
+              "buildTarget": "app:build:production"
+            },
+            "development": {
+              "buildTarget": "app:build:development"
+            }
           },
           "defaultConfiguration": "development"
         },
-        "test": {"builder": "@angular/build:unit-test"},
+        "test": {
+          "builder": "@angular/build:unit-test"
+        },
         "lint": {
           "builder": "@angular-eslint/builder:lint",
-          "options": {"lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]}
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
