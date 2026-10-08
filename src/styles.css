@@ -1,3 +1,6 @@
+/* Country flags */
+@import 'flag-icons/css/flag-icons.min.css';
+
 /* ==========================================================================
    x-facture Global Stylesheet
    Grounded in _tokens.css — No Tailwind, pure semantic design system
