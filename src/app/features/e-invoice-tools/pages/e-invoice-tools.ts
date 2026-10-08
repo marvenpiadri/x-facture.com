@@ -8,6 +8,13 @@ import { StructuredInvoiceService } from '../../../core/services/structured-invo
 import { DocumentService } from '../../../core/services/document.service';
 import { Router } from '@angular/router';
 
+interface ValidationSummary {
+  valid: boolean;
+  checks: Array<{ label: string; state: 'passed' | 'failed' | 'not-run' }>;
+  errors: unknown[];
+  french2026?: { status?: string; message?: string };
+}
+
 interface ToolDefinition {
   id: string;
   group: 'validate' | 'convert' | 'extract';
@@ -63,6 +70,32 @@ export class EInvoiceToolsPage {
   readonly error = signal('');
 
   readonly activeTool = computed(() => TOOLS.find(t => t.id === this.activeId()) || TOOLS[0]);
+  readonly validationSummary = computed<ValidationSummary | null>(() => {
+    const result = this.result();
+    if (!result || typeof result['valid'] !== 'boolean') return null;
+    const rawChecks = result['checks'];
+    const labels: Record<string, string> = {
+      xmlWellFormed: 'XML well-formedness',
+      facturXProfileXsd: 'Selected profile schema (XSD)',
+      en16931BusinessRules: 'EN 16931 business rules',
+      schematron: 'Schematron rules'
+    };
+    const checks = rawChecks && typeof rawChecks === 'object'
+      ? Object.entries(rawChecks as Record<string, unknown>).map(([key, value]) => ({
+          label: labels[key] || key,
+          state: value === true ? 'passed' as const : value === false ? 'failed' as const : 'not-run' as const
+        }))
+      : [];
+    const french2026 = result['french2026'] && typeof result['french2026'] === 'object'
+      ? result['french2026'] as { status?: string; message?: string }
+      : undefined;
+    return {
+      valid: result['valid'],
+      checks,
+      errors: Array.isArray(result['errors']) ? result['errors'] : [],
+      french2026
+    };
+  });
 
   constructor() {
     this.route.paramMap.subscribe(params => {
