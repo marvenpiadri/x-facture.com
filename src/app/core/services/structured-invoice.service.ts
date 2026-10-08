@@ -107,6 +107,7 @@ export class StructuredInvoiceService {
       (party.postalCode ? '<cbc:PostalZone>' + this.esc(party.postalCode) + '</cbc:PostalZone>' : '') +
       (party.country ? '<cac:Country><cbc:IdentificationCode>' + this.esc(party.country.toUpperCase().slice(0, 2)) + '</cbc:IdentificationCode></cac:Country>' : '') +
       '</cac:PostalAddress>' +
+      (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
       (party.email ? '<cac:Contact><cbc:ElectronicMail>' + this.esc(party.email) + '</cbc:ElectronicMail></cac:Contact>' : '') +
       '</cac:Party>';
   }
@@ -132,6 +133,7 @@ export class StructuredInvoiceService {
         (party.city ? '<ram:CityName>' + this.esc(party.city) + '</ram:CityName>' : '') +
         (party.country ? '<ram:CountryID>' + this.esc(party.country.toUpperCase().slice(0, 2)) + '</ram:CountryID>' : '') +
         '</ram:PostalTradeAddress>' : '') +
+      (party.electronicAddress ? '<ram:URIUniversalCommunication><ram:URIID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</ram:URIID></ram:URIUniversalCommunication>' : '') +
       (party.email ? '<ram:URIUniversalCommunication><ram:URIID>' + this.esc(party.email) + '</ram:URIID></ram:URIUniversalCommunication>' : '') +
       '</ram:' + tag + '>';
   }
