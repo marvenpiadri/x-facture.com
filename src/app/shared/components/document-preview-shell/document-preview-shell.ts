@@ -66,7 +66,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     const doc = this.document();
     this.facturXError.set(null);
 
-    if (doc.docType !== 'invoices' && doc.docType !== 'xfacture') return;
+    if (doc.docType !== 'xfacture') return;
 
     const missing: string[] = [];
     if (!doc.company.name?.trim()) missing.push('seller name');
