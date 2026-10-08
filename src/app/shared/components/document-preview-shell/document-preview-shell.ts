@@ -96,6 +96,8 @@ export class DocumentPreviewShellComponent implements OnInit {
     if (!doc.client.taxId?.trim()) missing.push('buyer VAT / tax ID');
     if (!doc.client.electronicAddress?.trim()) missing.push('buyer electronic address');
     if (!doc.client.electronicAddressScheme?.trim()) missing.push('buyer electronic address scheme');
+    if ((doc.company.country || '').toUpperCase() === 'FR' && !doc.specialFields?.sellerSiren?.trim()) missing.push('seller SIREN');
+    if ((doc.client.country || '').toUpperCase() === 'FR' && !doc.specialFields?.buyerSiren?.trim()) missing.push('buyer SIREN');
     if (!doc.issueDate) missing.push('issue date');
     if (!doc.items.length) missing.push('at least one line item');
 
