@@ -71,6 +71,57 @@
       </div>
     </div>
 
+    @if (config().routeSegment === 'xfacture') {
+      <section class="facturx-details-panel">
+        <div class="facturx-panel-heading">
+          <div>
+            <span class="form-section-kicker">Factur-X</span>
+            <h3>Electronic invoice details</h3>
+            <p>These fields help describe the structured e-invoice data alongside the readable PDF.</p>
+          </div>
+          <span class="facturx-badge">EN 16931 ready workflow</span>
+        </div>
+        <div class="form-meta-grid facturx-meta-grid">
+          <div class="form-field-item">
+            <label class="field-label">Nature of transaction</label>
+            <select class="form-select" [value]="document().specialFields?.transactionNature || ''" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
+              <option value="">Select transaction nature</option>
+              <option value="goods">Goods</option>
+              <option value="services">Services</option>
+              <option value="goods-and-services">Goods & services</option>
+            </select>
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">Payment method</label>
+            <select class="form-select" [value]="document().specialFields?.paymentMethod || ''" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
+              <option value="">Select payment method</option>
+              <option value="bank-transfer">Bank transfer</option>
+              <option value="card">Card</option>
+              <option value="direct-debit">Direct debit</option>
+              <option value="cash">Cash</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">IBAN</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.iban || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="IBAN" autocomplete="off" />
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">BIC / SWIFT</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.bic || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="BIC / SWIFT" autocomplete="off" />
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">Buyer reference</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.buyerReference || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer or service reference" />
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">Delivery date</label>
+            <input type="date" class="form-input" [value]="document().specialFields?.deliveryDate || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
+          </div>
+        </div>
+      </section>
+    }
+
     <div class="form-section-heading"><div><span class="form-section-kicker">Step 2</span><h3>Parties</h3><p>Tell your customer or recipient who is sending and receiving the document.</p></div></div>
     <div class="form-parties-split">
       <section class="party-card issuer-card">
