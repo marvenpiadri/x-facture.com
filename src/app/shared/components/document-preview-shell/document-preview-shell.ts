@@ -8,7 +8,6 @@ import { DocumentTypeConfig } from '../../../core/models/document-type-config.mo
 import { TemplateRendererComponent } from '../template-renderer/template-renderer';
 import { DocumentService } from '../../../core/services/document.service';
 import { StructuredInvoiceService } from '../../../core/services/structured-invoice.service';
-import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-document-preview-shell',
@@ -22,7 +21,6 @@ export class DocumentPreviewShellComponent implements OnInit {
   private router = inject(Router);
   private documentService = inject(DocumentService);
   private structuredInvoiceService = inject(StructuredInvoiceService);
-  private apiService = inject(ApiService);
 
   document = input.required<BusinessDocument>();
   config = input.required<DocumentTypeConfig>();
@@ -54,12 +52,29 @@ export class DocumentPreviewShellComponent implements OnInit {
         return;
       }
 
-      const htmlLayout = this.createSelfContainedHtml(element);
-      await this.apiService.downloadPdf(
-        this.document(),
-        htmlLayout,
-        this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
-      );
+      const lib = await import('html2pdf.js');
+      const html2pdf = (lib as any).default || lib;
+      const docName = this.document().docNumber || 'document';
+      const paperFormat = this.selectedPaperSize() === 'letter' ? 'letter' : 'a4';
+      const options = {
+        margin: 0,
+        filename: docName + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          onclone: (clonedDoc: Document) => {
+            const style = clonedDoc.createElement('style');
+            style.innerHTML = '#document-pdf-root, .document-render-sheet, .document-preview-sheet, .printable-document-container { box-shadow:none!important; border:none!important; border-radius:0!important; min-height:auto!important; margin:0!important; padding:10mm!important; } .template-bold .doc-header-block { margin:-10mm -10mm 20px -10mm!important; }';
+            clonedDoc.head.appendChild(style);
+          }
+        },
+        jsPDF: { unit: 'mm', format: paperFormat, orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.print-item-row', '.doc-summary-footer-block', '.info-clause-box'] }
+      } as any;
+      await html2pdf().from(element).set(options).save();
     } catch (error) {
       console.error('PDF generation failed:', error);
     } finally {
