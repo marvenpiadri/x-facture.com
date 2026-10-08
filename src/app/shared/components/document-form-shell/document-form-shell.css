@@ -690,3 +690,55 @@
     flex: 1;
   }
 }
+
+
+.facturx-details-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: 20px;
+  border: 1px solid color-mix(in srgb, var(--color-money-green) 28%, var(--color-border));
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, var(--color-surface-subtle), var(--color-surface));
+}
+
+.facturx-panel-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.facturx-panel-heading h3 {
+  margin: 0;
+  color: var(--color-text-main);
+  font-size: 18px;
+}
+
+.facturx-panel-heading p {
+  margin: 5px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.facturx-badge {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid color-mix(in srgb, var(--color-money-green) 35%, var(--color-border));
+  border-radius: 999px;
+  background: var(--color-money-green-light);
+  color: var(--color-money-green-dark);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+@media (max-width: 640px) {
+  .facturx-panel-heading {
+    flex-direction: column;
+  }
+
+  .facturx-badge {
+    align-self: flex-start;
+  }
+}
