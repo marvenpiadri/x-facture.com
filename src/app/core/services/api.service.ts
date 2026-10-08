@@ -219,7 +219,9 @@ export class ApiService {
         electronicAddressScheme: document.company.electronicAddressScheme,
         email: document.company.email,
         phone: document.company.phone,
-        website: document.company.website
+        website: document.company.website,
+        sellerSiren: document.specialFields?.sellerSiren,
+        buyerSiren: document.specialFields?.buyerSiren
       },
       buyer: {
         name: document.client.legalName || document.client.name,
@@ -234,7 +236,13 @@ export class ApiService {
         electronicAddressScheme: document.client.electronicAddressScheme,
         email: document.client.email,
         phone: document.client.phone,
-        website: document.client.website
+        website: document.client.website,
+        buyerReference: document.specialFields?.buyerReference,
+        deliveryDate: document.specialFields?.deliveryDate,
+        deliveryAddressLine1: document.specialFields?.deliveryAddress,
+        deliveryCity: document.specialFields?.deliveryCity,
+        deliveryPostalCode: document.specialFields?.deliveryPostalCode,
+        deliveryCountry: document.specialFields?.deliveryCountry
       },
       items: document.items.map(item => ({
         description: item.description,
