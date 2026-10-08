@@ -1,13 +1,13 @@
 <main class="xfacture-page">
   <section class="xfacture-hero">
-    <span class="eyebrow">x-facture · Structured invoicing</span>
-    <h1>x-facture invoice exports with x-facture</h1>
+    <span class="eyebrow">XFacture · Structured invoicing</span>
+    <h1>Turn your invoice into structured business data.</h1>
     <p class="lead">
-      Turn the invoice you already create in x-facture into structured CII or UBL XML directly in your browser.
-      No account server, database or Gotenberg service is required for these local exports.
+      x-facture keeps your invoice data local and gives you both browser-side XML exports and an optional
+      server-side Factur-X PDF/A workflow through the X-Facture API.
     </p>
     <div class="actions">
-      <a routerLink="/invoices/new" class="primary-action">Create an invoice</a>
+      <a routerLink="/invoices/create" class="primary-action">Create an invoice</a>
       <a routerLink="/invoices" class="secondary-action">Open invoices</a>
     </div>
   </section>
@@ -16,25 +16,50 @@
     <article class="format-card">
       <span class="format-code">CII</span>
       <h2>Cross Industry Invoice</h2>
-      <p>Generate a CII XML representation from your invoice data. This is the structured XML layer used by formats such as ZUGFeRD / Factur-X.</p>
+      <p>
+        Export a CII XML representation directly in the browser. This is the structured XML family used by
+        formats such as ZUGFeRD and Factur-X.
+      </p>
     </article>
+
     <article class="format-card">
       <span class="format-code">UBL</span>
       <h2>Universal Business Language</h2>
-      <p>Generate a UBL 2.1 invoice XML representation suitable as a foundation for European structured invoicing workflows.</p>
+      <p>
+        Export UBL 2.1 invoice XML locally for structured invoicing workflows and downstream integrations.
+      </p>
+    </article>
+
+    <article class="format-card">
+      <span class="format-code">FACTUR-X</span>
+      <h2>Hybrid PDF + XML</h2>
+      <p>
+        Generate a PDF/A document with embedded structured invoice data through api.x-facture.com when you
+        need a packaged Factur-X output.
+      </p>
+    </article>
+
+    <article class="format-card">
+      <span class="format-code">API</span>
+      <h2>Reusable X-Facture services</h2>
+      <p>
+        The same API also provides invoice calculations, exchange rates and QR generation for x-facture and
+        future X-Facture products.
+      </p>
     </article>
   </section>
 
   <section class="explanation">
-    <h2>What happens when you export?</h2>
+    <h2>How the API fits into x-facture</h2>
     <ol>
-      <li>Your invoice remains the single source of truth inside x-facture.</li>
-      <li>The local structured-invoice engine maps that data to CII or UBL XML.</li>
-      <li>The XML file is generated and downloaded in your browser.</li>
-      <li>Server-side PDF/A-3 packaging and network exchange can be added separately as the x-facture platform evolves.</li>
+      <li>Your invoice remains the source of truth in x-facture and can continue to work locally.</li>
+      <li>CII and UBL XML can be generated in the browser without sending the invoice to a server.</li>
+      <li>Factur-X PDF/A generation is delegated to the dedicated X-Facture API when requested.</li>
+      <li>The API is reusable, so QR generation, currency data and future document services can share the same infrastructure.</li>
     </ol>
     <p class="note">
-      XML export is a structured data feature. Country-specific legal compliance, validation profiles and electronic-invoicing network exchange may require additional rules or infrastructure.
+      API-backed features require an internet connection. Structured XML export remains available locally.
+      Legal compliance and electronic-invoicing network requirements still depend on the applicable country and profile.
     </p>
   </section>
 </main>

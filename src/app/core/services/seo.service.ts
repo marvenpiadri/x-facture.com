@@ -170,9 +170,9 @@ export class SeoService {
       const url = `${this.siteUrl}/${docConfig.routeSegment}/create`;
       const searchIntentMap: Record<string, { title: string; description: string; keywords: string }> = {
         'invoices': {
-          title: 'Create Free Invoices Online',
-          description: 'Create a professional invoice online for free. Add business and client details, line items, taxes and payment terms, then save a print-ready invoice.',
-          keywords: 'free invoice generator, create invoice online, invoice maker, online invoice template, tax invoice generator, printable invoice'
+          title: 'Create Free Invoices Online with Factur-X • x-facture',
+          description: 'Create professional invoices online for free with x-facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML, plus CII and UBL structured invoice exports.',
+          keywords: 'free invoice generator, create invoice online, invoice maker, Factur-X invoice, Factur-X PDF, electronic invoice, e-invoice, hybrid PDF XML invoice, CII invoice, UBL invoice, printable invoice'
         },
         'proforma-invoices': {
           title: 'Create Free Proforma Invoices Online',
@@ -273,12 +273,12 @@ export class SeoService {
     }
 
     const routeSeo: Record<string, SeoMetadata> = {
-      '/': { title: 'x-facture • Free Invoicing & PDF Tools, Business Calculators', description: '100% free business tools for entrepreneurs and companies: invoicing, free PDF tools, receipts, POS, financial calculators, cash-flow tools, pricing, taxes and business records.', keywords: 'free business tools, free invoicing, free PDF tools, free PDF editor, free PDF merger, invoice generator, POS, business finance, pricing tools, cash flow, tax calculator', url: this.siteUrl },
+      '/': { title: 'x-facture • Free Invoice Generator & Factur-X Invoices', description: 'Create free invoices online with x-facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML, and learn what Factur-X means for electronic invoicing.', keywords: 'x-facture, Factur-X, Factur-X invoice, electronic invoice, e-invoice, hybrid PDF XML invoice, free invoice generator, free invoicing, invoice maker, business tools, PDF tools', url: this.siteUrl },
       '/home': { title: 'x-facture • Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
       '/dashboard': { title: 'x-facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in x-facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
       '/store/pos': { title: 'x-facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
       '/ledger': { title: 'x-facture • Business Financial Ledger', description: 'Track business revenue, expenses and payment records with x-facture’s practical financial ledger.', keywords: 'business ledger, financial ledger, income expense tracker, payment ledger', url: `${this.siteUrl}/ledger` },
-      '/invoices/create': { title: 'Create Free Invoices Online • x-facture', description: 'Create professional invoices online for free with x-facture. Add your business and client details, line items, taxes and payment information, then save your invoice.', keywords: 'create free invoices online, free invoice generator, online invoice maker, create invoice, free invoice template, business invoice', url: `${this.siteUrl}/invoices/create` },
+      '/invoices/create': { title: 'Create Free Invoices Online with Factur-X • x-facture', description: 'Create professional invoices online for free with x-facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML, plus CII and UBL exports.', keywords: 'create free invoices online, free invoice generator, online invoice maker, Factur-X invoice, Factur-X PDF, electronic invoice, e-invoice, hybrid PDF XML invoice, CII invoice, UBL invoice, business invoice', url: `${this.siteUrl}/invoices/create` },
       '/clients': { title: 'x-facture • Client Directory & CRM', description: 'Organize customer accounts, billing contacts and client information for everyday business operations.', keywords: 'client management, CRM, customer directory, billing contacts', url: `${this.siteUrl}/clients` },
       '/products': { title: 'x-facture • Products & Services Catalog', description: 'Manage products, services, pricing, SKUs and inventory information for your business.', keywords: 'product catalog, service catalog, SKU management, inventory, business products', url: `${this.siteUrl}/products` },
       '/settings': { title: 'x-facture • Company & Business Settings', description: 'Configure company details, tax settings, currency and business preferences in x-facture.', url: `${this.siteUrl}/settings`, robots: 'noindex, nofollow' }
@@ -325,12 +325,36 @@ export class SeoService {
   }
 
   private setHomepageSchema(): void {
+    const faqQuestions = [
+      ['What is Factur-X?', 'Factur-X is a hybrid electronic invoice format that combines a readable PDF with structured XML invoice data embedded in the PDF.'],
+      ['What is a Factur-X invoice?', 'A Factur-X invoice gives people a normal PDF invoice while providing structured invoice data that compatible business software can process automatically.'],
+      ['Why use Factur-X instead of a normal PDF?', 'A normal PDF is primarily human-readable. Factur-X adds structured invoice data for automated processing and electronic invoicing workflows.'],
+      ['Does x-facture support Factur-X?', 'Yes. Eligible invoice documents in x-facture can be downloaded either as a standard PDF or as a Factur-X hybrid PDF with structured invoice data.'],
+      ['Does Factur-X apply to quotes and estimates?', 'Factur-X is an electronic invoice format, so x-facture keeps Factur-X associated with invoice-oriented documents rather than ordinary quotes and estimates.']
+    ];
+
     this.setJsonLd({
       '@context': 'https://schema.org',
       '@graph': [
         this.organizationSchema(),
         { '@type': 'WebSite', '@id': `${this.siteUrl}#website`, name: this.siteName, url: this.siteUrl, publisher: { '@id': `${this.siteUrl}#organization` } },
-        { '@type': 'WebPage', '@id': `${this.siteUrl}#webpage`, name: 'x-facture | Free Invoicing & PDF Tools, Business Calculators', url: this.siteUrl, isPartOf: { '@id': `${this.siteUrl}#website` }, about: { '@id': `${this.siteUrl}#organization` } }
+        {
+          '@type': 'WebPage',
+          '@id': `${this.siteUrl}#webpage`,
+          name: 'x-facture | Free Invoice Generator & Factur-X Invoices',
+          url: this.siteUrl,
+          isPartOf: { '@id': `${this.siteUrl}#website` },
+          about: { '@id': `${this.siteUrl}#organization` }
+        },
+        {
+          '@type': 'FAQPage',
+          '@id': `${this.siteUrl}#facturx-faq`,
+          mainEntity: faqQuestions.map(([name, text]) => ({
+            '@type': 'Question',
+            name,
+            acceptedAnswer: { '@type': 'Answer', text }
+          }))
+        }
       ]
     });
   }

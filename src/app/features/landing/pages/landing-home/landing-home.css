@@ -1255,3 +1255,87 @@
     animation: none !important;
   }
 }
+
+/* FACTUR-X SEO ARTICLE */
+.facturx-section {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.facturx-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, .85fr);
+  gap: 72px;
+  align-items: start;
+}
+
+.facturx-article {
+  max-width: 720px;
+}
+
+.facturx-article h2 {
+  margin: 10px 0 16px;
+  font-size: clamp(30px, 3.5vw, 46px);
+  line-height: 1.04;
+  letter-spacing: -.045em;
+  font-weight: 800;
+}
+
+.facturx-article p {
+  margin: 0 0 18px;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.facturx-points {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 30px 0 26px;
+}
+
+.facturx-points > div {
+  padding: 17px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface-subtle);
+}
+
+.facturx-points strong,
+.facturx-points span {
+  display: block;
+}
+
+.facturx-points strong {
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 780;
+}
+
+.facturx-points span {
+  color: var(--color-text-secondary);
+  font-size: 10.5px;
+  line-height: 1.55;
+}
+
+.facturx-article > .section-inline-link {
+  margin-top: 10px;
+}
+
+.facturx-faq {
+  border-top: 1px solid var(--color-border);
+}
+
+.facturx-faq .faq-item:first-child {
+  border-top: 0;
+}
+
+@media (max-width: 850px) {
+  .facturx-layout { grid-template-columns: 1fr; gap: 42px; }
+}
+
+@media (max-width: 680px) {
+  .facturx-points { grid-template-columns: 1fr; }
+}
