@@ -168,9 +168,37 @@
             </div>
 
             <div class="party-field full-width">
-              <label class="field-label">Street Address & Business Information</label>
-              <textarea class="form-textarea party-details-textarea" rows="4" [value]="document().company.address || ''" (input)="onCompanyFieldChange('address', $any($event.target).value)" placeholder="Street address&#10;Email&#10;Phone&#10;Website&#10;Other business information"></textarea>
+              <label class="field-label">Street Address</label>
+              <input type="text" class="form-input" [value]="document().company.address || ''" (input)="onCompanyFieldChange('address', $any($event.target).value)" placeholder="Street address" autocomplete="street-address" />
             </div>
+
+            <div class="party-field">
+              <label class="field-label">Legal Name</label>
+              <input type="text" class="form-input" [value]="document().company.legalName || ''" (input)="onCompanyFieldChange('legalName', $any($event.target).value)" placeholder="Registered legal name" />
+            </div>
+            <div class="party-field">
+              <label class="field-label">Email</label>
+              <input type="email" class="form-input" [value]="document().company.email || ''" (input)="onCompanyFieldChange('email', $any($event.target).value)" placeholder="billing@example.com" autocomplete="email" />
+            </div>
+            <div class="party-field">
+              <label class="field-label">Phone</label>
+              <input type="tel" class="form-input" [value]="document().company.phone || ''" (input)="onCompanyFieldChange('phone', $any($event.target).value)" placeholder="Phone number" autocomplete="tel" />
+            </div>
+            <div class="party-field">
+              <label class="field-label">Website</label>
+              <input type="url" class="form-input" [value]="document().company.website || ''" (input)="onCompanyFieldChange('website', $any($event.target).value)" placeholder="https://example.com" />
+            </div>
+
+            @if (config().routeSegment === 'xfacture') {
+              <div class="party-field">
+                <label class="field-label">Electronic Address Scheme</label>
+                <input type="text" class="form-input" [value]="document().company.electronicAddressScheme || ''" (input)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)" placeholder="e.g. 0225" />
+              </div>
+              <div class="party-field">
+                <label class="field-label">Electronic Address</label>
+                <input type="text" class="form-input" [value]="document().company.electronicAddress || ''" (input)="onCompanyFieldChange('electronicAddress', $any($event.target).value)" placeholder="Electronic invoicing endpoint" />
+              </div>
+            }
 
             <div class="party-field full-width logo-field">
               <div class="logo-field-header">
