@@ -159,7 +159,16 @@
     </div>
 
     @if (document().hasPricing) {
-      <div class="form-section-heading"><div><span class="form-section-kicker">Step 3</span><h3>Items & totals</h3><p>Add the transaction details and review the amounts calculated from your entries.</p></div></div>
+      <div class="form-section-heading"><div><span class="form-section-kicker">Step 3</span><h3>Items & totals</h3><p>Add products or services, then review the amounts calculated from your entries.</p></div></div>
+      <section class="line-items-section">
+        <app-line-items-table
+          [items]="document().items"
+          [lineLayoutMode]="document().lineLayoutMode"
+          [hasPricing]="document().hasPricing"
+          [currency]="document().currency"
+          (itemsChange)="onItemsChange($event)"
+          (lineLayoutModeChange)="onLineLayoutModeChange($event)"
+        ></app-line-items-table>
       <div class="totals-calculation-shelf">
         <div class="modifier-input-item">
           <label class="field-label">Global Tax Rate (%)</label>
@@ -185,6 +194,7 @@
           }
         </div>
       </div>
+      </section>
     }
 
     <div class="form-section-heading"><div><span class="form-section-kicker">Step 4</span><h3>Notes & payment information</h3><p>Add anything the recipient needs to understand or complete the transaction.</p></div></div>
