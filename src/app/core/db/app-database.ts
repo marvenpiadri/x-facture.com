@@ -68,6 +68,7 @@ export const DEFAULT_BUSINESS_SETTINGS: BusinessProfileSettings = {
   defaultReceiptTemplate: 'thermal-80mm',
   paperSize: 'a4',
   prefixes: {
+    'xfacture': { prefix: 'FX', nextNumber: 1001, padding: 4 },
     'invoices': { prefix: 'INV', nextNumber: 1001, padding: 4 },
     'proforma-invoices': { prefix: 'PRO', nextNumber: 101, padding: 4 },
     'commercial-invoices': { prefix: 'COM', nextNumber: 201, padding: 4 },
