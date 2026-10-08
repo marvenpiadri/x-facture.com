@@ -25,8 +25,6 @@ const TOOLS: ToolDefinition[] = [
   { id: 'edit-cii', group: 'validate', title: 'Edit CII XML', description: 'Open CII XML for inspection and preparation for the shared invoice form.', icon: 'edit_note', accepts: 'xml' },
   { id: 'convert', group: 'convert', title: 'Conversion Studio', description: 'Choose a source and target syntax and run the appropriate document conversion.', icon: 'swap_horiz', accepts: 'none' },
   { id: 'pdf-to-factur-x', group: 'convert', title: 'PDF to Factur-X', description: 'Prepare a legacy PDF for hybrid e-invoicing.', icon: 'picture_as_pdf', accepts: 'pdf-xml' },
-  { id: 'pdf-to-ubl', group: 'convert', title: 'PDF to UBL', description: 'Extract embedded CII from a hybrid PDF and convert it to UBL. Plain PDFs are not OCR-converted.', icon: 'description', accepts: 'pdf' },
-  { id: 'pdf-to-cii', group: 'convert', title: 'PDF to CII', description: 'Extract embedded CII from a hybrid PDF and export it as standalone CII. Plain PDFs are not OCR-converted.', icon: 'data_object', accepts: 'pdf' },
   { id: 'cii-to-factur-x', group: 'convert', title: 'CII to Factur-X', description: 'Embed existing CII into a PDF/A-3 Factur-X container.', icon: 'picture_as_pdf', accepts: 'pdf-xml' },
   { id: 'embed', group: 'convert', title: 'Embed XML to PDF', description: 'Embed existing CII XML into a PDF using the Factur-X engine.', icon: 'merge_type', accepts: 'pdf-xml' },
   { id: 'cii-to-ubl', group: 'convert', title: 'CII to UBL', description: 'Convert CII semantic data to UBL 2.1.', icon: 'swap_horiz', accepts: 'xml' },
@@ -172,21 +170,6 @@ export class EInvoiceToolsPage {
         const parsed = this.parser.parse(xml, 'invoices');
         await this.documentService.saveDocument(parsed);
         this.router.navigate(['/invoices', parsed.docNumber, 'preview']);
-        return;
-      }
-
-      if (tool.id === 'pdf-to-cii' || tool.id === 'pdf-to-ubl') {
-        const file = this.selectedFile();
-        if (!file) throw new Error('Upload a PDF first.');
-        const base64 = await this.fileToBase64(file);
-        const extracted = await this.api.extractFacturXXml(base64);
-        const parsed = this.parser.parse(extracted.xml, 'invoices');
-        const output = tool.id === 'pdf-to-cii'
-          ? this.structured.generateCiiInvoice(parsed)
-          : this.structured.generateUblInvoice(parsed);
-        this.downloadText(output, parsed.docNumber + (tool.id === 'pdf-to-cii' ? '.cii.xml' : '.ubl.xml'));
-        this.result.set({ source: 'embedded XML', detectedProfile: extracted.profile, output: tool.id === 'pdf-to-cii' ? 'CII' : 'UBL 2.1' });
-        this.resultText.set(output);
         return;
       }
 
