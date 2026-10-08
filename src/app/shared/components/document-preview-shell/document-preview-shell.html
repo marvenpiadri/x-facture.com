@@ -58,21 +58,21 @@
         }
       </div>
 
-      @if (document().docType === 'invoices') {
+      @if (document().docType === 'invoices' || document().docType === 'xfacture') {
         <button
           type="button"
           class="btn-action xfacturx-btn"
           (click)="onDownloadFacturX()"
           [disabled]="isGeneratingFacturX()"
           [attr.aria-busy]="isGeneratingFacturX()"
-          title="Download this invoice as a Factur-X PDF"
+          title="Download this document as a Factur-X PDF"
         >
           @if (isGeneratingFacturX()) {
             <span class="download-spinner" aria-hidden="true"></span>
             <span>Preparing Factur-X…</span>
           } @else {
             <span class="material-icons btn-icon">verified</span>
-            <span>Factur-X</span>
+            <span>Download XFacture</span>
           }
         </button>
       }
@@ -90,7 +90,7 @@
           <span>Preparing PDF…</span>
         } @else {
           <span class="material-icons btn-icon">picture_as_pdf</span>
-          <span>PDF</span>
+          <span>Download PDF</span>
         }
       </button>
 
