@@ -14,6 +14,7 @@ import { DocumentTypeConfig } from '../../../core/models/document-type-config.mo
 import { TemplateRendererComponent } from '../template-renderer/template-renderer';
 import { DocumentService } from '../../../core/services/document.service';
 import { StructuredInvoiceService } from '../../../core/services/structured-invoice.service';
+import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-document-preview-shell',
@@ -31,6 +32,7 @@ export class DocumentPreviewShellComponent implements OnInit {
   private router = inject(Router);
   private documentService = inject(DocumentService);
   private structuredInvoiceService = inject(StructuredInvoiceService);
+  private apiService = inject(ApiService);
 
   document = input.required<BusinessDocument>();
   config = input.required<DocumentTypeConfig>();
@@ -38,11 +40,12 @@ export class DocumentPreviewShellComponent implements OnInit {
   statusChange = output<DocumentStatus>();
   delete = output<void>();
 
-  // Interactive preview overrides
   selectedTemplate = signal<string>('modern');
   selectedPaperSize = signal<PaperSize>('a4');
   isPrinting = signal<boolean>(false);
   isGeneratingPdf = signal<boolean>(false);
+  isGeneratingFacturX = signal<boolean>(false);
+  facturXError = signal<string | null>(null);
 
   ngOnInit(): void {
     if (this.document().templateId) {
@@ -61,7 +64,6 @@ export class DocumentPreviewShellComponent implements OnInit {
     this.selectedPaperSize.set(size);
   }
 
-
   onPrint(): void {
     window.print();
   }
@@ -76,7 +78,6 @@ export class DocumentPreviewShellComponent implements OnInit {
         return;
       }
 
-      // Safe dynamic lazy-loading wrapper
       const lib = await import('html2pdf.js');
       const html2pdf = (lib as any).default || lib;
 
@@ -103,7 +104,7 @@ export class DocumentPreviewShellComponent implements OnInit {
                 border-radius: 0px !important;
                 min-height: auto !important;
                 margin: 0px !important;
-                padding: 10mm !important; /* Standard print margin */
+                padding: 10mm !important;
               }
               .template-bold .doc-header-block {
                 margin: -10mm -10mm 20px -10mm !important;
@@ -119,11 +120,63 @@ export class DocumentPreviewShellComponent implements OnInit {
       await html2pdf().from(element).set(options).save();
     } catch (err) {
       console.error('Error generating PDF with html2pdf:', err);
-      // Fallback
       window.print();
     } finally {
       this.isGeneratingPdf.set(false);
     }
+  }
+
+  async onDownloadFacturX(): Promise<void> {
+    const doc = this.document();
+    if (doc.docType !== 'invoices' && doc.docType !== 'credit-notes') return;
+
+    const element = document.getElementById('document-pdf-root');
+    if (!element) {
+      this.facturXError.set('The invoice preview is not ready yet.');
+      return;
+    }
+
+    this.isGeneratingFacturX.set(true);
+    this.facturXError.set(null);
+
+    try {
+      const htmlLayout = this.createSelfContainedHtml(element);
+      await this.apiService.downloadFacturX(doc, htmlLayout);
+    } catch (error) {
+      console.error('Factur-X generation failed:', error);
+      this.facturXError.set(error instanceof Error ? error.message : 'Unable to generate the Factur-X PDF.');
+    } finally {
+      this.isGeneratingFacturX.set(false);
+    }
+  }
+
+  private createSelfContainedHtml(element: HTMLElement): string {
+    const styles = Array.from(document.querySelectorAll('style'))
+      .map(style => style.textContent || '')
+      .filter(Boolean)
+      .join('\n');
+
+    return `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+${styles}
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+#document-pdf-root {
+  box-shadow: none !important;
+  margin: 0 !important;
+}
+</style>
+</head>
+<body>
+${element.outerHTML}
+</body>
+</html>`;
   }
 
   downloadStructured(format: 'ubl' | 'cii'): void {
