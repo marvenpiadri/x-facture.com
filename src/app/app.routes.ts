@@ -10,6 +10,7 @@ import { DocumentListPage } from './features/documents/pages/document-list/docum
 import { DocumentEditPage } from './features/documents/pages/document-edit/document-edit';
 import { DocumentPreviewPage } from './features/documents/pages/document-preview/document-preview';
 import { ALL_DOCUMENT_TYPES } from './core/config/document-type-config';
+import { EInvoiceToolsPage } from './features/e-invoice-tools/pages/e-invoice-tools';
 
 const DOCUMENT_ROUTES: Routes = ALL_DOCUMENT_TYPES.flatMap(({ routeSegment }) => [
   { path: routeSegment, component: DocumentListPage, data: { docType: routeSegment } },
@@ -27,6 +28,8 @@ export const routes: Routes = [
   { path: 'clients', component: ClientsHubPage },
   { path: 'products', component: ProductsHubPage },
   { path: 'settings', component: SettingsHubPage },
+  { path: 'tools', redirectTo: 'tools/convert', pathMatch: 'full' },
+  { path: 'tools/:tool', component: EInvoiceToolsPage },
 
   // Factur-X is a first-class creation workflow with its own document form.
 
