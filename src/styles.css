@@ -374,8 +374,9 @@ button.nav-link.active,
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+  /* Invoice tables intentionally keep a single heading; do not repeat it on later PDF pages. */
   thead {
-    display: table-header-group !important;
+    display: table-row-group !important;
   }
   tfoot {
     display: table-footer-group !important;
