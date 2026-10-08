@@ -85,7 +85,21 @@
 
       @if (error()) { <div class="tool-error"><span class="material-icons">error_outline</span>{{ error() }}</div> }
       @if (result()) {
-        <div class="tool-result"><div class="result-heading"><span class="material-icons">fact_check</span><strong>Result</strong></div><pre>{{ result() | json }}</pre></div>
+        <div class="tool-result">
+          <div class="result-heading"><span class="material-icons">fact_check</span><strong>Result</strong></div>
+          @if (activeTool().id === 'extract-attachments' && result()?.['attachments']; as attachments) {
+            <div class="attachment-list">
+              @for (attachment of attachments; track attachment.name) {
+                <button type="button" class="attachment-row" (click)="downloadAttachment(attachment)">
+                  <span class="material-icons">attach_file</span><span>{{ attachment.name }}</span><small>{{ attachment.size }} bytes</small><span class="material-icons">download</span>
+                </button>
+              }
+              @if (!attachments.length) { <p>No embedded attachments were found.</p> }
+            </div>
+          } @else {
+            <pre>{{ result() | json }}</pre>
+          }
+        </div>
       }
       @if (resultText()) {
         <div class="tool-result"><div class="result-heading"><span class="material-icons">description</span><strong>Output</strong></div><pre class="xml-output">{{ resultText() }}</pre></div>
