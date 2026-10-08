@@ -92,6 +92,16 @@ export class DocumentFormShellComponent {
       void this.clientService.saveClient({
         id: updated.clientId,
         name: client.name.trim(),
+        legalName: client.legalName,
+        email: client.email,
+        phone: client.phone,
+        website: client.website,
+        city: client.city,
+        postalCode: client.postalCode,
+        country: client.country,
+        taxId: client.taxId,
+        electronicAddress: client.electronicAddress,
+        electronicAddressScheme: client.electronicAddressScheme,
         address: client.address || ''
       }).then(saved => {
         if (updated.clientId !== saved.id) {
