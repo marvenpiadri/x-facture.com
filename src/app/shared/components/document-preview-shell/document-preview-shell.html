@@ -58,41 +58,36 @@
         }
       </div>
 
-      @if (document().docType === 'xfacture') {
+      @if (document().docType === 'xfacture' || document().docType === 'invoices' || document().docType === 'credit-notes') {
+        <div class="output-control">
+          <span class="material-icons">file_download</span>
+          <select class="output-select" [value]="selectedOutput()" (change)="selectedOutput.set($any($event.target).value)" aria-label="Choose document output">
+            <option value="pdf">Standard PDF</option>
+            <option value="factur-x">Factur-X PDF</option>
+            <option value="cii">CII XML</option>
+            <option value="ubl">UBL 2.1 XML</option>
+          </select>
+        </div>
         <button
           type="button"
-          class="btn-action xfacturx-btn"
-          (click)="onDownloadFacturX()"
-          [disabled]="isGeneratingFacturX()"
-          [attr.aria-busy]="isGeneratingFacturX()"
-          title="Download this document as a Factur-X PDF"
+          class="btn-action download-btn"
+          (click)="downloadSelectedOutput()"
+          [disabled]="isGeneratingPdf() || isGeneratingFacturX()"
+          title="Download selected document output"
         >
-          @if (isGeneratingFacturX()) {
+          @if (isGeneratingPdf() || isGeneratingFacturX()) {
             <span class="download-spinner" aria-hidden="true"></span>
-            <span>Preparing Factur-X…</span>
+            <span>Preparing…</span>
           } @else {
-            <span class="material-icons btn-icon">verified</span>
-            <span>Download XFacture</span>
+            <span class="material-icons btn-icon">download</span>
+            <span>Download</span>
           }
         </button>
+      } @else {
+        <button type="button" class="btn-action download-btn" (click)="onDownloadPdf()" [disabled]="isGeneratingPdf()">
+          <span class="material-icons btn-icon">picture_as_pdf</span><span>Download PDF</span>
+        </button>
       }
-
-      <button
-        type="button"
-        class="btn-action download-btn"
-        (click)="onDownloadPdf()"
-        [disabled]="isGeneratingPdf()"
-        [attr.aria-busy]="isGeneratingPdf()"
-        title="Download a standard PDF"
-      >
-        @if (isGeneratingPdf()) {
-          <span class="download-spinner" aria-hidden="true"></span>
-          <span>Preparing PDF…</span>
-        } @else {
-          <span class="material-icons btn-icon">picture_as_pdf</span>
-          <span>Download PDF</span>
-        }
-      </button>
 
       <button type="button" class="btn-action print-btn" (click)="onPrint()" title="Send to printer">
         <span class="material-icons btn-icon">print</span>
