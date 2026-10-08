@@ -25,6 +25,8 @@ export interface DocumentParty {
   taxId?: string;       // VAT / Tax Reg / Business No.
   logoUrl?: string;
   bankDetails?: string;
+  /** Optional legal footer repeated at the bottom of each PDF page (e.g. ICE, IF, TP). */
+  legalFooter?: string;
 }
 
 export type PaperSize = 'a4' | 'letter' | 'thermal-80mm' | 'thermal-58mm';
