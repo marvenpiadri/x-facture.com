@@ -234,6 +234,13 @@ export class EInvoiceToolsPage {
     return dataUrl.split(',')[1] || '';
   }
 
+  downloadAttachment(attachment: { name: string; mimeType: string; dataBase64: string }): void {
+    const binary = atob(attachment.dataBase64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    this.download(new Blob([bytes], { type: attachment.mimeType || 'application/octet-stream' }), attachment.name || 'attachment');
+  }
+
   private downloadText(content: string, filename: string): void {
     this.download(new Blob([content], { type: 'application/xml;charset=utf-8' }), filename);
   }
