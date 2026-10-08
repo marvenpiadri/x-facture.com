@@ -108,6 +108,8 @@ export class EInvoiceToolsPage {
           const parseError = parsed.querySelector('parsererror');
           if (parseError) throw new Error('The XML is not well formed.');
           this.resultText.set(xml);
+        } else if (tool.id === 'validate-order-x') {
+          this.result.set(await this.api.validateOrderX(xml));
         } else {
           this.result.set(await this.api.validateEInvoice({ xml, profile: this.selectedProfile() }));
         }
