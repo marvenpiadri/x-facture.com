@@ -202,6 +202,16 @@ export class DocumentFormShellComponent {
     void this.clientService.saveClient({
       id: clientId,
       name: updated.client.name.trim(),
+      legalName: updated.client.legalName,
+      email: updated.client.email,
+      phone: updated.client.phone,
+      website: updated.client.website,
+      city: updated.client.city,
+      postalCode: updated.client.postalCode,
+      country: updated.client.country,
+      taxId: updated.client.taxId,
+      electronicAddress: updated.client.electronicAddress,
+      electronicAddressScheme: updated.client.electronicAddressScheme,
       address: updated.client.address || ''
     }).catch(() => {
       // The selected client remains applied to the current document.
