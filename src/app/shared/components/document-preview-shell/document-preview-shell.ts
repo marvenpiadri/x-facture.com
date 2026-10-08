@@ -66,7 +66,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     const doc = this.document();
     this.facturXError.set(null);
 
-    if (doc.docType !== 'invoices') return;
+    if (doc.docType !== 'invoices' && doc.docType !== 'xfacture') return;
 
     const missing: string[] = [];
     if (!doc.company.name?.trim()) missing.push('seller name');
@@ -85,7 +85,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     if (!doc.items.length) missing.push('at least one line item');
 
     if (missing.length) {
-      this.facturXError.set('Complete the following Factur-X fields in the invoice form: ' + missing.join(', ') + '.');
+      this.facturXError.set('Complete the following Factur-X fields in this form: ' + missing.join(', ') + '.');
       return;
     }
 
