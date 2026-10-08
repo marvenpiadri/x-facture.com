@@ -50,10 +50,11 @@ export class StructuredDocumentParserService {
       };
     });
 
-    const subtotal = Number(value(root, isCii ? 'LineTotalAmount' : 'LineExtensionAmount')) || items.reduce((n, i) => n + i.amount, 0);
+    const totalsNode = isCii ? local(root, 'SpecifiedTradeSettlementHeaderMonetarySummation') : local(root, 'LegalMonetaryTotal');
+    const subtotal = Number(value(totalsNode, isCii ? 'LineTotalAmount' : 'LineExtensionAmount')) || items.reduce((n, i) => n + i.amount, 0);
     const taxAmount = Number(value(root, isCii ? 'TaxTotalAmount' : 'TaxAmount')) || 0;
-    const total = Number(value(root, isCii ? 'GrandTotalAmount' : 'TaxInclusiveAmount')) || subtotal + taxAmount;
-    const due = Number(value(root, isCii ? 'DuePayableAmount' : 'PayableAmount')) || total;
+    const total = Number(value(totalsNode, isCii ? 'GrandTotalAmount' : 'TaxInclusiveAmount')) || subtotal + taxAmount;
+    const due = Number(value(totalsNode, isCii ? 'DuePayableAmount' : 'PayableAmount')) || total;
 
     const now = new Date().toISOString();
     return {
