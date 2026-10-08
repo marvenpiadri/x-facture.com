@@ -3,7 +3,6 @@ import { Title, Meta } from '@angular/platform-browser';
 import { DOCUMENT } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { CalculatorDefinition, getCalculatorBySlug } from '../../calculators/calculator-registry';
 import { DOCUMENT_TYPE_CONFIGS } from '../config/document-type-config';
 
 export interface SeoMetadata {
@@ -65,67 +64,9 @@ export class SeoService {
     this.updateCanonicalLink(url);
   }
 
-  updateCalculatorMetadata(calculator: CalculatorDefinition): void {
-    const url = `${this.siteUrl}/calculators/${calculator.slug}`;
-    this.updateMetadata({ title: calculator.title, description: calculator.description, keywords: calculator.keywords.join(', '), url, type: 'website' });
-
-    this.setJsonLd({
-      '@context': 'https://schema.org',
-      '@graph': [
-        this.organizationSchema(),
-        {
-          '@type': 'WebApplication',
-          '@id': `${url}#calculator`,
-          name: calculator.name,
-          url,
-          applicationCategory: 'BusinessApplication',
-          operatingSystem: 'All',
-          isAccessibleForFree: true,
-          description: calculator.description,
-          keywords: calculator.keywords.join(', '),
-          offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-          provider: { '@id': `${this.siteUrl}#organization` }
-        },
-        {
-          '@type': 'BreadcrumbList',
-          '@id': `${url}#breadcrumbs`,
-          itemListElement: [
-            { '@type': 'ListItem', position: 1, name: 'x-facture', item: this.siteUrl },
-            { '@type': 'ListItem', position: 2, name: 'Business Calculators', item: `${this.siteUrl}/calculators` },
-            { '@type': 'ListItem', position: 3, name: this.normalizeTitle(calculator.name), item: url }
-          ]
-        }
-      ]
-    });
-  }
-
-  updateCalculatorMetadataBySlug(slug: string): void {
-    const calculator = getCalculatorBySlug(slug);
-    if (calculator) this.updateCalculatorMetadata(calculator);
-  }
-
   private updateForUrl(rawUrl: string): void {
     const path = rawUrl.split('?')[0].split('#')[0] || '/';
     const segments = path.split('/').filter(Boolean);
-
-    if (segments[0] === 'calculators' && segments[1]) {
-      const calculator = getCalculatorBySlug(segments[1]);
-      if (calculator) {
-        this.updateCalculatorMetadata(calculator);
-        return;
-      }
-    }
-
-    if (segments[0] === 'calculators') {
-      this.updateMetadata({
-        title: 'x-facture • Business Calculators & Financial Tools',
-        description: 'Free business calculators for pricing, margins, taxes, payments, loans, cash flow, inventory, marketing and everyday financial decisions.',
-        keywords: 'business calculators, financial calculators, pricing calculator, profit calculator, cash flow calculator, tax calculator, loan calculator, invoice calculator',
-        url: `${this.siteUrl}/calculators`
-      });
-      this.setSiteSchema(`${this.siteUrl}/calculators`, 'Business Calculators & Financial Tools');
-      return;
-    }
 
     if (segments[0] === 'pdf') {
       const pdfTools: Record<string, { title: string; description: string; keywords: string }> = {
