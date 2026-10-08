@@ -106,12 +106,7 @@
 
             <div class="party-field">
               <label class="field-label">Country</label>
-              <select class="form-select" [value]="document().company.country || ''" (change)="onCompanyFieldChange('country', $any($event.target).value)" autocomplete="country">
-                <option value="">Select country…</option>
-                @for (country of countries; track country.code) {
-                  <option [value]="country.code">{{ country.name }} ({{ country.code }})</option>
-                }
-              </select>
+              <app-country-picker [value]="document().company.country || ''" (valueChange)="onCompanyFieldChange('country', $event)" ariaLabel="Company country"></app-country-picker>
             </div>
 
             <div class="party-field">
