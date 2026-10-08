@@ -192,6 +192,9 @@
               </div>
             }
           </div>
+          @if (document().specialFields?.sellerSiren) {
+            <div class="meta-date-item"><span class="meta-date-label">Seller SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.sellerSiren }}</strong></div>
+          }
           @if (document().specialFields?.buyerSiren) {
             <div class="meta-date-item"><span class="meta-date-label">Buyer SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.buyerSiren }}</strong></div>
           }
