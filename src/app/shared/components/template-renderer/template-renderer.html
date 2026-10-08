@@ -192,17 +192,17 @@
               </div>
             }
           </div>
-          @if (document().specialFields?.sellerSiren) {
-            <div class="meta-date-item"><span class="meta-date-label">Seller SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.sellerSiren }}</strong></div>
+          @if (document().specialFields?.['sellerSiren']) {
+            <div class="meta-date-item"><span class="meta-date-label">Seller SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.['sellerSiren'] }}</strong></div>
           }
-          @if (document().specialFields?.buyerSiren) {
-            <div class="meta-date-item"><span class="meta-date-label">Buyer SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.buyerSiren }}</strong></div>
+          @if (document().specialFields?.['buyerSiren']) {
+            <div class="meta-date-item"><span class="meta-date-label">Buyer SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.['buyerSiren'] }}</strong></div>
           }
-          @if (document().specialFields?.vatPaymentOption === 'debits') {
+          @if (document().specialFields?.['vatPaymentOption'] === 'debits') {
             <div class="meta-date-item"><span class="meta-date-label">VAT:</span><strong class="meta-date-val">Option for payment on debits</strong></div>
           }
-          @if (document().specialFields?.transactionNature) {
-            <div class="meta-date-item"><span class="meta-date-label">Operation:</span><strong class="meta-date-val">{{ document().specialFields?.transactionNature }}</strong></div>
+          @if (document().specialFields?.['transactionNature']) {
+            <div class="meta-date-item"><span class="meta-date-label">Operation:</span><strong class="meta-date-val">{{ document().specialFields?.['transactionNature'] }}</strong></div>
           }
         </div>
       </header>
@@ -237,10 +237,10 @@
           @if (document().client.electronicAddress) { <div class="party-address">E-invoice: {{ document().client.electronicAddressScheme ? document().client.electronicAddressScheme + ':' : '' }}{{ document().client.electronicAddress }}</div> }
         </div>
       </section>
-      @if (document().specialFields?.deliveryAddress) {
+      @if (document().specialFields?.['deliveryAddress']) {
         <section class="doc-delivery-note">
           <strong>Delivery address</strong>
-          <span>{{ document().specialFields?.deliveryAddress }}, {{ document().specialFields?.deliveryPostalCode || '' }} {{ document().specialFields?.deliveryCity || '' }} {{ document().specialFields?.deliveryCountry || '' }}</span>
+          <span>{{ document().specialFields?.['deliveryAddress'] }}, {{ document().specialFields?.['deliveryPostalCode'] || '' }} {{ document().specialFields?.['deliveryCity'] || '' }} {{ document().specialFields?.['deliveryCountry'] || '' }}</span>
         </section>
       }
 
