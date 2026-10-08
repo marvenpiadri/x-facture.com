@@ -31,7 +31,7 @@ export class DocumentPreviewShellComponent implements OnInit {
 
   selectedTemplate = signal<string>('modern');
   selectedPaperSize = signal<PaperSize>('a4');
-  selectedOutput = signal<'pdf' | 'factur-x' | 'cii' | 'ubl'>('pdf');
+  selectedOutput = signal<'pdf' | 'factur-x' | 'cii' | 'ubl' | 'order-x'>('pdf');
   isGeneratingPdf = signal<boolean>(false);
   isGeneratingFacturX = signal<boolean>(false);
   facturXError = signal<string | null>(null);
@@ -40,7 +40,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     if (this.document().templateId) this.selectedTemplate.set(this.document().templateId);
     if (this.document().paperSize) this.selectedPaperSize.set(this.document().paperSize);
     const output = this.document().specialFields?.outputFormat;
-    if (output === 'pdf' || output === 'factur-x' || output === 'cii' || output === 'ubl') this.selectedOutput.set(output);
+    if (output === 'pdf' || output === 'factur-x' || output === 'cii' || output === 'ubl' || output === 'order-x') this.selectedOutput.set(output);
   }
 
   setTemplate(tpl: string): void { this.selectedTemplate.set(tpl); }
@@ -70,7 +70,8 @@ export class DocumentPreviewShellComponent implements OnInit {
     if (output === 'pdf') return this.onDownloadPdf();
     if (output === 'factur-x') return this.onDownloadFacturX();
     if (output === 'cii') return this.downloadStructured('cii');
-    return this.downloadStructured('ubl');
+    if (output === 'ubl') return this.downloadStructured('ubl');
+    return this.downloadStructured('order-x');
   }
 
   async onDownloadFacturX(): Promise<void> {
@@ -160,9 +161,10 @@ export class DocumentPreviewShellComponent implements OnInit {
       '</body></html>';
   }
 
-  downloadStructured(format: 'ubl' | 'cii'): void {
+  downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
     const doc = this.document();
-    if (doc.docType !== 'invoices' && doc.docType !== 'credit-notes') return;
+    if (format === 'order-x' && doc.docType !== 'order-x') return;
+    if (format !== 'order-x' && doc.docType !== 'invoices' && doc.docType !== 'credit-notes') return;
     this.structuredInvoiceService.download(doc, format);
   }
 
