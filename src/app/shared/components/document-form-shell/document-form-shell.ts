@@ -8,13 +8,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { BusinessDocument, DocumentLineItem, DocumentParty, LineLayoutMode } from '../../../core/models/document.model';
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService } from '../../../core/services/calculation.service';
 import { SettingsService } from '../../../core/services/settings.service';
 import { ClientService } from '../../../core/services/client.service';
+import { COUNTRY_OPTIONS, CountryOption } from '../../../core/data/country-options';
 import { LineItemsTableComponent } from '../line-items-table/line-items-table';
 import { ClientPickerComponent } from '../client-picker/client-picker';
 
@@ -33,7 +34,6 @@ import { ClientPickerComponent } from '../client-picker/client-picker';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DocumentFormShellComponent {
-  private router = inject(Router);
   private currencyService = inject(CurrencyService);
   private calculationService = inject(CalculationService);
   private settingsService = inject(SettingsService);
@@ -42,24 +42,27 @@ export class DocumentFormShellComponent {
   private activeBusinessId: string | undefined;
   private businessSaveTimer: ReturnType<typeof setTimeout> | undefined;
 
-  // Inputs
   document = input.required<BusinessDocument>();
   config = input.required<DocumentTypeConfig>();
   isNew = input<boolean>(false);
 
-  // Outputs
   save = output<BusinessDocument>();
   saveAndPreview = output<BusinessDocument>();
 
   readonly availableCurrencies = this.currencyService.CURRENCIES;
+  readonly countries: CountryOption[] = COUNTRY_OPTIONS;
   readonly registeredBusinesses = computed(() => this.settingsService.settings()?.registeredBusinesses || []);
-  readonly selectedBusinessId = computed(() => this.activeBusinessId || this.registeredBusinesses().find(b => b.company.name === this.document().company.name && b.company.address === this.document().company.address)?.id || '');
+  readonly selectedBusinessId = computed(() =>
+    this.activeBusinessId ||
+    this.registeredBusinesses().find(b =>
+      b.company.name === this.document().company.name &&
+      b.company.address === this.document().company.address
+    )?.id ||
+    ''
+  );
 
-  currencySymbol = computed(() => {
-    return this.currencyService.getSymbol(this.document().currency);
-  });
+  currencySymbol = computed(() => this.currencyService.getSymbol(this.document().currency));
 
-  // Calculation summaries live
   totals = computed(() => {
     const doc = this.document();
     return this.calculationService.calculateDocumentTotals(
@@ -72,29 +75,15 @@ export class DocumentFormShellComponent {
   });
 
   onHeaderFieldChange(field: keyof BusinessDocument, value: any): void {
-    const updated: BusinessDocument = {
-      ...this.document(),
-      [field]: value
-    };
-    this.save.emit(updated);
+    this.save.emit({ ...this.document(), [field]: value });
   }
 
   onClientChange(client: DocumentParty): void {
-    const updated: BusinessDocument = {
-      ...this.document(),
-      client
-    };
+    const updated: BusinessDocument = { ...this.document(), client };
     this.save.emit(updated);
 
-    // Remember the client locally so future documents can reuse the details.
-    // Debounce writes while the user is typing to avoid a database write per keystroke.
-    if (this.clientSaveTimer) {
-      clearTimeout(this.clientSaveTimer);
-    }
-
-    if (!client.name?.trim()) {
-      return;
-    }
+    if (this.clientSaveTimer) clearTimeout(this.clientSaveTimer);
+    if (!client.name?.trim()) return;
 
     this.clientSaveTimer = setTimeout(() => {
       void this.clientService.saveClient({
@@ -103,13 +92,10 @@ export class DocumentFormShellComponent {
         address: client.address || ''
       }).then(saved => {
         if (updated.clientId !== saved.id) {
-          this.save.emit({
-            ...updated,
-            clientId: saved.id
-          });
+          this.save.emit({ ...updated, clientId: saved.id });
         }
       }).catch(() => {
-        // The document remains editable even if local client persistence fails.
+        // The document remains editable if local client persistence fails.
       });
     }, 600);
   }
@@ -118,20 +104,19 @@ export class DocumentFormShellComponent {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file) return;
-    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type) || file.size > 1_500_000) {
       input.value = '';
       return;
     }
-    if (file.size > 1_500_000) {
-      input.value = '';
-      return;
-    }
+
     const logoUrl = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(String(reader.result));
       reader.onerror = () => reject(new Error('Unable to read logo.'));
       reader.readAsDataURL(file);
     });
+
     this.onCompanyFieldChange('logoUrl', logoUrl);
     input.value = '';
   }
@@ -150,7 +135,7 @@ export class DocumentFormShellComponent {
       void this.settingsService.saveRegisteredBusiness(company, this.activeBusinessId).then(profile => {
         this.activeBusinessId = profile.id;
       }).catch(() => {
-        // The document remains editable even if local profile persistence fails.
+        // The document remains editable if local profile persistence fails.
       });
     }, 600);
   }
@@ -162,17 +147,16 @@ export class DocumentFormShellComponent {
       this.activeBusinessId = undefined;
       return;
     }
+
     const profile = this.registeredBusinesses().find(b => b.id === id);
     if (!profile) return;
+
     this.activeBusinessId = profile.id;
-    const updated: BusinessDocument = {
+    this.save.emit({
       ...this.document(),
-      company: {
-        name: profile.company.name || '',
-        address: profile.company.address || ''
-      }
-    };
-    this.save.emit(updated);
+      company: { ...profile.company }
+    });
+
     void this.settingsService.selectRegisteredBusiness(profile.id).catch(() => {
       // The selected company remains applied to the current document.
     });
@@ -184,15 +168,11 @@ export class DocumentFormShellComponent {
       this.clientSaveTimer = undefined;
     }
 
-    const updated: BusinessDocument = {
+    this.save.emit({
       ...this.document(),
-      client: {
-        name: selection.client.name || '',
-        address: selection.client.address || ''
-      },
+      client: { ...selection.client },
       clientId: selection.clientId
-    };
-    this.save.emit(updated);
+    });
   }
 
   onClientIdChange(clientId: string | undefined): void {
@@ -201,10 +181,7 @@ export class DocumentFormShellComponent {
       this.clientSaveTimer = undefined;
     }
 
-    const updated: BusinessDocument = {
-      ...this.document(),
-      clientId
-    };
+    const updated: BusinessDocument = { ...this.document(), clientId };
     this.save.emit(updated);
 
     if (!clientId || !updated.client.name?.trim()) return;
@@ -219,28 +196,16 @@ export class DocumentFormShellComponent {
   }
 
   onItemsChange(items: DocumentLineItem[]): void {
-    const updated: BusinessDocument = {
-      ...this.document(),
-      items
-    };
-    this.save.emit(updated);
+    this.save.emit({ ...this.document(), items });
   }
 
   onLineLayoutModeChange(mode: LineLayoutMode): void {
-    const updated: BusinessDocument = {
-      ...this.document(),
-      lineLayoutMode: mode
-    };
-    this.save.emit(updated);
+    this.save.emit({ ...this.document(), lineLayoutMode: mode });
   }
 
   onTotalsModifierChange(field: 'taxRate' | 'discountAmount' | 'shippingAmount' | 'depositPaid', value: any): void {
     const num = Math.max(0, Number(value) || 0);
-    const updated: BusinessDocument = {
-      ...this.document(),
-      [field]: num
-    };
-    this.save.emit(updated);
+    this.save.emit({ ...this.document(), [field]: num });
   }
 
   triggerSave(): void {
