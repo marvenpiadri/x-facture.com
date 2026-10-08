@@ -132,14 +132,14 @@
                 </div>
                 <div class="logo-actions">
                   @if (document().company.logoUrl) {
-                    <img [src]="document().company.logoUrl" alt="Company logo preview" class="form-logo-preview" />
+                    <img [src]="document().company.logoUrl" alt="Company logo preview" class="company-logo-preview" />
                   }
-                  <label class="upload-logo-button">
+                  <label class="logo-upload-button">
                     {{ document().company.logoUrl ? 'Replace Logo' : 'Upload Logo' }}
                     <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
                   </label>
                   @if (document().company.logoUrl) {
-                    <button type="button" class="text-button" (click)="removeCompanyLogo()">Remove</button>
+                    <button type="button" class="logo-remove-button" (click)="removeCompanyLogo()">Remove</button>
                   }
                 </div>
               </div>
