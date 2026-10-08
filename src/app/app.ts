@@ -127,6 +127,7 @@ export class App {
     if (this.showDocsDropdown()) {
       this.showProfileMenu.set(false);
       this.showOpsDropdown.set(false);
+      this.showToolsDropdown.set(false);
     }
   }
 
