@@ -120,11 +120,12 @@ export class ApiService {
 
   async downloadPdf(
     document: BusinessDocument,
-    htmlLayout: string
+    htmlLayout: string,
+    paperSize: 'a4' | 'letter' = document.paperSize === 'letter' ? 'letter' : 'a4'
   ): Promise<void> {
     const result = await this.generatePdf({
       htmlLayout,
-      paperSize: document.paperSize === 'letter' ? 'letter' : 'a4',
+      paperSize,
       filename: document.docNumber || 'document'
     });
 
@@ -155,10 +156,14 @@ export class ApiService {
     };
   }
 
-  async downloadFacturX(document: BusinessDocument, htmlLayout: string): Promise<void> {
+  async downloadFacturX(
+    document: BusinessDocument,
+    htmlLayout: string,
+    paperSize: 'a4' | 'letter' = document.paperSize === 'letter' ? 'letter' : 'a4'
+  ): Promise<void> {
     const result = await this.generateFacturX({
       htmlLayout,
-      paperSize: document.paperSize === 'letter' ? 'letter' : 'a4',
+      paperSize,
       rawInvoiceData: this.toFacturXInvoice(document)
     });
 
@@ -239,7 +244,13 @@ export class ApiService {
 
   private async toApiError(response: Response): Promise<Error> {
     try {
-      const payload = await response.json() as { error?: { message?: string; code?: string; details?: { phase?: string } } };
+      const payload = await response.json() as {
+        error?: {
+          message?: string;
+          code?: string;
+          details?: { phase?: string };
+        };
+      };
       const phase = payload.error?.details?.phase;
       const message = payload.error?.message || `API request failed (HTTP ${response.status}).`;
       return new Error(phase ? `${message} [${phase}]` : message);
