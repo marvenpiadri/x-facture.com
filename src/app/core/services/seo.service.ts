@@ -4,6 +4,7 @@ import { DOCUMENT } from '@angular/common';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { DOCUMENT_TYPE_CONFIGS } from '../config/document-type-config';
+import { getCreatePageContent, CreatePageFaq } from '../config/document-create-content';
 
 export interface SeoMetadata {
   title: string;
@@ -198,7 +199,7 @@ export class SeoService {
         keywords: `${intent.keywords}, x-facture`,
         url
       });
-      this.setDocumentCreationSchema(url, pageTitle, docConfig.routeSegment);
+      this.setDocumentCreationSchema(url, pageTitle, docConfig.routeSegment, getCreatePageContent(docConfig.routeSegment).faqs);
       return;
     }
     if (docConfig && segments.length === 1) {
@@ -304,7 +305,7 @@ export class SeoService {
     this.setDocumentCreationSchema(url, 'Create Free Invoices Online', 'invoices');
   }
 
-  private setDocumentCreationSchema(url: string, pageTitle: string, routeSegment: string): void {
+  private setDocumentCreationSchema(url: string, pageTitle: string, routeSegment: string, faqs: CreatePageFaq[] = []): void {
     const collectionUrl = `${this.siteUrl}/${routeSegment}`;
     this.setJsonLd({
       '@context': 'https://schema.org',
@@ -320,7 +321,16 @@ export class SeoService {
             { '@type': 'ListItem', position: 2, name: this.normalizeTitle(DOCUMENT_TYPE_CONFIGS[routeSegment]?.pluralName || routeSegment), item: collectionUrl },
             { '@type': 'ListItem', position: 3, name: pageTitle, item: url }
           ]
-        }
+        },
+        ...(faqs.length ? [{
+          '@type': 'FAQPage',
+          '@id': `${url}#faq`,
+          mainEntity: faqs.map(faq => ({
+            '@type': 'Question',
+            name: faq.question,
+            acceptedAnswer: { '@type': 'Answer', text: faq.answer }
+          }))
+        }] : [])
       ]
     });
   }
