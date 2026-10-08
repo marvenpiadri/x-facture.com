@@ -74,6 +74,27 @@ export class ApiService {
     return this.get<CurrencyRatesResponse>('/currency-rates', { base });
   }
 
+  async validateEInvoice(payload: { xml?: string; pdfBase64?: string; profile?: string }): Promise<Record<string, unknown>> {
+    return this.post<Record<string, unknown>>('/validate', payload);
+  }
+
+  async extractFacturXXml(pdfBase64: string): Promise<{ success: boolean; filename?: string; profile?: string; xml: string }> {
+    return this.post<{ success: boolean; filename?: string; profile?: string; xml: string }>('/extract', { pdfBase64 });
+  }
+
+  async embedXmlToPdf(payload: { pdfBase64: string; xml: string; profile?: string }): Promise<{ blob: Blob; filename: string }> {
+    const response = await fetch(this.baseUrl + '/embed', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/pdf' },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) throw await this.toApiError(response);
+    const blob = await response.blob();
+    const disposition = response.headers.get('Content-Disposition') || '';
+    const match = disposition.match(/filename="([^"]+)"/i);
+    return { blob, filename: match?.[1] || 'factur-x.pdf' };
+  }
+
   async generateQr(
     text: string,
     options: { format?: 'svg' | 'png'; margin?: number; ecLevel?: 'L' | 'M' | 'Q' | 'H' } = {}
