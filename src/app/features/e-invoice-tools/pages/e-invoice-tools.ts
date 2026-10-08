@@ -3,6 +3,10 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../core/services/api.service';
+import { StructuredDocumentParserService } from '../../../core/services/structured-document-parser.service';
+import { StructuredInvoiceService } from '../../../core/services/structured-invoice.service';
+import { DocumentService } from '../../../core/services/document.service';
+import { Router } from '@angular/router';
 
 interface ToolDefinition {
   id: string;
@@ -45,6 +49,10 @@ const TOOLS: ToolDefinition[] = [
 export class EInvoiceToolsPage {
   private route = inject(ActivatedRoute);
   private api = inject(ApiService);
+  private parser = inject(StructuredDocumentParserService);
+  private structured = inject(StructuredInvoiceService);
+  private documentService = inject(DocumentService);
+  private router = inject(Router);
 
   readonly tools = TOOLS;
   readonly activeId = signal('validate-factur-x');
@@ -124,9 +132,35 @@ export class EInvoiceToolsPage {
           const extracted = await this.api.extractFacturXXml(base64);
           this.result.set(extracted as unknown as Record<string, unknown>);
           this.resultText.set(extracted.xml);
+          if (tool.id === 'edit-factur-x') {
+            const parsed = this.parser.parse(extracted.xml, 'invoices');
+            await this.documentService.saveDocument(parsed);
+            this.router.navigate(['/invoices', parsed.docNumber, 'edit']);
+          }
         } else {
           this.result.set(await this.api.validateEInvoice({ pdfBase64: base64, profile: this.selectedProfile() }));
         }
+        return;
+      }
+
+      if (['cii-to-ubl', 'ubl-to-cii'].includes(tool.id)) {
+        const xml = this.selectedXml();
+        if (!xml.trim()) throw new Error('Provide source XML first.');
+        const parsed = this.parser.parse(xml, 'invoices');
+        const output = tool.id === 'cii-to-ubl'
+          ? this.structured.generateUblInvoice(parsed)
+          : this.structured.generateCiiInvoice(parsed);
+        this.downloadText(output, parsed.docNumber + (tool.id === 'cii-to-ubl' ? '.ubl.xml' : '.cii.xml'));
+        this.resultText.set(output);
+        return;
+      }
+
+      if (tool.id === 'cii-to-pdf' || tool.id === 'ubl-to-pdf') {
+        const xml = this.selectedXml();
+        if (!xml.trim()) throw new Error('Provide source XML first.');
+        const parsed = this.parser.parse(xml, 'invoices');
+        await this.documentService.saveDocument(parsed);
+        this.router.navigate(['/invoices', parsed.docNumber, 'preview']);
         return;
       }
 
@@ -141,7 +175,13 @@ export class EInvoiceToolsPage {
         return;
       }
 
-      this.resultText.set('This conversion workflow is connected to the shared document engine. Use the existing invoice form for the semantic data entry, then choose the target syntax from the document output controls.');
+      if (tool.id === 'edit-cii') {
+        const parsed = this.parser.parse(this.selectedXml(), 'invoices');
+        await this.documentService.saveDocument(parsed);
+        this.router.navigate(['/invoices', parsed.docNumber, 'edit']);
+        return;
+      }
+      this.resultText.set('This conversion uses the shared document model. PDF-to-structured conversion will use the server extraction/OCR pipeline when connected.');
     } catch (e) {
       this.error.set(e instanceof Error ? e.message : 'The operation failed.');
     } finally {
@@ -157,6 +197,10 @@ export class EInvoiceToolsPage {
       reader.readAsDataURL(file);
     });
     return dataUrl.split(',')[1] || '';
+  }
+
+  private downloadText(content: string, filename: string): void {
+    this.download(new Blob([content], { type: 'application/xml;charset=utf-8' }), filename);
   }
 
   private download(blob: Blob, filename: string): void {
