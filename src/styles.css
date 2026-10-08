@@ -362,11 +362,18 @@ button.nav-link.active,
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  .printable-document-container, .document-preview-sheet, .document-render-sheet {
+  .printable-document-container, .document-preview-sheet {
     box-shadow: none !important;
     margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  /* The invoice renderer owns the physical page dimensions and padding so
+     print/PDF output matches the visible preview exactly. */
+  .document-render-sheet {
+    box-sizing: border-box !important;
+    box-shadow: none !important;
     background: #ffffff !important;
     color: #000000 !important;
   }
