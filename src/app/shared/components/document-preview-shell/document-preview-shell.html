@@ -1,4 +1,4 @@
-<div class="doc-preview-workspace">
+ <div class="doc-preview-workspace">
   <!-- Top Preview & Action Toolbar (Hidden in Print) -->
   <header class="preview-toolbar print-hide">
     <div class="toolbar-left">
@@ -14,67 +14,23 @@
 
     <!-- Template & Layout Controls -->
     <div class="toolbar-center">
-      <!-- Template Switcher Pills -->
       <div class="control-group">
         <span class="control-label">Template:</span>
         <div class="pills-capsule">
-          <button
-            type="button"
-            class="pill-btn"
-            [class.active]="selectedTemplate() === 'modern'"
-            (click)="setTemplate('modern')"
-          >
-            Modern
-          </button>
-          <button
-            type="button"
-            class="pill-btn"
-            [class.active]="selectedTemplate() === 'classic'"
-            (click)="setTemplate('classic')"
-          >
-            Classic
-          </button>
-          <button
-            type="button"
-            class="pill-btn"
-            [class.active]="selectedTemplate() === 'bold'"
-            (click)="setTemplate('bold')"
-          >
-            Bold
-          </button>
+          <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'modern'" (click)="setTemplate('modern')">Modern</button>
+          <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'classic'" (click)="setTemplate('classic')">Classic</button>
+          <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'bold'" (click)="setTemplate('bold')">Bold</button>
           @if (document().docType === 'receipts') {
-            <button
-              type="button"
-              class="pill-btn"
-              [class.active]="selectedTemplate() === 'thermal-80mm'"
-              (click)="setTemplate('thermal-80mm')"
-            >
-              80mm Thermal
-            </button>
+            <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'thermal-80mm'" (click)="setTemplate('thermal-80mm')">80mm Thermal</button>
           }
         </div>
       </div>
 
-      <!-- Paper Size Capsule -->
       <div class="control-group">
         <span class="control-label">Paper:</span>
         <div class="pills-capsule">
-          <button
-            type="button"
-            class="pill-btn"
-            [class.active]="selectedPaperSize() === 'a4'"
-            (click)="setPaperSize('a4')"
-          >
-            A4
-          </button>
-          <button
-            type="button"
-            class="pill-btn"
-            [class.active]="selectedPaperSize() === 'letter'"
-            (click)="setPaperSize('letter')"
-          >
-            Letter
-          </button>
+          <button type="button" class="pill-btn" [class.active]="selectedPaperSize() === 'a4'" (click)="setPaperSize('a4')">A4</button>
+          <button type="button" class="pill-btn" [class.active]="selectedPaperSize() === 'letter'" (click)="setPaperSize('letter')">Letter</button>
         </div>
       </div>
     </div>
@@ -91,24 +47,14 @@
         <span>Duplicate</span>
       </button>
 
-      <!-- Status dropdown action -->
       <div class="status-action-box">
         @if (document().status !== 'paid' && document().status !== 'completed') {
-          <button
-            type="button"
-            class="btn-action status-btn mark-paid"
-            (click)="updateStatus('paid')"
-            title="Mark this document as fully settled"
-          >
+          <button type="button" class="btn-action status-btn mark-paid" (click)="updateStatus('paid')" title="Mark this document as fully settled">
             <span class="material-icons btn-icon">check_circle</span>
             <span>Mark Paid</span>
           </button>
         } @else {
-          <button
-            type="button"
-            class="btn-action status-btn mark-sent"
-            (click)="updateStatus('sent')"
-          >
+          <button type="button" class="btn-action status-btn mark-sent" (click)="updateStatus('sent')">
             <span class="material-icons btn-icon">undo</span>
             <span>Mark Sent</span>
           </button>
@@ -121,7 +67,7 @@
       </button>
 
       @if (document().docType === 'invoices' || document().docType === 'credit-notes') {
-        <div class="structured-export-group" title="Generate structured invoice XML locally">
+        <div class="structured-export-group" title="Generate structured invoice files">
           <span class="structured-label">XFacture</span>
           <button type="button" class="btn-action structured-btn" (click)="downloadStructured('cii')" title="Download CII XML">
             <span class="material-icons btn-icon">data_object</span>
@@ -131,9 +77,12 @@
             <span class="material-icons btn-icon">code</span>
             <span>UBL</span>
           </button>
+          <button type="button" class="btn-action structured-btn" (click)="onDownloadFacturX()" [disabled]="isGeneratingFacturX()" title="Generate Factur-X PDF/A">
+            <span class="material-icons btn-icon">{{ isGeneratingFacturX() ? 'hourglass_top' : 'picture_as_pdf' }}</span>
+            <span>{{ isGeneratingFacturX() ? 'Generating…' : 'Factur-X' }}</span>
+          </button>
         </div>
       }
-
 
       <button type="button" class="btn-action print-btn" (click)="onPrint()" title="Send to printer">
         <span class="material-icons btn-icon">print</span>
@@ -145,6 +94,13 @@
       </button>
     </div>
   </header>
+
+  @if (facturXError()) {
+    <div class="api-error-banner print-hide" role="alert">
+      <span class="material-icons">error_outline</span>
+      <span>{{ facturXError() }}</span>
+    </div>
+  }
 
   <!-- Document Sheet Render Area -->
   <main class="preview-stage-container">
