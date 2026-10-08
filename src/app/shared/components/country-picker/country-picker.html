@@ -1,0 +1,59 @@
+<div class="country-picker">
+  <button
+    type="button"
+    class="country-trigger"
+    [class.has-value]="value()"
+    [attr.aria-expanded]="open()"
+    [attr.aria-label]="ariaLabel()"
+    (click)="open() ? closePicker() : openPicker()"
+  >
+    @if (selectedCountry(); as country) {
+      <span class="fi fi-{{ country.code.toLowerCase() }}" aria-hidden="true"></span>
+      <span class="country-selected-name">{{ country.name }}</span>
+      <span class="country-code">{{ country.code }}</span>
+    } @else {
+      <span class="country-placeholder">{{ placeholder() }}</span>
+    }
+    <span class="material-icons country-chevron" aria-hidden="true">expand_more</span>
+  </button>
+
+  @if (open()) {
+    <div class="country-menu">
+      <div class="country-search-wrap">
+        <span class="material-icons country-search-icon" aria-hidden="true">search</span>
+        <input
+          type="search"
+          class="country-search"
+          [value]="query()"
+          (input)="onSearch($event)"
+          placeholder="Search countries or code…"
+          autocomplete="off"
+          aria-label="Search countries"
+        />
+      </div>
+
+      <div class="country-results" role="listbox">
+        @if (!results().length) {
+          <div class="country-empty">No countries found.</div>
+        } @else {
+          @for (country of results(); track country.code) {
+            <button
+              type="button"
+              class="country-option"
+              [class.selected]="value() === country.code"
+              (click)="selectCountry(country)"
+            >
+              <span class="fi fi-{{ country.code.toLowerCase() }}" aria-hidden="true"></span>
+              <span class="country-option-name">{{ country.name }}</span>
+              <span class="country-option-code">{{ country.code }}</span>
+            </button>
+          }
+        }
+      </div>
+
+      @if (value()) {
+        <button type="button" class="country-clear" (click)="clearCountry()">Clear country</button>
+      }
+    </div>
+  }
+</div>
