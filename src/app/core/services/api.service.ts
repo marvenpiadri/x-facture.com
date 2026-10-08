@@ -219,9 +219,7 @@ export class ApiService {
         electronicAddressScheme: document.company.electronicAddressScheme,
         email: document.company.email,
         phone: document.company.phone,
-        website: document.company.website,
-        sellerSiren: document.specialFields?.sellerSiren,
-        buyerSiren: document.specialFields?.buyerSiren
+        website: document.company.website
       },
       buyer: {
         name: document.client.legalName || document.client.name,
@@ -236,13 +234,7 @@ export class ApiService {
         electronicAddressScheme: document.client.electronicAddressScheme,
         email: document.client.email,
         phone: document.client.phone,
-        website: document.client.website,
-        buyerReference: document.specialFields?.buyerReference,
-        deliveryDate: document.specialFields?.deliveryDate,
-        deliveryAddressLine1: document.specialFields?.deliveryAddress,
-        deliveryCity: document.specialFields?.deliveryCity,
-        deliveryPostalCode: document.specialFields?.deliveryPostalCode,
-        deliveryCountry: document.specialFields?.deliveryCountry
+        website: document.client.website
       },
       items: document.items.map(item => ({
         description: item.description,
@@ -257,7 +249,13 @@ export class ApiService {
       iban: document.specialFields?.iban,
       bic: document.specialFields?.bic,
       buyerReference: document.specialFields?.buyerReference,
-      deliveryDate: document.specialFields?.deliveryDate
+      sellerSiren: document.specialFields?.sellerSiren,
+      buyerSiren: document.specialFields?.buyerSiren,
+      deliveryDate: document.specialFields?.deliveryDate,
+      deliveryAddressLine1: document.specialFields?.deliveryAddress,
+      deliveryCity: document.specialFields?.deliveryCity,
+      deliveryPostalCode: document.specialFields?.deliveryPostalCode,
+      deliveryCountry: document.specialFields?.deliveryCountry
     };
   }
 
