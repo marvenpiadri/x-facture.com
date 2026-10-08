@@ -46,9 +46,16 @@ export interface CurrencyRatesResponse {
   nextUpdate?: string;
 }
 
+export interface GeneratePdfOptions {
+  htmlLayout: string;
+  paperSize: 'a4' | 'letter';
+  filename?: string;
+}
+
 export interface GenerateFacturXOptions {
   htmlLayout: string;
   rawInvoiceData: Record<string, unknown>;
+  paperSize: 'a4' | 'letter';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -84,6 +91,46 @@ export class ApiService {
     return response.blob();
   }
 
+  async generatePdf(
+    options: GeneratePdfOptions
+  ): Promise<{ blob: Blob; filename: string }> {
+    const response = await fetch(`${this.baseUrl}/generate-pdf`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/pdf'
+      },
+      body: JSON.stringify({
+        htmlLayout: options.htmlLayout,
+        paperSize: options.paperSize
+      })
+    });
+
+    if (!response.ok) throw await this.toApiError(response);
+
+    const blob = await response.blob();
+    const disposition = response.headers.get('Content-Disposition') || '';
+    const match = disposition.match(/filename="([^"]+)"/i);
+
+    return {
+      blob,
+      filename: match?.[1] || `${options.filename || 'document'}.pdf`
+    };
+  }
+
+  async downloadPdf(
+    document: BusinessDocument,
+    htmlLayout: string
+  ): Promise<void> {
+    const result = await this.generatePdf({
+      htmlLayout,
+      paperSize: document.paperSize === 'letter' ? 'letter' : 'a4',
+      filename: document.docNumber || 'document'
+    });
+
+    this.downloadBlob(result.blob, result.filename);
+  }
+
   async generateFacturX(
     options: GenerateFacturXOptions
   ): Promise<{ blob: Blob; filename: string }> {
@@ -111,13 +158,18 @@ export class ApiService {
   async downloadFacturX(document: BusinessDocument, htmlLayout: string): Promise<void> {
     const result = await this.generateFacturX({
       htmlLayout,
+      paperSize: document.paperSize === 'letter' ? 'letter' : 'a4',
       rawInvoiceData: this.toFacturXInvoice(document)
     });
 
-    const url = URL.createObjectURL(result.blob);
+    this.downloadBlob(result.blob, result.filename);
+  }
+
+  private downloadBlob(blob: Blob, filename: string): void {
+    const url = URL.createObjectURL(blob);
     const anchor = window.document.createElement('a');
     anchor.href = url;
-    anchor.download = result.filename;
+    anchor.download = filename;
     anchor.click();
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
   }
@@ -187,8 +239,10 @@ export class ApiService {
 
   private async toApiError(response: Response): Promise<Error> {
     try {
-      const payload = await response.json() as { error?: { message?: string } };
-      return new Error(payload.error?.message || `API request failed (HTTP ${response.status}).`);
+      const payload = await response.json() as { error?: { message?: string; code?: string; details?: { phase?: string } } };
+      const phase = payload.error?.details?.phase;
+      const message = payload.error?.message || `API request failed (HTTP ${response.status}).`;
+      return new Error(phase ? `${message} [${phase}]` : message);
     } catch {
       return new Error(`API request failed (HTTP ${response.status}).`);
     }
