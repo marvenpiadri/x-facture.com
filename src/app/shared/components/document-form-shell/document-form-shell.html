@@ -243,7 +243,15 @@
             @if (config().routeSegment === 'xfacture') {
               <div class="party-field">
                 <label class="field-label">Electronic Address Scheme</label>
-                <input type="text" class="form-input" [value]="document().company.electronicAddressScheme || ''" (input)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)" placeholder="e.g. 0225" />
+                <select class="form-select" [value]="document().company.electronicAddressScheme || ''" (change)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)">
+                  <option value="">Select scheme</option>
+                  <option value="0225">0225 — French e-invoice addressing</option>
+                  <option value="EM">EM — Email</option>
+                  <option value="0002">0002 — SIREN</option>
+                  <option value="0009">0009 — SIRET</option>
+                  <option value="0088">0088 — GLN</option>
+                  <option value="9930">9930 — DUNS</option>
+                </select>
               </div>
               <div class="party-field">
                 <label class="field-label">Electronic Address</label>
