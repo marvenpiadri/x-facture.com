@@ -198,6 +198,7 @@ export class ApiService {
     return {
       id: document.docNumber,
       invoiceNumber: document.docNumber,
+      documentType: document.docType,
       date: document.issueDate,
       dueDate: document.dueDate || undefined,
       currency: document.currency || 'EUR',
