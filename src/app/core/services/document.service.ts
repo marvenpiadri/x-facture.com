@@ -128,10 +128,12 @@ export class DocumentService {
     return {
       ...doc,
       company: {
+        ...doc.company,
         name: doc.company?.name || '',
         address: doc.company?.address || ''
       },
       client: {
+        ...doc.client,
         name: doc.client?.name || '',
         address: doc.client?.address || ''
       }
