@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../core/services/client.service';
 import { DocumentParty } from '../../../core/models/document.model';
+import { COUNTRY_OPTIONS, CountryOption } from '../../../core/data/country-options';
 
 @Component({
   selector: 'app-client-picker',
@@ -23,13 +24,13 @@ export class ClientPickerComponent {
   clientSelected = output<{ client: DocumentParty; clientId: string }>();
 
   readonly savedClients = this.clientService.clients;
+  readonly countries: CountryOption[] = COUNTRY_OPTIONS;
 
   onFieldChange(field: keyof DocumentParty, value: string): void {
-    const updated: DocumentParty = {
+    this.clientChange.emit({
       ...this.client(),
       [field]: value
-    };
-    this.clientChange.emit(updated);
+    });
   }
 
   onSelectExisting(event: Event): void {
@@ -42,11 +43,14 @@ export class ClientPickerComponent {
 
     const found = this.savedClients().find(c => c.id === clientId);
     if (found) {
-      const party: DocumentParty = {
-        name: found.name || '',
-        address: found.address || ''
-      };
-      this.clientSelected.emit({ client: party, clientId: found.id });
+      this.clientSelected.emit({
+        client: {
+          ...this.client(),
+          name: found.name || '',
+          address: found.address || ''
+        },
+        clientId: found.id
+      });
     }
   }
 }
