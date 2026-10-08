@@ -30,6 +30,13 @@ export const routes: Routes = [
   { path: 'settings', component: SettingsHubPage },
   { path: 'tools', redirectTo: 'tools/convert', pathMatch: 'full' },
   { path: 'tools/:tool', component: EInvoiceToolsPage },
+  // Creation shortcuts — all reuse the same shared document form.
+  { path: 'create-cii', component: DocumentEditPage, data: { docType: 'invoices', output: 'cii' } },
+  { path: 'create-ubl', component: DocumentEditPage, data: { docType: 'invoices', output: 'ubl' } },
+  { path: 'create-factur-x', component: DocumentEditPage, data: { docType: 'xfacture', output: 'factur-x' } },
+  { path: 'create-order-x', component: DocumentEditPage, data: { docType: 'order-x', output: 'order-x' } },
+  { path: 'create-credit-note', component: DocumentEditPage, data: { docType: 'credit-notes', output: 'factur-x' } },
+  { path: 'create-credit-note-cii', component: DocumentEditPage, data: { docType: 'credit-notes', output: 'cii' } },
 
   // Factur-X is a first-class creation workflow with its own document form.
 
