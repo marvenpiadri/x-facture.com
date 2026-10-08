@@ -1,6 +1,18 @@
 import { DocumentTypeConfig } from '../models/document-type-config.model';
 
 export const DOCUMENT_TYPE_CONFIGS: Record<string, DocumentTypeConfig> = {
+  'xfacture': {
+    docType: 'xfacture',
+    singularName: 'Factur-X',
+    pluralName: 'Factur-X Documents',
+    routeSegment: 'xfacture',
+    defaultPrefix: 'FX',
+    defaultLineLayoutMode: 'quantity',
+    hasPricing: true,
+    defaultTemplateId: 'modern',
+    description: 'Hybrid electronic invoice format combining a human-readable PDF with structured XML invoice data for automated processing.',
+    icon: 'verified'
+  },
   'invoices': {
     docType: 'invoices',
     singularName: 'Tax Invoice',
