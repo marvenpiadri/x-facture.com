@@ -49,6 +49,17 @@
 
     <div class="form-section-heading"><div><span class="form-section-kicker">Step 1</span><h3>Document details</h3><p>Set the basic information that identifies this document.</p></div></div>
     <div class="form-meta-grid">
+      @if (config().routeSegment === 'invoices' || config().routeSegment === 'credit-notes') {
+        <div class="form-field-item">
+          <label class="field-label">Output format</label>
+          <select class="form-select" [value]="document().specialFields?.outputFormat || 'pdf'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+            <option value="pdf">Standard PDF</option>
+            <option value="factur-x">Factur-X PDF</option>
+            <option value="cii">CII XML</option>
+            @if (config().routeSegment === 'invoices') { <option value="ubl">UBL 2.1 XML</option> }
+          </select>
+        </div>
+      }
       <div class="form-field-item">
         <label class="field-label">Currency</label>
         <select class="form-select" [value]="document().currency" (change)="onHeaderFieldChange('currency', $any($event.target).value)">
