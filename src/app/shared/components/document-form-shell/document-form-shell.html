@@ -201,4 +201,25 @@
       <button type="button" class="btn-primary" (click)="triggerSaveAndPreview()"><span>Continue to Preview</span><span class="material-icons btn-icon">arrow_forward</span></button>
     </div>
   </div>
+
+  @if (isNew()) {
+    <section class="create-page-faq" aria-labelledby="create-page-faq-title">
+      <div class="faq-heading">
+        <div>
+          <div class="faq-kicker">Learn before you generate</div>
+          <h2 id="create-page-faq-title">Frequently asked questions</h2>
+          <p>Useful information about {{ config().singularName.toLowerCase() }} documents, their purpose and the details you may want to include.</p>
+        </div>
+      </div>
+
+      <div class="faq-list">
+        @for (faq of createPageContent().faqs; track faq.question) {
+          <details class="faq-item">
+            <summary>{{ faq.question }}<span class="material-icons" aria-hidden="true">expand_more</span></summary>
+            <div class="faq-answer">{{ faq.answer }}</div>
+          </details>
+        }
+      </div>
+    </section>
+  }
 </div>
