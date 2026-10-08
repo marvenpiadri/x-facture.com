@@ -86,12 +86,16 @@ export class DocumentPreviewShellComponent implements OnInit {
     if (!doc.company.postalCode?.trim()) missing.push('seller postal code');
     if (!doc.company.country?.trim()) missing.push('seller country');
     if (!doc.company.taxId?.trim()) missing.push('seller VAT / tax ID');
+    if (!doc.company.electronicAddress?.trim()) missing.push('seller electronic address');
+    if (!doc.company.electronicAddressScheme?.trim()) missing.push('seller electronic address scheme');
     if (!doc.client.name?.trim()) missing.push('buyer name');
     if (!doc.client.address?.trim()) missing.push('buyer address');
     if (!doc.client.city?.trim()) missing.push('buyer city');
     if (!doc.client.postalCode?.trim()) missing.push('buyer postal code');
     if (!doc.client.country?.trim()) missing.push('buyer country');
     if (!doc.client.taxId?.trim()) missing.push('buyer VAT / tax ID');
+    if (!doc.client.electronicAddress?.trim()) missing.push('buyer electronic address');
+    if (!doc.client.electronicAddressScheme?.trim()) missing.push('buyer electronic address scheme');
     if (!doc.issueDate) missing.push('issue date');
     if (!doc.items.length) missing.push('at least one line item');
 
