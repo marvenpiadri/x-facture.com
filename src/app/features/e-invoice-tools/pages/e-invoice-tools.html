@@ -87,7 +87,43 @@
       @if (result()) {
         <div class="tool-result">
           <div class="result-heading"><span class="material-icons">fact_check</span><strong>Result</strong></div>
-          @if (activeTool().id === 'extract-attachments' && result()?.['attachments']; as attachments) {
+          @if (validationSummary(); as validation) {
+            <div class="validation-summary" [class.validation-pass]="validation.valid" [class.validation-fail]="!validation.valid">
+              <span class="material-icons">{{ validation.valid ? 'check_circle' : 'error' }}</span>
+              <div>
+                <strong>{{ validation.valid ? 'Validation passed' : 'Validation failed' }}</strong>
+                <p>{{ validation.valid ? 'The document passed the checks reported below.' : 'One or more checks failed. Review the reported issues.' }}</p>
+              </div>
+            </div>
+            @if (validation.checks.length) {
+              <ul class="validation-checks">
+                @for (check of validation.checks; track check.label) {
+                  <li>
+                    <span class="material-icons" [class.check-passed]="check.state === 'passed'" [class.check-failed]="check.state === 'failed'">{{ check.state === 'passed' ? 'check_circle' : check.state === 'failed' ? 'cancel' : 'remove_circle_outline' }}</span>
+                    <span>{{ check.label }}</span>
+                    <small>{{ check.state === 'passed' ? 'Passed' : check.state === 'failed' ? 'Failed' : 'Not run' }}</small>
+                  </li>
+                }
+              </ul>
+            }
+            @if (validation.errors.length) {
+              <div class="validation-errors">
+                <strong>Issues to review ({{ validation.errors.length }})</strong>
+                <ul>
+                  @for (issue of validation.errors; track $index) {
+                    <li>{{ issue | json }}</li>
+                  }
+                </ul>
+              </div>
+            }
+            @if (validation.french2026; as readiness) {
+              <div class="validation-readiness">
+                <strong>French 2026 readiness</strong>
+                <span>{{ readiness.status || 'Not assessed' }}</span>
+                <p>{{ readiness.message }}</p>
+              </div>
+            }
+          } @else if (activeTool().id === 'extract-attachments' && result()?.['attachments']; as attachments) {
             <div class="attachment-list">
               @for (attachment of attachments; track attachment.name) {
                 <button type="button" class="attachment-row" (click)="downloadAttachment(attachment)">
