@@ -45,6 +45,7 @@ export class ClientPickerComponent {
       this.clientSelected.emit({
         client: {
           ...this.client(),
+          ...found,
           name: found.name || '',
           address: found.address || ''
         },
