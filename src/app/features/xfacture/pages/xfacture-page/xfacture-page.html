@@ -92,7 +92,7 @@
     <aside class="preview-card">
       <div class="preview-heading"><strong>Live preview</strong><span>PDF/A layout</span></div>
       <div class="preview-viewport">
-        <app-template-renderer id="xfacture-preview-root" [document]="draft()" [templateId]="'modern'" [paperSize]="'a4'"></app-template-renderer>
+        <div id="xfacture-preview-host"><app-template-renderer [document]="draft()" [templateId]="'modern'" [paperSize]="'a4'"></app-template-renderer></div>
       </div>
     </aside>
   </div>
