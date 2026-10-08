@@ -78,6 +78,10 @@ export class ApiService {
     return this.post<Record<string, unknown>>('/validate', payload);
   }
 
+  async validateOrderX(xml: string): Promise<Record<string, unknown>> {
+    return this.post<Record<string, unknown>>('/validate-order-x', { xml });
+  }
+
   async extractFacturXXml(pdfBase64: string): Promise<{ success: boolean; filename?: string; profile?: string; xml: string }> {
     return this.post<{ success: boolean; filename?: string; profile?: string; xml: string }>('/extract', { pdfBase64 });
   }
