@@ -83,9 +83,38 @@ export class StructuredInvoiceService {
   generateOrderX(doc: BusinessDocument): string {
     const currency = this.currency(doc.currency);
     const lines = doc.items.filter(item => item.description.trim() || item.amount > 0);
-    return ['<?xml version="1.0" encoding="UTF-8"?>','<Order xmlns="urn:oasis:names:specification:ubl:schema:xsd:Order-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">','<cbc:CustomizationID>urn:cen.eu:en16931:2017</cbc:CustomizationID>','<cbc:ID>'+this.esc(doc.docNumber)+'</cbc:ID>','<cbc:IssueDate>'+this.esc(doc.issueDate)+'</cbc:IssueDate>',doc.purchaseOrderRef?'<cbc:CustomerReference>'+this.esc(doc.purchaseOrderRef)+'</cbc:CustomerReference>':'','<cbc:DocumentCurrencyCode>'+currency+'</cbc:DocumentCurrencyCode>','<cac:BuyerCustomerParty>'+this.ublParty(doc.client)+'</cac:BuyerCustomerParty>','<cac:SellerSupplierParty>'+this.ublParty(doc.company)+'</cac:SellerSupplierParty>',lines.map((item,i)=>'<cac:OrderLine><cbc:LineItem><cbc:ID>'+String(i+1)+'</cbc:ID><cbc:Quantity unitCode="C62">'+this.number(item.quantity)+'</cbc:Quantity><cbc:LineExtensionAmount currencyID="'+currency+'">'+this.money(item.amount)+'</cbc:LineExtensionAmount><cac:Item><cbc:Name>'+this.esc(item.description||'Item')+'</cbc:Name></cac:Item><cac:Price><cbc:PriceAmount currencyID="'+currency+'">'+this.money(item.unitCost)+'</cbc:PriceAmount></cac:Price></cbc:LineItem></cac:OrderLine>').join(''),' </Order>'].join('').replace(' </Order>','</Order>');
+    const lineXml = lines.map((item, i) =>
+      '<ram:IncludedSupplyChainTradeLineItem>' +
+      '<ram:AssociatedDocumentLineDocument><ram:LineID>' + String(i + 1) + '</ram:LineID></ram:AssociatedDocumentLineDocument>' +
+      '<ram:SpecifiedTradeProduct><ram:Name>' + this.esc(item.description || 'Item') + '</ram:Name></ram:SpecifiedTradeProduct>' +
+      '<ram:SpecifiedLineTradeAgreement><ram:NetPriceProductTradePrice><ram:ChargeAmount>' + this.money(item.unitCost) + '</ram:ChargeAmount><ram:BasisQuantity unitCode="C62">1</ram:BasisQuantity></ram:NetPriceProductTradePrice></ram:SpecifiedLineTradeAgreement>' +
+      '<ram:SpecifiedLineTradeDelivery><ram:RequestedQuantity unitCode="C62">' + this.number(item.quantity) + '</ram:RequestedQuantity></ram:SpecifiedLineTradeDelivery>' +
+      '<ram:SpecifiedLineTradeSettlement><ram:SpecifiedTradeSettlementLineMonetarySummation><ram:LineTotalAmount>' + this.money(item.amount) + '</ram:LineTotalAmount></ram:SpecifiedTradeSettlementLineMonetarySummation></ram:SpecifiedLineTradeSettlement>' +
+      '</ram:IncludedSupplyChainTradeLineItem>'
+    ).join('');
+    const party = (p: DocumentParty) =>
+      '<ram:Name>' + this.esc(p.legalName || p.name || 'Unnamed party') + '</ram:Name>' +
+      (p.address || p.city || p.postalCode || p.country
+        ? '<ram:PostalTradeAddress>' +
+          (p.postalCode ? '<ram:PostcodeCode>' + this.esc(p.postalCode) + '</ram:PostcodeCode>' : '') +
+          (p.address ? '<ram:LineOne>' + this.esc(p.address) + '</ram:LineOne>' : '') +
+          (p.city ? '<ram:CityName>' + this.esc(p.city) + '</ram:CityName>' : '') +
+          (p.country ? '<ram:CountryID>' + this.esc(p.country.toUpperCase().slice(0, 2)) + '</ram:CountryID>' : '') +
+          '</ram:PostalTradeAddress>' : '') +
+      (p.electronicAddress ? '<ram:URIUniversalCommunication><ram:URIID' + (p.electronicAddressScheme ? ' schemeID="' + this.esc(p.electronicAddressScheme) + '"' : '') + '>' + this.esc(p.electronicAddress) + '</ram:URIID></ram:URIUniversalCommunication>' : '') +
+      (p.taxId ? '<ram:SpecifiedTaxRegistration><ram:ID schemeID="VA">' + this.esc(p.taxId) + '</ram:ID></ram:SpecifiedTaxRegistration>' : '');
+    return [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<rsm:SCRDMCCBDACIOMessageStructure xmlns:rsm="urn:un:unece:uncefact:data:SCRDMCCBDACIOMessageStructure:100" xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:128" xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:128" xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:128">',
+      '<rsm:ExchangedDocumentContext><ram:BusinessProcessSpecifiedDocumentContextParameter><ram:ID>A1</ram:ID></ram:BusinessProcessSpecifiedDocumentContextParameter><ram:GuidelineSpecifiedDocumentContextParameter><ram:ID>urn:order-x.eu:1p0:basic</ram:ID></ram:GuidelineSpecifiedDocumentContextParameter></rsm:ExchangedDocumentContext>',
+      '<rsm:ExchangedDocument><ram:ID>' + this.esc(doc.docNumber) + '</ram:ID><ram:TypeCode>220</ram:TypeCode><ram:IssueDateTime><udt:DateTimeString format="102">' + this.dateCompact(doc.issueDate) + '</udt:DateTimeString></ram:IssueDateTime></rsm:ExchangedDocument>',
+      '<rsm:SupplyChainTradeTransaction>' + lineXml,
+      '<ram:ApplicableHeaderTradeAgreement><ram:SellerTradeParty>' + party(doc.company) + '</ram:SellerTradeParty><ram:BuyerTradeParty>' + party(doc.client) + '</ram:BuyerTradeParty></ram:ApplicableHeaderTradeAgreement>',
+      '<ram:ApplicableHeaderTradeDelivery/>',
+      '<ram:ApplicableHeaderTradeSettlement><ram:OrderCurrencyCode>' + currency + '</ram:OrderCurrencyCode><ram:SpecifiedTradeSettlementHeaderMonetarySummation><ram:LineTotalAmount>' + this.money(doc.subtotal) + '</ram:LineTotalAmount><ram:TaxBasisTotalAmount>' + this.money(doc.subtotal) + '</ram:TaxBasisTotalAmount></ram:SpecifiedTradeSettlementHeaderMonetarySummation></ram:ApplicableHeaderTradeSettlement>',
+      '</rsm:SupplyChainTradeTransaction></rsm:SCRDMCCBDACIOMessageStructure>'
+    ].join('');
   }
-
   download(doc: BusinessDocument, format: StructuredInvoiceFormat): void {
     const xml = format === 'ubl' ? this.generateUblInvoice(doc) : format === 'order-x' ? this.generateOrderX(doc) : this.generateCiiInvoice(doc);
     const suffix = format === 'ubl' ? 'ubl.xml' : format === 'order-x' ? 'order-x.xml' : 'cii.xml';
