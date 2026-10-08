@@ -371,7 +371,7 @@ export class SeoService {
 
     const labels: Record<string, string> = {
       pdf: 'PDF Tools', calculators: 'Business Calculators', ledger: 'Financial Ledger', clients: 'Clients', products: 'Products & Services',
-      invoices: 'Invoices', 'proforma-invoices': 'Proforma Invoices', 'commercial-invoices': 'Commercial Invoices', quotes: 'Quotes',
+      invoices: 'Invoices', xfacture: 'Factur-X', 'proforma-invoices': 'Proforma Invoices', 'commercial-invoices': 'Commercial Invoices', quotes: 'Quotes',
       'purchase-orders': 'Purchase Orders', receipts: 'Receipts', 'credit-notes': 'Credit Notes', 'delivery-notes': 'Delivery Notes',
       'timesheet-invoices': 'Timesheet Invoices', 'work-orders': 'Work Orders', statements: 'Statements', 'service-agreements': 'Service Agreements',
       'retainer-invoices': 'Retainer Invoices', 'bills-of-lading': 'Bills of Lading', 'custom-documents': 'Custom Documents',
