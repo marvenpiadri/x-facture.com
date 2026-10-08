@@ -91,9 +91,7 @@ export class ApiService {
     return response.blob();
   }
 
-  async generatePdf(
-    options: GeneratePdfOptions
-  ): Promise<{ blob: Blob; filename: string }> {
+  async generatePdf(options: GeneratePdfOptions): Promise<{ blob: Blob; filename: string }> {
     const response = await fetch(`${this.baseUrl}/generate-pdf`, {
       method: 'POST',
       headers: {
@@ -128,13 +126,10 @@ export class ApiService {
       paperSize,
       filename: document.docNumber || 'document'
     });
-
     this.downloadBlob(result.blob, result.filename);
   }
 
-  async generateFacturX(
-    options: GenerateFacturXOptions
-  ): Promise<{ blob: Blob; filename: string }> {
+  async generateFacturX(options: GenerateFacturXOptions): Promise<{ blob: Blob; filename: string }> {
     const response = await fetch(`${this.baseUrl}/generate-invoice`, {
       method: 'POST',
       headers: {
@@ -166,7 +161,6 @@ export class ApiService {
       paperSize,
       rawInvoiceData: this.toFacturXInvoice(document)
     });
-
     this.downloadBlob(result.blob, result.filename);
   }
 
@@ -188,18 +182,22 @@ export class ApiService {
       currency: document.currency || 'EUR',
       seller: {
         name: document.company.legalName || document.company.name,
-        address: document.company.address,
-        city: document.company.city,
-        postalCode: document.company.postalCode,
-        country: document.company.country,
+        address: {
+          line1: document.company.address,
+          city: document.company.city,
+          postalCode: document.company.postalCode,
+          country: document.company.country
+        },
         vatId: document.company.taxId
       },
       buyer: {
         name: document.client.legalName || document.client.name,
-        address: document.client.address,
-        city: document.client.city,
-        postalCode: document.client.postalCode,
-        country: document.client.country,
+        address: {
+          line1: document.client.address,
+          city: document.client.city,
+          postalCode: document.client.postalCode,
+          country: document.client.country
+        },
         vatId: document.client.taxId
       },
       items: document.items.map(item => ({
@@ -213,10 +211,7 @@ export class ApiService {
     };
   }
 
-  private async get<T>(
-    path: string,
-    query: Record<string, string> = {}
-  ): Promise<T> {
+  private async get<T>(path: string, query: Record<string, string> = {}): Promise<T> {
     const params = new URLSearchParams(query);
     const queryString = params.toString();
     const response = await fetch(
