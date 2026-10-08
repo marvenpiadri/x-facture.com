@@ -67,28 +67,6 @@ export class DocumentPreviewShellComponent implements OnInit {
     }
   }
 
-  async onDownloadFacturX(): Promise<void> {
-    const doc = this.document();
-    if (doc.docType !== 'invoices' && doc.docType !== 'credit-notes') return;
-    const element = document.getElementById('document-pdf-root');
-    if (!element) { this.facturXError.set('The invoice preview is not ready yet.'); return; }
-    this.isGeneratingFacturX.set(true);
-    this.facturXError.set(null);
-    try {
-      const htmlLayout = this.createSelfContainedHtml(element);
-      await this.apiService.downloadFacturX(
-        doc,
-        htmlLayout,
-        this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
-      );
-    } catch (error) {
-      console.error('Factur-X generation failed:', error);
-      this.facturXError.set(error instanceof Error ? error.message : 'Unable to generate the Factur-X PDF.');
-    } finally {
-      this.isGeneratingFacturX.set(false);
-    }
-  }
-
   private createSelfContainedHtml(element: HTMLElement): string {
     const styles = Array.from(document.querySelectorAll('style'))
       .map(style => style.textContent || '')
