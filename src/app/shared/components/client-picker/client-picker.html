@@ -4,7 +4,6 @@
       <span class="material-icons title-icon">person</span>
       <span>Client / Bill To</span>
     </label>
-
     <div class="quick-party-select">
       <select class="party-dropdown" [value]="clientId() || ''" (change)="onSelectExisting($event)" aria-label="Select saved client">
         <option value="">Choose saved client...</option>
@@ -21,9 +20,34 @@
       <input type="text" class="form-input" [value]="client().name" (input)="onFieldChange('name', $any($event.target).value)" placeholder="Client name" required />
     </div>
 
+    <div class="party-field">
+      <label class="field-label">City</label>
+      <input type="text" class="form-input" [value]="client().city || ''" (input)="onFieldChange('city', $any($event.target).value)" placeholder="City" autocomplete="address-level2" />
+    </div>
+
+    <div class="party-field">
+      <label class="field-label">Postal Code</label>
+      <input type="text" class="form-input" [value]="client().postalCode || ''" (input)="onFieldChange('postalCode', $any($event.target).value)" placeholder="Postal code" autocomplete="postal-code" />
+    </div>
+
+    <div class="party-field">
+      <label class="field-label">Country</label>
+      <select class="form-select" [value]="client().country || ''" (change)="onFieldChange('country', $any($event.target).value)" autocomplete="country">
+        <option value="">Select country…</option>
+        @for (country of countries; track country.code) {
+          <option [value]="country.code">{{ country.name }} ({{ country.code }})</option>
+        }
+      </select>
+    </div>
+
+    <div class="party-field">
+      <label class="field-label">VAT / Tax ID</label>
+      <input type="text" class="form-input" [value]="client().taxId || ''" (input)="onFieldChange('taxId', $any($event.target).value)" placeholder="VAT / tax identifier" />
+    </div>
+
     <div class="party-field full-width">
-      <label class="field-label">Client Information</label>
-      <textarea class="form-textarea party-details-textarea" rows="6" [value]="client().address || ''" (input)="onFieldChange('address', $any($event.target).value)" placeholder="Address&#10;mail@example.com&#10;+1 555 000 0000&#10;Tax ID&#10;Website&#10;Other client information"></textarea>
+      <label class="field-label">Street Address & Client Information</label>
+      <textarea class="form-textarea party-details-textarea" rows="4" [value]="client().address || ''" (input)="onFieldChange('address', $any($event.target).value)" placeholder="Street address&#10;Email&#10;Phone&#10;Website&#10;Other client information"></textarea>
     </div>
   </div>
 
