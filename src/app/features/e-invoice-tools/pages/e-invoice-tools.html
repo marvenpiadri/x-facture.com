@@ -123,14 +123,14 @@
                 <p>{{ readiness.message }}</p>
               </div>
             }
-          } @else if (activeTool().id === 'extract-attachments' && result()?.['attachments']; as attachments) {
+          } @else if (activeTool().id === 'extract-attachments') {
             <div class="attachment-list">
-              @for (attachment of attachments; track attachment.name) {
+              @for (attachment of attachments(); track attachment.name) {
                 <button type="button" class="attachment-row" (click)="downloadAttachment(attachment)">
                   <span class="material-icons">attach_file</span><span>{{ attachment.name }}</span><small>{{ attachment.size }} bytes</small><span class="material-icons">download</span>
                 </button>
               }
-              @if (!attachments.length) { <p>No embedded attachments were found.</p> }
+              @if (!attachments().length) { <p>No embedded attachments were found.</p> }
             </div>
           } @else {
             <pre>{{ result() | json }}</pre>
