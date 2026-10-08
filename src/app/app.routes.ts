@@ -10,7 +10,6 @@ import { DocumentListPage } from './features/documents/pages/document-list/docum
 import { DocumentEditPage } from './features/documents/pages/document-edit/document-edit';
 import { DocumentPreviewPage } from './features/documents/pages/document-preview/document-preview';
 import { ALL_DOCUMENT_TYPES } from './core/config/document-type-config';
-import { XFacturePage } from './features/xfacture/pages/xfacture-page/xfacture-page';
 
 const DOCUMENT_ROUTES: Routes = ALL_DOCUMENT_TYPES.flatMap(({ routeSegment }) => [
   { path: routeSegment, component: DocumentListPage, data: { docType: routeSegment } },
@@ -29,8 +28,9 @@ export const routes: Routes = [
   { path: 'products', component: ProductsHubPage },
   { path: 'settings', component: SettingsHubPage },
 
-  { path: 'invoice/xfacture', component: XFacturePage, title: 'XFacture Invoice Generator | CII & UBL XML | X-Facture', data: { description: 'Generate structured invoice XML with X-Facture. Export CII and UBL invoice data locally from your invoice.' } },
-  { path: 'xfacture', redirectTo: 'invoice/xfacture', pathMatch: 'full' },
+  // Factur-X is an invoice export, not a separate invoice form.
+  { path: 'invoice/xfacture', redirectTo: 'invoices/create', pathMatch: 'full' },
+  { path: 'xfacture', redirectTo: 'invoices/create', pathMatch: 'full' },
 
   ...DOCUMENT_ROUTES,
 
