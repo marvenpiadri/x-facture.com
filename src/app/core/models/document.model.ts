@@ -16,6 +16,8 @@ export interface DocumentParty {
   name: string;
   legalName?: string;
   email?: string;
+  electronicAddress?: string;
+  electronicAddressScheme?: string;
   phone?: string;
   website?: string;
   address?: string;
