@@ -29,7 +29,6 @@ export class DocumentPreviewShellComponent implements OnInit {
 
   selectedTemplate = signal<string>('modern');
   selectedPaperSize = signal<PaperSize>('a4');
-  isPrinting = signal<boolean>(false);
   isGeneratingPdf = signal<boolean>(false);
   isGeneratingFacturX = signal<boolean>(false);
   facturXError = signal<string | null>(null);
@@ -80,19 +79,6 @@ export class DocumentPreviewShellComponent implements OnInit {
     } finally {
       this.isGeneratingPdf.set(false);
     }
-  }
-
-  private createSelfContainedHtml(element: HTMLElement): string {
-    const styles = Array.from(document.querySelectorAll('style'))
-      .map(style => style.textContent || '')
-      .filter(Boolean)
-      .join('\n');
-
-    return '<!doctype html><html><head><meta charset="utf-8"><style>' +
-      styles +
-      '</style></head><body>' +
-      element.outerHTML +
-      '</body></html>';
   }
 
   downloadStructured(format: 'ubl' | 'cii'): void {
