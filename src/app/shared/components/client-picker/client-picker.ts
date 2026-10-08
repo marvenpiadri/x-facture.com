@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../core/services/client.service';
 import { DocumentParty } from '../../../core/models/document.model';
-import { COUNTRY_OPTIONS, CountryOption } from '../../../core/data/country-options';
+import { CountryPickerComponent } from '../country-picker/country-picker';
 
 @Component({
   selector: 'app-client-picker',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, CountryPickerComponent],
   templateUrl: './client-picker.html',
   styleUrl: './client-picker.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -24,7 +24,6 @@ export class ClientPickerComponent {
   clientSelected = output<{ client: DocumentParty; clientId: string }>();
 
   readonly savedClients = this.clientService.clients;
-  readonly countries: CountryOption[] = COUNTRY_OPTIONS;
 
   onFieldChange(field: keyof DocumentParty, value: string): void {
     this.clientChange.emit({
