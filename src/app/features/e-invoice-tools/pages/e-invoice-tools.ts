@@ -108,7 +108,7 @@ export class EInvoiceToolsPage {
     this.result.set(null);
     this.resultText.set('');
     try {
-      if (tool.id === 'cii-viewer' || tool.id === 'validate-cii' || tool.id === 'validate-order-x' || tool.id === 'edit-cii') {
+      if (tool.id === 'cii-viewer' || tool.id === 'validate-cii' || tool.id === 'validate-order-x') {
         const xml = this.selectedXml();
         if (!xml.trim()) throw new Error('Paste or upload XML first.');
         if (tool.id === 'cii-viewer') {
