@@ -70,6 +70,12 @@ export class EInvoiceToolsPage {
   readonly error = signal('');
 
   readonly activeTool = computed(() => TOOLS.find(t => t.id === this.activeId()) || TOOLS[0]);
+  readonly attachments = computed<Array<{ name: string; mimeType: string; size: number; dataBase64: string }>>(() => {
+    const value = this.result()?.['attachments'];
+    return Array.isArray(value)
+      ? value as Array<{ name: string; mimeType: string; size: number; dataBase64: string }>
+      : [];
+  });
   readonly validationSummary = computed<ValidationSummary | null>(() => {
     const result = this.result();
     if (!result || typeof result['valid'] !== 'boolean') return null;
