@@ -58,6 +58,25 @@
         }
       </div>
 
+      @if (document().docType === 'invoices') {
+        <button
+          type="button"
+          class="btn-action xfacturx-btn"
+          (click)="onDownloadFacturX()"
+          [disabled]="isGeneratingFacturX()"
+          [attr.aria-busy]="isGeneratingFacturX()"
+          title="Download this invoice as a Factur-X PDF"
+        >
+          @if (isGeneratingFacturX()) {
+            <span class="download-spinner" aria-hidden="true"></span>
+            <span>Preparing Factur-X…</span>
+          } @else {
+            <span class="material-icons btn-icon">verified</span>
+            <span>Factur-X</span>
+          }
+        </button>
+      }
+
       <button
         type="button"
         class="btn-action download-btn"
@@ -86,6 +105,12 @@
     </div>
   </header>
 
+  @if (facturXError()) {
+    <div class="preview-inline-error print-hide" role="alert">
+      <span class="material-icons">error_outline</span>
+      <span>{{ facturXError() }}</span>
+    </div>
+  }
 
   <main class="preview-stage-container">
     <app-template-renderer
