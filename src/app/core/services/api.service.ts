@@ -188,7 +188,12 @@ export class ApiService {
           postalCode: document.company.postalCode,
           country: document.company.country
         },
-        vatId: document.company.taxId
+        vatId: document.company.taxId,
+        electronicAddress: document.company.electronicAddress,
+        electronicAddressScheme: document.company.electronicAddressScheme,
+        email: document.company.email,
+        phone: document.company.phone,
+        website: document.company.website
       },
       buyer: {
         name: document.client.legalName || document.client.name,
@@ -198,7 +203,12 @@ export class ApiService {
           postalCode: document.client.postalCode,
           country: document.client.country
         },
-        vatId: document.client.taxId
+        vatId: document.client.taxId,
+        electronicAddress: document.client.electronicAddress,
+        electronicAddressScheme: document.client.electronicAddressScheme,
+        email: document.client.email,
+        phone: document.client.phone,
+        website: document.client.website
       },
       items: document.items.map(item => ({
         description: item.description,
