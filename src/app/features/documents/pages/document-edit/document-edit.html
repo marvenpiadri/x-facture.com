@@ -5,6 +5,15 @@
       <p>Loading document editor...</p>
     </div>
   } @else if (currentDocument()) {
+    @if (isNew()) {
+      <section class="create-page-intro" aria-labelledby="create-page-title">
+        <div class="create-page-intro-copy">
+          <div class="create-page-kicker">Free online document generator</div>
+          <h1 id="create-page-title">{{ createPageContent().title }}</h1>
+          <p>{{ createPageContent().description }}</p>
+        </div>
+      </section>
+    }
     <app-document-form-shell
       [document]="currentDocument()!"
       [config]="currentConfig()"
