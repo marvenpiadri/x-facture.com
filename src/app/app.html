@@ -57,6 +57,30 @@
           }
         </div>
 
+        <!-- E-Invoice Tools Dropdown -->
+        <div class="nav-item-dropdown">
+          <button type="button" class="nav-link dropdown-trigger" [class.active]="showToolsDropdown()" (click)="toggleToolsDropdown()" id="nav-tools-dropdown-btn">
+            <span class="material-icons nav-ico">verified</span>
+            <span>E-Invoice Tools</span>
+            <span class="material-icons arrow-ico">expand_more</span>
+          </button>
+          @if (showToolsDropdown()) {
+            <div class="dropdown-menu-card tools-menu" (click)="$event.stopPropagation()">
+              <div class="dropdown-header">Validate, convert, extract & inspect</div>
+              <div class="dropdown-section-label">Validate & fix</div>
+              <a routerLink="/tools/validate-factur-x" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">verified</span><div class="item-text"><strong class="item-title">Validate Factur-X</strong><span class="item-desc">EN 16931 profile and embedded XML checks</span></div></a>
+              <a routerLink="/tools/validate-cii" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">fact_check</span><div class="item-text"><strong class="item-title">Validate CII XML</strong><span class="item-desc">Validate standalone CII against the profile XSD</span></div></a>
+              <a routerLink="/tools/validate-order-x" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">rule</span><div class="item-text"><strong class="item-title">Validate Order-X</strong><span class="item-desc">Check purchase-order XML structure</span></div></a>
+              <div class="dropdown-section-label">Convert</div>
+              <a routerLink="/tools/convert" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">swap_horiz</span><div class="item-text"><strong class="item-title">Conversion Studio</strong><span class="item-desc">PDF, Factur-X, CII and UBL conversion workflows</span></div></a>
+              <div class="dropdown-section-label">Extract & view</div>
+              <a routerLink="/tools/extract-xml" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">data_object</span><div class="item-text"><strong class="item-title">Extract XML</strong><span class="item-desc">Extract embedded invoice XML from Factur-X PDFs</span></div></a>
+              <a routerLink="/tools/extract-attachments" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">attach_file</span><div class="item-text"><strong class="item-title">Extract Attachments</strong><span class="item-desc">Inspect embedded files inside hybrid invoices</span></div></a>
+              <a routerLink="/tools/cii-viewer" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">visibility</span><div class="item-text"><strong class="item-title">CII / UBL Viewer</strong><span class="item-desc">Read structured invoice XML as a human document</span></div></a>
+            </div>
+          }
+        </div>
+
         <!-- Operations & Management Dropdown -->
         <div class="nav-item-dropdown">
           <button
