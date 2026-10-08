@@ -127,6 +127,34 @@
             <label class="field-label">Delivery date</label>
             <input type="date" class="form-input" [value]="document().specialFields?.deliveryDate || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
           </div>
+          <div class="form-field-item">
+            <label class="field-label">Buyer SIREN</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.buyerSiren || ''" (input)="onSpecialFieldChange('buyerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">VAT payment option</label>
+            <select class="form-select" [value]="document().specialFields?.vatPaymentOption || ''" (change)="onSpecialFieldChange('vatPaymentOption', $any($event.target).value)">
+              <option value="">Not specified</option>
+              <option value="collections">VAT on collections</option>
+              <option value="debits">VAT on debits</option>
+            </select>
+          </div>
+          <div class="form-field-item full-width">
+            <label class="field-label">Delivery address (when different from billing address)</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.deliveryAddress || ''" (input)="onSpecialFieldChange('deliveryAddress', $any($event.target).value)" placeholder="Street address" />
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">Delivery city</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.deliveryCity || ''" (input)="onSpecialFieldChange('deliveryCity', $any($event.target).value)" placeholder="City" />
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">Delivery postal code</label>
+            <input type="text" class="form-input" [value]="document().specialFields?.deliveryPostalCode || ''" (input)="onSpecialFieldChange('deliveryPostalCode', $any($event.target).value)" placeholder="Postal code" />
+          </div>
+          <div class="form-field-item">
+            <label class="field-label">Delivery country</label>
+            <app-country-picker [value]="document().specialFields?.deliveryCountry || ''" (valueChange)="onSpecialFieldChange('deliveryCountry', $event)" ariaLabel="Delivery country"></app-country-picker>
+          </div>
         </div>
       </section>
     }
