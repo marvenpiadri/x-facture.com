@@ -114,7 +114,7 @@ export class DocumentFormShellComponent {
     }, 600);
   }
 
-  onCompanyFieldChange(field: keyof DocumentParty, value: string): void {
+  async onCompanyLogoSelected(event: Event): Promise<void> {\n    const input = event.target as HTMLInputElement;\n    const file = input.files?.[0];\n    if (!file) return;\n    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {\n      input.value = '';\n      return;\n    }\n    if (file.size > 1_500_000) {\n      input.value = '';\n      return;\n    }\n    const logoUrl = await new Promise<string>((resolve, reject) => {\n      const reader = new FileReader();\n      reader.onload = () => resolve(String(reader.result));\n      reader.onerror = () => reject(new Error('Unable to read logo.'));\n      reader.readAsDataURL(file);\n    });\n    this.onCompanyFieldChange('logoUrl', logoUrl);\n    input.value = '';\n  }\n\n  removeCompanyLogo(): void {\n    this.onCompanyFieldChange('logoUrl', '');\n  }\n\n  onCompanyFieldChange(field: keyof DocumentParty, value: string): void {
     const company: DocumentParty = { ...this.document().company, [field]: value };
     const updated: BusinessDocument = { ...this.document(), company };
     this.save.emit(updated);
