@@ -111,6 +111,11 @@ export class SeoService {
     if (docConfig && segments.length === 2 && segments[1] === 'create') {
       const url = `${this.siteUrl}/${docConfig.routeSegment}/create`;
       const searchIntentMap: Record<string, { title: string; description: string; keywords: string }> = {
+        'xfacture': {
+          title: 'Generate Free Factur-X E-Invoices Online',
+          description: 'Generate a Factur-X hybrid electronic invoice online for free. Create a human-readable PDF with structured XML invoice data designed for automated electronic invoice processing.',
+          keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, hybrid e-invoice, EN 16931, ZUGFeRD'
+        },
         'invoices': {
           title: 'Create Free Invoices Online with Factur-X • x-facture',
           description: 'Create professional invoices online for free with x-facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML, plus CII and UBL structured invoice exports.',
