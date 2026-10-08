@@ -51,12 +51,15 @@ export class DocumentPreviewShellComponent implements OnInit {
       const element = document.getElementById('document-pdf-root');
       if (!element) {
         console.error('Document PDF root element not found');
-        window.print();
         return;
       }
 
       const htmlLayout = this.createSelfContainedHtml(element);
-      await this.apiService.downloadPdf(this.document(), htmlLayout);
+      await this.apiService.downloadPdf(
+        this.document(),
+        htmlLayout,
+        this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
+      );
     } catch (error) {
       console.error('PDF generation failed:', error);
     } finally {
@@ -73,7 +76,11 @@ export class DocumentPreviewShellComponent implements OnInit {
     this.facturXError.set(null);
     try {
       const htmlLayout = this.createSelfContainedHtml(element);
-      await this.apiService.downloadFacturX(doc, htmlLayout);
+      await this.apiService.downloadFacturX(
+        doc,
+        htmlLayout,
+        this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
+      );
     } catch (error) {
       console.error('Factur-X generation failed:', error);
       this.facturXError.set(error instanceof Error ? error.message : 'Unable to generate the Factur-X PDF.');
