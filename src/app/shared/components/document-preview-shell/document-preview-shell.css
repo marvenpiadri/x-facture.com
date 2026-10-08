@@ -95,3 +95,5 @@
   .download-choice-group { width: 100%; }
   .download-choice-group .btn-action { flex: 1; min-width: 0; }
 }
+
+.output-control{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-color);border-radius:9px;padding:0 8px;background:var(--surface-color);height:38px}.output-control>.material-icons{font-size:18px;color:var(--text-secondary)}.output-select{border:0;background:transparent;color:var(--text-primary);font:inherit;font-size:12px;font-weight:600;height:34px;outline:none;cursor:pointer}
