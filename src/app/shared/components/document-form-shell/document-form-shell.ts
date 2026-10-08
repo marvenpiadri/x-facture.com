@@ -15,9 +15,9 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService } from '../../../core/services/calculation.service';
 import { SettingsService } from '../../../core/services/settings.service';
 import { ClientService } from '../../../core/services/client.service';
-import { COUNTRY_OPTIONS, CountryOption } from '../../../core/data/country-options';
 import { LineItemsTableComponent } from '../line-items-table/line-items-table';
 import { ClientPickerComponent } from '../client-picker/client-picker';
+import { CountryPickerComponent } from '../country-picker/country-picker';
 
 @Component({
   selector: 'app-document-form-shell',
@@ -27,7 +27,8 @@ import { ClientPickerComponent } from '../client-picker/client-picker';
     FormsModule,
     RouterModule,
     LineItemsTableComponent,
-    ClientPickerComponent
+    ClientPickerComponent,
+    CountryPickerComponent
   ],
   templateUrl: './document-form-shell.html',
   styleUrl: './document-form-shell.css',
@@ -50,7 +51,6 @@ export class DocumentFormShellComponent {
   saveAndPreview = output<BusinessDocument>();
 
   readonly availableCurrencies = this.currencyService.CURRENCIES;
-  readonly countries: CountryOption[] = COUNTRY_OPTIONS;
   readonly registeredBusinesses = computed(() => this.settingsService.settings()?.registeredBusinesses || []);
   readonly selectedBusinessId = computed(() =>
     this.activeBusinessId ||
