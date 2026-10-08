@@ -86,6 +86,10 @@ export class ApiService {
     return this.post<{ success: boolean; filename?: string; profile?: string; xml: string }>('/extract', { pdfBase64 });
   }
 
+  async extractFacturXAttachments(pdfBase64: string): Promise<{ success: boolean; attachments: Array<{ name: string; mimeType: string; size: number; dataBase64: string }> }> {
+    return this.post<{ success: boolean; attachments: Array<{ name: string; mimeType: string; size: number; dataBase64: string }> }>('/extract-attachments', { pdfBase64 });
+  }
+
   async embedXmlToPdf(payload: { pdfBase64: string; xml: string; profile?: string }): Promise<{ blob: Blob; filename: string }> {
     const response = await fetch(this.baseUrl + '/embed', {
       method: 'POST',
