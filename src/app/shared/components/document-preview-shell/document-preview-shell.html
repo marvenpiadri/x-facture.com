@@ -58,31 +58,22 @@
         }
       </div>
 
-      <div class="download-choice-group" role="group" aria-label="Download invoice">
-        <button
-          type="button"
-          class="btn-action download-btn"
-          (click)="onDownloadPdf()"
-          [disabled]="isGeneratingPdf() || isGeneratingFacturX()"
-          [attr.aria-busy]="isGeneratingPdf()"
-          title="Download a standard PDF"
-        >
-          @if (isGeneratingPdf()) {
-            <span class="download-spinner" aria-hidden="true"></span>
-            <span>Preparing PDF…</span>
-          } @else {
-            <span class="material-icons btn-icon">picture_as_pdf</span>
-            <span>PDF</span>
-          }
-        </button>
-
-@else {
-              <span class="material-icons btn-icon">picture_as_pdf</span>
-              <span>Factur-X</span>
-            }
-          </button>
+      <button
+        type="button"
+        class="btn-action download-btn"
+        (click)="onDownloadPdf()"
+        [disabled]="isGeneratingPdf()"
+        [attr.aria-busy]="isGeneratingPdf()"
+        title="Download a standard PDF"
+      >
+        @if (isGeneratingPdf()) {
+          <span class="download-spinner" aria-hidden="true"></span>
+          <span>Preparing PDF…</span>
+        } @else {
+          <span class="material-icons btn-icon">picture_as_pdf</span>
+          <span>PDF</span>
         }
-      </div>
+      </button>
 
       <button type="button" class="btn-action print-btn" (click)="onPrint()" title="Send to printer">
         <span class="material-icons btn-icon">print</span>
