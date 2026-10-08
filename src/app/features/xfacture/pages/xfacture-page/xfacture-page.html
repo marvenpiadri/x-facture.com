@@ -28,7 +28,7 @@
         <div class="section-heading"><span>Seller</span><small>Country is required for Factur-X</small></div>
         <div class="field-grid">
           <label>Business name<input [value]="draft().company.name" (input)="updateParty('company','name',$any($event.target).value)" required></label>
-          <label>VAT / tax ID<input [value]="draft().company.taxId || ''" (input)="updateParty('company','taxId',$any($event.target).value)" placeholder="Optional"></label>
+          <label>VAT / tax ID<input [value]="draft().company.taxId || ''" (input)="updateParty('company','taxId',$any($event.target).value)" placeholder="VAT identifier" required></label>
           <label>Street address<input [value]="draft().company.address || ''" (input)="updateParty('company','address',$any($event.target).value)" required></label>
           <label>City<input [value]="draft().company.city || ''" (input)="updateParty('company','city',$any($event.target).value)" required></label>
           <label>Postal code<input [value]="draft().company.postalCode || ''" (input)="updateParty('company','postalCode',$any($event.target).value)" required></label>
@@ -53,7 +53,7 @@
         <div class="section-heading"><span>Buyer</span><small>Country is required for Factur-X</small></div>
         <div class="field-grid">
           <label>Client name<input [value]="draft().client.name" (input)="updateParty('client','name',$any($event.target).value)" required></label>
-          <label>VAT / tax ID<input [value]="draft().client.taxId || ''" (input)="updateParty('client','taxId',$any($event.target).value)" placeholder="Optional"></label>
+          <label>VAT / tax ID<input [value]="draft().client.taxId || ''" (input)="updateParty('client','taxId',$any($event.target).value)" placeholder="VAT identifier" required></label>
           <label>Street address<input [value]="draft().client.address || ''" (input)="updateParty('client','address',$any($event.target).value)" required></label>
           <label>City<input [value]="draft().client.city || ''" (input)="updateParty('client','city',$any($event.target).value)" required></label>
           <label>Postal code<input [value]="draft().client.postalCode || ''" (input)="updateParty('client','postalCode',$any($event.target).value)" required></label>
