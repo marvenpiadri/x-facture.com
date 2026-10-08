@@ -28,9 +28,7 @@ export const routes: Routes = [
   { path: 'products', component: ProductsHubPage },
   { path: 'settings', component: SettingsHubPage },
 
-  // Factur-X is an invoice export, not a separate invoice form.
-  { path: 'invoice/xfacture', redirectTo: 'invoices/create', pathMatch: 'full' },
-  { path: 'xfacture', redirectTo: 'invoices/create', pathMatch: 'full' },
+  // Factur-X is a first-class creation workflow with its own document form.
 
   ...DOCUMENT_ROUTES,
 
