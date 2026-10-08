@@ -52,7 +52,7 @@
       @if (config().routeSegment === 'invoices' || config().routeSegment === 'credit-notes') {
         <div class="form-field-item">
           <label class="field-label">Output format</label>
-          <select class="form-select" [value]="document().specialFields?.outputFormat || 'pdf'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+          <select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'pdf'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
             <option value="pdf">Standard PDF</option>
             <option value="factur-x">Factur-X PDF</option>
             <option value="cii">CII XML</option>
@@ -95,7 +95,7 @@
         <div class="form-meta-grid facturx-meta-grid">
           <div class="form-field-item">
             <label class="field-label">Nature of transaction</label>
-            <select class="form-select" [value]="document().specialFields?.transactionNature || ''" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
+            <select class="form-select" [value]="document().specialFields?.['transactionNature'] || ''" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
               <option value="">Select transaction nature</option>
               <option value="goods">Goods</option>
               <option value="services">Services</option>
@@ -104,7 +104,7 @@
           </div>
           <div class="form-field-item">
             <label class="field-label">Payment method</label>
-            <select class="form-select" [value]="document().specialFields?.paymentMethod || ''" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
+            <select class="form-select" [value]="document().specialFields?.['paymentMethod'] || ''" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
               <option value="">Select payment method</option>
               <option value="bank-transfer">Bank transfer</option>
               <option value="card">Card</option>
@@ -115,19 +115,19 @@
           </div>
           <div class="form-field-item">
             <label class="field-label">IBAN</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.iban || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="IBAN" autocomplete="off" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="IBAN" autocomplete="off" />
           </div>
           <div class="form-field-item">
             <label class="field-label">BIC / SWIFT</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.bic || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="BIC / SWIFT" autocomplete="off" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="BIC / SWIFT" autocomplete="off" />
           </div>
           <div class="form-field-item">
             <label class="field-label">Buyer reference</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.buyerReference || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer or service reference" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer or service reference" />
           </div>
           <div class="form-field-item">
             <label class="field-label">Document output</label>
-            <select class="form-select" [value]="document().specialFields?.outputFormat || 'factur-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+            <select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'factur-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
               <option value="factur-x">Factur-X PDF</option>
               <option value="cii">CII XML</option>
               <option value="ubl">UBL 2.1 XML</option>
@@ -136,19 +136,19 @@
           </div>
           <div class="form-field-item">
             <label class="field-label">Delivery date</label>
-            <input type="date" class="form-input" [value]="document().specialFields?.deliveryDate || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
+            <input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
           </div>
           <div class="form-field-item">
             <label class="field-label">Seller SIREN</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.sellerSiren || ''" (input)="onSpecialFieldChange('sellerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['sellerSiren'] || ''" (input)="onSpecialFieldChange('sellerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
           </div>
           <div class="form-field-item">
             <label class="field-label">Buyer SIREN</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.buyerSiren || ''" (input)="onSpecialFieldChange('buyerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['buyerSiren'] || ''" (input)="onSpecialFieldChange('buyerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
           </div>
           <div class="form-field-item">
             <label class="field-label">VAT payment option</label>
-            <select class="form-select" [value]="document().specialFields?.vatPaymentOption || ''" (change)="onSpecialFieldChange('vatPaymentOption', $any($event.target).value)">
+            <select class="form-select" [value]="document().specialFields?.['vatPaymentOption'] || ''" (change)="onSpecialFieldChange('vatPaymentOption', $any($event.target).value)">
               <option value="">Not specified</option>
               <option value="collections">VAT on collections</option>
               <option value="debits">VAT on debits</option>
@@ -156,19 +156,19 @@
           </div>
           <div class="form-field-item full-width">
             <label class="field-label">Delivery address (when different from billing address)</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.deliveryAddress || ''" (input)="onSpecialFieldChange('deliveryAddress', $any($event.target).value)" placeholder="Street address" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['deliveryAddress'] || ''" (input)="onSpecialFieldChange('deliveryAddress', $any($event.target).value)" placeholder="Street address" />
           </div>
           <div class="form-field-item">
             <label class="field-label">Delivery city</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.deliveryCity || ''" (input)="onSpecialFieldChange('deliveryCity', $any($event.target).value)" placeholder="City" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['deliveryCity'] || ''" (input)="onSpecialFieldChange('deliveryCity', $any($event.target).value)" placeholder="City" />
           </div>
           <div class="form-field-item">
             <label class="field-label">Delivery postal code</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.deliveryPostalCode || ''" (input)="onSpecialFieldChange('deliveryPostalCode', $any($event.target).value)" placeholder="Postal code" />
+            <input type="text" class="form-input" [value]="document().specialFields?.['deliveryPostalCode'] || ''" (input)="onSpecialFieldChange('deliveryPostalCode', $any($event.target).value)" placeholder="Postal code" />
           </div>
           <div class="form-field-item">
             <label class="field-label">Delivery country</label>
-            <app-country-picker [value]="document().specialFields?.deliveryCountry || ''" (valueChange)="onSpecialFieldChange('deliveryCountry', $event)" ariaLabel="Delivery country"></app-country-picker>
+            <app-country-picker [value]="document().specialFields?.['deliveryCountry'] || ''" (valueChange)="onSpecialFieldChange('deliveryCountry', $event)" ariaLabel="Delivery country"></app-country-picker>
           </div>
         </div>
       </section>
@@ -181,9 +181,9 @@
           <span class="facturx-badge">Structured purchase order</span>
         </div>
         <div class="form-meta-grid facturx-meta-grid">
-          <div class="form-field-item"><label class="field-label">Buyer reference</label><input type="text" class="form-input" [value]="document().specialFields?.buyerReference || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer reference" /></div>
-          <div class="form-field-item"><label class="field-label">Requested delivery date</label><input type="date" class="form-input" [value]="document().specialFields?.deliveryDate || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" /></div>
-          <div class="form-field-item"><label class="field-label">Order-X output</label><select class="form-select" [value]="document().specialFields?.outputFormat || 'order-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)"><option value="order-x">Order-X PDF</option><option value="pdf">Standard PDF</option></select></div>
+          <div class="form-field-item"><label class="field-label">Buyer reference</label><input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer reference" /></div>
+          <div class="form-field-item"><label class="field-label">Requested delivery date</label><input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" /></div>
+          <div class="form-field-item"><label class="field-label">Order-X output</label><select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'order-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)"><option value="order-x">Order-X PDF</option><option value="pdf">Standard PDF</option></select></div>
         </div>
       </section>
     }
