@@ -1,0 +1,95 @@
+<div class="tool-workspace">
+  <header class="tool-hero">
+    <div>
+      <a routerLink="/dashboard" class="tool-back"><span class="material-icons">arrow_back</span> Dashboard</a>
+      <div class="tool-kicker">X-Facture document tools</div>
+      <h1>Validate, fix, convert & inspect</h1>
+      <p>One professional workspace for Factur-X, CII, UBL and Order-X operations. Creation still uses the same shared invoice form.</p>
+    </div>
+  </header>
+
+  <div class="tool-layout">
+    <aside class="tool-sidebar">
+      <section>
+        <div class="tool-group-title">Validate & fix</div>
+        @for (tool of tools; track tool.id) {
+          @if (tool.group === 'validate') {
+            <a class="tool-nav-item" [class.active]="activeId() === tool.id" [routerLink]="['/tools', tool.id]" (click)="selectTool(tool.id)">
+              <span class="material-icons">{{ tool.icon }}</span><span>{{ tool.title }}</span>
+            </a>
+          }
+        }
+      </section>
+      <section>
+        <div class="tool-group-title">Convert</div>
+        @for (tool of tools; track tool.id) {
+          @if (tool.group === 'convert') {
+            <a class="tool-nav-item" [class.active]="activeId() === tool.id" [routerLink]="['/tools', tool.id]" (click)="selectTool(tool.id)">
+              <span class="material-icons">{{ tool.icon }}</span><span>{{ tool.title }}</span>
+            </a>
+          }
+        }
+      </section>
+      <section>
+        <div class="tool-group-title">Extract & view</div>
+        @for (tool of tools; track tool.id) {
+          @if (tool.group === 'extract') {
+            <a class="tool-nav-item" [class.active]="activeId() === tool.id" [routerLink]="['/tools', tool.id]" (click)="selectTool(tool.id)">
+              <span class="material-icons">{{ tool.icon }}</span><span>{{ tool.title }}</span>
+            </a>
+          }
+        }
+      </section>
+    </aside>
+
+    <main class="tool-panel">
+      <div class="tool-panel-heading">
+        <div class="tool-icon"><span class="material-icons">{{ activeTool().icon }}</span></div>
+        <div><div class="tool-kicker">{{ activeTool().group === 'validate' ? 'Validate & fix' : activeTool().group === 'convert' ? 'Convert' : 'Extract & view' }}</div><h2>{{ activeTool().title }}</h2><p>{{ activeTool().description }}</p></div>
+      </div>
+
+      @if (activeTool().id === 'convert') {
+        <div class="conversion-grid">
+          @for (tool of tools; track tool.id) {
+            @if (tool.group === 'convert' && tool.id !== 'convert') {
+              <a class="conversion-card" [routerLink]="['/tools', tool.id]"><span class="material-icons">{{ tool.icon }}</span><strong>{{ tool.title }}</strong><span>{{ tool.description }}</span></a>
+            }
+          }
+        </div>
+      } @else {
+        @if (activeTool().accepts === 'pdf' || activeTool().accepts === 'pdf-xml') {
+          <div class="upload-zone">
+            <span class="material-icons">upload_file</span>
+            <strong>{{ activeTool().accepts === 'pdf-xml' ? 'Upload source PDF' : 'Upload PDF' }}</strong>
+            <span>PDF up to 12 MB</span>
+            <input type="file" accept=".pdf,application/pdf" (change)="onFile($event)" />
+            @if (selectedFile()) { <small>{{ selectedFile()!.name }}</small> }
+          </div>
+        }
+        @if (activeTool().accepts === 'xml' || activeTool().accepts === 'pdf-xml') {
+          <div class="xml-zone">
+            <label>Structured XML</label>
+            <textarea [value]="selectedXml()" (input)="onXmlInput($any($event.target).value)" placeholder="Paste CII / UBL / Order-X XML here…"></textarea>
+            @if (activeTool().accepts === 'xml') {
+              <input type="file" accept=".xml,text/xml,application/xml" (change)="onFile($event)" />
+            }
+          </div>
+        }
+        @if (activeTool().id === 'validate-factur-x' || activeTool().id === 'validate-cii' || activeTool().id === 'cii-to-factur-x' || activeTool().id === 'embed') {
+          <div class="profile-control"><label>Validation profile</label><select [value]="selectedProfile()" (change)="selectedProfile.set($any($event.target).value)"><option value="en16931">EN 16931</option><option value="basic">BASIC</option><option value="basic-wl">BASIC WL</option><option value="minimum">MINIMUM</option><option value="extended">EXTENDED</option></select></div>
+        }
+        <button class="tool-run-button" type="button" [disabled]="busy()" (click)="run()">
+          <span class="material-icons">{{ busy() ? 'hourglass_top' : 'play_arrow' }}</span>{{ busy() ? 'Working…' : 'Run operation' }}
+        </button>
+      }
+
+      @if (error()) { <div class="tool-error"><span class="material-icons">error_outline</span>{{ error() }}</div> }
+      @if (result()) {
+        <div class="tool-result"><div class="result-heading"><span class="material-icons">fact_check</span><strong>Result</strong></div><pre>{{ result() | json }}</pre></div>
+      }
+      @if (resultText()) {
+        <div class="tool-result"><div class="result-heading"><span class="material-icons">description</span><strong>Output</strong></div><pre class="xml-output">{{ resultText() }}</pre></div>
+      }
+    </main>
+  </div>
+</div>
