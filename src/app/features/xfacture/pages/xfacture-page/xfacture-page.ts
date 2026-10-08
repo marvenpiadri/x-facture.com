@@ -49,11 +49,13 @@ export class XFacturePage {
       doc.company.city?.trim() &&
       doc.company.postalCode?.trim() &&
       doc.company.country &&
+      doc.company.taxId?.trim() &&
       doc.client.name?.trim() &&
       doc.client.address?.trim() &&
       doc.client.city?.trim() &&
       doc.client.postalCode?.trim() &&
       doc.client.country &&
+      doc.client.taxId?.trim() &&
       doc.items.length > 0 &&
       doc.items.every(item => item.description.trim() && item.quantity > 0 && item.unitCost >= 0 && item.taxRate >= 0)
     );
