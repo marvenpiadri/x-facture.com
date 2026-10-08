@@ -157,7 +157,7 @@ export class XFacturePage {
 
     this.isGenerating.set(true);
     try {
-      const element = document.getElementById('xfacture-preview-root');
+      const element = document.querySelector('#xfacture-preview-host #document-pdf-root') as HTMLElement | null;
       if (!element) throw new Error('Invoice preview is not ready.');
 
       const result = await this.apiService.generateFacturX({
