@@ -653,22 +653,92 @@
 
 /* ==========================================================================
    PRINT MEDIA RULES (§8 Pagination Requirements)
+   The printed/PDF page must be the same physical page box as the on-screen
+   preview. Preview padding is part of the page itself; it is not an extra
+   print margin.
    ========================================================================== */
-@media print {
-  @page {
-    margin: 10mm;
-  }
 
+/* Named pages let A4 and Letter keep their own physical dimensions while
+   preserving the same sheet geometry used by the preview. */
+@page invoice-a4 {
+  size: A4 portrait;
+  margin: 0;
+}
+
+@page invoice-letter {
+  size: letter portrait;
+  margin: 0;
+}
+
+@page invoice-thermal-80 {
+  size: 80mm auto;
+  margin: 0;
+}
+
+@page invoice-thermal-58 {
+  size: 58mm auto;
+  margin: 0;
+}
+
+.document-render-sheet.paper-a4 {
+  page: invoice-a4;
+}
+
+.document-render-sheet.paper-letter {
+  page: invoice-letter;
+}
+
+.document-render-sheet.paper-thermal-80 {
+  page: invoice-thermal-80;
+}
+
+.document-render-sheet.paper-thermal-58 {
+  page: invoice-thermal-58;
+}
+
+@media print {
+  html,
   body {
+    margin: 0 !important;
+    padding: 0 !important;
     background: #ffffff !important;
   }
 
+  /*
+   * Keep the exact preview geometry. Do not reset padding/width here:
+   * A4 = 210 × 297 mm with 20 mm padding, Letter = 8.5 × 11 in
+   * with 0.75 in padding.
+   */
   .document-render-sheet {
+    box-sizing: border-box !important;
+    margin: 0 auto !important;
     box-shadow: none !important;
+  }
+
+  .document-render-sheet.paper-a4 {
+    width: 210mm !important;
+    min-height: 297mm !important;
+    padding: 20mm !important;
     border: none !important;
-    padding: 0 !important;
-    width: 100% !important;
-    min-height: auto !important;
+  }
+
+  .document-render-sheet.paper-letter {
+    width: 8.5in !important;
+    min-height: 11in !important;
+    padding: 0.75in !important;
+    border: none !important;
+  }
+
+  .document-render-sheet.paper-thermal-80 {
+    width: 80mm !important;
+    padding: 5mm !important;
+    border: none !important;
+  }
+
+  .document-render-sheet.paper-thermal-58 {
+    width: 58mm !important;
+    padding: 3mm !important;
+    border: none !important;
   }
 
   .print-item-row {
