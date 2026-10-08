@@ -32,6 +32,8 @@ export class DocumentPreviewShellComponent implements OnInit {
   selectedTemplate = signal<string>('modern');
   selectedPaperSize = signal<PaperSize>('a4');
   isGeneratingPdf = signal<boolean>(false);
+  isGeneratingFacturX = signal<boolean>(false);
+  facturXError = signal<string | null>(null);
 
   ngOnInit(): void {
     if (this.document().templateId) this.selectedTemplate.set(this.document().templateId);
@@ -48,16 +50,59 @@ export class DocumentPreviewShellComponent implements OnInit {
       const element = document.getElementById('document-pdf-root');
       if (!element) throw new Error('Document PDF root element not found.');
 
-      const htmlLayout = this.createSelfContainedHtml(element);
       await this.apiService.downloadPdf(
         this.document(),
-        htmlLayout,
+        this.createSelfContainedHtml(element),
         this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
       );
     } catch (error) {
       console.error('PDF generation failed:', error);
     } finally {
       this.isGeneratingPdf.set(false);
+    }
+  }
+
+  async onDownloadFacturX(): Promise<void> {
+    const doc = this.document();
+    this.facturXError.set(null);
+
+    if (doc.docType !== 'invoices') return;
+
+    const missing: string[] = [];
+    if (!doc.company.name?.trim()) missing.push('seller name');
+    if (!doc.company.address?.trim()) missing.push('seller address');
+    if (!doc.company.city?.trim()) missing.push('seller city');
+    if (!doc.company.postalCode?.trim()) missing.push('seller postal code');
+    if (!doc.company.country?.trim()) missing.push('seller country');
+    if (!doc.company.taxId?.trim()) missing.push('seller VAT / tax ID');
+    if (!doc.client.name?.trim()) missing.push('buyer name');
+    if (!doc.client.address?.trim()) missing.push('buyer address');
+    if (!doc.client.city?.trim()) missing.push('buyer city');
+    if (!doc.client.postalCode?.trim()) missing.push('buyer postal code');
+    if (!doc.client.country?.trim()) missing.push('buyer country');
+    if (!doc.client.taxId?.trim()) missing.push('buyer VAT / tax ID');
+    if (!doc.issueDate) missing.push('issue date');
+    if (!doc.items.length) missing.push('at least one line item');
+
+    if (missing.length) {
+      this.facturXError.set('Complete the following Factur-X fields in the invoice form: ' + missing.join(', ') + '.');
+      return;
+    }
+
+    this.isGeneratingFacturX.set(true);
+    try {
+      const element = document.getElementById('document-pdf-root');
+      if (!element) throw new Error('Document PDF root element not found.');
+
+      await this.apiService.downloadFacturX(
+        doc,
+        this.createSelfContainedHtml(element),
+        this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
+      );
+    } catch (error) {
+      this.facturXError.set(error instanceof Error ? error.message : 'Unable to generate the Factur-X PDF.');
+    } finally {
+      this.isGeneratingFacturX.set(false);
     }
   }
 
