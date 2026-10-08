@@ -115,6 +115,15 @@
             <input type="text" class="form-input" [value]="document().specialFields?.buyerReference || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer or service reference" />
           </div>
           <div class="form-field-item">
+            <label class="field-label">Document output</label>
+            <select class="form-select" [value]="document().specialFields?.outputFormat || 'factur-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+              <option value="factur-x">Factur-X PDF</option>
+              <option value="cii">CII XML</option>
+              <option value="ubl">UBL 2.1 XML</option>
+              <option value="pdf">Standard PDF</option>
+            </select>
+          </div>
+          <div class="form-field-item">
             <label class="field-label">Delivery date</label>
             <input type="date" class="form-input" [value]="document().specialFields?.deliveryDate || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
           </div>
