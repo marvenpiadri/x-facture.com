@@ -80,10 +80,7 @@ export class ApiService {
       headers: { Accept: options.format === 'png' ? 'image/png' : 'image/svg+xml' }
     });
 
-    if (!response.ok) {
-      throw await this.toApiError(response);
-    }
-
+    if (!response.ok) throw await this.toApiError(response);
     return response.blob();
   }
 
@@ -99,9 +96,7 @@ export class ApiService {
       body: JSON.stringify(options)
     });
 
-    if (!response.ok) {
-      throw await this.toApiError(response);
-    }
+    if (!response.ok) throw await this.toApiError(response);
 
     const blob = await response.blob();
     const disposition = response.headers.get('Content-Disposition') || '';
@@ -114,8 +109,10 @@ export class ApiService {
   }
 
   async downloadFacturX(document: BusinessDocument, htmlLayout: string): Promise<void> {
-    const rawInvoiceData = this.toFacturXInvoice(document);
-    const result = await this.generateFacturX({ htmlLayout, rawInvoiceData });
+    const result = await this.generateFacturX({
+      htmlLayout,
+      rawInvoiceData: this.toFacturXInvoice(document)
+    });
 
     const url = URL.createObjectURL(result.blob);
     const anchor = window.document.createElement('a');
@@ -155,8 +152,7 @@ export class ApiService {
         vatRate: item.taxRate,
         discountPercent: item.discountPercent
       })),
-      amountPaid: document.depositPaid,
-      payment: document.bankDetails ? undefined : undefined
+      amountPaid: document.depositPaid
     };
   }
 
@@ -171,10 +167,7 @@ export class ApiService {
       { headers: { Accept: 'application/json' } }
     );
 
-    if (!response.ok) {
-      throw await this.toApiError(response);
-    }
-
+    if (!response.ok) throw await this.toApiError(response);
     return response.json() as Promise<T>;
   }
 
@@ -188,18 +181,13 @@ export class ApiService {
       body: JSON.stringify(body)
     });
 
-    if (!response.ok) {
-      throw await this.toApiError(response);
-    }
-
+    if (!response.ok) throw await this.toApiError(response);
     return response.json() as Promise<T>;
   }
 
   private async toApiError(response: Response): Promise<Error> {
     try {
-      const payload = await response.json() as {
-        error?: { message?: string };
-      };
+      const payload = await response.json() as { error?: { message?: string } };
       return new Error(payload.error?.message || `API request failed (HTTP ${response.status}).`);
     } catch {
       return new Error(`API request failed (HTTP ${response.status}).`);
