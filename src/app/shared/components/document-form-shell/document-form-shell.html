@@ -131,6 +131,20 @@
       </section>
     }
 
+    @if (config().routeSegment === 'order-x') {
+      <section class="facturx-details-panel orderx-details-panel">
+        <div class="facturx-panel-heading">
+          <div><span class="form-section-kicker">Order-X</span><h3>Purchase order details</h3><p>The same business document form is used to prepare the commercial data before Order-X packaging.</p></div>
+          <span class="facturx-badge">Structured purchase order</span>
+        </div>
+        <div class="form-meta-grid facturx-meta-grid">
+          <div class="form-field-item"><label class="field-label">Buyer reference</label><input type="text" class="form-input" [value]="document().specialFields?.buyerReference || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer reference" /></div>
+          <div class="form-field-item"><label class="field-label">Requested delivery date</label><input type="date" class="form-input" [value]="document().specialFields?.deliveryDate || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" /></div>
+          <div class="form-field-item"><label class="field-label">Order-X output</label><select class="form-select" [value]="document().specialFields?.outputFormat || 'order-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)"><option value="order-x">Order-X PDF</option><option value="pdf">Standard PDF</option></select></div>
+        </div>
+      </section>
+    }
+
     <div class="form-section-heading"><div><span class="form-section-kicker">Step 2</span><h3>Parties</h3><p>Tell your customer or recipient who is sending and receiving the document.</p></div></div>
     <div class="form-parties-split">
       <section class="party-card issuer-card">
