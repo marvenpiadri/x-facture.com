@@ -8,6 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DOCUMENT_TYPE_CONFIGS } from '../../../../core/config/document-type-config';
+import { getCreatePageContent } from '../../../../core/config/document-create-content';
 import { DocumentTypeConfig } from '../../../../core/models/document-type-config.model';
 import { DocumentService } from '../../../../core/services/document.service';
 import { BusinessDocument } from '../../../../core/models/document.model';
@@ -36,6 +37,8 @@ export class DocumentEditPage {
     const slug = this.docTypeSlug();
     return DOCUMENT_TYPE_CONFIGS[slug];
   });
+
+  createPageContent = computed(() => getCreatePageContent(this.docTypeSlug()));
 
   constructor() {
     this.route.data.subscribe(data => {
