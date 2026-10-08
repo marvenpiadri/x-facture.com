@@ -207,7 +207,13 @@ export class ApiService {
         vatRate: item.taxRate,
         discountPercent: item.discountPercent
       })),
-      amountPaid: document.depositPaid
+      amountPaid: document.depositPaid,
+      transactionNature: document.specialFields?.transactionNature,
+      paymentMethod: document.specialFields?.paymentMethod,
+      iban: document.specialFields?.iban,
+      bic: document.specialFields?.bic,
+      buyerReference: document.specialFields?.buyerReference,
+      deliveryDate: document.specialFields?.deliveryDate
     };
   }
 
