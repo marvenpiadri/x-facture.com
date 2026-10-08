@@ -107,14 +107,38 @@ export class DocumentPreviewShellComponent implements OnInit {
   }
 
   private createSelfContainedHtml(element: HTMLElement): string {
-    const styles = Array.from(document.querySelectorAll('style'))
-      .map(style => style.textContent || '')
+    /*
+     * The preview is the source of truth for the PDF. Collect the actual
+     * stylesheet rules currently applied to the document instead of only
+     * Angular's <style> tags. This keeps global tokens, box-sizing and the
+     * invoice renderer styles in the server-side HTML snapshot.
+     */
+    const styles = Array.from(document.styleSheets)
+      .flatMap(sheet => {
+        try {
+          return Array.from(sheet.cssRules).map(rule => rule.cssText);
+        } catch {
+          // Cross-origin stylesheets (for example Google Fonts) are added
+          // explicitly below and cannot always be read through cssRules.
+          return [];
+        }
+      })
       .filter(Boolean)
       .join('\n');
 
-    return '<!doctype html><html><head><meta charset="utf-8"><style>' +
-      styles +
-      '</style></head><body>' +
+    const pdfBaseStyles = [
+      '* { box-sizing: border-box; }',
+      'html, body { margin: 0; padding: 0; background: #ffffff; }',
+      'body { font-family: Inter, sans-serif; }',
+      '.document-render-sheet { box-sizing: border-box; }'
+    ].join('\n');
+
+    return '<!doctype html><html><head><meta charset="utf-8">' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">' +
+      '<style>' + pdfBaseStyles + '\n' + styles + '</style>' +
+      '</head><body>' +
       element.outerHTML +
       '</body></html>';
   }
