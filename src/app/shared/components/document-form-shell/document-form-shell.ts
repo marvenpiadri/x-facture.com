@@ -206,6 +206,16 @@ export class DocumentFormShellComponent {
     this.save.emit({ ...this.document(), lineLayoutMode: mode });
   }
 
+  onSpecialFieldChange(field: string, value: string): void {
+    this.save.emit({
+      ...this.document(),
+      specialFields: {
+        ...(this.document().specialFields || {}),
+        [field]: value
+      }
+    });
+  }
+
   onTotalsModifierChange(field: 'taxRate' | 'discountAmount' | 'shippingAmount' | 'depositPaid', value: any): void {
     const num = Math.max(0, Number(value) || 0);
     this.save.emit({ ...this.document(), [field]: num });
