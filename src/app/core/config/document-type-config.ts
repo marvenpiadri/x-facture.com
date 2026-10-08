@@ -13,6 +13,18 @@ export const DOCUMENT_TYPE_CONFIGS: Record<string, DocumentTypeConfig> = {
     description: 'Hybrid electronic invoice format combining a human-readable PDF with structured XML invoice data for automated processing.',
     icon: 'verified'
   },
+  'order-x': {
+    docType: 'order-x',
+    singularName: 'Order-X Purchase Order',
+    pluralName: 'Order-X Purchase Orders',
+    routeSegment: 'order-x',
+    defaultPrefix: 'ORX',
+    defaultLineLayoutMode: 'quantity',
+    hasPricing: true,
+    defaultTemplateId: 'classic',
+    description: 'Hybrid purchase order format combining a readable PDF with structured Order-X XML for automated procurement processing.',
+    icon: 'shopping_cart'
+  },
   'invoices': {
     docType: 'invoices',
     singularName: 'Tax Invoice',
