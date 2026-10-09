@@ -23,6 +23,8 @@ export interface PartyTaxIdentifier {
   schemeId?: string;
   /** Country whose registry defines this identifier; retained when switching jurisdictions. */
   countryCode?: string;
+  /** Original predefined identifier type when a value is archived across countries. */
+  originalType?: string;
   custom?: boolean;
 }
 
