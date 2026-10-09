@@ -95,7 +95,7 @@
 }
 
 .doc-number-display {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 26px;
   font-weight: 800;
   color: var(--color-midnight-800);
@@ -343,7 +343,7 @@
 .col-tax { width: 8%; }
 .col-total { width: 18%; }
 
-.font-mono { font-family: var(--font-mono); }
+.font-mono { font-family: var(--font-sans); }
 .font-bold { font-weight: 700; }
 .text-center { text-align: center; }
 .text-right { text-align: right; }
