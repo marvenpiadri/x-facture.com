@@ -87,8 +87,20 @@ export class ClientsHubPage {
     event.stopPropagation();
     const newDoc = await this.documentService.createDraft('invoices');
     newDoc.clientId = client.id;
+    // Restore the complete saved client profile, not only name and free-text address.
     newDoc.client = {
       name: client.name || '',
+      legalName: client.legalName || '',
+      email: client.email || '',
+      phone: client.phone || '',
+      website: client.website || '',
+      city: client.city || '',
+      postalCode: client.postalCode || '',
+      country: client.country || '',
+      taxId: client.taxId || '',
+      taxIdentifiers: (client.taxIdentifiers || []).map(identifier => ({ ...identifier })),
+      electronicAddress: client.electronicAddress || '',
+      electronicAddressScheme: client.electronicAddressScheme || '',
       address: client.address || ''
     };
     newDoc.currency = client.defaultCurrency || '';
