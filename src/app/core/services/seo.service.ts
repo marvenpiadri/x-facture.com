@@ -312,7 +312,8 @@ export class SeoService {
           title: 'Free Factur-X Generator Online | X-Facture',
           description: 'Create and manage Factur-X hybrid e-invoices online for free with X-Facture. Start a new invoice or open your saved Factur-X documents, with readable PDF and structured XML in one file.',
           keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, hybrid e-invoice, Factur-X PDF, embedded CII XML, x-facture',
-          url
+          url,
+          robots: 'noindex, follow'
         });
         this.setSiteSchema(url, 'Free Factur-X Generator Online');
         return;
@@ -321,7 +322,8 @@ export class SeoService {
         title: `x-facture • ${docConfig.pluralName} | Free Business Documents`,
         description: `${docConfig.description} Create and manage ${docConfig.pluralName.toLowerCase()} with x-facture's free business document tools.`,
         keywords: `${docConfig.pluralName.toLowerCase()}, ${docConfig.singularName.toLowerCase()}, business documents, invoicing, free business tools`,
-        url
+        url,
+        robots: 'noindex, follow'
       });
       this.setSiteSchema(url, docConfig.pluralName);
       return;
