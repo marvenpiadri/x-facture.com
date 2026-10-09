@@ -101,16 +101,10 @@ export class DocumentPreviewShellComponent implements OnInit {
 
     if (!['xfacture', 'invoices', 'credit-notes'].includes(doc.docType)) return;
 
-    const missing: string[] = [];
-    if (!doc.company.name?.trim()) missing.push('seller name');
-    if (!doc.company.address?.trim()) missing.push('seller address');
-    if (!doc.client.name?.trim()) missing.push('buyer name');
-    if (!doc.client.address?.trim()) missing.push('buyer address');
-    if (!doc.issueDate) missing.push('issue date');
-    if (!doc.items.length) missing.push('at least one line item');
-
-    if (missing.length) {
-      this.facturXError.set('Complete the following Factur-X fields in this form: ' + missing.join(', ') + '.');
+    // Keep generation tolerant of incomplete party details. The separate XML
+    // health validator reports missing fields without blocking PDF/A-3 creation.
+    if (!doc.items.length) {
+      this.facturXError.set('Add at least one invoice line before generating the PDF.');
       return;
     }
 
