@@ -167,76 +167,55 @@ export class DocumentPreviewShellComponent implements OnInit {
       '</body></html>';
   }
 
-  private async createEmbeddedFontCss(element: HTMLElement): Promise<string> {
-    // Embed both exact font families used by the invoice. Do not depend on the
-    // browser's local font cache or on the PDF server reaching Google Fonts.
-    const invoiceText = (element.innerText || element.textContent || 'Invoice')
-      .replace(/\s+/g, ' ')
-      .trim();
-    const glyphs = Array.from(new Set(Array.from(invoiceText))).join('').slice(0, 1800);
-    const fontUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap' +
-      '&text=' + encodeURIComponent(glyphs || 'Invoice');
-
-    let css: string;
-    try {
-      const response = await fetch(fontUrl);
-      if (!response.ok) throw new Error('Google Fonts stylesheet request failed.');
-      css = await response.text();
-    } catch {
-      throw new Error('Inter and JetBrains Mono could not be loaded for invoice printing. Check your connection and try again.');
-    }
-
-    // Google Fonts may return modern URLs such as /l/font?kit=... with no
-    // .woff2 extension. Match CSS url() assets rather than relying on filenames.
-    const fontUrls = [...new Set(Array.from(
-      css.matchAll(/url\(\s*(['"]?)(https:\/\/[^)'"]+)\1\s*\)/gi),
-      match => match[2]
-    ))];
-    if (!fontUrls.length) {
-      throw new Error('Google Fonts returned no downloadable font assets for Inter and JetBrains Mono.');
-    }
-
-    const embeddedFonts = await Promise.all(fontUrls.map(async url => {
-      try {
-        const response = await fetch(url);
-        if (!response.ok) return null;
-        const contentType = response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
-        const bytes = new Uint8Array(await response.arrayBuffer());
-        if (!bytes.length || (contentType && !contentType.includes('font') && !/octet-stream|application\/vnd\.ms-fontobject/i.test(contentType))) {
-          return null;
-        }
-        let binary = '';
-        const chunkSize = 0x8000;
-        for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-          binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
-        }
-        const extension = url.match(/\.(woff2?|ttf|otf)(?:[?#]|$)/i)?.[1]?.toLowerCase();
-        const mime = contentType && contentType.includes('font') ? contentType
-          : extension === 'ttf' ? 'font/ttf'
-          : extension === 'otf' ? 'font/otf'
-          : extension === 'woff' ? 'font/woff'
-          : 'font/woff2';
-        return { url, data: 'data:' + mime + ';base64,' + btoa(binary) };
-      } catch {
-        return null;
+  private async createEmbeddedFontCss(_element: HTMLElement): Promise<string> {
+    // Fonts are bundled with the app. PDF generation must not depend on Google Fonts,
+    // an external CDN, or the browser's installed fonts.
+    const fontAssets = [
+      {
+        family: 'Inter',
+        url: '/fonts/InterVariable.woff2',
+        weight: '100 900'
+      },
+      {
+        family: 'JetBrains Mono',
+        url: '/fonts/JetBrainsMono[wght].woff2',
+        weight: '100 800'
       }
+    ];
+
+    const embeddedFonts = await Promise.all(fontAssets.map(async font => {
+      let response: Response;
+      try {
+        response = await fetch(new URL(font.url, window.location.origin).toString());
+      } catch {
+        throw new Error(`The local ${font.family} font could not be reached for PDF generation.`);
+      }
+
+      if (!response.ok) {
+        throw new Error(`The local ${font.family} font file is missing. Please redeploy X-Facture with its bundled fonts.`);
+      }
+
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      if (!bytes.length) {
+        throw new Error(`The local ${font.family} font file is empty.`);
+      }
+
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
+      }
+
+      return `@font-face {
+        font-family: "${font.family}";
+        src: url("data:font/woff2;base64,${btoa(binary)}") format("woff2");
+        font-style: normal;
+        font-weight: ${font.weight};
+        font-display: block;
+      }`;
     }));
 
-    if (embeddedFonts.some(font => !font)) {
-      throw new Error('One or more Inter or JetBrains Mono font files could not be embedded for invoice printing.');
-    }
-
-    for (const font of embeddedFonts) {
-      if (font) css = css.split(font.url).join(font.data);
-    }
-
-    if (!/font-family:\s*['"]?Inter['"]?/i.test(css) ||
-        !/font-family:\s*['"]?JetBrains Mono['"]?/i.test(css) ||
-        /url\(https:\/\//i.test(css)) {
-      throw new Error('Invoice font embedding was incomplete. The PDF was not generated to prevent default-font substitution.');
-    }
-
-    return css;
+    return embeddedFonts.join('\\n');
   }
 
   downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
