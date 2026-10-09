@@ -395,8 +395,10 @@
 
 .vat-breakdown-table {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  table-layout: fixed;
+  font-size: 9pt;
 }
 
 .vat-breakdown-table th {
@@ -433,10 +435,24 @@
 }
 
 .totals-line {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  column-gap: 12px;
+  align-items: start;
+  padding: 3px 0;
+}
+
+.totals-lbl {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.totals-val {
+  min-width: 0;
+  max-width: 100%;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .totals-lbl {
@@ -1241,5 +1257,88 @@
   .totals-line {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+  }
+}
+
+
+/* VAT and totals need their own compact, constrained layout. Long currency
+   values must not widen the VAT table or collide with the totals labels. */
+.vat-breakdown-table th,
+.vat-breakdown-table td {
+  box-sizing: border-box;
+  padding: 5px 4px !important;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.vat-breakdown-table th:nth-child(1),
+.vat-breakdown-table td:nth-child(1) { width: 12%; }
+
+.vat-breakdown-table th:nth-child(2),
+.vat-breakdown-table td:nth-child(2) { width: 14%; }
+
+.vat-breakdown-table th:nth-child(3),
+.vat-breakdown-table td:nth-child(3) { width: 37%; }
+
+.vat-breakdown-table th:nth-child(4),
+.vat-breakdown-table td:nth-child(4) { width: 37%; }
+
+.vat-breakdown-table th:nth-child(3),
+.vat-breakdown-table th:nth-child(4) {
+  font-size: 8pt;
+  line-height: 1.2;
+}
+
+.doc-totals-col,
+.facturx-totals-ledger {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media print {
+  /* Never keep the entire VAT/totals area together: if it does not fit in
+     the remaining page, Chromium must be allowed to move it to the next one. */
+  .doc-summary-calc-section,
+  .doc-vat-breakdown-col,
+  .doc-totals-col,
+  .facturx-totals-ledger {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .vat-breakdown-table {
+    width: 100% !important;
+    table-layout: fixed !important;
+  }
+
+  .vat-breakdown-table th,
+  .vat-breakdown-table td {
+    padding: 4px 3px !important;
+    font-size: 8pt !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .totals-line {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) max-content !important;
+    column-gap: 10px !important;
+    align-items: start !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .totals-lbl {
+    min-width: 0 !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .totals-val {
+    max-width: 100% !important;
+    white-space: nowrap !important;
+    text-align: right !important;
+    font-size: 8.5pt !important;
   }
 }
