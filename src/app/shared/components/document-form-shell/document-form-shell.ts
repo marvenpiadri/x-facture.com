@@ -63,7 +63,7 @@ export class DocumentFormShellComponent implements OnInit {
     const current = this.document().company.taxIdentifiers || [];
     if (current.length) return current;
     const legacy = this.document().company.taxId?.trim();
-    return legacy ? [{ id: 'legacy-tax-id', type: 'TAX_ID', label: 'Tax / VAT', value: legacy }] : [];
+    return legacy ? [{ id: 'legacy-tax-id', type: 'VAT', label: 'Tax / VAT', value: legacy }] : [];
   });
   readonly deliveryExpanded = signal<boolean>(false);
   readonly notesExpanded = signal<boolean>(false);
