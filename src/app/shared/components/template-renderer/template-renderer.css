@@ -1107,6 +1107,7 @@
 
 
 
+@media print {
   /* Let the item table paginate naturally; repeat its column headings and
      keep each ordinary row together. */
   .doc-items-table thead {
