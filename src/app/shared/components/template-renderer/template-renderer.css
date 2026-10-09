@@ -194,7 +194,7 @@
   color: var(--color-text-muted);
 }
 
-.buyer-logo-container {
+.seller-logo-container {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -204,7 +204,7 @@
   margin-left: auto;
 }
 
-.buyer-logo {
+.seller-logo {
   max-height: 48px;
   max-width: 130px;
   object-fit: contain;
