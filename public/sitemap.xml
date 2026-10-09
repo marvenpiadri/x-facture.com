@@ -74,4 +74,12 @@
     <lastmod>2026-10-08</lastmod></url>
   <url><loc>https://x-facture.com/custom-documents</loc>
     <lastmod>2026-10-08</lastmod></url>
+  <url><loc>https://x-facture.com/tools/validate-factur-x</loc>
+    <lastmod>2026-10-09</lastmod></url>
+  <url><loc>https://x-facture.com/tools/pdf-to-factur-x</loc>
+    <lastmod>2026-10-09</lastmod></url>
+  <url><loc>https://x-facture.com/tools/cii-to-factur-x</loc>
+    <lastmod>2026-10-09</lastmod></url>
+  <url><loc>https://x-facture.com/tools/extract-xml</loc>
+    <lastmod>2026-10-09</lastmod></url>
 </urlset>
