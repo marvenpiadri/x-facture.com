@@ -59,12 +59,12 @@ const definitions: Record<string, PartyIdentifierDefinition[]> = {
   ],
   BE: [
     { type: 'VAT', label: 'VAT number', category: 'vat' },
-    { type: 'CBE', label: 'Crossroads Bank for Enterprises (CBE/KBO)', category: 'business' }
+    { type: 'CBE', label: 'Enterprise number (CBE/KBO)', category: 'business', schemeId: '0208' }
   ],
   NL: [
     { type: 'VAT', label: 'VAT identification number (btw-id)', category: 'vat' },
     { type: 'RSIN', label: 'RSIN', category: 'tax' },
-    { type: 'KVK', label: 'Chamber of Commerce number (KvK)', category: 'business' }
+    { type: 'KVK', label: 'Chamber of Commerce number (KvK)', category: 'business', schemeId: '0106' }
   ],
   PT: [
     { type: 'VAT', label: 'VAT number (NIF/NIPC)', category: 'vat' },
@@ -312,7 +312,13 @@ const fallback: PartyIdentifierDefinition[] = [
   { type: 'SOCIAL_REG', label: 'Social security / contribution registration', category: 'social' }
 ];
 export function getPartyIdentifierDefinitions(countryCode?: string): PartyIdentifierDefinition[] {
-  return (definitions[(countryCode || '').trim().toUpperCase()] || fallback).map(item => ({ ...item }));
+  const countryDefinitions = definitions[(countryCode || '').trim().toUpperCase()] || fallback;
+  const globalIdentifiers: PartyIdentifierDefinition[] = [
+    { type: 'GLN', label: 'GLN (Global Location Number)', category: 'business', schemeId: '0088' },
+    { type: 'DUNS', label: 'D-U-N-S Number', category: 'business', schemeId: '0060' }
+  ];
+  return [...countryDefinitions, ...globalIdentifiers.filter(global => !countryDefinitions.some(item => item.type === global.type))]
+    .map(item => ({ ...item }));
 }
 export function getPartyIdentifierDefinition(countryCode: string | undefined, type: string): PartyIdentifierDefinition | undefined {
   return getPartyIdentifierDefinitions(countryCode).find(item => item.type === type);
