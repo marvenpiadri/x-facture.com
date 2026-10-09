@@ -242,19 +242,22 @@
 .doc-delivery-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  padding: 16px 20px;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 }
 
 .delivery-card-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  min-width: 0;
   font-size: 12px;
 }
+.delivery-card-grid > * { max-width: 100%; overflow-wrap: anywhere; }
 
 .delivery-lbl {
   color: var(--color-text-muted);
@@ -738,8 +741,36 @@
    */
   .document-render-sheet {
     box-sizing: border-box !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
     box-shadow: none !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Normal block flow paginates more reliably than a flex column in Chromium. */
+  .formal-document-sheet {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  .formal-document-sheet > * {
+    margin-bottom: 22px !important;
+  }
+
+  .doc-delivery-card,
+  .doc-submeta-bar,
+  .doc-header-block,
+  .doc-parties-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .doc-summary-calc-section,
+  .doc-terms-payment-section {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
   }
 
   .document-render-sheet.paper-a4 {
@@ -779,8 +810,8 @@
   }
 
   .doc-summary-footer-block {
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
   }
 }
 
