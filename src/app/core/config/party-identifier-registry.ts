@@ -327,7 +327,7 @@ export const ISO_6523_LEGAL_SCHEMES = [
 
 
 const defaultIdentifierTypes: Record<string, string[]> = {
-  MA: ['ICE', 'IF', 'RC'],
+  MA: ['ICE', 'IF'],
   FR: ['VAT', 'SIREN'],
   DE: ['VAT', 'TAX_ID'],
   GB: ['VAT', 'CRN'],
