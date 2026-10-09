@@ -449,6 +449,7 @@ export class DocumentFormShellComponent implements OnInit {
         postalCode: client.postalCode,
         country: client.country,
         taxId: client.taxId,
+        taxIdentifiers: client.taxIdentifiers,
         electronicAddress: client.electronicAddress,
         electronicAddressScheme: client.electronicAddressScheme,
         address: client.address || ''
@@ -561,6 +562,7 @@ export class DocumentFormShellComponent implements OnInit {
       postalCode: updated.client.postalCode,
       country: updated.client.country,
       taxId: updated.client.taxId,
+      taxIdentifiers: updated.client.taxIdentifiers,
       electronicAddress: updated.client.electronicAddress,
       electronicAddressScheme: updated.client.electronicAddressScheme,
       address: updated.client.address || ''
