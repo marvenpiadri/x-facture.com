@@ -48,13 +48,16 @@ function enrichContent(
 export const DOCUMENT_CREATE_CONTENT: Record<string, CreatePageContent> = {
   'invoices': enrichContent({
     title: 'Create Free Invoices Online',
-    description: 'Generate a professional tax invoice online for free. Add your business and customer details, line items, taxes and payment terms, then download a print-ready PDF or structured electronic invoice formats.',
-    keywords: 'free invoice generator, create invoice online, invoice maker, tax invoice generator, printable invoice, electronic invoice',
+    description: 'Create a professional invoice online for free with seller and buyer details, searchable country selection, line items, tax calculations, payment information and an optional footer note. Save party details for reuse and download a print-ready PDF, CII XML or UBL XML.',
+    keywords: 'free invoice generator, create invoice online, invoice maker, tax invoice generator, printable PDF invoice, CII XML invoice, UBL invoice, seller buyer details, online billing',
     faqs: [
       { question: 'What is a tax invoice?', answer: 'A tax invoice is a commercial document that records a sale of goods or services and normally identifies the seller, buyer, taxable amounts, taxes and total amount due.' },
       { question: 'Can I create an invoice for free with x-facture?', answer: 'Yes. x-facture lets you prepare invoices online for free and download the finished document as a PDF.' },
       { question: 'What information should an invoice contain?', answer: 'A complete invoice commonly includes the invoice number, issue date, seller and buyer details, line items, quantities, prices, tax information, totals and payment terms.' },
-      { question: 'What is the difference between a normal PDF invoice and Factur-X?', answer: 'A normal PDF is primarily a human-readable document. Factur-X combines a readable PDF with structured XML invoice data so compatible software can process the invoice automatically.' }
+      { question: 'What is the difference between a normal PDF invoice and Factur-X?', answer: 'A normal PDF is primarily a human-readable document. Factur-X combines a readable PDF with structured XML invoice data so compatible software can process the invoice automatically.' },
+      { question: 'Is Factur-X part of the standard invoice form?', answer: 'No. X-Facture keeps ordinary invoices and Factur-X as separate workflows. Use the invoice form for a printable PDF or standalone CII / UBL XML; use the dedicated Factur-X workflow when you need a hybrid PDF/A-3 document with embedded structured invoice data.' },
+      { question: 'Can I save seller and buyer details for later invoices?', answer: 'Yes. Seller business profiles and saved clients can be selected again when creating another document. Their contact and address details remain editable for each invoice.' },
+      { question: 'Can I add a custom footer to my invoice?', answer: 'Yes. Enable the optional footer field in the form and enter a short legal note, registration detail or closing message. The footer is included in the generated document preview.' }
     ]
   }, 'Invoice'),
   'proforma-invoices': enrichContent({
