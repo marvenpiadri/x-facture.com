@@ -76,7 +76,7 @@ export class ClientPickerComponent {
         const def = this.identifierDefinitions().find(option => option.type === value);
         return { ...item, type: value, label: def?.label || value, custom: false, countryCode: this.client().country || undefined, schemeId: def?.schemeId };
       }
-      return { ...item, [field]: value, ...(field === 'label' ? { custom: true } : {}) };
+      return { ...item, [field]: value, ...(field === 'label' ? { custom: true, originalType: undefined } : {}) };
     });
     this.emitIdentifiers(updated);
   }
