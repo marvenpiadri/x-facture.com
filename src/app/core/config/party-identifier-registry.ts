@@ -20,7 +20,7 @@ const definitions: Record<string, PartyIdentifierDefinition[]> = {
   ],
   FR: [
     { type: 'VAT', label: 'VAT number (TVA intracommunautaire)', category: 'vat' },
-    { type: 'SIREN', label: 'SIREN (Company registration)', category: 'business', schemeId: '0002' },
+    { type: 'SIREN', label: 'SIREN / SIRENE (Company registration)', category: 'business', schemeId: '0002' },
     { type: 'SIRET', label: 'SIRET (Establishment registration)', category: 'business', schemeId: '0009' },
     { type: 'RCS', label: 'RCS (Commercial Register)', category: 'business' }
   ],
