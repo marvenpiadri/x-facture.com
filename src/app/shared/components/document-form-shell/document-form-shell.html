@@ -1099,7 +1099,7 @@
           <h4>XML / EN 16931 errors</h4>
           <ul>
             @for (issue of report['errors']; track $index) {
-              <li>{{ issue['message'] || issue['text'] || issue['error'] || issue }}</li>
+              <li>{{ validationMessages.formatIssue(issue) }}</li>
             }
           </ul>
         }
