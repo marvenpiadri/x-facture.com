@@ -195,9 +195,6 @@
           @if (document().specialFields?.['vatPaymentOption'] === 'debits') {
             <div class="meta-date-item"><span class="meta-date-label">VAT:</span><strong class="meta-date-val">Option for payment on debits</strong></div>
           }
-          @if (document().specialFields?.['transactionNature']) {
-            <div class="meta-date-item"><span class="meta-date-label">Operation:</span><strong class="meta-date-val">{{ document().specialFields?.['transactionNature'] }}</strong></div>
-          }
         </div>
       </header>
 
