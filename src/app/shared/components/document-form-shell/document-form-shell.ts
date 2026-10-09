@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BusinessDocument, DocumentDiscount, DocumentLineItem, DocumentParty, LineLayoutMode, PartyTaxIdentifier } from '../../../core/models/document.model';
-import { getPartyIdentifierDefinitions, PartyIdentifierDefinition } from '../../../core/config/party-identifier-registry';
+import { getDefaultPartyIdentifierDefinitions, getPartyIdentifierDefinitions, PartyIdentifierDefinition } from '../../../core/config/party-identifier-registry';
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { getCreatePageContent } from '../../../core/config/document-create-content';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -344,7 +344,24 @@ export class DocumentFormShellComponent implements OnInit {
   });
 
   onSellerCountryChange(country: string): void {
-    this.onCompanyFieldChange('country', country);
+    const existing = this.sellerTaxIdentifiers();
+    const taxIdentifiers = existing.length ? existing : getDefaultPartyIdentifierDefinitions(country).map((item, index) => ({
+      id: `seller-id-${Date.now()}-${index}`,
+      type: item.type,
+      label: item.label,
+      value: '',
+      ...(item.schemeId ? { schemeId: item.schemeId } : {})
+    }));
+    const company = { ...this.document().company, country, taxIdentifiers };
+    this.save.emit({ ...this.document(), company });
+    if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
+    this.businessSaveTimer = setTimeout(() => {
+      void this.settingsService.saveRegisteredBusiness(company, this.activeBusinessId).then(profile => {
+        this.activeBusinessId = profile.id;
+      }).catch(() => {
+        // The invoice remains editable if local profile persistence fails.
+      });
+    }, 600);
   }
 
   addSellerIdentifier(event: Event): void {
