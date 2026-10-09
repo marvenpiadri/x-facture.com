@@ -307,13 +307,13 @@ export class ApiService {
             if (typeof item === 'string') return item;
             if (!item || typeof item !== 'object') return String(item);
             const detail = item as Record<string, unknown>;
-            const path = typeof detail.path === 'string' ? detail.path : '';
-            const message = typeof detail.message === 'string'
-              ? detail.message
-              : typeof detail.text === 'string'
-                ? detail.text
-                : typeof detail.error === 'string'
-                  ? detail.error
+            const path = typeof detail['path'] === 'string' ? detail['path'] : '';
+            const message = typeof detail['message'] === 'string'
+              ? detail['message']
+              : typeof detail['text'] === 'string'
+                ? detail['text']
+                : typeof detail['error'] === 'string'
+                  ? detail['error']
                   : JSON.stringify(detail);
             return path ? `${path}: ${message}` : message;
           }).filter(Boolean)
