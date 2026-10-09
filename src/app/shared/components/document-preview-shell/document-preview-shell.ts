@@ -215,7 +215,7 @@ export class DocumentPreviewShellComponent implements OnInit {
       }`;
     }));
 
-    return embeddedFonts.join('\\n');
+    return embeddedFonts.join('\n');
   }
 
   downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
