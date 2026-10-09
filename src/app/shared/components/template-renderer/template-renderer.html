@@ -157,14 +157,33 @@
   @else {
     <div class="formal-document-sheet">
 
-      <!-- Document Brand Header Banner (§Factur-X Layout) -->
+      <!-- Signature header: brand anchored top-left, document identity and dates aligned right. -->
       <header class="doc-header-block">
         <div class="doc-header-left">
-          <div class="doc-type-badge">{{ document().docType === 'xfacture' || document().docType === 'invoices' ? 'INVOICE' : (document().docTypeLabel || 'INVOICE') }}</div>
-          <div class="doc-number-display">{{ document().docNumber }}</div>
+          <div class="brand-lockup">
+            @if (document().company.logoUrl) {
+              <img [src]="document().company.logoUrl" class="document-brand-logo" alt="Company logo" />
+            } @else if (document().company.name) {
+              <div class="document-brand-monogram" aria-hidden="true">{{ document().company.name.substring(0, 1) }}</div>
+            }
+            <div class="document-brand-copy">
+              @if (document().company.name) {
+                <div class="document-brand-name">{{ document().company.name }}</div>
+              }
+              @if (document().company.website) {
+                <div class="document-brand-detail">{{ document().company.website }}</div>
+              } @else if (document().company.email) {
+                <div class="document-brand-detail">{{ document().company.email }}</div>
+              }
+            </div>
+          </div>
         </div>
 
         <div class="doc-meta-side">
+          <div class="doc-identity">
+            <div class="doc-type-badge">{{ document().docType === 'xfacture' || document().docType === 'invoices' ? 'INVOICE' : (document().docTypeLabel || 'INVOICE') }}</div>
+            <div class="doc-number-display">{{ document().docNumber }}</div>
+          </div>
           <div class="meta-dates-grid">
             <div class="meta-date-item">
               <span class="meta-date-label">ISSUE DATE</span>
@@ -198,15 +217,12 @@
         </div>
       }
 
-      <!-- Parties Block: Seller & Buyer Inlined with the logo inside the buyer -->
+      <!-- Parties Block: seller and buyer details, with branding kept in the page header -->
       <section class="doc-parties-card">
         <!-- Seller Column -->
         <div class="party-col seller-party-col">
           <div class="party-col-header">
-            <div class="party-role-tag">SELLER</div>
-            @if (document().company.logoUrl) {
-              <div class="seller-logo-container"><img [src]="document().company.logoUrl" class="seller-logo" alt="Seller logo" /></div>
-            }
+            <div class="party-role-tag">FROM</div>
           </div>
           <div class="party-details-stack">
             @if (document().company.name) {
@@ -247,7 +263,7 @@
         <!-- Buyer Column -->
         <div class="party-col buyer-party-col">
           <div class="party-col-header">
-            <div class="party-role-tag">BUYER</div>
+            <div class="party-role-tag">BILL TO</div>
           </div>
           <div class="party-details-stack">
             @if (document().client.name) {
