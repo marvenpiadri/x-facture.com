@@ -220,7 +220,7 @@ label, .field-label, .form-label {
 .brand-logo {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
   text-decoration: none;
   transition: transform 0.2s ease;
 }
@@ -233,27 +233,29 @@ label, .field-label, .form-label {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background-color: var(--color-surface, #0d1117);
-  border: 2px solid var(--color-money-green, #238636);
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(35, 134, 54, 0.2);
-  overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 26px;
+  height: 26px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brand-badge:hover,
 .brand-logo:hover .brand-badge {
-  border-color: var(--color-money-green, #238636);
-  box-shadow: 0 0 16px rgba(35, 134, 54, 0.5), 0 4px 12px rgba(35, 134, 54, 0.3);
-  transform: scale(1.06);
+  border: none;
+  box-shadow: none;
+  transform: scale(1.05);
 }
 
 .brand-logo-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 26px;
+  height: 26px;
+  max-width: 26px;
+  max-height: 26px;
+  object-fit: contain;
   display: block;
 }
 

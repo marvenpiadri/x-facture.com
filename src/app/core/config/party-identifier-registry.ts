@@ -3,12 +3,12 @@
  * This registry is extensible UI guidance, not legal advice or proof of registration.
  * Tax registration, ISO 6523 legal-entity identifiers, and electronic-address schemes are distinct.
  */
-export type PartyIdentifierDefinition = {
+export interface PartyIdentifierDefinition {
   type: string;
   label: string;
   category: 'tax' | 'vat' | 'business' | 'social' | 'other';
   schemeId?: string;
-};
+}
 const definitions: Record<string, PartyIdentifierDefinition[]> = {
   MA: [
     { type: 'ICE', label: 'ICE (Common Enterprise Identifier)', category: 'business' },

@@ -24,6 +24,17 @@
   align-items: center;
 }
 
+.brand-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+}
+
 .brand-name {
   font-family: 'Inter', sans-serif;
   font-size: 20px;

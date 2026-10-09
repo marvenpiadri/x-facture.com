@@ -214,9 +214,9 @@
 .party-details-stack {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
   color: var(--color-midnight-800);
 }
 

@@ -76,21 +76,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  background-color: var(--color-surface, #0d1117);
-  border: 2px solid var(--color-money-green, #238636);
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(35, 134, 54, 0.2);
-  overflow: hidden;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 30px;
+  height: 30px;
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .brand-badge.mini:hover,
 .footer-logo-anchor:hover .brand-badge.mini {
-  border-color: var(--color-money-green, #238636);
-  box-shadow: 0 0 14px rgba(35, 134, 54, 0.5), 0 3px 10px rgba(35, 134, 54, 0.3);
-  transform: scale(1.06);
+  border: none;
+  box-shadow: none;
+  transform: scale(1.05);
 }
 
 .directory-links-column { display: flex; flex-direction: column; gap: 16px; }

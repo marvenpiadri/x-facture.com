@@ -259,44 +259,46 @@
 .preview-logo-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-bottom: 2px;
+  gap: 8px;
+  margin-bottom: 6px;
 }
 
-.preview-logo-initial {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 5px;
-  background: #0f172a;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 900;
+.preview-app-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  object-fit: contain;
+  display: block;
 }
 
 .preview-brand-name {
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 800;
   color: #0f172a;
   letter-spacing: -0.02em;
+}
+
+.preview-company-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
 }
 
 .company-name {
   font-size: 13px;
   font-weight: 750;
   color: #1e293b;
+  line-height: 1.3;
 }
 
-.company-sub {
-  font-size: 10.5px;
+.company-sub,
+.company-contact,
+.company-address,
+.company-tax {
+  font-size: 11px;
   color: #64748b;
-}
-
-.company-contact {
-  font-size: 10px;
-  color: #94a3b8;
+  line-height: 1.45;
 }
 
 .preview-invoice-stamp {
