@@ -330,7 +330,7 @@ export class SeoService {
     }
 
     const routeSeo: Record<string, SeoMetadata> = {
-      '/': { title: 'Free Invoice & Factur-X Generator Online | X-Facture', description: 'Create invoices online for free with X-Facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML. No account required.', keywords: 'x-facture, Factur-X, Factur-X invoice, electronic invoice, e-invoice, hybrid PDF XML invoice, free invoice generator, free invoicing, invoice maker, business tools, PDF tools', url: this.siteUrl },
+      '/': { title: 'Free Invoice Generator & Factur-X Tools | X-Facture', description: 'Create invoices, quotes and receipts online for free. Generate Factur-X hybrid e-invoices with a readable PDF and embedded structured XML. No account required.', keywords: 'x-facture, free invoice generator, free Factur-X generator, Factur-X invoice generator, hybrid electronic invoice, embedded XML invoice, quotes, receipts, EN 16931, business documents', url: this.siteUrl },
       '/home': { title: 'x-facture • Business Finance & Invoicing Tools', description: 'Practical free business tools for invoicing, POS, financial calculations, pricing, taxes and everyday business operations.', url: `${this.siteUrl}/home`, robots: 'noindex, follow' },
       '/dashboard': { title: 'x-facture • Business Dashboard', description: 'Business dashboard for monitoring sales, transactions, records and operating activity in x-facture.', url: `${this.siteUrl}/dashboard`, robots: 'noindex, nofollow' },
       '/store/pos': { title: 'x-facture • Free POS & Cash Register', description: 'Practical point-of-sale and cash register tools for retail transactions, checkout and change calculation.', keywords: 'free POS, cash register, point of sale, retail POS, checkout software', url: `${this.siteUrl}/store/pos` },
@@ -398,7 +398,7 @@ export class SeoService {
         {
           '@type': 'WebPage',
           '@id': `${this.siteUrl}#webpage`,
-          name: 'Free Invoice & Factur-X Generator Online | X-Facture',
+          name: 'Free Invoice Generator & Factur-X Tools | X-Facture',
           url: this.siteUrl,
           isPartOf: { '@id': `${this.siteUrl}#website` },
           about: { '@id': `${this.siteUrl}#organization` }
