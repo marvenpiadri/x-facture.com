@@ -175,7 +175,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     // instead of relying on the PDF server to access the user's font cache.
     const glyphs = Array.from(new Set(
       (documentText || 'Invoice')
-        .replace(/\\s+/g, ' ')
+        .replace(/\s+/g, ' ')
         .trim()
         .split('')
     )).join('').slice(0, 1800);
@@ -196,7 +196,7 @@ export class DocumentPreviewShellComponent implements OnInit {
       if (!response.ok) throw new Error('Google Fonts stylesheet request failed.');
       let css = await response.text();
       const fontUrls = [...new Set(Array.from(
-        css.matchAll(/url\\((['"]?)(https:\\/\\/[^)'"]+\\.(?:woff2?|ttf|otf)(?:\\?[^)'"]*)?)\\1\\)/gi),
+        css.matchAll(/url\((['"]?)(https:\/\/[^)'"]+\.(?:woff2?|ttf|otf)(?:\?[^)'"]*)?)\1\)/gi),
         match => match[2]
       ))];
       if (!fontUrls.length) throw new Error('No downloadable invoice font files were returned.');
@@ -215,7 +215,7 @@ export class DocumentPreviewShellComponent implements OnInit {
           for (let offset = 0; offset < bytes.length; offset += chunkSize) {
             binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
           }
-          const extension = url.match(/\\.(woff2?|ttf|otf)(?:\\?|$)/i)?.[1]?.toLowerCase();
+          const extension = url.match(/\.(woff2?|ttf|otf)(?:\?|$)/i)?.[1]?.toLowerCase();
           const mime = extension === 'ttf' ? 'font/ttf' : extension === 'otf' ? 'font/otf' : extension === 'woff' ? 'font/woff' : 'font/woff2';
           return { url, data: 'data:' + mime + ';base64,' + btoa(binary) };
         } catch {
@@ -229,7 +229,7 @@ export class DocumentPreviewShellComponent implements OnInit {
       for (const font of embedded) {
         if (font) css = css.split(font.url).join(font.data);
       }
-      if (!/font-family:\\s*['"]?Inter['"]?/i.test(css)) {
+      if (!/font-family:\s*['"]?Inter['"]?/i.test(css)) {
         throw new Error('The Inter font-face declarations were not returned.');
       }
       return css;
