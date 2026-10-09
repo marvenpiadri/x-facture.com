@@ -117,9 +117,9 @@ export class SeoService {
           keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, hybrid e-invoice, EN 16931, ZUGFeRD'
         },
         'invoices': {
-          title: 'Create Free Invoices Online',
-          description: 'Create professional invoices online for free with x-facture. Add seller, buyer, line-item, tax and payment details, then download a print-ready PDF or structured invoice data.',
-          keywords: 'free invoice generator, create invoice online, invoice maker, Factur-X invoice, Factur-X PDF, electronic invoice, e-invoice, hybrid PDF XML invoice, CII invoice, UBL invoice, printable invoice'
+          title: 'Create Free Invoices Online | PDF, CII & UBL',
+          description: 'Create professional invoices online for free with x-facture. Add seller and buyer contact details, country, line items, tax calculations and payment terms, then download a print-ready PDF or standalone CII / UBL XML. Factur-X has its own dedicated workflow.',
+          keywords: 'free invoice generator, create invoice online, invoice maker, tax invoice generator, printable PDF invoice, CII XML invoice, UBL XML invoice, seller buyer details, invoice tax calculator, online billing'
         },
         'proforma-invoices': {
           title: 'Create Free Proforma Invoices Online',
