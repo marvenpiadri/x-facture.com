@@ -401,7 +401,7 @@ export class DocumentFormShellComponent implements OnInit {
         const definition = this.sellerIdentifierDefinitions().find(option => option.type === value);
         return { ...item, type: value, label: definition?.label || value, custom: false, countryCode: this.document().company.country || undefined, schemeId: definition?.schemeId };
       }
-      return { ...item, [field]: value, ...(field === 'label' ? { custom: true } : {}) };
+      return { ...item, [field]: value, ...(field === 'label' ? { custom: true, originalType: undefined } : {}) };
     });
     this.saveSellerIdentifiers(identifiers);
   }
