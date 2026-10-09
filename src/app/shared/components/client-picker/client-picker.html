@@ -42,10 +42,24 @@
       <textarea
         class="form-textarea party-details-textarea"
         rows="2"
-        [value]="displayDetails()"
+        [value]="client().address || ''"
         (input)="onDetailsChange($any($event.target).value)"
-        placeholder="Street, postal code, city, website, and other address details"
+        placeholder="Street address, building, suite, etc."
       ></textarea>
+      <div class="party-location-grid">
+        <div class="party-field">
+          <label class="field-label">City (optional)</label>
+          <input class="form-input" [value]="client().city || ''" (input)="onFieldChange('city', $any($event.target).value)" autocomplete="address-level2" placeholder="City" />
+        </div>
+        <div class="party-field">
+          <label class="field-label">Postal code (optional)</label>
+          <input class="form-input" [value]="client().postalCode || ''" (input)="onFieldChange('postalCode', $any($event.target).value)" autocomplete="postal-code" placeholder="Postal code" />
+        </div>
+        <div class="party-field">
+          <label class="field-label">Website (optional)</label>
+          <input class="form-input" [value]="client().website || ''" (input)="onFieldChange('website', $any($event.target).value)" autocomplete="url" placeholder="https://…" />
+        </div>
+      </div>
     </div>
   </div>
 
