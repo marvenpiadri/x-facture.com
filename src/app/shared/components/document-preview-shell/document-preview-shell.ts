@@ -67,6 +67,7 @@ export class DocumentPreviewShellComponent implements OnInit {
 
   async onDownloadPdf(): Promise<void> {
     this.previewError.set(null);
+    this.facturXError.set(null);
     this.isGeneratingPdf.set(true);
     try {
       const element = document.getElementById('document-pdf-root');
