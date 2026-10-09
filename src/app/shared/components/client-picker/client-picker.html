@@ -17,13 +17,20 @@
   <div class="party-fields-stack">
     <div class="party-field">
       <label class="field-label">Name / Business name</label>
-      <input type="text" class="form-input" [value]="client().name" (input)="onFieldChange('name', $any($event.target).value)" placeholder="Full name or business name" autocomplete="organization" required />
+      <input
+        type="text"
+        class="form-input"
+        [value]="client().name"
+        (input)="onFieldChange('name', $any($event.target).value)"
+        placeholder="Full name or business name"
+        required
+      />
     </div>
 
     <div class="party-field party-primary-grid">
       <div class="party-field">
         <label class="field-label">Email (optional)</label>
-        <input type="email" class="form-input" [value]="client().email || ''" (input)="onFieldChange('email', $any($event.target).value)" placeholder="billing@example.com" autocomplete="email" />
+        <input type="email" class="form-input" [value]="client().email || ''" (input)="onFieldChange('email', $any($event.target).value)" placeholder="billing@client.com" autocomplete="email" />
       </div>
       <div class="party-field">
         <label class="field-label">Phone (optional)</label>
@@ -32,21 +39,13 @@
     </div>
     <div class="party-field">
       <label class="field-label">Address (optional)</label>
-      <textarea class="form-textarea party-details-textarea" rows="2" [value]="client().address || ''" (input)="onDetailsChange($any($event.target).value)" placeholder="Street address or business address" autocomplete="street-address"></textarea>
-    </div>
-    <div class="party-primary-grid party-location-grid">
-      <div class="party-field">
-        <label class="field-label">City (optional)</label>
-        <input type="text" class="form-input" [value]="client().city || ''" (input)="onFieldChange('city', $any($event.target).value)" placeholder="City" autocomplete="address-level2" />
-      </div>
-      <div class="party-field">
-        <label class="field-label">Postal / ZIP code (optional)</label>
-        <input type="text" class="form-input" [value]="client().postalCode || ''" (input)="onFieldChange('postalCode', $any($event.target).value)" placeholder="Postal code" autocomplete="postal-code" />
-      </div>
-    </div>
-    <div class="party-field">
-      <label class="field-label">Website (optional)</label>
-      <input type="url" class="form-input" [value]="client().website || ''" (input)="onFieldChange('website', $any($event.target).value)" placeholder="https://example.com" autocomplete="url" />
+      <textarea
+        class="form-textarea party-details-textarea"
+        rows="2"
+        [value]="client().address || ''"
+        (input)="onDetailsChange($any($event.target).value)"
+        placeholder="Street address or business address"
+      ></textarea>
     </div>
   </div>
 
@@ -55,7 +54,7 @@
       <label class="field-label">Country (optional)</label>
       <app-country-picker [value]="client().country || ''" (valueChange)="onCountryChange($event)" placeholder="Choose country…" ariaLabel="Buyer country"></app-country-picker>
     </div>
-     <div class="party-field identifier-manager">
+    <div class="party-field identifier-manager">
       <div class="field-label-row">
         <label class="field-label">Tax and registration identifiers (optional)</label>
         <span class="field-sublabel">Add only identifiers that apply to this buyer</span>
