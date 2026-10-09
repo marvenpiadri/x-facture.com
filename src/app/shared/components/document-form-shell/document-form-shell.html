@@ -261,14 +261,13 @@
                 <div class="logo-field-header">
                   <div>
                     <label class="field-label">Company Logo</label>
-                    <span class="field-sublabel">PNG, JPEG or WebP · embedded in generated PDF</span>
                   </div>
                   <div class="logo-actions">
                     @if (document().company.logoUrl) {
                       <img [src]="document().company.logoUrl" alt="Logo preview" class="company-logo-preview" />
                     }
                     <label class="logo-upload-button">
-                      {{ document().company.logoUrl ? 'Replace Logo' : 'Upload Logo' }}
+                      {{ document().company.logoUrl ? 'Replace' : 'Upload' }}
                       <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
                     </label>
                     @if (document().company.logoUrl) {
