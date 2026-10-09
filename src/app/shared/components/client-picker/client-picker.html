@@ -2,7 +2,7 @@
   <div class="panel-header-row">
     <label class="panel-title-label">
       <span class="material-icons title-icon">person</span>
-      <span>Client / Bill To</span>
+      <span>Buyer (To)</span>
     </label>
     <div class="quick-party-select">
       <select class="party-dropdown" [value]="clientId() || ''" (change)="onSelectExisting($event)" aria-label="Select saved client">
@@ -14,71 +14,38 @@
     </div>
   </div>
 
-  <div class="party-fields-grid">
-    <div class="party-field full-width">
-      <label class="field-label">Client Name</label>
-      <input type="text" class="form-input" [value]="client().name" (input)="onFieldChange('name', $any($event.target).value)" placeholder="Client name" required />
+  <div class="party-fields-stack">
+    <div class="party-field">
+      <label class="field-label">Company / Client Name</label>
+      <input
+        type="text"
+        class="form-input"
+        [value]="client().name"
+        (input)="onFieldChange('name', $any($event.target).value)"
+        placeholder="e.g. Acme Corp or Jane Doe"
+        required
+      />
     </div>
 
     <div class="party-field">
-      <label class="field-label">City</label>
-      <input type="text" class="form-input" [value]="client().city || ''" (input)="onFieldChange('city', $any($event.target).value)" placeholder="City" autocomplete="address-level2" />
-    </div>
-
-    <div class="party-field">
-      <label class="field-label">Postal Code</label>
-      <input type="text" class="form-input" [value]="client().postalCode || ''" (input)="onFieldChange('postalCode', $any($event.target).value)" placeholder="Postal code" autocomplete="postal-code" />
-    </div>
-
-    <div class="party-field">
-      <label class="field-label">Country</label>
-      <app-country-picker [value]="client().country || ''" (valueChange)="onFieldChange('country', $event)" ariaLabel="Client country"></app-country-picker>
-    </div>
-
-    <div class="party-field">
-      <label class="field-label">VAT / Tax ID</label>
-      <input type="text" class="form-input" [value]="client().taxId || ''" (input)="onFieldChange('taxId', $any($event.target).value)" placeholder="VAT / tax identifier" />
-    </div>
-
-    <div class="party-field full-width">
-      <label class="field-label">Street Address</label>
-      <input type="text" class="form-input" [value]="client().address || ''" (input)="onFieldChange('address', $any($event.target).value)" placeholder="Street address" autocomplete="street-address" />
-    </div>
-
-    <div class="party-field">
-      <label class="field-label">Legal Name</label>
-      <input type="text" class="form-input" [value]="client().legalName || ''" (input)="onFieldChange('legalName', $any($event.target).value)" placeholder="Registered legal name" />
-    </div>
-    <div class="party-field">
-      <label class="field-label">Email</label>
-      <input type="email" class="form-input" [value]="client().email || ''" (input)="onFieldChange('email', $any($event.target).value)" placeholder="billing@example.com" autocomplete="email" />
-    </div>
-    <div class="party-field">
-      <label class="field-label">Phone</label>
-      <input type="tel" class="form-input" [value]="client().phone || ''" (input)="onFieldChange('phone', $any($event.target).value)" placeholder="Phone number" autocomplete="tel" />
-    </div>
-    <div class="party-field">
-      <label class="field-label">Website</label>
-      <input type="url" class="form-input" [value]="client().website || ''" (input)="onFieldChange('website', $any($event.target).value)" placeholder="https://example.com" />
-    </div>
-
-    <div class="party-field">
-      <label class="field-label">Electronic Address Scheme</label>
-      <select class="form-select" [value]="client().electronicAddressScheme || ''" (change)="onFieldChange('electronicAddressScheme', $any($event.target).value)">
-        <option value="">Select scheme</option>
-        <option value="0225">0225 — French e-invoice addressing</option>
-        <option value="EM">EM — Email</option>
-        <option value="0002">0002 — SIREN</option>
-        <option value="0009">0009 — SIRET</option>
-        <option value="0088">0088 — GLN</option>
-        <option value="9930">9930 — DUNS</option>
-      </select>
-    </div>
-    <div class="party-field">
-      <label class="field-label">Electronic Address</label>
-      <input type="text" class="form-input" [value]="client().electronicAddress || ''" (input)="onFieldChange('electronicAddress', $any($event.target).value)" placeholder="Electronic invoicing endpoint" />
+      <div class="field-label-row">
+        <label class="field-label">Address, Tax & Contact Details</label>
+        <span class="field-sublabel">Address, city, tax/VAT, email, phone & website</span>
+      </div>
+      <textarea
+        class="form-textarea party-details-textarea"
+        rows="4"
+        [value]="displayDetails()"
+        (input)="onDetailsChange($any($event.target).value)"
+        placeholder="25 City Road&#10;London, EC1Y 1AA, United Kingdom&#10;Tax / VAT: GB987654321&#10;Email: finance@client.com · Tel: +44 20 7946 0912"
+      ></textarea>
     </div>
   </div>
 
-  <a routerLink="/clients" class="manage-party-link">Manage clients</a>
+  <div class="party-panel-footer">
+    <a routerLink="/clients" class="manage-party-link">
+      <span class="material-icons link-icon">group</span>
+      <span>Manage clients</span>
+    </a>
+  </div>
 </div>

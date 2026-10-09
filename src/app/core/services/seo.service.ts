@@ -245,7 +245,7 @@ export class SeoService {
 
   private normalizeTitle(title: string): string {
     return title
-      .replace(/[\u2014\u2013]/g, '•')
+      .replace(/[—–]/g, '•')
       .replace(/\s*•\s*/g, ' • ')
       .replace(/\s+/g, ' ')
       .trim();

@@ -12,7 +12,7 @@ export interface ApiHealthResponse {
 export interface InvoiceCalculationResponse {
   success: boolean;
   currency: string;
-  items: Array<{
+  items: {
     description: string;
     quantity: number;
     unitPrice: number;
@@ -23,7 +23,7 @@ export interface InvoiceCalculationResponse {
     taxable: number;
     tax: number;
     total: number;
-  }>;
+  }[];
   totals: {
     subtotal: number;
     discount: number;
@@ -33,7 +33,7 @@ export interface InvoiceCalculationResponse {
     amountPaid: number;
     due: number;
   };
-  vatBreakdown: Array<{ rate: number; taxable: number; tax: number }>;
+  vatBreakdown: { rate: number; taxable: number; tax: number }[];
   calculatedAt: string;
 }
 
@@ -86,8 +86,8 @@ export class ApiService {
     return this.post<{ success: boolean; filename?: string; profile?: string; xml: string }>('/extract', { pdfBase64 });
   }
 
-  async extractFacturXAttachments(pdfBase64: string): Promise<{ success: boolean; attachments: Array<{ name: string; mimeType: string; size: number; dataBase64: string }> }> {
-    return this.post<{ success: boolean; attachments: Array<{ name: string; mimeType: string; size: number; dataBase64: string }> }>('/extract-attachments', { pdfBase64 });
+  async extractFacturXAttachments(pdfBase64: string): Promise<{ success: boolean; attachments: { name: string; mimeType: string; size: number; dataBase64: string }[] }> {
+    return this.post<{ success: boolean; attachments: { name: string; mimeType: string; size: number; dataBase64: string }[] }>('/extract-attachments', { pdfBase64 });
   }
 
   async embedXmlToPdf(payload: { pdfBase64: string; xml: string; profile?: string }): Promise<{ blob: Blob; filename: string }> {

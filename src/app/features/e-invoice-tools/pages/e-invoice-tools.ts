@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 
 interface ValidationSummary {
   valid: boolean;
-  checks: Array<{ label: string; state: 'passed' | 'failed' | 'not-run' }>;
+  checks: { label: string; state: 'passed' | 'failed' | 'not-run' }[];
   errors: unknown[];
   french2026?: { status?: string; message?: string };
 }
@@ -70,10 +70,10 @@ export class EInvoiceToolsPage {
   readonly error = signal('');
 
   readonly activeTool = computed(() => TOOLS.find(t => t.id === this.activeId()) || TOOLS[0]);
-  readonly attachments = computed<Array<{ name: string; mimeType: string; size: number; dataBase64: string }>>(() => {
+  readonly attachments = computed<{ name: string; mimeType: string; size: number; dataBase64: string }[]>(() => {
     const value = this.result()?.['attachments'];
     return Array.isArray(value)
-      ? value as Array<{ name: string; mimeType: string; size: number; dataBase64: string }>
+      ? value as { name: string; mimeType: string; size: number; dataBase64: string }[]
       : [];
   });
   readonly validationSummary = computed<ValidationSummary | null>(() => {

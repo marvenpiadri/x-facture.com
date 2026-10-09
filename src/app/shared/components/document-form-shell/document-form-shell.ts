@@ -77,6 +77,57 @@ export class DocumentFormShellComponent {
     );
   });
 
+  displaySellerDetails = computed(() => {
+    const comp = this.document().company;
+    if (!comp) return '';
+    return this.formatMergedPartyDetails(comp);
+  });
+
+  onSellerDetailsChange(value: string): void {
+    this.onCompanyFieldChange('address', value);
+  }
+
+  formatMergedPartyDetails(party: DocumentParty): string {
+    if (!party) return '';
+    const addr = (party.address || '').trim();
+    if (addr.includes('\n')) {
+      return addr;
+    }
+
+    const lines: string[] = [];
+    if (addr) {
+      lines.push(addr);
+    }
+
+    const locParts = [party.postalCode, party.city, party.country].filter(Boolean);
+    if (locParts.length > 0) {
+      const locStr = locParts.join(' ');
+      if (!addr || !addr.toLowerCase().includes((party.city || '').toLowerCase())) {
+        lines.push(locStr);
+      }
+    }
+
+    if (party.taxId?.trim() && (!addr || !addr.includes(party.taxId))) {
+      lines.push(`Tax / VAT: ${party.taxId.trim()}`);
+    }
+
+    const contacts: string[] = [];
+    if (party.phone?.trim() && (!addr || !addr.includes(party.phone))) {
+      contacts.push(`Tel: ${party.phone.trim()}`);
+    }
+    if (party.email?.trim() && (!addr || !addr.includes(party.email))) {
+      contacts.push(`Email: ${party.email.trim()}`);
+    }
+    if (party.website?.trim() && (!addr || !addr.includes(party.website))) {
+      contacts.push(party.website.trim());
+    }
+    if (contacts.length > 0) {
+      lines.push(contacts.join(' · '));
+    }
+
+    return lines.join('\n');
+  }
+
   onHeaderFieldChange(field: keyof BusinessDocument, value: any): void {
     this.save.emit({ ...this.document(), [field]: value });
   }
@@ -165,9 +216,10 @@ export class DocumentFormShellComponent {
     if (!profile) return;
 
     this.activeBusinessId = profile.id;
+    const formattedAddress = this.formatMergedPartyDetails(profile.company);
     this.save.emit({
       ...this.document(),
-      company: { ...profile.company }
+      company: { ...profile.company, address: formattedAddress }
     });
 
     void this.settingsService.selectRegisteredBusiness(profile.id).catch(() => {
@@ -181,9 +233,10 @@ export class DocumentFormShellComponent {
       this.clientSaveTimer = undefined;
     }
 
+    const formattedAddress = this.formatMergedPartyDetails(selection.client);
     this.save.emit({
       ...this.document(),
-      client: { ...selection.client },
+      client: { ...selection.client, address: formattedAddress },
       clientId: selection.clientId
     });
   }
@@ -247,5 +300,60 @@ export class DocumentFormShellComponent {
 
   triggerSaveAndPreview(): void {
     this.saveAndPreview.emit(this.document());
+  }
+
+  fillSampleData(): void {
+    const current = this.document();
+    const today = new Date().toISOString().split('T')[0];
+    const dueDate = new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0];
+
+    const sample: BusinessDocument = {
+      ...current,
+      docNumber: current.docNumber || 'INV-2026-0042',
+      issueDate: current.issueDate || today,
+      dueDate: current.dueDate || dueDate,
+      purchaseOrderRef: current.purchaseOrderRef || 'PO-2026-984',
+      company: {
+        ...current.company,
+        name: current.company.name || 'Factur-X Solutions SAS',
+        address: current.company.address || '15 Boulevard Haussmann\n75009 Paris, France\nTax / VAT: FR12345678901\nEmail: billing@facturx-solutions.fr · Tel: +33 1 42 68 00 00'
+      },
+      client: {
+        ...current.client,
+        name: current.client.name || 'Starlight Technologies Ltd',
+        address: current.client.address || '25 City Road\nEC1Y 1AA London, United Kingdom\nTax / VAT: GB987654321\nEmail: finance@starlight.tech · Tel: +44 20 7946 0912'
+      },
+      items: current.items.length > 0 && current.items[0].description ? current.items : [
+        {
+          id: 'item-1',
+          description: 'Factur-X E-Invoice Integration & Setup',
+          quantity: 1,
+          unitCost: 1200,
+          taxRate: 20,
+          discountPercent: 0,
+          amount: 1200
+        },
+        {
+          id: 'item-2',
+          description: 'PDF/A-3b Compliance Validation Service',
+          quantity: 2,
+          unitCost: 350,
+          taxRate: 20,
+          discountPercent: 5,
+          amount: 665
+        }
+      ],
+      notes: current.notes || 'Payment terms: 30 days net from issue date. Thank you for your business.',
+      bankDetails: current.bankDetails || 'Bank: BNP Paribas Paris\nIBAN: FR76 3000 6000 0112 3456 7890 189\nBIC: BNPAFRPPXXX\nAccount Name: Factur-X Solutions SAS',
+      specialFields: {
+        ...(current.specialFields || {}),
+        transactionNature: 'services',
+        paymentMethod: 'bank-transfer',
+        iban: 'FR76 3000 6000 0112 3456 7890 189',
+        bic: 'BNPAFRPPXXX',
+        outputFormat: current.specialFields?.['outputFormat'] || 'factur-x'
+      }
+    };
+    this.save.emit(sample);
   }
 }

@@ -1,11 +1,29 @@
 <div class="doc-edit-workspace">
+  <!-- Workspace Header Bar -->
   <div class="workspace-top-bar">
-    <div class="breadcrumb-trail">
-      <a routerLink="/dashboard" class="bc-link">Dashboard</a>
-      <span class="bc-sep">/</span>
-      <a [routerLink]="'/' + config().routeSegment" class="bc-link">{{ config().pluralName }}</a>
-      <span class="bc-sep">/</span>
-      <span class="bc-current">{{ isNew() ? 'New ' + config().singularName : document().docNumber }}</span>
+    <div class="workspace-title-group">
+      <div class="breadcrumb-trail">
+        <a routerLink="/dashboard" class="bc-link">Dashboard</a>
+        <span class="bc-sep">/</span>
+        <a [routerLink]="'/' + config().routeSegment" class="bc-link">{{ config().pluralName }}</a>
+        <span class="bc-sep">/</span>
+        <span class="bc-current">{{ isNew() ? 'New ' + config().singularName : document().docNumber }}</span>
+      </div>
+      <div class="workspace-heading-line">
+        <div class="heading-title-wrapper">
+          <span class="material-icons heading-type-icon">{{ config().icon }}</span>
+          <h1 class="workspace-doc-title">{{ isNew() ? 'Create ' + config().singularName : document().docNumber }}</h1>
+        </div>
+        <button
+          type="button"
+          class="btn-prefill-sample"
+          (click)="fillSampleData()"
+          title="Autofill sample data for quick preview & testing"
+        >
+          <span class="material-icons sample-icon">auto_fix_high</span>
+          <span>Fill Sample Data</span>
+        </button>
+      </div>
     </div>
 
     <div class="workspace-top-actions">
@@ -24,296 +42,257 @@
     </div>
   </div>
 
-  <div class="document-form-chassis">
-    <div class="form-title-deck">
-      <div class="title-meta-group">
-        <div class="type-indicator">
-          <span class="material-icons type-icon">{{ config().icon }}</span>
-          <h2>{{ config().singularName }}</h2>
-        </div>
-        <p class="type-description">{{ config().description }}</p>
-      </div>
-
-      <div class="serial-number-box">
-        <label class="field-label">Document Number</label>
-        <input
-          type="text"
-          class="form-input serial-input"
-          [value]="document().docNumber"
-          (input)="onHeaderFieldChange('docNumber', $any($event.target).value)"
-          placeholder="Document number"
-          required
-        />
+  <!-- Step 1: Document Details -->
+  <section class="form-step-section">
+    <div class="form-section-heading">
+      <div>
+        <span class="form-section-kicker">Step 1</span>
+        <h3>Document details</h3>
+        <p>Set document identifiers, issue dates, currency, and format.</p>
       </div>
     </div>
-
-    <div class="form-section-heading"><div><span class="form-section-kicker">Step 1</span><h3>Document details</h3><p>Set the basic information that identifies this document.</p></div></div>
-    <div class="form-meta-grid">
-      @if (config().routeSegment === 'invoices' || config().routeSegment === 'credit-notes') {
+    <div class="form-step-card">
+      <div class="form-meta-grid">
         <div class="form-field-item">
-          <label class="field-label">Output format</label>
-          <select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'pdf'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
-            <option value="pdf">Standard PDF</option>
-            <option value="factur-x">Factur-X PDF</option>
-            <option value="cii">CII XML</option>
-            @if (config().routeSegment === 'invoices') { <option value="ubl">UBL 2.1 XML</option> }
+          <label class="field-label">Document Number</label>
+          <input
+            type="text"
+            class="form-input serial-input"
+            [value]="document().docNumber"
+            (input)="onHeaderFieldChange('docNumber', $any($event.target).value)"
+            placeholder="e.g. INV-2026-0001"
+            required
+          />
+        </div>
+
+        <div class="form-field-item">
+          <label class="field-label">Issue Date</label>
+          <input type="date" class="form-input" [value]="document().issueDate" (input)="onHeaderFieldChange('issueDate', $any($event.target).value)" required />
+        </div>
+
+        <div class="form-field-item">
+          <label class="field-label">Payment Due / Expiry Date</label>
+          <input type="date" class="form-input" [value]="document().dueDate || ''" (input)="onHeaderFieldChange('dueDate', $any($event.target).value)" />
+        </div>
+
+        <div class="form-field-item">
+          <label class="field-label">Currency</label>
+          <select class="form-select" [value]="document().currency" (change)="onHeaderFieldChange('currency', $any($event.target).value)">
+            @for (c of availableCurrencies; track c.code) {
+              <option [value]="c.code">{{ c.code }} ({{ c.symbol }}) — {{ c.name }}</option>
+            }
           </select>
         </div>
-      }
-      <div class="form-field-item">
-        <label class="field-label">Currency</label>
-        <select class="form-select" [value]="document().currency" (change)="onHeaderFieldChange('currency', $any($event.target).value)">
-          @for (c of availableCurrencies; track c.code) {
-            <option [value]="c.code">{{ c.code }} ({{ c.symbol }}) — {{ c.name }}</option>
-          }
-        </select>
-      </div>
-      <div class="form-field-item">
-        <label class="field-label">Issue Date</label>
-        <input type="date" class="form-input" [value]="document().issueDate" (input)="onHeaderFieldChange('issueDate', $any($event.target).value)" required />
-      </div>
-      <div class="form-field-item">
-        <label class="field-label">Payment Due / Expiry Date</label>
-        <input type="date" class="form-input" [value]="document().dueDate || ''" (input)="onHeaderFieldChange('dueDate', $any($event.target).value)" />
-      </div>
-      <div class="form-field-item">
-        <label class="field-label">P.O. / Customer Reference</label>
-        <input type="text" class="form-input" [value]="document().purchaseOrderRef || ''" (input)="onHeaderFieldChange('purchaseOrderRef', $any($event.target).value)" placeholder="Purchase order reference" />
-      </div>
-    </div>
 
-    @if (config().routeSegment === 'xfacture') {
-      <section class="facturx-details-panel">
-        <div class="facturx-panel-heading">
-          <div>
-            <span class="form-section-kicker">Factur-X</span>
-            <h3>Electronic invoice details</h3>
-            <p>These fields help describe the structured e-invoice data alongside the readable PDF.</p>
-          </div>
-          <span class="facturx-badge">Structured e-invoice fields</span>
-        </div>
-        <div class="form-meta-grid facturx-meta-grid">
+        @if (config().routeSegment === 'invoices' || config().routeSegment === 'credit-notes' || config().routeSegment === 'xfacture') {
           <div class="form-field-item">
-            <label class="field-label">Nature of transaction</label>
-            <select class="form-select" [value]="document().specialFields?.['transactionNature'] || ''" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
-              <option value="">Select transaction nature</option>
-              <option value="goods">Goods</option>
-              <option value="services">Services</option>
-              <option value="goods-and-services">Goods & services</option>
-            </select>
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Payment method</label>
-            <select class="form-select" [value]="document().specialFields?.['paymentMethod'] || ''" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
-              <option value="">Select payment method</option>
-              <option value="bank-transfer">Bank transfer</option>
-              <option value="card">Card</option>
-              <option value="direct-debit">Direct debit</option>
-              <option value="cash">Cash</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">IBAN</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="IBAN" autocomplete="off" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">BIC / SWIFT</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="BIC / SWIFT" autocomplete="off" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Buyer reference</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer or service reference" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Document output</label>
-            <select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'factur-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
-              <option value="factur-x">Factur-X PDF</option>
-              <option value="cii">CII XML</option>
-              <option value="ubl">UBL 2.1 XML</option>
+            <label class="field-label">Output format</label>
+            <select class="form-select" [value]="document().specialFields?.['outputFormat'] || (config().routeSegment === 'xfacture' ? 'factur-x' : 'pdf')" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+              <option value="factur-x">Factur-X PDF (PDF/A-3b)</option>
               <option value="pdf">Standard PDF</option>
+              <option value="cii">CII XML</option>
+              @if (config().routeSegment === 'invoices' || config().routeSegment === 'xfacture') { <option value="ubl">UBL 2.1 XML</option> }
             </select>
           </div>
-          <div class="form-field-item">
-            <label class="field-label">Delivery date</label>
-            <input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Seller SIREN</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['sellerSiren'] || ''" (input)="onSpecialFieldChange('sellerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Buyer SIREN</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['buyerSiren'] || ''" (input)="onSpecialFieldChange('buyerSiren', $any($event.target).value)" placeholder="9-digit French SIREN" inputmode="numeric" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">VAT payment option</label>
-            <select class="form-select" [value]="document().specialFields?.['vatPaymentOption'] || ''" (change)="onSpecialFieldChange('vatPaymentOption', $any($event.target).value)">
-              <option value="">Not specified</option>
-              <option value="collections">VAT on collections</option>
-              <option value="debits">VAT on debits</option>
-            </select>
-          </div>
-          <div class="form-field-item full-width">
-            <label class="field-label">Delivery address (when different from billing address)</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['deliveryAddress'] || ''" (input)="onSpecialFieldChange('deliveryAddress', $any($event.target).value)" placeholder="Street address" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Delivery city</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['deliveryCity'] || ''" (input)="onSpecialFieldChange('deliveryCity', $any($event.target).value)" placeholder="City" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Delivery postal code</label>
-            <input type="text" class="form-input" [value]="document().specialFields?.['deliveryPostalCode'] || ''" (input)="onSpecialFieldChange('deliveryPostalCode', $any($event.target).value)" placeholder="Postal code" />
-          </div>
-          <div class="form-field-item">
-            <label class="field-label">Delivery country</label>
-            <app-country-picker [value]="document().specialFields?.['deliveryCountry'] || ''" (valueChange)="onSpecialFieldChange('deliveryCountry', $event)" ariaLabel="Delivery country"></app-country-picker>
-          </div>
-        </div>
-      </section>
-    }
+        }
 
-    @if (config().routeSegment === 'order-x') {
-      <section class="facturx-details-panel orderx-details-panel">
-        <div class="facturx-panel-heading">
-          <div><span class="form-section-kicker">Order-X</span><h3>Purchase order details</h3><p>The same business document form is used to prepare the commercial data before Order-X packaging.</p></div>
-          <span class="facturx-badge">Structured purchase order</span>
+        <div class="form-field-item">
+          <label class="field-label">P.O. / Customer Reference</label>
+          <input type="text" class="form-input" [value]="document().purchaseOrderRef || ''" (input)="onHeaderFieldChange('purchaseOrderRef', $any($event.target).value)" placeholder="e.g. PO-98421" />
         </div>
-        <div class="form-meta-grid facturx-meta-grid">
-          <div class="form-field-item"><label class="field-label">Buyer reference</label><input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer reference" /></div>
-          <div class="form-field-item"><label class="field-label">Requested delivery date</label><input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" /></div>
-          <div class="form-field-item"><label class="field-label">Order-X output</label><select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'order-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)"><option value="order-x">Order-X PDF</option><option value="pdf">Standard PDF</option></select></div>
-        </div>
-      </section>
-    }
+      </div>
 
-    <div class="form-section-heading"><div><span class="form-section-kicker">Step 2</span><h3>Parties</h3><p>Tell your customer or recipient who is sending and receiving the document.</p></div></div>
-    <div class="form-parties-split">
-      <section class="party-card issuer-card">
-        <div class="party-picker-panel">
-          <div class="panel-header-row">
-            <label class="panel-title-label">
-              <span class="material-icons title-icon">business</span>
-              <span>From / Issuer</span>
-            </label>
-            <div class="quick-party-select">
-              <select class="party-dropdown" [value]="selectedBusinessId()" (change)="onBusinessSelect($event)" aria-label="Select registered business">
-                <option value="">Choose registered business...</option>
-                @for (business of registeredBusinesses(); track business.id) {
-                  <option [value]="business.id">{{ business.company.name || 'Unnamed business' }}</option>
-                }
+      @if (config().routeSegment === 'xfacture') {
+        <div class="facturx-section-divider">
+          <div class="facturx-divider-header">
+            <span class="facturx-subheading">Factur-X Electronic Invoicing Attributes</span>
+            <span class="facturx-hint-text">Franco-German hybrid e-invoicing standard (EN 16931)</span>
+          </div>
+          <div class="form-meta-grid">
+            <div class="form-field-item">
+              <label class="field-label">Nature of transaction (BT-23)</label>
+              <select class="form-select" [value]="document().specialFields?.['transactionNature'] || 'services'" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
+                <option value="services">Services (S1)</option>
+                <option value="goods">Goods (B1)</option>
+                <option value="goods-and-services">Goods & Services (M1)</option>
+              </select>
+            </div>
+
+            <div class="form-field-item">
+              <label class="field-label">Payment method</label>
+              <select class="form-select" [value]="document().specialFields?.['paymentMethod'] || 'bank-transfer'" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
+                <option value="bank-transfer">Bank transfer (Virement)</option>
+                <option value="direct-debit">SEPA Direct debit</option>
+                <option value="card">Bank card</option>
+                <option value="cash">Cash</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-field-item">
+              <label class="field-label">IBAN</label>
+              <input type="text" class="form-input font-mono" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="FR76 3000..." autocomplete="off" />
+            </div>
+
+            <div class="form-field-item">
+              <label class="field-label">BIC / SWIFT</label>
+              <input type="text" class="form-input font-mono" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="BNPAFRPPXXX" autocomplete="off" />
+            </div>
+
+            <div class="form-field-item">
+              <label class="field-label">Buyer Reference / Service Code</label>
+              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Chorus Pro / buyer service" />
+            </div>
+
+            <div class="form-field-item">
+              <label class="field-label">Delivery Date</label>
+              <input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
+            </div>
+          </div>
+        </div>
+      }
+
+      @if (config().routeSegment === 'order-x') {
+        <div class="facturx-section-divider">
+          <div class="facturx-divider-header">
+            <span class="facturx-subheading">Order-X Purchase Order Attributes</span>
+            <span class="facturx-hint-text">Structured electronic purchase ordering</span>
+          </div>
+          <div class="form-meta-grid">
+            <div class="form-field-item">
+              <label class="field-label">Buyer Reference</label>
+              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer reference" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Requested Delivery Date</label>
+              <input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Order-X Output</label>
+              <select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'order-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+                <option value="order-x">Order-X PDF (PDF/A-3b)</option>
+                <option value="pdf">Standard PDF</option>
               </select>
             </div>
           </div>
+        </div>
+      }
+    </div>
+  </section>
 
-          <div class="party-fields-grid">
-            <div class="party-field full-width">
-              <label class="field-label">Company Name</label>
-              <input type="text" class="form-input" [value]="document().company.name || ''" (input)="onCompanyFieldChange('name', $any($event.target).value)" placeholder="Business name" autocomplete="organization" />
-            </div>
-
-            <div class="party-field">
-              <label class="field-label">City</label>
-              <input type="text" class="form-input" [value]="document().company.city || ''" (input)="onCompanyFieldChange('city', $any($event.target).value)" placeholder="City" autocomplete="address-level2" />
-            </div>
-
-            <div class="party-field">
-              <label class="field-label">Postal Code</label>
-              <input type="text" class="form-input" [value]="document().company.postalCode || ''" (input)="onCompanyFieldChange('postalCode', $any($event.target).value)" placeholder="Postal code" autocomplete="postal-code" />
-            </div>
-
-            <div class="party-field">
-              <label class="field-label">Country</label>
-              <app-country-picker [value]="document().company.country || ''" (valueChange)="onCompanyFieldChange('country', $event)" ariaLabel="Company country"></app-country-picker>
-            </div>
-
-            <div class="party-field">
-              <label class="field-label">VAT / Tax ID</label>
-              <input type="text" class="form-input" [value]="document().company.taxId || ''" (input)="onCompanyFieldChange('taxId', $any($event.target).value)" placeholder="VAT / tax identifier" />
-            </div>
-
-            <div class="party-field full-width">
-              <label class="field-label">Street Address</label>
-              <input type="text" class="form-input" [value]="document().company.address || ''" (input)="onCompanyFieldChange('address', $any($event.target).value)" placeholder="Street address" autocomplete="street-address" />
-            </div>
-
-            <div class="party-field">
-              <label class="field-label">Legal Name</label>
-              <input type="text" class="form-input" [value]="document().company.legalName || ''" (input)="onCompanyFieldChange('legalName', $any($event.target).value)" placeholder="Registered legal name" />
-            </div>
-            <div class="party-field">
-              <label class="field-label">Email</label>
-              <input type="email" class="form-input" [value]="document().company.email || ''" (input)="onCompanyFieldChange('email', $any($event.target).value)" placeholder="billing@example.com" autocomplete="email" />
-            </div>
-            <div class="party-field">
-              <label class="field-label">Phone</label>
-              <input type="tel" class="form-input" [value]="document().company.phone || ''" (input)="onCompanyFieldChange('phone', $any($event.target).value)" placeholder="Phone number" autocomplete="tel" />
-            </div>
-            <div class="party-field">
-              <label class="field-label">Website</label>
-              <input type="url" class="form-input" [value]="document().company.website || ''" (input)="onCompanyFieldChange('website', $any($event.target).value)" placeholder="https://example.com" />
-            </div>
-
-            @if (config().routeSegment === 'xfacture') {
-              <div class="party-field">
-                <label class="field-label">Electronic Address Scheme</label>
-                <select class="form-select" [value]="document().company.electronicAddressScheme || ''" (change)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)">
-                  <option value="">Select scheme</option>
-                  <option value="0225">0225 — French e-invoice addressing</option>
-                  <option value="EM">EM — Email</option>
-                  <option value="0002">0002 — SIREN</option>
-                  <option value="0009">0009 — SIRET</option>
-                  <option value="0088">0088 — GLN</option>
-                  <option value="9930">9930 — DUNS</option>
+  <!-- Step 2: Seller & Buyer (inline) -->
+  <section class="form-step-section">
+    <div class="form-section-heading">
+      <div>
+        <span class="form-section-kicker">Step 2</span>
+        <h3>Seller & Buyer</h3>
+        <p>Your company information and client recipient details.</p>
+      </div>
+    </div>
+    <div class="form-step-card parties-inline-step-card">
+      <div class="parties-inline-grid">
+        <!-- Seller Side -->
+        <div class="party-inline-col seller-col">
+          <div class="party-picker-panel">
+            <div class="panel-header-row">
+              <label class="panel-title-label">
+                <span class="material-icons title-icon">business</span>
+                <span>Seller (From)</span>
+              </label>
+              <div class="quick-party-select">
+                <select class="party-dropdown" [value]="selectedBusinessId()" (change)="onBusinessSelect($event)" aria-label="Select registered business">
+                  <option value="">Choose saved business...</option>
+                  @for (business of registeredBusinesses(); track business.id) {
+                    <option [value]="business.id">{{ business.company.name || 'Unnamed business' }}</option>
+                  }
                 </select>
               </div>
-              <div class="party-field">
-                <label class="field-label">Electronic Address</label>
-                <input type="text" class="form-input" [value]="document().company.electronicAddress || ''" (input)="onCompanyFieldChange('electronicAddress', $any($event.target).value)" placeholder="Electronic invoicing endpoint" />
-              </div>
-            }
+            </div>
 
-            <div class="party-field full-width logo-field">
-              <div class="logo-field-header">
-                <div>
-                  <label class="field-label">Invoice / Document Logo</label>
-                  <p class="field-help">PNG, JPEG or WebP · max 1.5 MB · embedded in generated PDFs</p>
+            <div class="party-fields-stack">
+              <div class="party-field">
+                <label class="field-label">Company Name</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  [value]="document().company.name || ''"
+                  (input)="onCompanyFieldChange('name', $any($event.target).value)"
+                  placeholder="e.g. Acme Studio SAS"
+                  autocomplete="organization"
+                  required
+                />
+              </div>
+
+              <div class="party-field">
+                <div class="field-label-row">
+                  <label class="field-label">Address, Tax & Contact Details</label>
+                  <span class="field-sublabel">Address, city, tax/VAT, email, phone & website</span>
                 </div>
-                <div class="logo-actions">
-                  @if (document().company.logoUrl) {
-                    <img [src]="document().company.logoUrl" alt="Company logo preview" class="company-logo-preview" />
-                  }
-                  <label class="logo-upload-button">
-                    {{ document().company.logoUrl ? 'Replace Logo' : 'Upload Logo' }}
-                    <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
-                  </label>
-                  @if (document().company.logoUrl) {
-                    <button type="button" class="logo-remove-button" (click)="removeCompanyLogo()">Remove</button>
-                  }
+                <textarea
+                  class="form-textarea party-details-textarea"
+                  rows="4"
+                  [value]="displaySellerDetails()"
+                  (input)="onSellerDetailsChange($any($event.target).value)"
+                  placeholder="15 Boulevard Haussmann&#10;75009 Paris, France&#10;Tax / VAT: FR12345678901&#10;Email: billing@company.com · Tel: +33 1 23 45 67 89"
+                ></textarea>
+              </div>
+
+              <div class="party-field logo-compact-field">
+                <div class="logo-field-header">
+                  <div>
+                    <label class="field-label">Company Logo</label>
+                    <span class="field-sublabel">PNG, JPEG or WebP · embedded in generated PDF</span>
+                  </div>
+                  <div class="logo-actions">
+                    @if (document().company.logoUrl) {
+                      <img [src]="document().company.logoUrl" alt="Logo preview" class="company-logo-preview" />
+                    }
+                    <label class="logo-upload-button">
+                      {{ document().company.logoUrl ? 'Replace Logo' : 'Upload Logo' }}
+                      <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
+                    </label>
+                    @if (document().company.logoUrl) {
+                      <button type="button" class="logo-remove-button" (click)="removeCompanyLogo()">Remove</button>
+                    }
+                  </div>
                 </div>
               </div>
             </div>
+
+            <div class="party-panel-footer">
+              <a routerLink="/settings" [queryParams]="{ tab: 'businesses' }" class="manage-party-link">
+                <span class="material-icons link-icon">tune</span>
+                <span>Manage businesses</span>
+              </a>
+            </div>
           </div>
-
-          <a routerLink="/settings" [queryParams]="{ tab: 'businesses' }" class="manage-party-link">Manage businesses</a>
         </div>
-      </section>
 
-      <section class="party-card client-card">
-        <app-client-picker
-          [client]="document().client"
-          [clientId]="document().clientId"
-          (clientChange)="onClientChange($event)"
-          (clientIdChange)="onClientIdChange($event)"
-          (clientSelected)="onSavedClientSelect($event)"
-        ></app-client-picker>
-      </section>
+        <!-- Buyer Side -->
+        <div class="party-inline-col buyer-col">
+          <app-client-picker
+            [client]="document().client"
+            [clientId]="document().clientId"
+            (clientChange)="onClientChange($event)"
+            (clientIdChange)="onClientIdChange($event)"
+            (clientSelected)="onSavedClientSelect($event)"
+          ></app-client-picker>
+        </div>
+      </div>
     </div>
+  </section>
 
-    @if (document().hasPricing) {
-      <div class="form-section-heading"><div><span class="form-section-kicker">Step 3</span><h3>Items & totals</h3><p>Add products or services, then review the amounts calculated from your entries.</p></div></div>
-      <section class="line-items-section">
+  <!-- Step 3: Items & Totals -->
+  @if (document().hasPricing) {
+    <section class="form-step-section">
+      <div class="form-section-heading">
+        <div>
+          <span class="form-section-kicker">Step 3</span>
+          <h3>Items & totals</h3>
+          <p>Add products or services and review auto-calculated totals and taxes.</p>
+        </div>
+      </div>
+      <div class="form-step-card step-table-card">
         <app-line-items-table
           [items]="document().items"
           [lineLayoutMode]="document().lineLayoutMode"
@@ -322,60 +301,75 @@
           (itemsChange)="onItemsChange($event)"
           (lineLayoutModeChange)="onLineLayoutModeChange($event)"
         ></app-line-items-table>
-      <div class="totals-calculation-shelf">
-        <div class="modifier-input-item">
-          <label class="field-label">Global Tax Rate (%)</label>
-          <input type="number" class="form-input text-right" [value]="document().taxRate" (input)="onTotalsModifierChange('taxRate', $any($event.target).value)" min="0" max="100" placeholder="0" />
-        </div>
-        <div class="modifier-input-item">
-          <label class="field-label">Document Discount ({{ currencySymbol() }})</label>
-          <input type="number" class="form-input text-right" [value]="document().discountAmount" (input)="onTotalsModifierChange('discountAmount', $any($event.target).value)" min="0" placeholder="0.00" />
-        </div>
-        <div class="modifier-input-item">
-          <label class="field-label">Shipping / Freight ({{ currencySymbol() }})</label>
-          <input type="number" class="form-input text-right" [value]="document().shippingAmount" (input)="onTotalsModifierChange('shippingAmount', $any($event.target).value)" min="0" placeholder="0.00" />
-        </div>
-        <div class="modifier-input-item">
-          <label class="field-label">Deposit / Paid ({{ currencySymbol() }})</label>
-          <input type="number" class="form-input text-right" [value]="document().depositPaid" (input)="onTotalsModifierChange('depositPaid', $any($event.target).value)" min="0" placeholder="0.00" />
-        </div>
-        <div class="totals-callout-card">
-          <div class="callout-subrow"><span>Subtotal:</span><strong>{{ currencySymbol() }}{{ totals().subtotal | number:'1.2-2' }}</strong></div>
-          <div class="callout-mainrow"><span>Total:</span><span class="total-number">{{ currencySymbol() }}{{ totals().total | number:'1.2-2' }}</span></div>
-          @if (totals().depositPaid > 0) {
-            <div class="callout-balancerow"><span>Balance Due:</span><span class="balance-number">{{ currencySymbol() }}{{ totals().balanceDue | number:'1.2-2' }}</span></div>
-          }
-        </div>
-      </div>
-      </section>
-    }
 
-    <div class="form-section-heading"><div><span class="form-section-kicker">Step 4</span><h3>Notes & payment information</h3><p>Add anything the recipient needs to understand or complete the transaction.</p></div></div>
-    <div class="form-bottom-terms-grid">
-      <div class="terms-field-item">
-        <label class="field-label">Special Notes & Instructions (Visible on document)</label>
-        <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Add payment notes, thank you message, or special instructions..."></textarea>
+        <div class="totals-calculation-shelf">
+          <div class="modifier-input-item">
+            <label class="field-label">Tax Rate (%)</label>
+            <input type="number" class="form-input text-right" [value]="document().taxRate" (input)="onTotalsModifierChange('taxRate', $any($event.target).value)" min="0" max="100" placeholder="0" />
+          </div>
+          <div class="modifier-input-item">
+            <label class="field-label">Discount ({{ currencySymbol() }})</label>
+            <input type="number" class="form-input text-right" [value]="document().discountAmount" (input)="onTotalsModifierChange('discountAmount', $any($event.target).value)" min="0" placeholder="0.00" />
+          </div>
+          <div class="modifier-input-item">
+            <label class="field-label">Shipping ({{ currencySymbol() }})</label>
+            <input type="number" class="form-input text-right" [value]="document().shippingAmount" (input)="onTotalsModifierChange('shippingAmount', $any($event.target).value)" min="0" placeholder="0.00" />
+          </div>
+          <div class="modifier-input-item">
+            <label class="field-label">Deposit Paid ({{ currencySymbol() }})</label>
+            <input type="number" class="form-input text-right" [value]="document().depositPaid" (input)="onTotalsModifierChange('depositPaid', $any($event.target).value)" min="0" placeholder="0.00" />
+          </div>
+          <div class="totals-callout-card">
+            <div class="callout-subrow"><span>Subtotal (Net):</span><strong>{{ currencySymbol() }}{{ totals().subtotal | number:'1.2-2' }}</strong></div>
+            <div class="callout-subrow"><span>Tax Amount:</span><strong>{{ currencySymbol() }}{{ totals().taxAmount | number:'1.2-2' }}</strong></div>
+            <div class="callout-mainrow"><span>Total:</span><span class="total-number">{{ currencySymbol() }}{{ totals().total | number:'1.2-2' }}</span></div>
+            @if (totals().depositPaid > 0) {
+              <div class="callout-balancerow"><span>Balance Due:</span><span class="balance-number">{{ currencySymbol() }}{{ totals().balanceDue | number:'1.2-2' }}</span></div>
+            }
+          </div>
+        </div>
       </div>
-      <div class="terms-field-item">
-        <label class="field-label">Bank & Wire Transfer Remittance</label>
-        <textarea class="form-textarea font-mono" rows="3" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank Name, Routing ABA, Account #, SWIFT/IBAN..."></textarea>
+    </section>
+  }
+
+  <!-- Step 4: Notes & Payment Information -->
+  <section class="form-step-section">
+    <div class="form-section-heading">
+      <div>
+        <span class="form-section-kicker">{{ document().hasPricing ? 'Step 4' : 'Step 3' }}</span>
+        <h3>Notes & payment information</h3>
+        <p>Add remittance information, bank details, and customer instructions.</p>
       </div>
     </div>
-
-    <div class="form-footer-action-bar">
-      <button type="button" class="btn-secondary" (click)="triggerSave()"><span class="material-icons btn-icon">save</span><span>Save Draft</span></button>
-      <button type="button" class="btn-secondary" (click)="triggerSaveAndPreview()"><span class="material-icons btn-icon">print</span><span>Print / PDF</span></button>
-      <button type="button" class="btn-primary" (click)="triggerSaveAndPreview()"><span>Continue to Preview</span><span class="material-icons btn-icon">arrow_forward</span></button>
+    <div class="form-step-card">
+      <div class="form-bottom-terms-grid">
+        <div class="terms-field-item">
+          <label class="field-label">Special Notes & Terms (Visible on document)</label>
+          <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms: Due within 30 days. Thank you for your business."></textarea>
+        </div>
+        <div class="terms-field-item">
+          <label class="field-label">Bank & Wire Transfer Remittance</label>
+          <textarea class="form-textarea font-mono" rows="3" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank Name: BNP Paribas&#10;IBAN: FR76 3000 6000 0112 3456 7890 189&#10;BIC: BNPAFRPPXXX"></textarea>
+        </div>
+      </div>
     </div>
+  </section>
+
+  <!-- Sticky / Bottom Action Bar -->
+  <div class="form-footer-action-bar">
+    <button type="button" class="btn-secondary" (click)="triggerSave()"><span class="material-icons btn-icon">save</span><span>Save Draft</span></button>
+    <button type="button" class="btn-secondary" (click)="triggerSaveAndPreview()"><span class="material-icons btn-icon">print</span><span>Print / PDF</span></button>
+    <button type="button" class="btn-primary" (click)="triggerSaveAndPreview()"><span>Continue to Preview</span><span class="material-icons btn-icon">arrow_forward</span></button>
   </div>
 
+  <!-- Frequently Asked Questions (for creation view) -->
   @if (isNew()) {
     <section class="create-page-faq" aria-labelledby="create-page-faq-title">
       <div class="faq-heading">
         <div>
           <div class="faq-kicker">Learn before you generate</div>
           <h2 id="create-page-faq-title">Frequently asked questions</h2>
-          <p>Useful information about {{ config().singularName.toLowerCase() }} documents, their purpose and the details you may want to include.</p>
+          <p>Useful information about {{ config().singularName.toLowerCase() }} documents, their purpose and required Factur-X fields.</p>
         </div>
       </div>
 

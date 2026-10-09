@@ -192,12 +192,6 @@
               </div>
             }
           </div>
-          @if (document().specialFields?.['sellerSiren']) {
-            <div class="meta-date-item"><span class="meta-date-label">Seller SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.['sellerSiren'] }}</strong></div>
-          }
-          @if (document().specialFields?.['buyerSiren']) {
-            <div class="meta-date-item"><span class="meta-date-label">Buyer SIREN:</span><strong class="meta-date-val">{{ document().specialFields?.['buyerSiren'] }}</strong></div>
-          }
           @if (document().specialFields?.['vatPaymentOption'] === 'debits') {
             <div class="meta-date-item"><span class="meta-date-label">VAT:</span><strong class="meta-date-val">Option for payment on debits</strong></div>
           }
@@ -212,29 +206,13 @@
         <div class="party-card party-from">
           <div class="party-role-title">FROM / ISSUER</div>
           @if (document().company.name) { <div class="party-name">{{ document().company.name }}</div> }
-          @if (document().company.legalName && document().company.legalName !== document().company.name) { <div class="party-address">{{ document().company.legalName }}</div> }
           @if (document().company.address) { <div class="party-address">{{ document().company.address }}</div> }
-          @if (document().company.postalCode || document().company.city) { <div class="party-address">{{ document().company.postalCode }} {{ document().company.city }}</div> }
-          @if (document().company.country) { <div class="party-address">{{ document().company.country }}</div> }
-          @if (document().company.taxId) { <div class="party-address">VAT / Tax ID: {{ document().company.taxId }}</div> }
-          @if (document().company.email) { <div class="party-address">{{ document().company.email }}</div> }
-          @if (document().company.phone) { <div class="party-address">{{ document().company.phone }}</div> }
-          @if (document().company.website) { <div class="party-address">{{ document().company.website }}</div> }
-          @if (document().company.electronicAddress) { <div class="party-address">E-invoice: {{ document().company.electronicAddressScheme ? document().company.electronicAddressScheme + ':' : '' }}{{ document().company.electronicAddress }}</div> }
         </div>
 
         <div class="party-card party-bill-to">
           <div class="party-role-title">BILL TO / CLIENT</div>
           @if (document().client.name) { <div class="party-name">{{ document().client.name }}</div> }
-          @if (document().client.legalName && document().client.legalName !== document().client.name) { <div class="party-address">{{ document().client.legalName }}</div> }
           @if (document().client.address) { <div class="party-address">{{ document().client.address }}</div> }
-          @if (document().client.postalCode || document().client.city) { <div class="party-address">{{ document().client.postalCode }} {{ document().client.city }}</div> }
-          @if (document().client.country) { <div class="party-address">{{ document().client.country }}</div> }
-          @if (document().client.taxId) { <div class="party-address">VAT / Tax ID: {{ document().client.taxId }}</div> }
-          @if (document().client.email) { <div class="party-address">{{ document().client.email }}</div> }
-          @if (document().client.phone) { <div class="party-address">{{ document().client.phone }}</div> }
-          @if (document().client.website) { <div class="party-address">{{ document().client.website }}</div> }
-          @if (document().client.electronicAddress) { <div class="party-address">E-invoice: {{ document().client.electronicAddressScheme ? document().client.electronicAddressScheme + ':' : '' }}{{ document().client.electronicAddress }}</div> }
         </div>
       </section>
       @if (document().specialFields?.['deliveryAddress']) {

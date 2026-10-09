@@ -67,6 +67,7 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true,
+              "outputHashing": "media",
               "externalDependencies": [
                 "@google/genai"
               ]
