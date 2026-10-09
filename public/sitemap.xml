@@ -5,6 +5,7 @@
   <!-- Public document creation pages; saved-document lists are intentionally excluded. -->
   <url><loc>https://x-facture.com/xfacture/create</loc><lastmod>2026-10-09</lastmod></url>
   <url><loc>https://x-facture.com/invoices/create</loc><lastmod>2026-10-09</lastmod></url>
+  <url><loc>https://x-facture.com/order-x/create</loc><lastmod>2026-10-09</lastmod></url>
   <url><loc>https://x-facture.com/proforma-invoices/create</loc><lastmod>2026-10-09</lastmod></url>
   <url><loc>https://x-facture.com/commercial-invoices/create</loc><lastmod>2026-10-09</lastmod></url>
   <url><loc>https://x-facture.com/quotes/create</loc><lastmod>2026-10-09</lastmod></url>
