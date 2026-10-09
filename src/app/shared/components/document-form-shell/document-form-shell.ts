@@ -452,7 +452,7 @@ export class DocumentFormShellComponent implements OnInit {
     const addressLower = address.toLowerCase();
     const lines = address ? address.split(/\r?\n/).map(line => line.trim()).filter(Boolean) : [];
     const missingLocation = [party.postalCode, party.city]
-      .filter((part): part is string => Boolean(part?.trim()) && !addressLower.includes(part.trim().toLowerCase()));
+      .filter((part): part is string => typeof part === 'string' && Boolean(part.trim()) && !addressLower.includes(part.trim().toLowerCase()));
     if (missingLocation.length) lines.push(missingLocation.join(' '));
     if (party.website?.trim() && !addressLower.includes(party.website.trim().toLowerCase())) {
       lines.push(party.website.trim());
@@ -472,7 +472,7 @@ export class DocumentFormShellComponent implements OnInit {
     // fields only when the user has not already included them in the textarea.
     const countryName = party.country ? this.countryService.findByCode(party.country)?.name || party.country : undefined;
     const missingLocation = [party.postalCode, party.city, countryName]
-      .filter((part): part is string => Boolean(part?.trim()) && !addressLower.includes(part!.trim().toLowerCase()));
+      .filter((part): part is string => typeof part === 'string' && Boolean(part.trim()) && !addressLower.includes(part.trim().toLowerCase()));
     if (missingLocation.length) lines.push(missingLocation.join(' '));
 
     if (party.taxId?.trim() && !addressLower.includes(party.taxId.trim().toLowerCase())) {
