@@ -323,107 +323,6 @@
         ></app-line-items-table>
       </div>
 
-      <!-- 1. Invoice Discounts Card matching getfacturx.com -->
-      <div class="form-step-card invoice-discounts-card">
-        <div class="card-section-header-row">
-          <div>
-            <h4 class="card-subheading">Invoice Discounts</h4>
-            <p class="card-subheading-desc">
-              Discounts on the whole invoice, such as a volume or loyalty rebate. A discount on a single item belongs on that line.
-            </p>
-          </div>
-          <button type="button" class="btn-add-discount" (click)="addInvoiceDiscount()">
-            <span class="material-icons btn-icon">add</span>
-            <span>Add Discount</span>
-          </button>
-        </div>
-
-        @if ((document().discounts?.length || 0) > 0) {
-          <div class="discounts-list-stack">
-            @for (disc of document().discounts; track disc.id; let di = $index) {
-              <div class="discount-row-box">
-                <div class="discount-field-col flex-2">
-                  <label class="field-label">Reason</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    [value]="disc.reason"
-                    (input)="updateInvoiceDiscount(di, 'reason', $any($event.target).value)"
-                    placeholder="e.g. Loyalty discount"
-                  />
-                </div>
-
-                <div class="discount-field-col flex-1">
-                  <label class="field-label">Discount</label>
-                  <div class="discount-combined-input">
-                    <input
-                      type="number"
-                      class="form-input"
-                      [value]="disc.value"
-                      (input)="updateInvoiceDiscount(di, 'value', $any($event.target).value)"
-                      min="0"
-                      step="any"
-                      placeholder="0"
-                    />
-                    <select
-                      class="form-select discount-unit-select"
-                      [value]="disc.type"
-                      (change)="updateInvoiceDiscount(di, 'type', $any($event.target).value)"
-                    >
-                      <option value="percent">%</option>
-                      <option value="fixed">{{ currencySymbol() }}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="discount-field-col flex-1-5">
-                  <label class="field-label">Applies to</label>
-                  <select
-                    class="form-select"
-                    [value]="disc.appliesTo"
-                    (change)="updateInvoiceDiscount(di, 'appliesTo', $any($event.target).value)"
-                  >
-                    <option value="all">All items</option>
-                    @for (rate of availableTaxRatesForDiscount(); track rate) {
-                      <option [value]="rate">Standard VAT {{ rate }}%</option>
-                    }
-                  </select>
-                </div>
-
-                <div class="discount-field-col flex-1">
-                  <label class="field-label">Amount</label>
-                  <input
-                    type="text"
-                    class="form-input amount-auto-field"
-                    [value]="getComputedDiscountAmount(di)"
-                    readonly
-                    tabindex="-1"
-                    placeholder="auto"
-                  />
-                </div>
-
-                <div class="discount-action-col">
-                  <button
-                    type="button"
-                    class="btn-delete-discount"
-                    (click)="removeInvoiceDiscount(di)"
-                    title="Remove discount"
-                    aria-label="Remove discount"
-                  >
-                    <span class="material-icons">delete_outline</span>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="no-discounts-state">
-            <span class="no-discounts-text">No document-level discounts applied.</span>
-            <button type="button" class="btn-link-action" (click)="addInvoiceDiscount()">+ Add one now</button>
-          </div>
-        }
-      </div>
-
       <!-- 2. Delivery / Shipping (Expandable Optional Menu with Arrow) -->
       <div class="form-step-card delivery-charges-card" [class.is-expanded]="deliveryExpanded()">
         <div
@@ -825,81 +724,79 @@
         }
       </div>
 
-      <!-- 3. Final Calculations & Tax Breakdown (Merged Calculator Card) -->
-      <div class="form-step-card totals-calculator-card">
-        <div class="card-section-header-row">
+      <!-- Lightweight final calculation -->
+      <div class="totals-summary" style="padding: 8px 0 4px; border-top: 1px solid var(--border-color, #e5e7eb);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px;">
           <div>
-            <h4 class="card-subheading">
-              Final Calculations & Tax Breakdown
-              <span class="subheading-muted">(auto-calculated)</span>
-            </h4>
-            <p class="card-subheading-desc">
-              Summary of taxable net amounts, VAT tiers, and final payable total.
-            </p>
+            <h4 style="margin:0; font-size:1.05rem; font-weight:650;">Summary</h4>
+            <p style="margin:4px 0 0; color:var(--text-muted, #6b7280); font-size:.875rem;">Discounts, taxes and final amount</p>
           </div>
-          <div class="calculator-badge">
-            <span class="material-icons calc-badge-icon">calculate</span>
-            <span>Live Calculation</span>
-          </div>
+          <button type="button" class="btn-add-discount" (click)="addInvoiceDiscount()">
+            <span class="material-icons btn-icon">add</span><span>Add discount</span>
+          </button>
         </div>
 
-        <!-- Tax Breakdown Section -->
-        <div class="calc-tax-section">
-          <div class="calc-section-label-row">
-            <span class="calc-section-label">Tax Breakdown</span>
-            <span class="calc-section-hint">Calculated across line items and billable delivery</span>
+        <div style="display:grid; gap:10px; max-width:760px;">
+          <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
+            <span>Items & services</span>
+            <span>{{ (totals().netTotal + (document().discounts || []).reduce((sum, disc) => sum + getComputedDiscountAmountValue(disc), 0)) | number:'1.2-2' }} {{ document().currency }}</span>
           </div>
 
-          <div class="calc-tax-table">
-            <div class="calc-tax-head-row">
-              <span class="col-tax-cat">Category</span>
-              <span class="col-tax-rate text-center">Tax Rate</span>
-              <span class="col-tax-base text-right">Taxable Net Base</span>
-              <span class="col-tax-amt text-right">Tax Amount</span>
+          @if ((document().discounts?.length || 0) > 0) {
+            <div style="padding:10px 0; border-top:1px solid var(--border-color, #e5e7eb); border-bottom:1px solid var(--border-color, #e5e7eb);">
+              <div style="font-size:.8rem; font-weight:650; color:var(--text-muted, #6b7280); margin-bottom:8px;">INVOICE DISCOUNTS</div>
+              @for (disc of document().discounts; track disc.id; let di = $index) {
+                <div style="display:grid; grid-template-columns:minmax(120px,1fr) minmax(130px,auto) auto; align-items:center; gap:10px; padding:5px 0;">
+                  <input type="text" class="form-input" style="min-width:0; padding:7px 9px;" [value]="disc.reason" (input)="updateInvoiceDiscount(di, 'reason', $any($event.target).value)" placeholder="Discount reason" aria-label="Discount reason" />
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <input type="number" class="form-input" style="width:88px; padding:7px 9px;" [value]="disc.value" (input)="updateInvoiceDiscount(di, 'value', $any($event.target).value)" min="0" step="any" aria-label="Discount value" />
+                    <select class="form-select" style="width:66px; padding:7px 5px;" [value]="disc.type" (change)="updateInvoiceDiscount(di, 'type', $any($event.target).value)" aria-label="Discount unit">
+                      <option value="percent">%</option>
+                      <option value="fixed">{{ currencySymbol() }}</option>
+                    </select>
+                    <select class="form-select" style="max-width:145px; padding:7px 5px;" [value]="disc.appliesTo" (change)="updateInvoiceDiscount(di, 'appliesTo', $any($event.target).value)" aria-label="Discount applies to">
+                      <option value="all">All items</option>
+                      @for (rate of availableTaxRatesForDiscount(); track rate) {
+                        <option [value]="rate">{{ rate }}% VAT</option>
+                      }
+                    </select>
+                  </div>
+                  <button type="button" class="btn-delete-discount" (click)="removeInvoiceDiscount(di)" title="Remove discount" aria-label="Remove discount"><span class="material-icons">close</span></button>
+                </div>
+                <div style="text-align:right; color:var(--text-muted, #6b7280); font-size:.8rem;">Discount: −{{ getComputedDiscountAmount(di) }} {{ document().currency }}</div>
+              }
             </div>
+          }
 
-            @for (tb of totals().taxBreakdown; track tb.taxRate) {
-              <div class="calc-tax-data-row">
-                <span class="col-tax-cat font-medium">{{ tb.category }}</span>
-                <span class="col-tax-rate text-center">
-                  <span class="tax-rate-chip">{{ tb.taxRate }}%</span>
-                </span>
-                <span class="col-tax-base text-right font-mono">{{ tb.netAmount | number:'1.2-2' }} {{ document().currency }}</span>
-                <span class="col-tax-amt text-right font-mono font-semibold tax-color">+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
-              </div>
-            }
+          @if ((document().deliveryDiscount || 0) > 0) {
+            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
+              <span>Delivery discount</span>
+              <span>−{{ document().deliveryDiscount | number:'1.2-2' }} {{ document().currency }}</span>
+            </div>
+          }
+
+          <div style="display:flex; justify-content:space-between; gap:16px; padding-top:10px; border-top:1px solid var(--border-color, #e5e7eb);">
+            <span>Net total</span>
+            <strong>{{ totals().netTotal | number:'1.2-2' }} {{ document().currency }}</strong>
           </div>
-        </div>
 
-        <!-- Calculator Result Screen (Net + VAT = Grand Total) -->
-        <div class="calculator-result-screen">
-          <div class="calc-tape-strip">
-            <!-- Total Net -->
-            <div class="calc-tape-item">
-              <span class="tape-label">Total (Net)</span>
-              <span class="tape-sub-desc">Taxable subtotal</span>
-              <span class="tape-value font-mono">{{ totals().netTotal | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
+          @for (tb of totals().taxBreakdown; track tb.taxRate) {
+            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280); font-size:.9rem;">
+              <span>VAT {{ tb.taxRate }}% <span style="font-size:.8rem;">({{ tb.netAmount | number:'1.2-2' }} taxable)</span></span>
+              <span>+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
             </div>
+          }
 
-            <!-- Operator + -->
-            <div class="calc-tape-operator" aria-hidden="true">+</div>
-
-            <!-- Total VAT -->
-            <div class="calc-tape-item">
-              <span class="tape-label">Total (VAT)</span>
-              <span class="tape-sub-desc">Combined tax amount</span>
-              <span class="tape-value font-mono tax-val">+{{ totals().taxAmount | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
+          @if (totals().netShipping > 0) {
+            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
+              <span>Shipping (net)</span>
+              <span>{{ totals().netShipping | number:'1.2-2' }} {{ document().currency }}</span>
             </div>
+          }
 
-            <!-- Operator = -->
-            <div class="calc-tape-operator" aria-hidden="true">=</div>
-
-            <!-- Grand Total -->
-            <div class="calc-tape-item grand-result-card">
-              <div class="grand-header-tag">Final Total Due</div>
-              <span class="tape-label grand-label">Grand Total</span>
-              <span class="tape-value grand-value font-mono">{{ totals().total | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
-            </div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin-top:6px; padding-top:15px; border-top:2px solid var(--border-color, #d1d5db);">
+            <span style="font-size:1rem; font-weight:650;">Total due</span>
+            <strong style="font-size:clamp(1.5rem, 3vw, 2rem); line-height:1.15; letter-spacing:-.035em;">{{ totals().total | number:'1.2-2' }} <span style="font-size:.85rem; font-weight:500; letter-spacing:0;">{{ document().currency }}</span></strong>
           </div>
         </div>
       </div>
