@@ -394,6 +394,14 @@ export class DocumentFormShellComponent implements OnInit {
     const tax = taxIdentifiers.find(item => ['TAX_ID', 'IF', 'EIN', 'TIN', 'NIF'].includes(item.type) && item.value.trim());
     company.taxId = vat?.value || tax?.value || '';
     this.save.emit({ ...this.document(), company });
+    if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
+    this.businessSaveTimer = setTimeout(() => {
+      void this.settingsService.saveRegisteredBusiness(company, this.activeBusinessId).then(profile => {
+        this.activeBusinessId = profile.id;
+      }).catch(() => {
+        // The invoice remains editable if local profile persistence fails.
+      });
+    }, 600);
   }
 
   onSellerDetailsChange(value: string): void {
