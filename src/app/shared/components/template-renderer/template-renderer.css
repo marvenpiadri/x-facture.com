@@ -505,7 +505,7 @@
 
 /* Classic Template: Double borders, serif details, formal ledger lines */
 .template-classic .company-title {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 24px;
 }
 .template-classic .doc-header-block {
@@ -550,7 +550,7 @@
    THERMAL RECEIPT STYLING (58mm / 80mm)
    ========================================================================== */
 .thermal-receipt-content {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 11px;
   color: #000000;
   line-height: 1.35;
