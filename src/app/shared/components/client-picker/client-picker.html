@@ -47,6 +47,20 @@
         placeholder="Street address or business address"
       ></textarea>
     </div>
+    <div class="party-primary-grid party-location-grid">
+      <div class="party-field">
+        <label class="field-label">City (optional)</label>
+        <input type="text" class="form-input" [value]="client().city || ''" (input)="onFieldChange('city', $any($event.target).value)" placeholder="City" autocomplete="address-level2" />
+      </div>
+      <div class="party-field">
+        <label class="field-label">Postal / ZIP code (optional)</label>
+        <input type="text" class="form-input" [value]="client().postalCode || ''" (input)="onFieldChange('postalCode', $any($event.target).value)" placeholder="Postal code" autocomplete="postal-code" />
+      </div>
+    </div>
+    <div class="party-field">
+      <label class="field-label">Website (optional)</label>
+      <input type="url" class="form-input" [value]="client().website || ''" (input)="onFieldChange('website', $any($event.target).value)" placeholder="https://example.com" autocomplete="url" />
+    </div>
   </div>
 
   <div class="party-extra-fields">
