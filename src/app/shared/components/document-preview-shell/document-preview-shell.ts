@@ -186,26 +186,33 @@ export class DocumentPreviewShellComponent implements OnInit {
       throw new Error('Inter and JetBrains Mono could not be loaded for invoice printing. Check your connection and try again.');
     }
 
+    // Google Fonts may return modern URLs such as /l/font?kit=... with no
+    // .woff2 extension. Match CSS url() assets rather than relying on filenames.
     const fontUrls = [...new Set(Array.from(
-      css.matchAll(/url\((['"]?)(https:\/\/[^)'"]+\.(?:woff2?|ttf|otf)(?:\?[^)'"]*)?)\1\)/gi),
+      css.matchAll(/url\(\s*(['"]?)(https:\/\/[^)'"]+)\1\s*\)/gi),
       match => match[2]
     ))];
     if (!fontUrls.length) {
-      throw new Error('Google Fonts did not return embeddable Inter and JetBrains Mono font files.');
+      throw new Error('Google Fonts returned no downloadable font assets for Inter and JetBrains Mono.');
     }
 
     const embeddedFonts = await Promise.all(fontUrls.map(async url => {
       try {
         const response = await fetch(url);
         if (!response.ok) return null;
+        const contentType = response.headers.get('content-type')?.split(';')[0].trim().toLowerCase();
         const bytes = new Uint8Array(await response.arrayBuffer());
+        if (!bytes.length || (contentType && !contentType.includes('font') && !/octet-stream|application\/vnd\.ms-fontobject/i.test(contentType))) {
+          return null;
+        }
         let binary = '';
         const chunkSize = 0x8000;
         for (let offset = 0; offset < bytes.length; offset += chunkSize) {
           binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
         }
-        const extension = url.match(/\.(woff2?|ttf|otf)(?:\?|$)/i)?.[1]?.toLowerCase();
-        const mime = extension === 'ttf' ? 'font/ttf'
+        const extension = url.match(/\.(woff2?|ttf|otf)(?:[?#]|$)/i)?.[1]?.toLowerCase();
+        const mime = contentType && contentType.includes('font') ? contentType
+          : extension === 'ttf' ? 'font/ttf'
           : extension === 'otf' ? 'font/otf'
           : extension === 'woff' ? 'font/woff'
           : 'font/woff2';
