@@ -64,8 +64,10 @@
           <select class="output-select" [value]="selectedOutput()" (change)="selectedOutput.set($any($event.target).value)" aria-label="Choose document output">
             <option value="pdf">Standard PDF</option>
             @if (document().docType === 'xfacture' || document().docType === 'credit-notes') { <option value="factur-x">Factur-X PDF</option> }
-            <option value="cii">CII XML</option>
-            <option value="ubl">UBL 2.1 XML</option>
+            @if (document().docType === 'xfacture' || document().docType === 'invoices' || document().docType === 'credit-notes') {
+              <option value="cii">CII XML</option>
+              <option value="ubl">UBL 2.1 XML</option>
+            }
             @if (document().docType === 'order-x') { <option value="order-x">Order-X XML</option> }
           </select>
         </div>
@@ -101,10 +103,10 @@
     </div>
   </header>
 
-  @if (facturXError()) {
+  @if (facturXError() || previewError()) {
     <div class="preview-inline-error print-hide" role="alert">
       <span class="material-icons">error_outline</span>
-      <span>{{ facturXError() }}</span>
+      <span>{{ facturXError() || previewError() }}</span>
     </div>
   }
 
