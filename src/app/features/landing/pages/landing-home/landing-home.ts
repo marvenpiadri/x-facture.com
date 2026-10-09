@@ -26,9 +26,9 @@ export class LandingHomePage implements OnInit {
 
   ngOnInit(): void {
     this.seoService.updateMetadata({
-      title: 'Free Invoice & Factur-X Generator Online | X-Facture',
-      description: 'Create invoices online for free with X-Facture. Download a standard PDF or a Factur-X hybrid e-invoice with embedded structured XML. No account required.',
-      keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, free invoice generator, Factur-X PDF, hybrid electronic invoice, embedded XML invoice, EN 16931, x-facture',
+      title: 'Free Invoice Generator & Factur-X Tools | X-Facture',
+      description: 'Create invoices, quotes and receipts online for free. Generate Factur-X hybrid e-invoices with a readable PDF and embedded structured XML. No account required.',
+      keywords: 'free invoice generator, free Factur-X generator, Factur-X invoice generator, create Factur-X online, invoice maker, hybrid electronic invoice, Factur-X PDF, embedded CII XML, EN 16931, quotes, receipts, x-facture',
       url: 'https://x-facture.com/'
     });
   }
