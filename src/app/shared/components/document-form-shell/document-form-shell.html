@@ -26,27 +26,13 @@
       </div>
     </div>
 
-    <div class="workspace-top-actions">
-      <button type="button" class="btn-secondary" (click)="triggerSave()" title="Save current progress as draft">
-        <span class="material-icons btn-icon">save</span>
-        <span>Save Draft</span>
-      </button>
-      <button type="button" class="btn-secondary" (click)="triggerSaveAndPreview()" title="Generate printable PDF/Print version">
-        <span class="material-icons btn-icon">print</span>
-        <span>Print / PDF</span>
-      </button>
-      <button type="button" class="btn-primary" (click)="triggerSaveAndPreview()">
-        <span>Continue to Preview</span>
-        <span class="material-icons btn-icon">arrow_forward</span>
-      </button>
-    </div>
   </div>
 
   <!-- Step 1: Document Details -->
   <section class="form-step-section">
     <div class="form-section-heading">
       <div>
-        <span class="form-section-kicker">Step 1</span>
+        <span class="step-number" aria-hidden="true">1</span>
         <h3>Document details</h3>
         <p>Set document identifiers, issue dates, currency, and format.</p>
       </div>
@@ -87,8 +73,10 @@
         @if (config().routeSegment === 'invoices' || config().routeSegment === 'credit-notes' || config().routeSegment === 'xfacture') {
           <div class="form-field-item">
             <label class="field-label">Output format</label>
-            <select class="form-select" [value]="document().specialFields?.['outputFormat'] || (config().routeSegment === 'xfacture' ? 'factur-x' : 'pdf')" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
-              <option value="factur-x">Factur-X PDF (PDF/A-3b)</option>
+            <select class="form-select" [value]="selectedOutputFormat()" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+              @if (config().routeSegment === 'xfacture' || config().routeSegment === 'credit-notes') {
+                <option value="factur-x">Factur-X PDF (PDF/A-3b)</option>
+              }
               <option value="pdf">Standard PDF</option>
               <option value="cii">CII XML</option>
               @if (config().routeSegment === 'invoices' || config().routeSegment === 'xfacture') { <option value="ubl">UBL 2.1 XML</option> }
@@ -184,7 +172,7 @@
   <section class="form-step-section">
     <div class="form-section-heading">
       <div>
-        <span class="form-section-kicker">Step 2</span>
+        <span class="step-number" aria-hidden="true">2</span>
         <h3>Seller & Buyer</h3>
         <p>Your company information and client recipient details.</p>
       </div>
@@ -237,6 +225,29 @@
                 ></textarea>
               </div>
 
+              <div class="party-extra-fields">
+                <div class="party-field">
+                  <label class="field-label">Country</label>
+                  <app-country-picker [value]="document().company.country || ''" (valueChange)="onCompanyFieldChange('country', $event)" placeholder="Choose country…" ariaLabel="Seller country"></app-country-picker>
+                </div>
+                <div class="party-field">
+                  <label class="field-label">Electronic address / code</label>
+                  <input type="text" class="form-input" [value]="document().company.electronicAddress || ''" (input)="onCompanyFieldChange('electronicAddress', $any($event.target).value)" placeholder="e.g. company identifier or network address" autocomplete="off" />
+                </div>
+                <div class="party-field">
+                  <label class="field-label">Electronic address scheme</label>
+                  <select class="form-select" [value]="document().company.electronicAddressScheme || ''" (change)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)">
+                    <option value="">Select scheme (optional)</option>
+                    <option value="0225">0225 — SIREN</option>
+                    <option value="0002">0002 — SIRENE</option>
+                    <option value="0007">0007 — SIRET</option>
+                    <option value="0088">0088 — GLN / EAN</option>
+                    <option value="EM">EM — Email</option>
+                    <option value="0204">0204 — Leitweg-ID</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="party-field logo-compact-field">
                 <div class="logo-field-header">
                   <div>
@@ -287,7 +298,7 @@
     <section class="form-step-section">
       <div class="form-section-heading">
         <div>
-          <span class="form-section-kicker">Step 3</span>
+          <span class="step-number" aria-hidden="true">3</span>
           <h3>Items & totals</h3>
           <p>Add products or services and review auto-calculated totals and taxes.</p>
         </div>
@@ -336,7 +347,7 @@
   <section class="form-step-section">
     <div class="form-section-heading">
       <div>
-        <span class="form-section-kicker">{{ document().hasPricing ? 'Step 4' : 'Step 3' }}</span>
+        <span class="step-number" aria-hidden="true">{{ document().hasPricing ? '4' : '3' }}</span>
         <h3>Notes & payment information</h3>
         <p>Add remittance information, bank details, and customer instructions.</p>
       </div>
@@ -350,6 +361,16 @@
         <div class="terms-field-item">
           <label class="field-label">Bank & Wire Transfer Remittance</label>
           <textarea class="form-textarea font-mono" rows="3" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank Name: BNP Paribas&#10;IBAN: FR76 3000 6000 0112 3456 7890 189&#10;BIC: BNPAFRPPXXX"></textarea>
+        </div>
+        <div class="footer-note-field">
+          <label class="footer-note-toggle">
+            <input type="checkbox" [checked]="document().specialFields?.['showFooterText'] === true" (change)="onSpecialFieldChange('showFooterText', $any($event.target).checked)" />
+            <span>Add a custom footer note to this document</span>
+          </label>
+          @if (document().specialFields?.['showFooterText'] === true) {
+            <label class="field-label" for="document-footer-note">Footer text</label>
+            <textarea id="document-footer-note" class="form-textarea" rows="2" [value]="document().specialFields?.['footerText'] || ''" (input)="onSpecialFieldChange('footerText', $any($event.target).value)" placeholder="Company registration details, a short legal note, or a closing message…"></textarea>
+          }
         </div>
       </div>
     </div>
