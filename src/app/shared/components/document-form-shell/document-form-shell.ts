@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BusinessDocument, DocumentDiscount, DocumentLineItem, DocumentParty, LineLayoutMode, PartyTaxIdentifier } from '../../../core/models/document.model';
-import { getDefaultPartyIdentifierDefinitions, getPartyIdentifierDefinitions, PartyIdentifierDefinition } from '../../../core/config/party-identifier-registry';
+import { getPartyIdentifierDefinitions, getPrimaryTaxIdentifierValue, PartyIdentifierDefinition, reconcilePartyIdentifiersForCountryChange } from '../../../core/config/party-identifier-registry';
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { getCreatePageContent } from '../../../core/config/document-create-content';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -84,6 +84,7 @@ export class DocumentFormShellComponent implements OnInit {
 
   ngOnInit(): void {
     void this.countryService.load();
+    void this.settingsService.loadSettings().then(() => this.ensureActiveBusinessId(this.document().company));
 
     // Repair older drafts that were created before issue dates defaulted to today.
     if (!this.isValidIssueDate(this.document().issueDate)) {
@@ -357,15 +358,10 @@ export class DocumentFormShellComponent implements OnInit {
   });
 
   onSellerCountryChange(country: string): void {
-    const existing = this.sellerTaxIdentifiers();
-    const taxIdentifiers = existing.length ? existing : getDefaultPartyIdentifierDefinitions(country).map((item, index) => ({
-      id: `seller-id-${Date.now()}-${index}`,
-      type: item.type,
-      label: item.label,
-      value: '',
-      ...(item.schemeId ? { schemeId: item.schemeId } : {})
-    }));
-    const company = { ...this.document().company, country, taxIdentifiers };
+    const currentCompany = this.document().company;
+    this.ensureActiveBusinessId(currentCompany);
+    const taxIdentifiers = reconcilePartyIdentifiersForCountryChange(this.sellerTaxIdentifiers(), currentCompany.country, country, 'seller-id');
+    const company = { ...currentCompany, country, taxIdentifiers, taxId: getPrimaryTaxIdentifierValue(taxIdentifiers, country) };
     this.save.emit({ ...this.document(), company });
     if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
     this.businessSaveTimer = setTimeout(() => {
@@ -389,12 +385,13 @@ export class DocumentFormShellComponent implements OnInit {
       type,
       label: definition?.label || type,
       value: '',
+      countryCode: this.document().company.country || undefined,
       ...(definition?.schemeId ? { schemeId: definition.schemeId } : {})
     }]);
   }
 
   addCustomSellerIdentifier(): void {
-    this.saveSellerIdentifiers([...this.sellerTaxIdentifiers(), { id: `seller-id-${Date.now()}`, type: 'CUSTOM', label: '', value: '', custom: true }]);
+    this.saveSellerIdentifiers([...this.sellerTaxIdentifiers(), { id: `seller-id-${Date.now()}`, type: 'CUSTOM', label: '', value: '', countryCode: this.document().company.country || undefined, custom: true }]);
   }
 
   updateSellerIdentifier(id: string, field: 'type' | 'label' | 'value', value: string): void {
@@ -402,7 +399,7 @@ export class DocumentFormShellComponent implements OnInit {
       if (item.id !== id) return item;
       if (field === 'type' && value !== 'CUSTOM') {
         const definition = this.sellerIdentifierDefinitions().find(option => option.type === value);
-        return { ...item, type: value, label: definition?.label || value, custom: false, schemeId: definition?.schemeId };
+        return { ...item, type: value, label: definition?.label || value, custom: false, countryCode: this.document().company.country || undefined, schemeId: definition?.schemeId };
       }
       return { ...item, [field]: value, ...(field === 'label' ? { custom: true } : {}) };
     });
@@ -419,10 +416,10 @@ export class DocumentFormShellComponent implements OnInit {
   }
 
   private saveSellerIdentifiers(taxIdentifiers: PartyTaxIdentifier[]): void {
-    const company = { ...this.document().company, taxIdentifiers };
-    const vat = taxIdentifiers.find(item => item.type === 'VAT' && item.value.trim());
-    const tax = taxIdentifiers.find(item => ['TAX_ID', 'IF', 'EIN', 'TIN', 'NIF'].includes(item.type) && item.value.trim());
-    company.taxId = vat?.value || tax?.value || '';
+    const currentCompany = this.document().company;
+    this.ensureActiveBusinessId(currentCompany);
+    const company = { ...currentCompany, taxIdentifiers };
+    company.taxId = getPrimaryTaxIdentifierValue(taxIdentifiers, company.country);
     this.save.emit({ ...this.document(), company });
     if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
     this.businessSaveTimer = setTimeout(() => {
@@ -435,13 +432,9 @@ export class DocumentFormShellComponent implements OnInit {
   }
 
   onSellerDetailsChange(value: string): void {
-    const company: DocumentParty = {
-      ...this.document().company,
-      address: value,
-      city: '',
-      postalCode: '',
-      website: ''
-    };
+    const currentCompany = this.document().company;
+    this.ensureActiveBusinessId(currentCompany);
+    const company: DocumentParty = { ...currentCompany, address: value };
     this.save.emit({ ...this.document(), company });
 
     if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
@@ -512,7 +505,9 @@ export class DocumentFormShellComponent implements OnInit {
   }
 
   onClientChange(client: DocumentParty): void {
-    const updated: BusinessDocument = { ...this.document(), client };
+    const currentDocument = this.document();
+    const clientId = currentDocument.clientId || (client.name?.trim() ? `client-${Date.now()}-${Math.random().toString(36).slice(2, 6)}` : undefined);
+    const updated: BusinessDocument = { ...currentDocument, client, ...(clientId ? { clientId } : {}) };
     this.save.emit(updated);
 
     if (this.clientSaveTimer) clearTimeout(this.clientSaveTimer);
@@ -535,8 +530,9 @@ export class DocumentFormShellComponent implements OnInit {
         electronicAddressScheme: client.electronicAddressScheme,
         address: client.address || ''
       }).then(saved => {
-        if (updated.clientId !== saved.id) {
-          this.save.emit({ ...updated, clientId: saved.id });
+        if (this.document().clientId !== saved.id) {
+          // Preserve newer edits made while the IndexedDB write was in flight.
+          this.save.emit({ ...this.document(), clientId: saved.id });
         }
       }).catch(() => {
         // The document remains editable if local client persistence fails.
@@ -570,6 +566,7 @@ export class DocumentFormShellComponent implements OnInit {
   }
 
   onCompanyFieldChange(field: keyof DocumentParty, value: string): void {
+    this.ensureActiveBusinessId(this.document().company);
     const company: DocumentParty = { ...this.document().company, [field]: value };
     const updated: BusinessDocument = { ...this.document(), company };
     this.save.emit(updated);
@@ -617,6 +614,13 @@ export class DocumentFormShellComponent implements OnInit {
       client: { ...selection.client },
       clientId: selection.clientId
     });
+  }
+
+  private ensureActiveBusinessId(company: DocumentParty): string | undefined {
+    if (this.activeBusinessId) return this.activeBusinessId;
+    const match = this.registeredBusinesses().find(profile => profile.company.name === company.name && profile.company.address === company.address);
+    if (match) this.activeBusinessId = match.id;
+    return this.activeBusinessId;
   }
 
   onClientIdChange(clientId: string | undefined): void {
