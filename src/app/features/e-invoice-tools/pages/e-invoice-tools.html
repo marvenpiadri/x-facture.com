@@ -111,7 +111,7 @@
                 <strong>Issues to review ({{ validation.errors.length }})</strong>
                 <ul>
                   @for (issue of validation.errors; track $index) {
-                    <li>{{ issue | json }}</li>
+                    <li>{{ issueMessage(issue) }}</li>
                   }
                 </ul>
               </div>
