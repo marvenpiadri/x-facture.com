@@ -147,7 +147,11 @@ export class DocumentPreviewShellComponent implements OnInit {
       })
       .filter(Boolean)
       .join('\n')
-      .replace(/@import[^;]+;/g, '');
+      .replace(/@import[^;]+;/g, '')
+      // The app's @font-face rules point to root-relative URLs. In the API's
+      // about:blank document those URLs have no valid origin; retain only the
+      // base64-embedded font faces produced below.
+      .replace(/@font-face\s*\{(?=[^}]*font-family\s*:\s*["']?(?:Inter|JetBrains Mono)["']?)[^}]*\}/gi, '');
 
     const embeddedFonts = await this.createEmbeddedFontCss(element);
     const pdfBaseStyles = [
