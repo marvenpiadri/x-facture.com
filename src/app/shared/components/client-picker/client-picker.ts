@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../core/services/client.service';
 import { CountryPickerComponent } from '../country-picker/country-picker';
+import { CountryService } from '../../../core/services/country.service';
 import { DocumentParty } from '../../../core/models/document.model';
 
 @Component({
@@ -15,6 +16,7 @@ import { DocumentParty } from '../../../core/models/document.model';
 })
 export class ClientPickerComponent {
   private clientService = inject(ClientService);
+  private countryService = inject(CountryService);
 
   client = input.required<DocumentParty>();
   clientId = input<string | undefined>(undefined);
@@ -84,7 +86,8 @@ export class ClientPickerComponent {
       ? address.split(/\r?\n/).map(line => line.trim()).filter(Boolean)
       : [];
 
-    const missingLocation = [party.postalCode, party.city, party.country]
+    const countryName = party.country ? this.countryService.findByCode(party.country)?.name || party.country : undefined;
+    const missingLocation = [party.postalCode, party.city, countryName]
       .filter((part): part is string => Boolean(part?.trim()) && !addressLower.includes(part!.trim().toLowerCase()));
     if (missingLocation.length) lines.push(missingLocation.join(' '));
 
