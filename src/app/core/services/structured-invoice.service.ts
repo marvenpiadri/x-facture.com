@@ -157,15 +157,16 @@ export class StructuredInvoiceService {
     }).join('');
     const legalId = this.legalIdentifier(party);
     const legalEntity = legalId ? '<cac:PartyLegalEntity><cbc:RegistrationName>' + this.esc(party.legalName || party.name || 'Unnamed party') + '</cbc:RegistrationName><cbc:CompanyID' + (legalId.schemeId ? ' schemeID="' + this.esc(legalId.schemeId) + '"' : '') + '>' + this.esc(legalId.value) + '</cbc:CompanyID></cac:PartyLegalEntity>' : '';
-    return '<cac:Party><cac:PartyName><cbc:Name>' + this.esc(name) + '</cbc:Name></cac:PartyName>' +
-      taxSchemes + legalEntity +
-      '<cac:PostalAddress>' +
+    return '<cac:Party>' +
+      (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
+      '<cac:PartyName><cbc:Name>' + this.esc(name) + '</cbc:Name></cac:PartyName>' +
+      '<cac:PostalAddress>'
       (party.address ? '<cbc:StreetName>' + this.esc(party.address) + '</cbc:StreetName>' : '') +
       (party.city ? '<cbc:CityName>' + this.esc(party.city) + '</cbc:CityName>' : '') +
       (party.postalCode ? '<cbc:PostalZone>' + this.esc(party.postalCode) + '</cbc:PostalZone>' : '') +
       (party.country ? '<cac:Country><cbc:IdentificationCode>' + this.esc(party.country.toUpperCase().slice(0, 2)) + '</cbc:IdentificationCode></cac:Country>' : '') +
       '</cac:PostalAddress>' +
-      (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
+      taxSchemes + legalEntity +
       (party.email ? '<cac:Contact><cbc:ElectronicMail>' + this.esc(party.email) + '</cbc:ElectronicMail></cac:Contact>' : '') +
       '</cac:Party>';
   }
@@ -192,7 +193,7 @@ export class StructuredInvoiceService {
       return scheme ? ['<ram:SpecifiedTaxRegistration><ram:ID schemeID="' + scheme + '">' + this.esc(identifier.value) + '</ram:ID></ram:SpecifiedTaxRegistration>'] : [];
     }).join('');
     return '<ram:' + tag + '><ram:Name>' + this.esc(name) + '</ram:Name>' +
-      legalOrganization + taxRegistrations +
+      legalOrganization +
       (party.address || party.city || party.postalCode || party.country ? '<ram:PostalTradeAddress>' +
         (party.address ? '<ram:LineOne>' + this.esc(party.address) + '</ram:LineOne>' : '') +
         (party.postalCode ? '<ram:PostcodeCode>' + this.esc(party.postalCode) + '</ram:PostcodeCode>' : '') +
@@ -201,6 +202,7 @@ export class StructuredInvoiceService {
         '</ram:PostalTradeAddress>' : '') +
       (party.electronicAddress ? '<ram:URIUniversalCommunication><ram:URIID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</ram:URIID></ram:URIUniversalCommunication>' : '') +
       (party.email ? '<ram:URIUniversalCommunication><ram:URIID>' + this.esc(party.email) + '</ram:URIID></ram:URIUniversalCommunication>' : '') +
+      taxRegistrations +
       '</ram:' + tag + '>';
   }
 
