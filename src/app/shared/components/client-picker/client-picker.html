@@ -42,6 +42,29 @@
     </div>
   </div>
 
+  <div class="party-extra-fields">
+    <div class="party-field">
+      <label class="field-label">Country</label>
+      <app-country-picker [value]="client().country || ''" (valueChange)="onFieldChange('country', $event)" placeholder="Choose country…" ariaLabel="Buyer country"></app-country-picker>
+    </div>
+    <div class="party-field">
+      <label class="field-label">Electronic address / code</label>
+      <input type="text" class="form-input" [value]="client().electronicAddress || ''" (input)="onFieldChange('electronicAddress', $any($event.target).value)" placeholder="e.g. company identifier or network address" autocomplete="off" />
+    </div>
+    <div class="party-field">
+      <label class="field-label">Electronic address scheme</label>
+      <select class="form-input" [value]="client().electronicAddressScheme || ''" (change)="onFieldChange('electronicAddressScheme', $any($event.target).value)">
+        <option value="">Select scheme (optional)</option>
+        <option value="0225">0225 — SIREN</option>
+        <option value="0002">0002 — SIRENE</option>
+        <option value="0007">0007 — SIRET</option>
+        <option value="0088">0088 — GLN / EAN</option>
+        <option value="EM">EM — Email</option>
+        <option value="0204">0204 — Leitweg-ID</option>
+      </select>
+    </div>
+  </div>
+
   <div class="party-panel-footer">
     <a routerLink="/clients" class="manage-party-link">
       <span class="material-icons link-icon">group</span>
