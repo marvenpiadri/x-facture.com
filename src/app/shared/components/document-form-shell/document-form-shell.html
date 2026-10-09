@@ -115,20 +115,9 @@
         <div class="facturx-section-divider">
           <div class="facturx-divider-header">
             <span class="facturx-subheading">Electronic invoice details</span>
-            <span class="facturx-hint-text">Add only the references and dates that apply to this invoice.</span>
+            <span class="facturx-hint-text">Optional buyer reference and delivery details for the electronic invoice.</span>
           </div>
           <div class="form-meta-grid">
-            <div class="form-field-item">
-              <label class="field-label">Payment method</label>
-              <select class="form-select" [value]="document().specialFields?.['paymentMethod'] || 'bank-transfer'" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
-                <option value="bank-transfer">Bank transfer (Virement)</option>
-                <option value="direct-debit">SEPA Direct debit</option>
-                <option value="card">Bank card</option>
-                <option value="cash">Cash</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
             <div class="form-field-item">
               <label class="field-label">Buyer Reference / Service Code</label>
               <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Chorus Pro / buyer service" />
@@ -966,7 +955,7 @@
             </div>
             <div class="terms-field-item">
               <label class="field-label">Payment details / instructions</label>
-              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter any payment instructions that suit your country: bank name, RIB, IBAN, account number, BIC/SWIFT, account holder, payment link, or other details."></textarea>
+              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details."></textarea>
               <span class="field-help">Free-form text: no country-specific bank format is required.</span>
             </div>
             <div class="footer-note-field">
