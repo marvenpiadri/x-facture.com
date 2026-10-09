@@ -156,7 +156,7 @@ export class DocumentPreviewShellComponent implements OnInit {
       })
       .filter(rule => Boolean(rule) && !rule.trim().toLowerCase().startsWith('@font-face'))
       .join('\n')
-      .replace(/@import[^;]+;/g, '')
+      .replace(/@import[^;]+;/g, '');
       
 
     let embeddedInterCss = '';
