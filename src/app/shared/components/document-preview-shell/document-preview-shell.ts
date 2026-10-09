@@ -63,7 +63,10 @@ export class DocumentPreviewShellComponent implements OnInit {
 
   setTemplate(tpl: string): void { this.selectedTemplate.set(tpl); }
   setPaperSize(size: PaperSize): void { this.selectedPaperSize.set(size); }
-  onPrint(): void { window.print(); }
+  async onPrint(): Promise<void> {
+    await document.fonts.ready;
+    window.print();
+  }
 
   async onDownloadPdf(): Promise<void> {
     this.previewError.set(null);
