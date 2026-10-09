@@ -1139,3 +1139,21 @@
     color: #ffffff !important;
   }
 }
+
+
+.template-bold .document-brand-name { color: #ffffff !important; }
+.template-bold .document-brand-detail { color: #cbd5e1 !important; }
+.template-bold .document-brand-monogram {
+  background: rgba(255, 255, 255, .14) !important;
+  color: #ffffff !important;
+}
+
+@media print {
+  #document-pdf-root.template-bold .document-brand-name,
+  #document-pdf-root.template-bold .document-brand-detail {
+    color: #ffffff !important;
+  }
+  #document-pdf-root.template-bold .document-brand-detail {
+    color: #cbd5e1 !important;
+  }
+}
