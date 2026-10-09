@@ -211,7 +211,7 @@ export class StructuredInvoiceService {
     const name = party.legalName || party.name || 'Unnamed party';
     const legalId = this.legalIdentifier(party);
     const legalOrganization = legalId
-      ? '<ram:SpecifiedLegalOrganization><ram:ID' + (legalId.schemeId ? ' schemeID="' + this.esc(legalId.schemeId) + '"' : '') + '>' + this.esc(legalId.value) + '</ram:ID></ram:SpecifiedLegalOrganization>'
+      ? '<ram:SpecifiedLegalOrganization><ram:ID' + (this.legalSchemeId(legalId) ? ' schemeID="' + this.esc(this.legalSchemeId(legalId)!) + '"' : '') + '>' + this.esc(legalId.value) + '</ram:ID></ram:SpecifiedLegalOrganization>'
       : '';
     const taxRegistrations = this.partyIdentifiers(party).flatMap(identifier => {
       const scheme = this.identifierTaxScheme(identifier);
