@@ -295,12 +295,35 @@ export class ApiService {
         error?: {
           message?: string;
           code?: string;
-          details?: { phase?: string };
+          details?: unknown;
         };
       };
-      const phase = payload.error?.details?.phase;
+      const details = payload.error?.details;
+      const phase = details && typeof details === 'object' && !Array.isArray(details)
+        ? (details as { phase?: unknown }).phase
+        : undefined;
+      const validationDetails = Array.isArray(details)
+        ? details.map((item: unknown) => {
+            if (typeof item === 'string') return item;
+            if (!item || typeof item !== 'object') return String(item);
+            const detail = item as Record<string, unknown>;
+            const path = typeof detail.path === 'string' ? detail.path : '';
+            const message = typeof detail.message === 'string'
+              ? detail.message
+              : typeof detail.text === 'string'
+                ? detail.text
+                : typeof detail.error === 'string'
+                  ? detail.error
+                  : JSON.stringify(detail);
+            return path ? `${path}: ${message}` : message;
+          }).filter(Boolean)
+        : [];
       const message = payload.error?.message || `API request failed (HTTP ${response.status}).`;
-      return new Error(phase ? `${message} [${phase}]` : message);
+      const phaseText = typeof phase === 'string' ? ` [${phase}]` : '';
+      const detailText = validationDetails.length
+        ? ` Details: ${validationDetails.slice(0, 5).join(' | ')}`
+        : '';
+      return new Error(`${message}${phaseText}${detailText}`);
     } catch {
       return new Error(`API request failed (HTTP ${response.status}).`);
     }
