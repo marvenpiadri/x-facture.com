@@ -99,7 +99,7 @@ export class DocumentFormShellComponent {
     const address = (party.address || '').trim();
     const addressLower = address.toLowerCase();
     const lines: string[] = address
-      ? address.split(/\\r?\\n/).map(line => line.trim()).filter(Boolean)
+      ? address.split(/\r?\n/).map(line => line.trim()).filter(Boolean)
       : [];
 
     // Keep free-form address/contact text intact, while appending separately stored
@@ -116,7 +116,7 @@ export class DocumentFormShellComponent {
     if (party.email?.trim() && !addressLower.includes(party.email.trim().toLowerCase())) contacts.push(`Email: ${party.email.trim()}`);
     if (party.website?.trim() && !addressLower.includes(party.website.trim().toLowerCase())) contacts.push(party.website.trim());
     if (contacts.length) lines.push(contacts.join(' · '));
-    return lines.join('\\n');
+    return lines.join('\n');
   }
 
   onHeaderFieldChange(field: keyof BusinessDocument, value: any): void {
