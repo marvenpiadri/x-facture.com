@@ -115,7 +115,7 @@ export class DocumentPreviewShellComponent implements OnInit {
 
       await this.apiService.downloadFacturX(
         doc,
-        this.createSelfContainedHtml(element),
+        await this.createSelfContainedHtml(element),
         this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
       );
     } catch (error) {
@@ -164,6 +164,37 @@ export class DocumentPreviewShellComponent implements OnInit {
       '</head><body>' +
       element.outerHTML +
       '</body></html>';
+  }
+
+  private async createEmbeddedFontCss(): Promise<string> {
+    const stylesheetUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap';
+    try {
+      const response = await fetch(stylesheetUrl);
+      if (!response.ok) return '';
+      let css = await response.text();
+      const fontUrls = [...new Set(Array.from(css.matchAll(/url\((https:\/\/[^)]+\.woff2[^)]*)\)/g), match => match[1]))];
+      const embedded = await Promise.all(fontUrls.map(async url => {
+        try {
+          const fontResponse = await fetch(url);
+          if (!fontResponse.ok) return null;
+          const bytes = new Uint8Array(await fontResponse.arrayBuffer());
+          let binary = '';
+          const chunkSize = 0x8000;
+          for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+            binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
+          }
+          return { url, data: 'data:font/woff2;base64,' + btoa(binary) };
+        } catch {
+          return null;
+        }
+      }));
+      for (const font of embedded) {
+        if (font) css = css.split(font.url).join(font.data);
+      }
+      return css;
+    } catch {
+      return '';
+    }
   }
 
   downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
