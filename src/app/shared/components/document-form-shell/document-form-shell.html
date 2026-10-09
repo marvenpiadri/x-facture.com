@@ -77,7 +77,7 @@
           <label class="field-label">Currency</label>
           <select class="form-select" [value]="document().currency" (change)="onHeaderFieldChange('currency', $any($event.target).value)">
             @for (c of availableCurrencies; track c.code) {
-              <option [value]="c.code">{{ c.code }} ({{ c.symbol }}) — {{ c.name }}</option>
+              <option [value]="c.code">{{ c.code }} ({{ c.symbol }}) • {{ c.name }}</option>
             }
           </select>
         </div>
