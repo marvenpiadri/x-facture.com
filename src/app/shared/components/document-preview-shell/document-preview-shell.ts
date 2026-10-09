@@ -130,18 +130,18 @@ export class DocumentPreviewShellComponent implements OnInit {
 
   private async createSelfContainedHtml(element: HTMLElement): Promise<string> {
     /*
-     * The preview is the source of truth for the PDF. Collect the actual
-     * stylesheet rules currently applied to the document instead of only
-     * Angular's <style> tags. This keeps global tokens, box-sizing and the
-     * invoice renderer styles in the server-side HTML snapshot.
+     * Keep the preview's real typography. Capture the CSS currently applied to
+     * the invoice, discover the font families used by its own elements, and
+     * embed those font files. Do not impose a new font on the printed document.
      */
+    await document.fonts.ready;
+
     const styles = Array.from(document.styleSheets)
       .flatMap(sheet => {
         try {
           return Array.from(sheet.cssRules).map(rule => rule.cssText);
         } catch {
-          // Cross-origin stylesheets (for example Google Fonts) are added
-          // explicitly below and cannot always be read through cssRules.
+          // Cross-origin font stylesheets are handled by embedding their assets.
           return [];
         }
       })
@@ -149,16 +149,11 @@ export class DocumentPreviewShellComponent implements OnInit {
       .join('\n')
       .replace(/@import[^;]+;/g, '');
 
-    // Download the exact font faces used by the preview and inline them as data
-    // URLs. The server-side PDF renderer cannot rely on the user's font cache or
-    // external Google Fonts access, so the HTML snapshot carries its own fonts.
-    const embeddedFonts = await this.createEmbeddedFontCss(element.innerText || element.textContent || 'Invoice');
-
+    const embeddedFonts = await this.createEmbeddedFontCss(element);
     const pdfBaseStyles = [
       '* { box-sizing: border-box; }',
-      'html, body { margin: 0; padding: 0; background: #ffffff; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }',
-      '*, *::before, *::after { -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; }',
-      '.font-mono, code, pre { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace !important; }',
+      'html, body { margin: 0; padding: 0; background: #ffffff; font-family: inherit; }',
+      '*, *::before, *::after { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }',
       '.document-render-sheet { box-sizing: border-box; }'
     ].join('\n');
 
@@ -169,33 +164,59 @@ export class DocumentPreviewShellComponent implements OnInit {
       '</body></html>';
   }
 
-  private async createEmbeddedFontCss(documentText: string): Promise<string> {
-    // Request a text-subset font containing the glyphs actually used by this
-    // invoice. This keeps the HTML payload small while embedding real font data
-    // instead of relying on the PDF server to access the user's font cache.
-    const glyphs = Array.from(new Set(
-      Array.from((documentText || 'Invoice').replace(/\s+/g, ' ').trim())
-    )).join('').slice(0, 1800);
-    const families = 'family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600';
-    const stylesheetUrl = 'https://fonts.googleapis.com/css2?' + families +
-      '&display=swap&text=' + encodeURIComponent(glyphs || 'Invoice');
+  private async createEmbeddedFontCss(element: HTMLElement): Promise<string> {
+    // Read actual computed font-family values from the invoice rather than
+    // assuming a brand font. This also respects template-specific typography.
+    const fontFamilies = new Set<string>();
+    const nodes = [element, ...Array.from(element.querySelectorAll<HTMLElement>('*'))];
+    for (const node of nodes) {
+      const stack = getComputedStyle(node).fontFamily;
+      for (const candidate of stack.split(',')) {
+        const family = candidate.trim().replace(/^['"]|['"]$/g, '');
+        if (family && !/^(serif|sans-serif|monospace|system-ui|ui-serif|ui-sans-serif|ui-monospace|cursive|fantasy|inherit|initial|unset)$/i.test(family)) {
+          fontFamilies.add(family);
+        }
+      }
+    }
 
-    try {
-      await document.fonts.ready;
-      // Browser fetch automatically sends the browser's real user agent, so
-      // Google Fonts returns the matching WOFF2 assets for this user's browser.
-      const response = await fetch(stylesheetUrl);
-      if (!response.ok) throw new Error('Google Fonts stylesheet request failed.');
+    // Only embed families that are genuinely loaded as web fonts in this app.
+    // System fallback families remain in the original CSS stack unchanged.
+    const loadedFamilies = new Set(
+      Array.from(document.fonts).map(face => face.family.replace(/^['"]|['"]$/g, ''))
+    );
+    const familiesToEmbed = [...fontFamilies].filter(family => loadedFamilies.has(family));
+    if (!familiesToEmbed.length) return '';
+
+    const fontCssParts: string[] = [];
+    for (const family of familiesToEmbed) {
+      const weights = [...new Set(
+        nodes.map(node => getComputedStyle(node))
+          .filter(style => style.fontFamily.split(',').some(value => value.trim().replace(/^['"]|['"]$/g, '') === family))
+          .map(style => style.fontWeight)
+          .map(weight => /^\d+$/.test(weight) ? Number(weight) : 400)
+          .map(weight => Math.max(100, Math.min(900, Math.round(weight / 100) * 100)))
+      )].sort((a, b) => a - b);
+      const weightSpec = weights.length ? weights.join(';') : '400;500;600;700;800';
+      const url = 'https://fonts.googleapis.com/css2?family=' +
+        encodeURIComponent(family).replace(/%20/g, '+') +
+        ':wght@' + weightSpec + '&display=swap';
+
+      const response = await fetch(url).catch(() => null);
+      if (!response?.ok) {
+        throw new Error('Could not retrieve the font used by this invoice: ' + family + '.');
+      }
       let css = await response.text();
-      const fontUrls = [...new Set(Array.from(
+      const urls = [...new Set(Array.from(
         css.matchAll(/url\((['"]?)(https:\/\/[^)'"]+\.(?:woff2?|ttf|otf)(?:\?[^)'"]*)?)\1\)/gi),
         match => match[2]
       ))];
-      if (!fontUrls.length) throw new Error('No downloadable invoice font files were returned.');
+      if (!urls.length) {
+        throw new Error('No embeddable font files were returned for: ' + family + '.');
+      }
 
-      const embedded = await Promise.all(fontUrls.map(async url => {
+      const embedded = await Promise.all(urls.map(async fontUrl => {
         try {
-          const fontResponse = await fetch(url);
+          const fontResponse = await fetch(fontUrl);
           if (!fontResponse.ok) return null;
           const bytes = new Uint8Array(await fontResponse.arrayBuffer());
           let binary = '';
@@ -203,27 +224,24 @@ export class DocumentPreviewShellComponent implements OnInit {
           for (let offset = 0; offset < bytes.length; offset += chunkSize) {
             binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
           }
-          const extension = url.match(/\.(woff2?|ttf|otf)(?:\?|$)/i)?.[1]?.toLowerCase();
+          const extension = fontUrl.match(/\.(woff2?|ttf|otf)(?:\?|$)/i)?.[1]?.toLowerCase();
           const mime = extension === 'ttf' ? 'font/ttf' : extension === 'otf' ? 'font/otf' : extension === 'woff' ? 'font/woff' : 'font/woff2';
-          return { url, data: 'data:' + mime + ';base64,' + btoa(binary) };
+          return { url: fontUrl, data: 'data:' + mime + ';base64,' + btoa(binary) };
         } catch {
           return null;
         }
       }));
 
       if (embedded.some(font => !font)) {
-        throw new Error('One or more invoice font files could not be embedded.');
+        throw new Error('One or more font files could not be embedded for: ' + family + '.');
       }
       for (const font of embedded) {
         if (font) css = css.split(font.url).join(font.data);
       }
-      if (!/font-family:\s*['"]?Inter['"]?/i.test(css)) {
-        throw new Error('The Inter font-face declarations were not returned.');
-      }
-      return css;
-    } catch {
-      throw new Error('The invoice fonts could not be embedded for PDF generation. Check your connection and try again.');
+      fontCssParts.push(css);
     }
+
+    return fontCssParts.join('\n');
   }
 
   downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
