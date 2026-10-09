@@ -317,6 +317,12 @@
                       <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
                     </label>
                   </div>
+                  @if (document().company.logoUrl) {
+                    <div class="seller-logo-preview">
+                      <img [src]="document().company.logoUrl" alt="Selected seller logo preview" />
+                      <span>Seller logo selected</span>
+                    </div>
+                  }
                 </div>
               </div>
             </div>
