@@ -1049,9 +1049,70 @@
 
   <!-- Sticky / Bottom Action Bar -->
   <div class="form-footer-action-bar">
+    @if (config().routeSegment === 'xfacture') {
+      <button type="button" class="btn-secondary" [disabled]="validatingXml()" (click)="validateXmlHealth()">
+        <span class="material-icons btn-icon">fact_check</span>
+        <span>{{ validatingXml() ? 'Checking XML…' : 'Validate XML health' }}</span>
+      </button>
+    }
     <button type="button" class="btn-secondary" (click)="triggerSave()"><span class="material-icons btn-icon">save</span><span>Save Draft</span></button>
     <button type="button" class="btn-primary" (click)="triggerSaveAndPreview()"><span>Continue to Preview</span><span class="material-icons btn-icon">arrow_forward</span></button>
   </div>
+
+  @if (config().routeSegment === 'xfacture' && (xmlHealthError() || xmlHealthReport())) {
+    <section class="xml-health-report" aria-live="polite" aria-labelledby="xml-health-title">
+      <div class="xml-health-heading">
+        <span class="material-icons">fact_check</span>
+        <div>
+          <h3 id="xml-health-title">Factur-X XML health report</h3>
+          <p>Validation is separate from PDF generation. You can still generate the PDF when this report finds issues.</p>
+        </div>
+      </div>
+
+      @if (xmlHealthError()) {
+        <p class="xml-health-error">{{ xmlHealthError() }}</p>
+      }
+
+      @if (xmlHealthReport(); as report) {
+        <div class="xml-health-status" [class.is-valid]="report['valid'] === true" [class.has-issues]="report['valid'] !== true">
+          <strong>{{ report['valid'] === true ? 'No validation issues detected' : 'Issues found, review the report below' }}</strong>
+          <span>XML schema: {{ report['summary']?.xmlSchemaValid === true ? 'passed' : report['summary']?.xmlSchemaValid === false ? 'failed' : 'not completed' }}</span>
+          <span>EN 16931 rules: {{ report['summary']?.en16931Valid === true ? 'passed' : report['summary']?.en16931Valid === false ? 'failed' : 'not completed' }}</span>
+        </div>
+
+        @if (report['missingFields']?.length) {
+          <h4>Missing or incomplete form data</h4>
+          <ul>
+            @for (finding of report['missingFields']; track $index) {
+              <li><strong>{{ finding['label'] }}</strong><span>{{ finding['path'] }}</span><p>{{ finding['message'] }}</p></li>
+            }
+          </ul>
+        }
+
+        @if (report['errors']?.length) {
+          <h4>XML / EN 16931 errors</h4>
+          <ul>
+            @for (issue of report['errors']; track $index) {
+              <li>{{ issue['message'] || issue['text'] || issue['error'] || issue }}</li>
+            }
+          </ul>
+        }
+
+        @if (report['compliance']?.['findings']?.length) {
+          <h4>Additional compliance checks</h4>
+          <ul>
+            @for (finding of report['compliance']['findings']; track $index) {
+              <li><strong>{{ finding['severity'] }}: {{ finding['title'] }}</strong><span>{{ finding['path'] }}</span><p>{{ finding['message'] }}</p></li>
+            }
+          </ul>
+        }
+
+        @if (report['validationEngineError']) {
+          <p class="xml-health-error">The XML validation engine could not complete: {{ report['validationEngineError'] }}</p>
+        }
+      }
+    </section>
+  }
 
   <!-- Frequently Asked Questions (for creation view) -->
   @if (isNew()) {
