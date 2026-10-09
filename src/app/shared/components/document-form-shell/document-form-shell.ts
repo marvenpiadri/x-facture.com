@@ -66,6 +66,13 @@ export class DocumentFormShellComponent {
 
   currencySymbol = computed(() => this.currencyService.getSymbol(this.document().currency));
 
+  selectedOutputFormat(): string {
+    const route = this.config().routeSegment;
+    const requested = this.document().specialFields?.['outputFormat'];
+    if (route === 'invoices') return ['pdf', 'cii', 'ubl'].includes(requested) ? requested : 'pdf';
+    return requested || (route === 'xfacture' ? 'factur-x' : route === 'order-x' ? 'order-x' : 'pdf');
+  }
+
   totals = computed(() => {
     const doc = this.document();
     return this.calculationService.calculateDocumentTotals(
@@ -279,7 +286,7 @@ export class DocumentFormShellComponent {
     this.save.emit({ ...this.document(), lineLayoutMode: mode });
   }
 
-  onSpecialFieldChange(field: string, value: string): void {
+  onSpecialFieldChange(field: string, value: any): void {
     this.save.emit({
       ...this.document(),
       specialFields: {
