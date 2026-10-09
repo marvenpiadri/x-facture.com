@@ -428,7 +428,36 @@ export class DocumentFormShellComponent implements OnInit {
   }
 
   onSellerDetailsChange(value: string): void {
-    this.onCompanyFieldChange('address', value);
+    const company: DocumentParty = {
+      ...this.document().company,
+      address: value,
+      city: '',
+      postalCode: '',
+      website: ''
+    };
+    this.save.emit({ ...this.document(), company });
+
+    if (this.businessSaveTimer) clearTimeout(this.businessSaveTimer);
+    this.businessSaveTimer = setTimeout(() => {
+      void this.settingsService.saveRegisteredBusiness(company, this.activeBusinessId).then(profile => {
+        this.activeBusinessId = profile.id;
+      }).catch(() => {
+        // The invoice remains editable if local profile persistence fails.
+      });
+    }, 600);
+  }
+
+  formatAddressDetails(party: DocumentParty): string {
+    const address = (party.address || '').trim();
+    const addressLower = address.toLowerCase();
+    const lines = address ? address.split(/\\r?\\n/).map(line => line.trim()).filter(Boolean) : [];
+    const missingLocation = [party.postalCode, party.city]
+      .filter((part): part is string => Boolean(part?.trim()) && !addressLower.includes(part.trim().toLowerCase()));
+    if (missingLocation.length) lines.push(missingLocation.join(' '));
+    if (party.website?.trim() && !addressLower.includes(party.website.trim().toLowerCase())) {
+      lines.push(party.website.trim());
+    }
+    return lines.join('\\n');
   }
 
   formatMergedPartyDetails(party: DocumentParty): string {

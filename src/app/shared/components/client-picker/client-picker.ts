@@ -110,7 +110,10 @@ export class ClientPickerComponent {
   onDetailsChange(value: string): void {
     this.clientChange.emit({
       ...this.client(),
-      address: value
+      address: value,
+      city: '',
+      postalCode: '',
+      website: ''
     });
   }
 

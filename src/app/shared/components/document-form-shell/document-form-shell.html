@@ -265,7 +265,7 @@
               </div>
               <div class="party-field">
                 <label class="field-label">Address details</label>
-                <textarea class="form-textarea party-details-textarea" rows="2" [value]="document().company.address || ''" (input)="onSellerDetailsChange($any($event.target).value)" placeholder="Street, postal code, city, website, and other address details" autocomplete="street-address"></textarea>
+                <textarea class="form-textarea party-details-textarea" rows="2" [value]="formatAddressDetails(document().company)" (input)="onSellerDetailsChange($any($event.target).value)" placeholder="Street, postal code, city, website, and other address details" autocomplete="street-address"></textarea>
               </div>
 
               <div class="party-extra-fields">
