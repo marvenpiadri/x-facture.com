@@ -428,55 +428,79 @@
         }
       </div>
 
-      <!-- 2. Delivery & Shipping (Expandable optional menu with arrow matching getfacturx.com) -->
-      <div class="form-step-card delivery-charges-card expandable-card" [class.is-expanded]="deliveryExpanded()">
-        <button
-          type="button"
-          class="expandable-card-header"
+      <!-- 2. Delivery / Shipping (Expandable Optional Menu with Arrow) -->
+      <div class="form-step-card delivery-charges-card" [class.is-expanded]="deliveryExpanded()">
+        <div
+          class="card-accordion-header"
           (click)="toggleDelivery()"
+          role="button"
+          tabindex="0"
+          (keydown.enter)="toggleDelivery()"
+          (keydown.space)="$event.preventDefault(); toggleDelivery()"
           [attr.aria-expanded]="deliveryExpanded()"
-          aria-controls="delivery-card-content"
         >
-          <div class="expandable-header-left">
-            <div class="header-icon-circle delivery-icon-circle">
-              <span class="material-icons">local_shipping</span>
+          <div class="accordion-title-col">
+            <div class="accordion-title-row">
+              <span class="material-icons accordion-icon">local_shipping</span>
+              <h4 class="card-subheading">Delivery & Shipping</h4>
+              <span class="badge-optional">Optional</span>
+              @if (hasDeliveryData()) {
+                <span class="badge-active-data">Active</span>
+              }
             </div>
-            <div>
-              <div class="expandable-title-row">
-                <h4 class="card-subheading">Delivery & Shipping</h4>
+            <p class="card-subheading-desc">
+              @if (!deliveryExpanded()) {
                 @if (hasDeliveryData()) {
-                  <span class="status-badge badge-active">
-                    <span class="badge-dot"></span>
-                    {{ totals().netShipping > 0 ? (totals().netShipping | number:'1.2-2') + ' ' + document().currency : 'Details added' }}
+                  <span class="summary-highlight">
+                    {{ totals().netShipping > 0 ? (totals().netShipping | number:'1.2-2') + ' ' + document().currency : 'Details entered' }}
+                    @if (document().specialFields?.['carrier']) { · {{ document().specialFields?.['carrier'] }} }
+                    @if (document().specialFields?.['deliveryDate']) { · Delivery {{ document().specialFields?.['deliveryDate'] }} }
                   </span>
                 } @else {
-                  <span class="status-badge badge-optional">Optional</span>
+                  <span>Carrier, tracking number, delivery date, shipping address, and transport fees.</span>
                 }
-              </div>
-              <p class="card-subheading-desc">
-                Carrier tracking, dispatch dates, destination address, and shipping charges.
-              </p>
-            </div>
+              } @else {
+                <span>Carrier, tracking number, delivery date, shipping address, and transport fees.</span>
+              }
+            </p>
           </div>
 
-          <div class="expandable-header-right">
-            <span class="expand-action-hint">{{ deliveryExpanded() ? 'Hide details' : 'Add shipping & delivery' }}</span>
-            <span class="material-icons chevron-icon" [class.rotated]="deliveryExpanded()">keyboard_arrow_down</span>
+          <div class="accordion-actions-col">
+            @if (hasDeliveryData() && deliveryExpanded()) {
+              <button
+                type="button"
+                class="btn-text-action"
+                (click)="$event.stopPropagation(); clearDelivery()"
+                title="Clear all shipping and delivery data"
+              >
+                Clear
+              </button>
+            }
+            <button
+              type="button"
+              class="btn-accordion-toggle"
+              (click)="$event.stopPropagation(); toggleDelivery()"
+              [attr.aria-expanded]="deliveryExpanded()"
+              aria-label="Toggle Delivery and Shipping details"
+            >
+              <span class="toggle-cta-text">{{ deliveryExpanded() ? 'Collapse' : (hasDeliveryData() ? 'Edit delivery' : 'Add delivery') }}</span>
+              <span class="material-icons chevron-icon" [class.rotated]="deliveryExpanded()">expand_more</span>
+            </button>
           </div>
-        </button>
+        </div>
 
         @if (deliveryExpanded()) {
-          <div id="delivery-card-content" class="expandable-card-body animate-fade-in">
-            <!-- Part A: Delivery & Logistics Information (Not just numbers!) -->
-            <div class="delivery-sub-section">
-              <h5 class="delivery-section-subtitle">
-                <span class="material-icons">info</span>
-                <span>Delivery & Tracking Information</span>
-              </h5>
+          <div class="card-accordion-body">
+            <!-- Factur-X / EN 16931 Logistics & Transport Information -->
+            <div class="delivery-info-section">
+              <div class="subsection-label-row">
+                <span class="subsection-label">Transport & Logistics Information</span>
+                <span class="subsection-hint">Factur-X / EN 16931 BG-13 standard delivery fields</span>
+              </div>
 
-              <div class="delivery-info-grid">
+              <div class="delivery-details-grid">
                 <div class="field-item">
-                  <label class="field-label">Delivery / Despatch Date</label>
+                  <label class="field-label">Delivery Date</label>
                   <input
                     type="date"
                     class="form-input"
@@ -487,89 +511,88 @@
 
                 <div class="field-item">
                   <label class="field-label">Carrier / Courier Name</label>
-                  <div class="input-with-icon">
-                    <span class="material-icons input-icon">local_shipping</span>
-                    <input
-                      type="text"
-                      class="form-input"
-                      [value]="document().specialFields?.['carrier'] || ''"
-                      (input)="onSpecialFieldChange('carrier', $any($event.target).value)"
-                      placeholder="e.g. DHL, UPS, FedEx, Chronopost"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    class="form-input"
+                    [value]="document().specialFields?.['carrier'] || ''"
+                    (input)="onSpecialFieldChange('carrier', $any($event.target).value)"
+                    placeholder="e.g. DHL Express, FedEx, UPS, Chronopost"
+                  />
                 </div>
 
                 <div class="field-item">
                   <label class="field-label">Tracking / Consignment #</label>
-                  <div class="input-with-icon">
-                    <span class="material-icons input-icon">qr_code</span>
-                    <input
-                      type="text"
-                      class="form-input"
-                      [value]="document().specialFields?.['trackingNumber'] || ''"
-                      (input)="onSpecialFieldChange('trackingNumber', $any($event.target).value)"
-                      placeholder="e.g. 1Z9999999999999999"
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    class="form-input font-mono"
+                    [value]="document().specialFields?.['trackingNumber'] || ''"
+                    (input)="onSpecialFieldChange('trackingNumber', $any($event.target).value)"
+                    placeholder="e.g. 1Z9999999999999999"
+                  />
                 </div>
 
                 <div class="field-item">
                   <label class="field-label">Delivery Terms / Incoterms</label>
-                  <input
-                    type="text"
-                    class="form-input"
+                  <select
+                    class="form-select"
                     [value]="document().specialFields?.['deliveryTerms'] || ''"
-                    (input)="onSpecialFieldChange('deliveryTerms', $any($event.target).value)"
-                    placeholder="e.g. DAP, DDP, EXW, FOB"
-                  />
+                    (change)="onSpecialFieldChange('deliveryTerms', $any($event.target).value)"
+                  >
+                    <option value="">Standard Delivery</option>
+                    <option value="DAP">DAP – Delivered at Place</option>
+                    <option value="DDP">DDP – Delivered Duty Paid</option>
+                    <option value="FCA">FCA – Free Carrier</option>
+                    <option value="CPT">CPT – Carriage Paid To</option>
+                    <option value="CIP">CIP – Carriage and Insurance Paid</option>
+                    <option value="EXW">EXW – Ex Works</option>
+                    <option value="FOB">FOB – Free On Board</option>
+                    <option value="CIF">CIF – Cost, Insurance & Freight</option>
+                  </select>
                 </div>
               </div>
 
-              <!-- Special Shipping Instructions -->
-              <div class="field-item full-width mt-3">
-                <label class="field-label">Special Delivery Instructions / Notes</label>
-                <textarea
-                  class="form-textarea"
-                  rows="2"
-                  [value]="document().shippingInstructions || ''"
-                  (input)="onHeaderFieldChange('shippingInstructions', $any($event.target).value)"
-                  placeholder="Special instructions for the driver or receiving dock (e.g. Gate code, Dock 4, Call upon arrival)..."
-                ></textarea>
+              <div class="field-item full-width-field mt-3">
+                <label class="field-label">Delivery Instructions / Handling Notes</label>
+                <input
+                  type="text"
+                  class="form-input"
+                  [value]="document().shippingInstructions || document().specialFields?.['shippingInstructions'] || ''"
+                  (input)="onShippingInstructionsChange($any($event.target).value)"
+                  placeholder="e.g. Fragile goods. Deliver to loading bay 3; gate access code: 4921."
+                />
               </div>
 
-              <!-- Different Ship-To Address Toggle -->
-              <div class="different-address-toggle-row">
-                <label class="checkbox-label">
+              <!-- Ship-To Address: Deliver to different location than buyer billing address -->
+              <div class="ship-to-card-box">
+                <label class="ship-to-checkbox-row">
                   <input
                     type="checkbox"
-                    [checked]="showDifferentShipTo()"
-                    (change)="showDifferentShipTo.set($any($event.target).checked)"
+                    [checked]="hasDifferentShipTo()"
+                    (change)="toggleDifferentShipTo($any($event.target).checked)"
                   />
-                  <span class="checkbox-text font-semibold">Deliver to a different destination address (Ship-To)</span>
+                  <span class="ship-to-toggle-text">Deliver to a different recipient or address than buyer address</span>
                 </label>
-              </div>
 
-              @if (showDifferentShipTo()) {
-                <div class="ship-to-address-box animate-fade-in">
-                  <div class="ship-to-grid">
-                    <div class="field-item">
-                      <label class="field-label">Recipient / Consignee Name</label>
+                @if (hasDifferentShipTo()) {
+                  <div class="ship-to-address-grid">
+                    <div class="field-item full-width-field">
+                      <label class="field-label">Recipient / Consignee Name or Department</label>
                       <input
                         type="text"
                         class="form-input"
-                        [value]="document().specialFields?.['shipToName'] || ''"
-                        (input)="onSpecialFieldChange('shipToName', $any($event.target).value)"
-                        placeholder="e.g. ACME Warehouse Dept"
+                        [value]="document().specialFields?.['deliveryRecipient'] || ''"
+                        (input)="onSpecialFieldChange('deliveryRecipient', $any($event.target).value)"
+                        placeholder="e.g. Acme Logistics Center – Dock 2"
                       />
                     </div>
-                    <div class="field-item">
+                    <div class="field-item full-width-field">
                       <label class="field-label">Street Address</label>
                       <input
                         type="text"
                         class="form-input"
-                        [value]="document().specialFields?.['shipToAddress'] || ''"
-                        (input)="onSpecialFieldChange('shipToAddress', $any($event.target).value)"
-                        placeholder="e.g. 42 Logistics Way, Suite 100"
+                        [value]="document().specialFields?.['deliveryAddress'] || ''"
+                        (input)="onSpecialFieldChange('deliveryAddress', $any($event.target).value)"
+                        placeholder="e.g. 742 Evergreen Terrace, Suite 100"
                       />
                     </div>
                     <div class="field-item">
@@ -577,181 +600,317 @@
                       <input
                         type="text"
                         class="form-input"
-                        [value]="document().specialFields?.['shipToCity'] || ''"
-                        (input)="onSpecialFieldChange('shipToCity', $any($event.target).value)"
-                        placeholder="e.g. Lyon"
+                        [value]="document().specialFields?.['deliveryCity'] || ''"
+                        (input)="onSpecialFieldChange('deliveryCity', $any($event.target).value)"
+                        placeholder="City"
                       />
                     </div>
                     <div class="field-item">
-                      <label class="field-label">Postal Code</label>
+                      <label class="field-label">Postal / ZIP Code</label>
                       <input
                         type="text"
                         class="form-input"
-                        [value]="document().specialFields?.['shipToPostalCode'] || ''"
-                        (input)="onSpecialFieldChange('shipToPostalCode', $any($event.target).value)"
-                        placeholder="e.g. 69001"
+                        [value]="document().specialFields?.['deliveryPostalCode'] || ''"
+                        (input)="onSpecialFieldChange('deliveryPostalCode', $any($event.target).value)"
+                        placeholder="Postal code"
                       />
                     </div>
                     <div class="field-item">
                       <label class="field-label">Country</label>
-                      <input
-                        type="text"
-                        class="form-input"
-                        [value]="document().specialFields?.['shipToCountry'] || ''"
-                        (input)="onSpecialFieldChange('shipToCountry', $any($event.target).value)"
-                        placeholder="e.g. France"
-                      />
+                      <select
+                        class="form-select"
+                        [value]="document().specialFields?.['deliveryCountry'] || ''"
+                        (change)="onSpecialFieldChange('deliveryCountry', $any($event.target).value)"
+                      >
+                        <option value="">Select country</option>
+                        @for (c of countries(); track c.code) {
+                          <option [value]="c.code">{{ c.name }} ({{ c.code }})</option>
+                        }
+                      </select>
                     </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Refactored Delivery Pricing & Freight Charge Section -->
+            <div class="delivery-charges-section">
+              <div class="subsection-label-row">
+                <div>
+                  <span class="subsection-label">Delivery Pricing & Freight Surcharge</span>
+                  <span class="subsection-hint">Determine whether delivery is free / included or charged on the final invoice</span>
+                </div>
+                <span class="pricing-mode-pill" [class.chargeable]="isShippingChargeable()">
+                  {{ isShippingChargeable() ? 'Billed to customer (affects final price)' : 'Free / Included (does not affect price)' }}
+                </span>
+              </div>
+
+              <!-- Clear Invoicing Policy: Free vs Billable -->
+              <div class="delivery-pricing-selector">
+                <button
+                  type="button"
+                  class="pricing-choice-card"
+                  [class.selected]="!isShippingChargeable()"
+                  (click)="setShippingMode('free')"
+                >
+                  <div class="choice-radio-indicator">
+                    <span class="radio-dot" [class.active]="!isShippingChargeable()"></span>
+                  </div>
+                  <div class="choice-content">
+                    <div class="choice-title-row">
+                      <span class="material-icons choice-icon">redeem</span>
+                      <strong class="choice-title">Free / Included Delivery</strong>
+                      <span class="choice-badge-free">No charge</span>
+                    </div>
+                    <p class="choice-desc">
+                      Logistics, carrier, and delivery notes appear on the document, but no freight fee is added. Does not alter the final invoice total.
+                    </p>
+                  </div>
+                </button>
+
+                <button
+                  type="button"
+                  class="pricing-choice-card"
+                  [class.selected]="isShippingChargeable()"
+                  (click)="setShippingMode('chargeable')"
+                >
+                  <div class="choice-radio-indicator">
+                    <span class="radio-dot" [class.active]="isShippingChargeable()"></span>
+                  </div>
+                  <div class="choice-content">
+                    <div class="choice-title-row">
+                      <span class="material-icons choice-icon">receipt_long</span>
+                      <strong class="choice-title">Bill Delivery Charge</strong>
+                      <span class="choice-badge-chargeable">+ Added to Total</span>
+                    </div>
+                    <p class="choice-desc">
+                      Charge transport/freight fees to the client. Added to the net subtotal and calculated in the tax breakdown.
+                    </p>
+                  </div>
+                </button>
+              </div>
+
+              <!-- If Chargeable: Refactored Form Fields with Live Financial Impact -->
+              @if (isShippingChargeable()) {
+                <div class="chargeable-delivery-panel">
+                  <div class="delivery-form-grid">
+                    <!-- 1. Shipping Charge -->
+                    <div class="field-item">
+                      <label class="field-label">
+                        Freight / Shipping Fee (excl. VAT)
+                        <span class="field-currency">({{ currencySymbol() }})</span>
+                      </label>
+                      <div class="input-with-affix">
+                        <input
+                          type="number"
+                          class="form-input num-field"
+                          [value]="document().shippingAmount"
+                          (input)="onDeliveryFieldChange('shippingAmount', $any($event.target).value)"
+                          min="0"
+                          step="any"
+                          placeholder="0.00"
+                        />
+                        <span class="input-affix">{{ document().currency }}</span>
+                      </div>
+                      <span class="field-helper-text">Standard transport fee billed to client</span>
+                    </div>
+
+                    <!-- 2. VAT on Delivery -->
+                    <div class="field-item">
+                      <label class="field-label">Delivery VAT Rate</label>
+                      <div class="input-with-affix">
+                        <select
+                          class="form-select"
+                          [value]="document().deliveryTaxRate || 20"
+                          (change)="onDeliveryFieldChange('deliveryTaxRate', $any($event.target).value)"
+                        >
+                          @for (rate of availableTaxRatesForDiscount(); track rate) {
+                            <option [value]="rate">{{ rate }}% (Matches items)</option>
+                          }
+                          <option value="20">20% Standard VAT</option>
+                          <option value="10">10% Intermediate VAT</option>
+                          <option value="5.5">5.5% Reduced VAT</option>
+                          <option value="0">0% (Zero-rated / Exempt)</option>
+                        </select>
+                      </div>
+                      <span class="field-helper-text">
+                        Tax on transport: {{ deliveryTaxAmount() | number:'1.2-2' }} {{ document().currency }}
+                      </span>
+                    </div>
+
+                    <!-- 3. Optional Delivery Discount -->
+                    <div class="field-item">
+                      <div class="field-label-between">
+                        <label class="field-label">
+                          Delivery Discount / Rebate
+                          <span class="field-currency">({{ currencySymbol() }})</span>
+                        </label>
+                        @if ((document().deliveryDiscount || 0) > 0) {
+                          <button
+                            type="button"
+                            class="btn-text-action"
+                            (click)="onDeliveryFieldChange('deliveryDiscount', 0)"
+                          >
+                            Clear
+                          </button>
+                        }
+                      </div>
+                      <div class="input-with-affix">
+                        <input
+                          type="number"
+                          class="form-input num-field"
+                          [value]="document().deliveryDiscount || 0"
+                          (input)="onDeliveryFieldChange('deliveryDiscount', $any($event.target).value)"
+                          min="0"
+                          step="any"
+                          placeholder="0.00"
+                        />
+                        <span class="input-affix">{{ document().currency }}</span>
+                      </div>
+                      <span class="field-helper-text">Promotional rebate on shipping</span>
+                    </div>
+
+                    <!-- 4. Net Delivery Amount -->
+                    <div class="field-item">
+                      <label class="field-label">Net Billed Freight</label>
+                      <div class="input-with-affix">
+                        <input
+                          type="text"
+                          class="form-input amount-auto-field"
+                          [value]="(totals().netShipping | number:'1.2-2') + ' ' + document().currency"
+                          readonly
+                          tabindex="-1"
+                        />
+                      </div>
+                      <span class="field-helper-text">Amount added to taxable subtotal</span>
+                    </div>
+                  </div>
+
+                  <!-- Live Financial Impact Banner -->
+                  <div class="delivery-impact-summary">
+                    <div class="impact-header-line">
+                      <span class="material-icons impact-icon">account_balance_wallet</span>
+                      <span class="impact-title">Effect on Invoice Final Price:</span>
+                    </div>
+                    <div class="impact-metrics-row">
+                      <div class="impact-metric">
+                        <span class="metric-tiny-label">Net Freight</span>
+                        <strong class="metric-strong">+{{ totals().netShipping | number:'1.2-2' }} {{ document().currency }}</strong>
+                      </div>
+                      <span class="impact-op">+</span>
+                      <div class="impact-metric">
+                        <span class="metric-tiny-label">VAT ({{ document().deliveryTaxRate || 20 }}%)</span>
+                        <strong class="metric-strong">+{{ deliveryTaxAmount() | number:'1.2-2' }} {{ document().currency }}</strong>
+                      </div>
+                      <span class="impact-op">=</span>
+                      <div class="impact-metric highlight-total">
+                        <span class="metric-tiny-label">Added to Grand Total</span>
+                        <strong class="metric-strong total-color">+{{ deliveryTotalWithTax() | number:'1.2-2' }} {{ document().currency }}</strong>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              } @else {
+                <!-- Free Shipping Active Notice -->
+                <div class="free-shipping-card">
+                  <div class="free-icon-box">
+                    <span class="material-icons">local_shipping</span>
+                  </div>
+                  <div class="free-info-text">
+                    <strong>Free delivery is active</strong>
+                    <p>
+                      No delivery surcharge is billed. The invoice final total is unaffected (+0.00 {{ document().currency }}). All transport dates, carrier names, tracking numbers, and delivery addresses entered above remain fully visible on the final document.
+                    </p>
                   </div>
                 </div>
               }
             </div>
-
-            <!-- Part B: Shipping Charges & Financial Calculations -->
-            <div class="delivery-sub-section border-top-subtle pt-4">
-              <h5 class="delivery-section-subtitle">
-                <span class="material-icons">payments</span>
-                <span>Shipping Fees & Freight Charges</span>
-              </h5>
-
-              <div class="delivery-grid-row">
-                <div class="field-item">
-                  <label class="field-label">Delivery Charge ({{ currencySymbol() }})</label>
-                  <input
-                    type="number"
-                    class="form-input num-field"
-                    [value]="document().shippingAmount"
-                    (input)="onDeliveryFieldChange('shippingAmount', $any($event.target).value)"
-                    min="0"
-                    step="any"
-                    placeholder="0.00"
-                  />
-                </div>
-
-                <div class="field-item">
-                  <label class="field-label">Delivery Discount ({{ currencySymbol() }})</label>
-                  <input
-                    type="number"
-                    class="form-input num-field"
-                    [value]="document().deliveryDiscount || 0"
-                    (input)="onDeliveryFieldChange('deliveryDiscount', $any($event.target).value)"
-                    min="0"
-                    step="any"
-                    placeholder="0.00"
-                  />
-                </div>
-
-                <div class="field-item">
-                  <label class="field-label">Delivery Tax %</label>
-                  <input
-                    type="number"
-                    class="form-input num-field"
-                    [value]="document().deliveryTaxRate || 0"
-                    (input)="onDeliveryFieldChange('deliveryTaxRate', $any($event.target).value)"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    placeholder="0"
-                  />
-                </div>
-
-                <div class="field-item">
-                  <label class="field-label">Net Delivery</label>
-                  <input
-                    type="text"
-                    class="form-input amount-auto-field"
-                    [value]="totals().netShipping > 0 ? (totals().netShipping | number:'1.2-2') + ' ' + document().currency : '0.00 ' + document().currency"
-                    readonly
-                    tabindex="-1"
-                  />
-                </div>
-              </div>
-            </div>
           </div>
         }
       </div>
 
-      <!-- 3. Tax Breakdown (auto-calculated) matching Screenshot 2 -->
-      <div class="form-step-card tax-breakdown-card">
-        <div class="tax-breakdown-header">
-          <h4 class="card-subheading">
-            Tax Breakdown <span class="subheading-muted">(auto-calculated)</span>
-          </h4>
-        </div>
-
-        <div class="tax-breakdown-stack">
-          @for (tb of totals().taxBreakdown; track tb.taxRate) {
-            <div class="tax-breakdown-row-box">
-              <div class="tb-col">
-                <span class="tb-label">Category</span>
-                <span class="tb-value">{{ tb.category }}</span>
-              </div>
-              <div class="tb-col">
-                <span class="tb-label">Net Amount</span>
-                <span class="tb-value">{{ tb.netAmount | number:'1.2-2' }} {{ document().currency }}</span>
-              </div>
-              <div class="tb-col">
-                <span class="tb-label">Tax Rate</span>
-                <span class="tb-value">{{ tb.taxRate }}%</span>
-              </div>
-              <div class="tb-col">
-                <span class="tb-label">Tax Amount</span>
-                <span class="tb-value">{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
-              </div>
-            </div>
-          }
-        </div>
-      </div>
-
-      <!-- 4. Final Result on its own card matching Screenshot 2 -->
-      <div class="form-step-card final-result-card">
-        <div class="final-result-grid">
-          <div class="result-metric-col">
-            <span class="metric-label">Total (Net)</span>
-            <span class="metric-value">{{ totals().netTotal | number:'1.2-2' }} {{ document().currency }}</span>
+      <!-- 3. Final Calculations & Tax Breakdown (Merged Calculator Card) -->
+      <div class="form-step-card totals-calculator-card">
+        <div class="card-section-header-row">
+          <div>
+            <h4 class="card-subheading">
+              Final Calculations & Tax Breakdown
+              <span class="subheading-muted">(auto-calculated)</span>
+            </h4>
+            <p class="card-subheading-desc">
+              Summary of taxable net amounts, VAT tiers, and final payable total.
+            </p>
           </div>
-
-          <div class="result-metric-col">
-            <span class="metric-label">Total (VAT)</span>
-            <span class="metric-value">{{ totals().taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
-          </div>
-
-          <div class="result-metric-col grand-total-col">
-            <span class="metric-label">Grand Total</span>
-            <span class="metric-value grand-total-value">{{ totals().total | number:'1.2-2' }} {{ document().currency }}</span>
+          <div class="calculator-badge">
+            <span class="material-icons calc-badge-icon">calculate</span>
+            <span>Live Calculation</span>
           </div>
         </div>
 
-        @if (totals().depositPaid > 0) {
-          <div class="deposit-balance-strip">
-            <div class="deposit-info-item">
-              <span class="metric-label">Deposit / Advance Paid:</span>
-              <strong class="deposit-amount">{{ totals().depositPaid | number:'1.2-2' }} {{ document().currency }}</strong>
+        <!-- Tax Breakdown Section -->
+        <div class="calc-tax-section">
+          <div class="calc-section-label-row">
+            <span class="calc-section-label">Tax Breakdown</span>
+            <span class="calc-section-hint">Calculated across line items and billable delivery</span>
+          </div>
+
+          <div class="calc-tax-table">
+            <div class="calc-tax-head-row">
+              <span class="col-tax-cat">Category</span>
+              <span class="col-tax-rate text-center">Tax Rate</span>
+              <span class="col-tax-base text-right">Taxable Net Base</span>
+              <span class="col-tax-amt text-right">Tax Amount</span>
             </div>
-            <div class="deposit-info-item balance-due-item">
-              <span class="metric-label">Balance Due:</span>
-              <strong class="balance-due-amount">{{ totals().balanceDue | number:'1.2-2' }} {{ document().currency }}</strong>
+
+            @for (tb of totals().taxBreakdown; track tb.taxRate) {
+              <div class="calc-tax-data-row">
+                <span class="col-tax-cat font-medium">{{ tb.category }}</span>
+                <span class="col-tax-rate text-center">
+                  <span class="tax-rate-chip">{{ tb.taxRate }}%</span>
+                </span>
+                <span class="col-tax-base text-right font-mono">{{ tb.netAmount | number:'1.2-2' }} {{ document().currency }}</span>
+                <span class="col-tax-amt text-right font-mono font-semibold tax-color">+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Calculator Result Screen (Net + VAT = Grand Total) -->
+        <div class="calculator-result-screen">
+          <div class="calc-tape-strip">
+            <!-- Total Net -->
+            <div class="calc-tape-item">
+              <span class="tape-label">Total (Net)</span>
+              <span class="tape-sub-desc">Taxable subtotal</span>
+              <span class="tape-value font-mono">{{ totals().netTotal | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
+            </div>
+
+            <!-- Operator + -->
+            <div class="calc-tape-operator" aria-hidden="true">+</div>
+
+            <!-- Total VAT -->
+            <div class="calc-tape-item">
+              <span class="tape-label">Total (VAT)</span>
+              <span class="tape-sub-desc">Combined tax amount</span>
+              <span class="tape-value font-mono tax-val">+{{ totals().taxAmount | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
+            </div>
+
+            <!-- Operator = -->
+            <div class="calc-tape-operator" aria-hidden="true">=</div>
+
+            <!-- Grand Total -->
+            <div class="calc-tape-item grand-result-card">
+              <div class="grand-header-tag">Final Total Due</div>
+              <span class="tape-label grand-label">Grand Total</span>
+              <span class="tape-value grand-value font-mono">{{ totals().total | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
             </div>
           </div>
-        }
-
-        <div class="deposit-input-row">
-          <label class="deposit-field-label">Deposit / Advance Paid ({{ currencySymbol() }}):</label>
-          <input
-            type="number"
-            class="form-input deposit-input-field"
-            [value]="document().depositPaid"
-            (input)="onTotalsModifierChange('depositPaid', $any($event.target).value)"
-            min="0"
-            step="any"
-            placeholder="0.00"
-          />
         </div>
       </div>
     </section>
   }
 
-  <!-- Step 4: Notes & Payment Information (Expandable optional menu with arrow matching getfacturx.com) -->
+  <!-- Step 4: Notes & Payment Information -->
   <section class="form-step-section">
     <div class="form-section-heading">
       <div>
@@ -760,95 +919,73 @@
         <p>Add remittance information, bank details, and customer instructions.</p>
       </div>
     </div>
-
-    <div class="form-step-card notes-step-card expandable-card" [class.is-expanded]="notesExpanded()">
-      <button
-        type="button"
-        class="expandable-card-header"
+    <div class="form-step-card notes-step-card" [class.is-expanded]="notesExpanded()">
+      <div
+        class="card-accordion-header"
         (click)="toggleNotes()"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="toggleNotes()"
+        (keydown.space)="$event.preventDefault(); toggleNotes()"
         [attr.aria-expanded]="notesExpanded()"
-        aria-controls="notes-card-content"
       >
-        <div class="expandable-header-left">
-          <div class="header-icon-circle notes-icon-circle">
-            <span class="material-icons">notes</span>
+        <div class="accordion-title-col">
+          <div class="accordion-title-row">
+            <span class="material-icons accordion-icon">sticky_note_2</span>
+            <h4 class="card-subheading">Notes & Payment Details</h4>
+            <span class="badge-optional">Optional</span>
+            @if (hasNotesData()) {
+              <span class="badge-active-data">Active</span>
+            }
           </div>
-          <div>
-            <div class="expandable-title-row">
-              <h4 class="card-subheading">Notes, Terms & Remittance</h4>
+          <p class="card-subheading-desc">
+            @if (!notesExpanded()) {
               @if (hasNotesData()) {
-                <span class="status-badge badge-active">
-                  <span class="badge-dot"></span>
-                  Added
+                <span class="summary-highlight">
+                  {{ document().notes ? (document().notes!.length > 50 ? (document().notes!.slice(0, 50) + '…') : document().notes) : (document().bankDetails ? 'Bank remittance specified' : 'Custom footer text enabled') }}
                 </span>
               } @else {
-                <span class="status-badge badge-optional">Optional</span>
+                <span>Public customer notes, payment terms, bank wire remittance (IBAN/BIC), and legal footer text.</span>
               }
-            </div>
-            <p class="card-subheading-desc">
-              Customer instructions, payment terms, bank wire details (IBAN/BIC) and document footer.
-            </p>
-          </div>
+            } @else {
+              <span>Public customer notes, payment terms, bank wire remittance (IBAN/BIC), and legal footer text.</span>
+            }
+          </p>
         </div>
 
-        <div class="expandable-header-right">
-          <span class="expand-action-hint">{{ notesExpanded() ? 'Hide notes' : 'Add notes & payment info' }}</span>
-          <span class="material-icons chevron-icon" [class.rotated]="notesExpanded()">keyboard_arrow_down</span>
+        <div class="accordion-actions-col">
+          <button
+            type="button"
+            class="btn-accordion-toggle"
+            (click)="$event.stopPropagation(); toggleNotes()"
+            [attr.aria-expanded]="notesExpanded()"
+            aria-label="Toggle Notes and Payment details"
+          >
+            <span class="toggle-cta-text">{{ notesExpanded() ? 'Collapse' : (hasNotesData() ? 'Edit notes' : 'Add notes') }}</span>
+            <span class="material-icons chevron-icon" [class.rotated]="notesExpanded()">expand_more</span>
+          </button>
         </div>
-      </button>
+      </div>
 
       @if (notesExpanded()) {
-        <div id="notes-card-content" class="expandable-card-body animate-fade-in">
+        <div class="card-accordion-body">
           <div class="form-bottom-terms-grid">
             <div class="terms-field-item">
-              <div class="label-with-presets">
-                <label class="field-label">Special Notes & Terms (Visible on document)</label>
-                <div class="note-presets">
-                  <button type="button" class="btn-preset-chip" (click)="onHeaderFieldChange('notes', 'Payment terms: Due within 30 days. Thank you for your business.')">Net 30</button>
-                  <button type="button" class="btn-preset-chip" (click)="onHeaderFieldChange('notes', 'Payment due upon receipt. Thank you for your business!')">Due on receipt</button>
-                </div>
-              </div>
-              <textarea
-                class="form-textarea"
-                rows="3"
-                [value]="document().notes || ''"
-                (input)="onHeaderFieldChange('notes', $any($event.target).value)"
-                placeholder="Payment terms: Due within 30 days. Thank you for your business."
-              ></textarea>
+              <label class="field-label">Special Notes & Terms (Visible on document)</label>
+              <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms: Due within 30 days. Thank you for your business."></textarea>
             </div>
-
             <div class="terms-field-item">
               <label class="field-label">Bank & Wire Transfer Remittance</label>
-              <textarea
-                class="form-textarea font-mono"
-                rows="3"
-                [value]="document().bankDetails || ''"
-                (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)"
-                placeholder="Bank Name: BNP Paribas&#10;IBAN: FR76 3000 6000 0112 3456 7890 189&#10;BIC: BNPAFRPPXXX"
-              ></textarea>
+              <textarea class="form-textarea font-mono" rows="3" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank Name: BNP Paribas&#10;IBAN: FR76 3000 6000 0112 3456 7890 189&#10;BIC: BNPAFRPPXXX"></textarea>
             </div>
-
-            <div class="footer-note-field full-width">
+            <div class="footer-note-field">
               <label class="footer-note-toggle">
-                <input
-                  type="checkbox"
-                  [checked]="document().specialFields?.['showFooterText'] === true"
-                  (change)="onSpecialFieldChange('showFooterText', $any($event.target).checked)"
-                />
-                <span class="font-semibold">Add a custom footer note to this document</span>
+                <input type="checkbox" [checked]="document().specialFields?.['showFooterText'] === true" (change)="onSpecialFieldChange('showFooterText', $any($event.target).checked)" />
+                <span>Add a custom footer note to this document</span>
               </label>
               @if (document().specialFields?.['showFooterText'] === true) {
-                <div class="footer-text-input-wrap animate-fade-in">
-                  <label class="field-label mt-2" for="document-footer-note">Footer text</label>
-                  <textarea
-                    id="document-footer-note"
-                    class="form-textarea"
-                    rows="2"
-                    [value]="document().specialFields?.['footerText'] || ''"
-                    (input)="onSpecialFieldChange('footerText', $any($event.target).value)"
-                    placeholder="Company registration details, a short legal note, or a closing message…"
-                  ></textarea>
-                </div>
+                <label class="field-label" for="document-footer-note">Footer text</label>
+                <textarea id="document-footer-note" class="form-textarea" rows="2" [value]="document().specialFields?.['footerText'] || ''" (input)="onSpecialFieldChange('footerText', $any($event.target).value)" placeholder="Company registration details, a short legal note, or a closing message…"></textarea>
               }
             </div>
           </div>

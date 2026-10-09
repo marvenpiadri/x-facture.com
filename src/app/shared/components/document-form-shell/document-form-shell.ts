@@ -56,6 +56,138 @@ export class DocumentFormShellComponent implements OnInit {
   saveAndPreview = output<BusinessDocument>();
 
   readonly availableCurrencies = this.currencyService.CURRENCIES;
+  readonly countries = this.countryService.countries;
+  readonly deliveryExpanded = signal<boolean>(false);
+  readonly notesExpanded = signal<boolean>(false);
+
+  ngOnInit(): void {
+    void this.countryService.load();
+    if (this.hasDeliveryData()) {
+      this.deliveryExpanded.set(true);
+    }
+    if (this.hasNotesData()) {
+      this.notesExpanded.set(true);
+    }
+  }
+
+  readonly hasDeliveryData = computed(() => {
+    const d = this.document();
+    const sf = d.specialFields || {};
+    return (
+      (d.shippingAmount || 0) > 0 ||
+      (d.deliveryDiscount || 0) > 0 ||
+      (d.deliveryTaxRate || 0) > 0 ||
+      Boolean(d.shippingInstructions?.trim()) ||
+      Boolean(sf['deliveryDate']) ||
+      Boolean(sf['carrier']?.trim()) ||
+      Boolean(sf['trackingNumber']?.trim()) ||
+      Boolean(sf['deliveryTerms']?.trim()) ||
+      Boolean(sf['deliveryAddress']?.trim()) ||
+      Boolean(sf['deliveryRecipient']?.trim())
+    );
+  });
+
+  readonly hasNotesData = computed(() => {
+    const d = this.document();
+    return (
+      Boolean(d.notes?.trim()) ||
+      Boolean(d.bankDetails?.trim()) ||
+      Boolean(d.specialFields?.['showFooterText'] && d.specialFields?.['footerText']?.trim())
+    );
+  });
+
+  readonly hasDifferentShipTo = computed(() => {
+    const sf = this.document().specialFields;
+    return Boolean(
+      sf?.['showDifferentShipTo'] ||
+      sf?.['deliveryAddress'] ||
+      sf?.['deliveryRecipient']
+    );
+  });
+
+  readonly isShippingChargeable = computed(() => (this.document().shippingAmount || 0) > 0);
+
+  readonly deliveryTaxAmount = computed(() => {
+    const net = this.totals().netShipping;
+    const rate = this.document().deliveryTaxRate !== undefined && Number.isFinite(this.document().deliveryTaxRate)
+      ? this.document().deliveryTaxRate!
+      : (this.document().taxRate || 20);
+    return Math.round((net * (rate / 100) + Number.EPSILON) * 100) / 100;
+  });
+
+  readonly deliveryTotalWithTax = computed(() => {
+    return Math.round((this.totals().netShipping + this.deliveryTaxAmount() + Number.EPSILON) * 100) / 100;
+  });
+
+  setShippingMode(mode: 'free' | 'chargeable'): void {
+    if (mode === 'free') {
+      this.save.emit({
+        ...this.document(),
+        shippingAmount: 0,
+        deliveryDiscount: 0
+      });
+    } else {
+      const defaultFee = (this.document().shippingAmount || 0) > 0 ? this.document().shippingAmount : 15;
+      const defaultTax = (this.document().deliveryTaxRate ?? 0) > 0
+        ? this.document().deliveryTaxRate!
+        : (this.document().taxRate || 20);
+      this.save.emit({
+        ...this.document(),
+        shippingAmount: defaultFee,
+        deliveryTaxRate: defaultTax
+      });
+    }
+  }
+
+  toggleDelivery(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.deliveryExpanded.update(v => !v);
+  }
+
+  toggleNotes(event?: Event): void {
+    if (event) event.stopPropagation();
+    this.notesExpanded.update(v => !v);
+  }
+
+  toggleDifferentShipTo(checked: boolean): void {
+    this.onSpecialFieldChange('showDifferentShipTo', checked);
+  }
+
+  onShippingInstructionsChange(value: string): void {
+    this.save.emit({
+      ...this.document(),
+      shippingInstructions: value,
+      specialFields: {
+        ...(this.document().specialFields || {}),
+        shippingInstructions: value
+      }
+    });
+  }
+
+  clearDelivery(): void {
+    this.save.emit({
+      ...this.document(),
+      shippingAmount: 0,
+      deliveryDiscount: 0,
+      deliveryTaxRate: 0,
+      shippingInstructions: '',
+      specialFields: {
+        ...(this.document().specialFields || {}),
+        deliveryDate: '',
+        carrier: '',
+        trackingNumber: '',
+        deliveryTerms: '',
+        deliveryAddress: '',
+        deliveryRecipient: '',
+        deliveryCity: '',
+        deliveryPostalCode: '',
+        deliveryCountry: '',
+        showDifferentShipTo: false,
+        shippingInstructions: ''
+      }
+    });
+  }
+
   readonly registeredBusinesses = computed(() => this.settingsService.settings()?.registeredBusinesses || []);
   readonly selectedBusinessId = computed(() =>
     this.activeBusinessId ||
@@ -69,57 +201,6 @@ export class DocumentFormShellComponent implements OnInit {
   createPageContent = computed(() => getCreatePageContent(this.config().routeSegment));
 
   currencySymbol = computed(() => this.currencyService.getSymbol(this.document().currency));
-
-  // Expandable section states (matching getfacturx.com optional menus with arrows)
-  deliveryExpanded = signal<boolean>(false);
-  notesExpanded = signal<boolean>(false);
-  showDifferentShipTo = signal<boolean>(false);
-
-  hasDeliveryData = computed(() => {
-    const d = this.document();
-    return (
-      (d.shippingAmount || 0) > 0 ||
-      (d.deliveryDiscount || 0) > 0 ||
-      (d.deliveryTaxRate || 0) > 0 ||
-      !!d.specialFields?.['deliveryDate'] ||
-      !!d.specialFields?.['trackingNumber'] ||
-      !!d.specialFields?.['carrier'] ||
-      !!d.specialFields?.['deliveryTerms'] ||
-      !!d.shippingInstructions?.trim() ||
-      !!d.specialFields?.['shipToName'] ||
-      !!d.specialFields?.['shipToAddress']
-    );
-  });
-
-  hasNotesData = computed(() => {
-    const d = this.document();
-    return (
-      !!d.notes?.trim() ||
-      !!d.bankDetails?.trim() ||
-      !!d.terms?.trim() ||
-      d.specialFields?.['showFooterText'] === true
-    );
-  });
-
-  ngOnInit(): void {
-    if (this.hasDeliveryData()) {
-      this.deliveryExpanded.set(true);
-    }
-    if (this.hasNotesData()) {
-      this.notesExpanded.set(true);
-    }
-    if (this.document().specialFields?.['shipToAddress'] || this.document().specialFields?.['shipToName']) {
-      this.showDifferentShipTo.set(true);
-    }
-  }
-
-  toggleDelivery(): void {
-    this.deliveryExpanded.update(v => !v);
-  }
-
-  toggleNotes(): void {
-    this.notesExpanded.update(v => !v);
-  }
 
   selectedOutputFormat(): string {
     const route = this.config().routeSegment;
@@ -455,16 +536,8 @@ export class DocumentFormShellComponent implements OnInit {
       ],
       notes: current.notes || 'Payment terms: 30 days net from issue date. Thank you for your business.',
       bankDetails: current.bankDetails || 'Bank: BNP Paribas Paris\nIBAN: FR76 3000 6000 0112 3456 7890 189\nBIC: BNPAFRPPXXX\nAccount Name: Factur-X Solutions SAS',
-      shippingAmount: current.shippingAmount || 35,
-      deliveryDiscount: current.deliveryDiscount || 0,
-      deliveryTaxRate: current.deliveryTaxRate || 20,
-      shippingInstructions: current.shippingInstructions || 'Deliver to loading bay B. Gate code #4012.',
       specialFields: {
         ...(current.specialFields || {}),
-        deliveryDate: current.specialFields?.['deliveryDate'] || new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
-        carrier: current.specialFields?.['carrier'] || 'DHL Express',
-        trackingNumber: current.specialFields?.['trackingNumber'] || 'DHL-984210984',
-        deliveryTerms: current.specialFields?.['deliveryTerms'] || 'DAP (Delivered at Place)',
         transactionNature: 'services',
         paymentMethod: 'bank-transfer',
         iban: 'FR76 3000 6000 0112 3456 7890 189',
@@ -472,8 +545,6 @@ export class DocumentFormShellComponent implements OnInit {
         outputFormat: current.specialFields?.['outputFormat'] || (['xfacture', 'credit-notes'].includes(this.config().routeSegment) ? 'factur-x' : 'pdf')
       }
     };
-    this.deliveryExpanded.set(true);
-    this.notesExpanded.set(true);
     this.save.emit(sample);
   }
 }
