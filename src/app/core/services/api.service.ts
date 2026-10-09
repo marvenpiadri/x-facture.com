@@ -78,6 +78,10 @@ export class ApiService {
     return this.post<Record<string, unknown>>('/validate', payload);
   }
 
+  async validateFacturXInvoiceData(rawInvoiceData: Record<string, unknown>): Promise<Record<string, unknown>> {
+    return this.post<Record<string, unknown>>('/validate-invoice-data', { rawInvoiceData });
+  }
+
   async validateOrderX(xml: string): Promise<Record<string, unknown>> {
     return this.post<Record<string, unknown>>('/validate-order-x', { xml });
   }
