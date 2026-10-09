@@ -140,7 +140,7 @@ export class StructuredInvoiceService {
   private identifierTaxScheme(identifier: PartyTaxIdentifier): 'VAT' | 'FC' | undefined {
     const type = identifier.type.toUpperCase();
     if (type === 'VAT') return 'VAT';
-    if (['GST', 'GSTIN', 'TRN', 'INVOICE_REG', 'SALES_TAX', 'SST', 'TAX_ID', 'IF', 'EIN', 'TIN', 'NIF', 'CNPJ', 'CPF', 'PAN', 'UTR', 'NPWP', 'KRA_PIN', 'MAT_FISCAL', 'VKN', 'NTN', 'PATENTE'].includes(type)) return 'FC';
+    if (['GST', 'GSTIN', 'TRN', 'INVOICE_REG', 'SALES_TAX', 'SST', 'TAX_ID', 'CODICE_FISCALE', 'IF', 'EIN', 'TIN', 'NIF', 'CNPJ', 'CPF', 'PAN', 'UTR', 'NPWP', 'KRA_PIN', 'MAT_FISCAL', 'VKN', 'NTN', 'PATENTE'].includes(type)) return 'FC';
     return undefined;
   }
 
