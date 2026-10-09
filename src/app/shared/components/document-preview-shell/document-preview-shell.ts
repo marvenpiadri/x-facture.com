@@ -167,8 +167,9 @@ export class DocumentPreviewShellComponent implements OnInit {
   }
 
   private async createEmbeddedFontCss(): Promise<string> {
-    const stylesheetUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap';
+    const stylesheetUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap&subset=latin,latin-ext';
     try {
+      await document.fonts.ready;
       const response = await fetch(stylesheetUrl);
       if (!response.ok) return '';
       let css = await response.text();
