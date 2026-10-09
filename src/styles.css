@@ -2,6 +2,10 @@
    x-facture Global Stylesheet
    Grounded in _tokens.css — No Tailwind, pure semantic design system
    ========================================================================== */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import './styles/_tokens.css';
+@import 'flag-icons/css/flag-icons.min.css';
+
 /* Self-hosted variable fonts keep the app and generated PDFs consistent and reliable. */
 @font-face {
   font-family: 'Inter';
@@ -17,9 +21,6 @@
   font-weight: 100 800;
   font-display: swap;
 }
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
-@import './styles/_tokens.css';
-@import 'flag-icons/css/flag-icons.min.css';
 
 *, *::before, *::after {
   box-sizing: border-box;
