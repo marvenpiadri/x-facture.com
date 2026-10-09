@@ -21,23 +21,40 @@ function enrichContent(
   singularName: string
 ): CreatePageContent {
   const name = singularName.toLowerCase();
+  const isFacturX = singularName === 'Factur-X Invoice';
   return {
     ...content,
-    howItWorks: [
+    howItWorks: isFacturX ? [
+      { title: 'Enter invoice and party details', text: 'Add the invoice number and date, seller and buyer information, currency and payment details needed for the transaction.' },
+      { title: 'Complete the line items and taxes', text: 'Describe the goods or services with quantities, unit prices and applicable tax rates. Review the calculated totals before generating the hybrid invoice.' },
+      { title: 'Generate your Factur-X file', text: 'Choose the Factur-X output in the dedicated workflow, review the document, then download the hybrid invoice with its readable PDF and structured XML data.' }
+    ] : [
       { title: 'Enter your details', text: `Add the information that belongs on your ${name}, including the parties, dates, references and other document details.` },
       { title: 'Add the items or services', text: `Describe the products, services or transactions covered by your ${name}. Quantities, prices, taxes and totals are calculated where the document supports them.` },
       { title: 'Review and download', text: `Check the document preview, make any final changes, then save or continue to the finished document for printing and PDF download.` }
     ],
-    whatToPrepare: [
+    whatToPrepare: isFacturX ? [
+      'The seller business name and relevant legal or tax identifiers',
+      'The buyer name and address details',
+      'A unique invoice number and issue date',
+      'At least one goods or services line with quantity, unit price and applicable tax treatment',
+      'Currency, totals, payment terms and any transaction references required for your use case'
+    ] : [
       'Your business name and contact details',
       'The customer, supplier or recipient details when applicable',
       'A document number and issue date',
       'The products, services, quantities or transaction details covered by the document',
       'Any applicable taxes, payment terms, references or notes'
     ],
-    guideTitle: `How to create a ${name}`,
-    guideIntro: `A good ${name} is clear, complete and easy for the other party to understand. x-facture keeps the creation process in one guided workspace so you can enter the information once and produce a polished document.`,
-    guideSections: [
+    guideTitle: isFacturX ? 'How to create a Factur-X invoice online for free' : `How to create a ${name}`,
+    guideIntro: isFacturX
+      ? 'Use this free online Factur-X generator to create a hybrid electronic invoice. Factur-X combines a PDF that people can read with structured CII XML data that compatible accounting and business systems can process. Enter the invoice data carefully and review the result before sending it.'
+      : `A good ${name} is clear, complete and easy for the other party to understand. x-facture keeps the creation process in one guided workspace so you can enter the information once and produce a polished document.`,
+    guideSections: isFacturX ? [
+      { title: 'Factur-X combines PDF and XML', text: 'A standard PDF displays invoice information for people. A Factur-X file also carries structured invoice data in XML, based on the UN/CEFACT Cross Industry Invoice syntax and aligned with the EN 16931 semantic model.' },
+      { title: 'Use complete and consistent invoice data', text: 'Make sure the seller and buyer details, invoice number, issue date, line descriptions, quantities, prices, tax categories and totals agree. The right fields depend on your transaction and the requirements of the recipient or platform.' },
+      { title: 'Review the file before sending it', text: 'Creating a hybrid invoice is not the same as proving that it will be accepted by every recipient or platform. Review the generated file and validate it against the applicable profile and business rules when required.' }
+    ] : [
       { title: 'Start with the parties', text: `Use the sender and recipient sections to identify who is issuing and receiving the ${name}. Add country and address information when it is relevant to the transaction.` },
       { title: 'Make the transaction clear', text: `Use the document details and line items to explain what the ${name} covers. Clear descriptions and consistent quantities and amounts make the finished document easier to review and reconcile.` },
       { title: 'Keep the final document useful', text: `Add references, payment information and notes when they help the recipient act on the document. Before downloading, review the preview for completeness and readability.` }
@@ -206,6 +223,8 @@ export const DOCUMENT_CREATE_CONTENT: Record<string, CreatePageContent> = {
     keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, electronic invoice, hybrid e-invoice, EN 16931, ZUGFeRD',
     faqs: [
       { question: 'What is Factur-X?', answer: 'Factur-X is a Franco-German standard for hybrid electronic invoicing that combines a human-readable PDF with structured XML invoice data for automated processing. The current official release is Factur-X 1.09.2 / ZUGFeRD 2.5.2.' },
+      { question: 'Can I create a Factur-X invoice online for free?', answer: 'Yes. X-Facture provides a free online workflow for preparing a Factur-X invoice without installing desktop invoicing software or creating an account.' },
+      { question: 'What should I check before sending a Factur-X invoice?', answer: 'Review seller and buyer identifiers, invoice dates and number, line items, tax categories, totals and payment details. If the recipient or platform requires formal validation, validate the generated file against the relevant Factur-X profile and business rules before sending it.' },
       { question: 'Is Factur-X the same as ZUGFeRD?', answer: 'Factur-X and ZUGFeRD are technically aligned names for the same Franco-German hybrid e-invoice standard, with Factur-X used in France and ZUGFeRD used in Germany.' },
       { question: 'What does a Factur-X file contain?', answer: 'A Factur-X document contains a readable PDF representation together with structured XML invoice data. The standard is designed around the European EN 16931 semantic model and uses the UN/CEFACT Cross Industry Invoice syntax.' },
       { question: 'Why use Factur-X instead of a normal PDF invoice?', answer: 'A normal PDF is mainly designed for people to read. Factur-X adds structured invoice data so compatible accounting, procurement and e-invoicing systems can process information automatically while keeping the readable PDF.' },
