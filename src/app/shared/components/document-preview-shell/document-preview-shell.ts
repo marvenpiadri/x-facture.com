@@ -174,7 +174,7 @@ export class DocumentPreviewShellComponent implements OnInit {
       .replace(/\s+/g, ' ')
       .trim();
     const glyphs = Array.from(new Set(Array.from(invoiceText))).join('').slice(0, 1800);
-    const fontUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap' +
+    const fontUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap' +
       '&text=' + encodeURIComponent(glyphs || 'Invoice');
 
     let css: string;
