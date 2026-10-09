@@ -1864,6 +1864,9 @@
 }
 
 
+/* Preserve the intentionally hidden sample-data shortcut in production forms. */
+.workspace-top-actions { display: none; }
+
 /* Step-based form UX: consistent section hierarchy and responsive navigation. */
 .form-step-nav {
   position: sticky;
@@ -2027,7 +2030,7 @@
 .form-footer-action-bar button { min-height: 40px; }
 @media (max-width: 560px) {
   .doc-edit-workspace { padding-inline: 12px; }
-  .form-step-card { padding: 16px; }
+  .form-step-card:not(.parties-inline-step-card) { padding: 16px; }
   .form-step-nav { top: 6px; }
   .form-step-nav a { gap: 6px; padding-right: 9px; }
   .form-footer-action-bar {
