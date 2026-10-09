@@ -2687,3 +2687,96 @@
 @media (max-width: 560px) {
   .party-primary-grid { grid-template-columns: 1fr; }
 }
+
+
+/* In-form Factur-X XML health report */
+.xml-health-report {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface, var(--color-canvas));
+  color: var(--color-text-main);
+}
+
+.xml-health-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.xml-health-heading > .material-icons {
+  color: var(--color-money-green);
+  font-size: 22px;
+}
+
+.xml-health-heading h3,
+.xml-health-report h4 {
+  margin: 0;
+  color: var(--color-text-main);
+}
+
+.xml-health-heading p {
+  margin: 4px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.xml-health-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-muted, var(--color-canvas));
+  font-size: 12px;
+}
+
+.xml-health-status.is-valid {
+  border: 1px solid color-mix(in srgb, var(--color-money-green) 40%, transparent);
+}
+
+.xml-health-status.has-issues {
+  border: 1px solid color-mix(in srgb, #d97706 45%, transparent);
+}
+
+.xml-health-report h4 {
+  margin-top: 4px;
+  font-size: 13px;
+}
+
+.xml-health-report ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.xml-health-report li {
+  padding-left: 2px;
+  font-size: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.xml-health-report li span {
+  display: block;
+  color: var(--color-text-secondary);
+  font-size: 11px;
+}
+
+.xml-health-report li p {
+  margin: 2px 0 0;
+  color: var(--color-text-secondary);
+}
+
+.xml-health-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
