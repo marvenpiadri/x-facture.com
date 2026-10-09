@@ -152,7 +152,10 @@ export class DocumentPreviewShellComponent implements OnInit {
     const embeddedFonts = await this.createEmbeddedFontCss(element);
     const pdfBaseStyles = [
       '* { box-sizing: border-box; }',
-      'html, body { margin: 0; padding: 0; background: #ffffff; font-family: inherit; }',
+      ':root { --font-sans: "Inter", sans-serif; --font-mono: "JetBrains Mono", monospace; }',
+      'html, body { margin: 0; padding: 0; background: #ffffff; font-family: "Inter", sans-serif !important; }',
+      '#document-pdf-root { font-family: "Inter", sans-serif !important; }',
+      '.font-mono, .doc-number-display { font-family: "JetBrains Mono", monospace !important; font-variant-numeric: tabular-nums; }',
       '*, *::before, *::after { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }',
       '.document-render-sheet { box-sizing: border-box; }'
     ].join('\n');
@@ -165,83 +168,68 @@ export class DocumentPreviewShellComponent implements OnInit {
   }
 
   private async createEmbeddedFontCss(element: HTMLElement): Promise<string> {
-    // Read actual computed font-family values from the invoice rather than
-    // assuming a brand font. This also respects template-specific typography.
-    const fontFamilies = new Set<string>();
-    const nodes = [element, ...Array.from(element.querySelectorAll<HTMLElement>('*'))];
-    for (const node of nodes) {
-      const stack = getComputedStyle(node).fontFamily;
-      for (const candidate of stack.split(',')) {
-        const family = candidate.trim().replace(/^['"]|['"]$/g, '');
-        if (family && !/^(serif|sans-serif|monospace|system-ui|ui-serif|ui-sans-serif|ui-monospace|cursive|fantasy|inherit|initial|unset)$/i.test(family)) {
-          fontFamilies.add(family);
-        }
-      }
+    // Embed both exact font families used by the invoice. Do not depend on the
+    // browser's local font cache or on the PDF server reaching Google Fonts.
+    const invoiceText = (element.innerText || element.textContent || 'Invoice')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const glyphs = Array.from(new Set(Array.from(invoiceText))).join('').slice(0, 1800);
+    const fontUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap' +
+      '&text=' + encodeURIComponent(glyphs || 'Invoice');
+
+    let css: string;
+    try {
+      const response = await fetch(fontUrl);
+      if (!response.ok) throw new Error('Google Fonts stylesheet request failed.');
+      css = await response.text();
+    } catch {
+      throw new Error('Inter and JetBrains Mono could not be loaded for invoice printing. Check your connection and try again.');
     }
 
-    // Only embed families that are genuinely loaded as web fonts in this app.
-    // System fallback families remain in the original CSS stack unchanged.
-    const loadedFamilies = new Set(
-      Array.from(document.fonts).map(face => face.family.replace(/^['"]|['"]$/g, ''))
-    );
-    const familiesToEmbed = [...fontFamilies].filter(family => loadedFamilies.has(family));
-    if (!familiesToEmbed.length) return '';
-
-    const fontCssParts: string[] = [];
-    for (const family of familiesToEmbed) {
-      const weights = [...new Set(
-        nodes.map(node => getComputedStyle(node))
-          .filter(style => style.fontFamily.split(',').some(value => value.trim().replace(/^['"]|['"]$/g, '') === family))
-          .map(style => style.fontWeight)
-          .map(weight => /^\d+$/.test(weight) ? Number(weight) : 400)
-          .map(weight => Math.max(100, Math.min(900, Math.round(weight / 100) * 100)))
-      )].sort((a, b) => a - b);
-      const weightSpec = weights.length ? weights.join(';') : '400;500;600;700;800';
-      const url = 'https://fonts.googleapis.com/css2?family=' +
-        encodeURIComponent(family).replace(/%20/g, '+') +
-        ':wght@' + weightSpec + '&display=swap';
-
-      const response = await fetch(url).catch(() => null);
-      if (!response?.ok) {
-        throw new Error('Could not retrieve the font used by this invoice: ' + family + '.');
-      }
-      let css = await response.text();
-      const urls = [...new Set(Array.from(
-        css.matchAll(/url\((['"]?)(https:\/\/[^)'"]+\.(?:woff2?|ttf|otf)(?:\?[^)'"]*)?)\1\)/gi),
-        match => match[2]
-      ))];
-      if (!urls.length) {
-        throw new Error('No embeddable font files were returned for: ' + family + '.');
-      }
-
-      const embedded = await Promise.all(urls.map(async fontUrl => {
-        try {
-          const fontResponse = await fetch(fontUrl);
-          if (!fontResponse.ok) return null;
-          const bytes = new Uint8Array(await fontResponse.arrayBuffer());
-          let binary = '';
-          const chunkSize = 0x8000;
-          for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-            binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
-          }
-          const extension = fontUrl.match(/\.(woff2?|ttf|otf)(?:\?|$)/i)?.[1]?.toLowerCase();
-          const mime = extension === 'ttf' ? 'font/ttf' : extension === 'otf' ? 'font/otf' : extension === 'woff' ? 'font/woff' : 'font/woff2';
-          return { url: fontUrl, data: 'data:' + mime + ';base64,' + btoa(binary) };
-        } catch {
-          return null;
-        }
-      }));
-
-      if (embedded.some(font => !font)) {
-        throw new Error('One or more font files could not be embedded for: ' + family + '.');
-      }
-      for (const font of embedded) {
-        if (font) css = css.split(font.url).join(font.data);
-      }
-      fontCssParts.push(css);
+    const fontUrls = [...new Set(Array.from(
+      css.matchAll(/url\((['"]?)(https:\/\/[^)'"]+\.(?:woff2?|ttf|otf)(?:\?[^)'"]*)?)\1\)/gi),
+      match => match[2]
+    ))];
+    if (!fontUrls.length) {
+      throw new Error('Google Fonts did not return embeddable Inter and JetBrains Mono font files.');
     }
 
-    return fontCssParts.join('\n');
+    const embeddedFonts = await Promise.all(fontUrls.map(async url => {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const bytes = new Uint8Array(await response.arrayBuffer());
+        let binary = '';
+        const chunkSize = 0x8000;
+        for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+          binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
+        }
+        const extension = url.match(/\.(woff2?|ttf|otf)(?:\?|$)/i)?.[1]?.toLowerCase();
+        const mime = extension === 'ttf' ? 'font/ttf'
+          : extension === 'otf' ? 'font/otf'
+          : extension === 'woff' ? 'font/woff'
+          : 'font/woff2';
+        return { url, data: 'data:' + mime + ';base64,' + btoa(binary) };
+      } catch {
+        return null;
+      }
+    }));
+
+    if (embeddedFonts.some(font => !font)) {
+      throw new Error('One or more Inter or JetBrains Mono font files could not be embedded for invoice printing.');
+    }
+
+    for (const font of embeddedFonts) {
+      if (font) css = css.split(font.url).join(font.data);
+    }
+
+    if (!/font-family:\s*['"]?Inter['"]?/i.test(css) ||
+        !/font-family:\s*['"]?JetBrains Mono['"]?/i.test(css) ||
+        /url\(https:\/\//i.test(css)) {
+      throw new Error('Invoice font embedding was incomplete. The PDF was not generated to prevent default-font substitution.');
+    }
+
+    return css;
   }
 
   downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
