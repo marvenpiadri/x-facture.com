@@ -148,7 +148,8 @@ export class DocumentPreviewShellComponent implements OnInit {
     const pdfBaseStyles = [
       '* { box-sizing: border-box; }',
       'html, body { margin: 0; padding: 0; background: #ffffff; }',
-      'body { font-family: Inter, sans-serif; }',
+      '*, *::before, *::after { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important; -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; }',
+      '.font-mono, code, pre { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace !important; }',
       '.document-render-sheet { box-sizing: border-box; }'
     ].join('\n');
 
