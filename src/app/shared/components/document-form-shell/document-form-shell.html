@@ -273,7 +273,6 @@
                   <label class="field-label">Country</label>
                   <app-country-picker [value]="document().company.country || ''" (valueChange)="onSellerCountryChange($event)" placeholder="Choose country…" ariaLabel="Seller country" aria-required="true"></app-country-picker>
                 </div>
-               </div>
 
               <div class="party-field identifier-manager">
                 <div class="field-label-row">
@@ -306,6 +305,7 @@
                   </select>
                   <button type="button" class="identifier-add-custom" (click)="addCustomSellerIdentifier()">Add custom</button>
                 </div>
+              </div>
               </div>
 
               <div class="party-field logo-compact-field seller-logo-box">
