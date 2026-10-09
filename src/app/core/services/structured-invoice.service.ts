@@ -145,8 +145,22 @@ export class StructuredInvoiceService {
   }
 
   private legalIdentifier(party: DocumentParty): PartyTaxIdentifier | undefined {
-    const businessTypes = new Set(['ICE', 'SIREN', 'SIRET', 'RC', 'RCS', 'CRN', 'CBE', 'KVK', 'ABN', 'ACN', 'NZBN', 'CIN', 'UEN', 'USCC', 'CR', 'ORG_NO', 'CVR', 'BUSINESS_ID', 'CUI', 'KRS', 'REGON', 'NIB', 'MERSIS', 'EDRPOU', 'HRB']);
-    return this.partyIdentifiers(party).find(item => item.schemeId || businessTypes.has(item.type.toUpperCase()));
+    const identifiers = this.partyIdentifiers(party);
+    const businessTypes = new Set(['ICE', 'SIREN', 'RC', 'RCS', 'CRN', 'CBE', 'KVK', 'ABN', 'ACN', 'NZBN', 'CIN', 'UEN', 'USCC', 'CR', 'ORG_NO', 'CVR', 'BUSINESS_ID', 'CUI', 'KRS', 'REGON', 'NIB', 'MERSIS', 'EDRPOU', 'HRB']);
+    // A French SIRET is an establishment/global identifier (0009), not the legal SIREN (0002).
+    return identifiers.find(item => item.type.toUpperCase() === 'SIREN')
+      || identifiers.find(item => item.schemeId === '0002')
+      || identifiers.find(item => item.schemeId && !['0009', '0088'].includes(item.schemeId) && businessTypes.has(item.type.toUpperCase()))
+      || identifiers.find(item => businessTypes.has(item.type.toUpperCase()) && item.type.toUpperCase() !== 'SIRET');
+  }
+
+  private globalIdentifiers(party: DocumentParty): PartyTaxIdentifier[] {
+    const legalId = this.legalIdentifier(party);
+    return this.partyIdentifiers(party).filter(item =>
+      Boolean(item.schemeId && /^\\d{4}$/.test(item.schemeId) && item.value?.trim()) &&
+      item.id !== legalId?.id &&
+      ['0009', '0060', '0088'].includes(item.schemeId!)
+    );
   }
 
   private ublParty(party: DocumentParty): string {
@@ -192,7 +206,10 @@ export class StructuredInvoiceService {
       const scheme = this.identifierTaxScheme(identifier);
       return scheme ? ['<ram:SpecifiedTaxRegistration><ram:ID schemeID="' + scheme + '">' + this.esc(identifier.value) + '</ram:ID></ram:SpecifiedTaxRegistration>'] : [];
     }).join('');
-    return '<ram:' + tag + '><ram:Name>' + this.esc(name) + '</ram:Name>' +
+    const globalIds = this.globalIdentifiers(party).map(identifier =>
+      '<ram:GlobalID schemeID="' + this.esc(identifier.schemeId!) + '">' + this.esc(identifier.value) + '</ram:GlobalID>'
+    ).join('');
+    return '<ram:' + tag + '>' + globalIds + '<ram:Name>' + this.esc(name) + '</ram:Name>' +
       legalOrganization +
       (party.address || party.city || party.postalCode || party.country ? '<ram:PostalTradeAddress>' +
         (party.address ? '<ram:LineOne>' + this.esc(party.address) + '</ram:LineOne>' : '') +
