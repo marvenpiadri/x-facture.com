@@ -265,7 +265,21 @@
               </div>
               <div class="party-field">
                 <label class="field-label">Address details</label>
-                <textarea class="form-textarea party-details-textarea" rows="2" [value]="formatAddressDetails(document().company)" (input)="onSellerDetailsChange($any($event.target).value)" placeholder="Street, postal code, city, website, and other address details" autocomplete="street-address"></textarea>
+                <textarea class="form-textarea party-details-textarea" rows="2" [value]="document().company.address || ''" (input)="onSellerDetailsChange($any($event.target).value)" placeholder="Street address, building, suite, etc." autocomplete="street-address"></textarea>
+                <div class="party-location-grid">
+                  <div class="party-field">
+                    <label class="field-label">City (optional)</label>
+                    <input class="form-input" [value]="document().company.city || ''" (input)="onCompanyFieldChange('city', $any($event.target).value)" autocomplete="address-level2" placeholder="City" />
+                  </div>
+                  <div class="party-field">
+                    <label class="field-label">Postal code (optional)</label>
+                    <input class="form-input" [value]="document().company.postalCode || ''" (input)="onCompanyFieldChange('postalCode', $any($event.target).value)" autocomplete="postal-code" placeholder="Postal code" />
+                  </div>
+                  <div class="party-field">
+                    <label class="field-label">Website (optional)</label>
+                    <input class="form-input" [value]="document().company.website || ''" (input)="onCompanyFieldChange('website', $any($event.target).value)" autocomplete="url" placeholder="https://…" />
+                  </div>
+                </div>
               </div>
 
               <div class="party-extra-fields">
