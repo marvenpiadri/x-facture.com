@@ -345,3 +345,29 @@
   .capsule-toggle { display: flex; flex-wrap: wrap; border-radius: 10px; }
   .capsule-btn { white-space: normal; }
 }
+
+
+.btn-add-line {
+  width: auto;
+  min-width: 170px;
+  min-height: 40px;
+  padding: 0 18px;
+  border: 1px solid var(--color-money-green);
+  border-radius: 9px;
+  background: var(--color-money-green-light);
+  color: var(--color-money-green-dark);
+  font-weight: 750;
+  box-shadow: none;
+}
+.btn-add-line .material-icons { color: var(--color-money-green-dark); }
+.btn-add-line:hover,
+.btn-add-line:active {
+  background: color-mix(in srgb, var(--color-money-green) 15%, var(--color-surface));
+  border-color: var(--color-money-green);
+  color: var(--color-money-green-dark);
+  transform: none;
+}
+.btn-add-line:hover .material-icons,
+.btn-add-line:hover span,
+.btn-add-line:active .material-icons,
+.btn-add-line:active span { color: var(--color-money-green-dark) !important; }
