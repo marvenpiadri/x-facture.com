@@ -161,7 +161,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     ].join('\n');
 
     return '<!doctype html><html><head><meta charset="utf-8">' +
-      '<style>' + embeddedFonts + '\n' + pdfBaseStyles + '\n' + styles + '</style>' +
+      '<style>' + pdfBaseStyles + '\n' + styles + '\n' + embeddedFonts + '</style>' +
       '</head><body>' +
       element.outerHTML +
       '</body></html>';
