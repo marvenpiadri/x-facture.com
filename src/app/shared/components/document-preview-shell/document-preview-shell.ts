@@ -40,7 +40,12 @@ export class DocumentPreviewShellComponent implements OnInit {
     if (this.document().templateId) this.selectedTemplate.set(this.document().templateId);
     if (this.document().paperSize) this.selectedPaperSize.set(this.document().paperSize);
     const output = this.document().specialFields?.['outputFormat'];
-    if (output === 'pdf' || output === 'factur-x' || output === 'cii' || output === 'ubl' || output === 'order-x') this.selectedOutput.set(output);
+    // Ordinary invoices must not silently turn into Factur-X because of an old saved draft.
+    if (this.document().docType === 'invoices' && output === 'factur-x') {
+      this.selectedOutput.set('pdf');
+    } else if (output === 'pdf' || output === 'factur-x' || output === 'cii' || output === 'ubl' || output === 'order-x') {
+      this.selectedOutput.set(output);
+    }
   }
 
   setTemplate(tpl: string): void { this.selectedTemplate.set(tpl); }
