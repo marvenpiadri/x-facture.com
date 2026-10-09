@@ -806,3 +806,6 @@
     padding-bottom: 20mm;
   }
 }
+
+
+.document-custom-footer { white-space: pre-line; }
