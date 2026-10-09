@@ -494,11 +494,11 @@
 
 .logo-field-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 8px;
   width: 100%;
-  flex-wrap: wrap;
 }
 
 .logo-actions {

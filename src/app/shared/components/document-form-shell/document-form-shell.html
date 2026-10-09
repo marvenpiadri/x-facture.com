@@ -105,7 +105,7 @@
       @if (config().routeSegment === 'xfacture' || (config().routeSegment === 'credit-notes' && selectedOutputFormat() === 'factur-x')) {
         <div class="facturx-section-divider">
           <div class="facturx-divider-header">
-            <span class="facturx-subheading">E-invoicing routing addresses (optional)</span>
+            <span class="facturx-subheading">E-invoicing routing addresses</span>
             <span class="facturx-hint-text">Only enter an address that is registered for electronic invoice routing. A tax number is not automatically a routing address.</span>
           </div>
           <div class="form-meta-grid">
@@ -116,7 +116,7 @@
             <div class="form-field-item">
               <label class="field-label">Seller address scheme</label>
               <select class="form-select" [value]="document().company.electronicAddressScheme || ''" (change)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)">
-                <option value="">Choose scheme (optional)</option>
+                <option value="">Choose scheme</option>
                 <option value="0225">0225: FRCTC electronic address (France)</option>
                 <option value="9957">9957: French VAT number</option>
                 <option value="0088">0088: GLN (GS1)</option>
