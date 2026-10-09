@@ -68,6 +68,38 @@
         <option value="0088">0088: GLN</option>
       </select>
     </div>
+    <div class="party-field identifier-manager">
+      <div class="field-label-row">
+        <label class="field-label">Tax and registration identifiers</label>
+        <span class="field-sublabel">Suggestions adapt to the selected country</span>
+      </div>
+      @for (identifier of taxIdentifiers(); track identifier.id) {
+        <div class="identifier-row">
+          <div class="identifier-label-control">
+            @if (identifier.custom || identifier.type === 'CUSTOM') {
+              <input class="form-input" [value]="identifier.label" (input)="updateIdentifier(identifier.id, 'label', $any($event.target).value)" placeholder="Identifier name (e.g. CNSS)" aria-label="Custom identifier name" />
+            } @else {
+              <select class="form-input" [value]="identifier.type" (change)="updateIdentifier(identifier.id, 'type', $any($event.target).value)" aria-label="Identifier type">
+                @for (option of identifierOptionsFor(identifier.type); track option.type) {
+                  <option [value]="option.type">{{ option.label }}</option>
+                }
+              </select>
+            }
+          </div>
+          <input class="form-input identifier-value" [value]="identifier.value" (input)="updateIdentifier(identifier.id, 'value', $any($event.target).value)" [placeholder]="'Enter ' + (identifier.label || 'identifier') + ' value'" [attr.aria-label]="(identifier.label || 'Identifier') + ' value'" />
+          <button type="button" class="identifier-remove" (click)="removeIdentifier(identifier.id)" [attr.aria-label]="'Remove ' + (identifier.label || 'identifier')">×</button>
+        </div>
+      }
+      <div class="identifier-actions">
+        <select class="form-input identifier-add-select" (change)="addIdentifier($event)" aria-label="Add a predefined identifier">
+          <option value="">Add identifier...</option>
+          @for (option of identifierDefinitions(); track option.type) {
+            <option [value]="option.type">{{ option.label }}</option>
+          }
+        </select>
+        <button type="button" class="identifier-add-custom" (click)="addCustomIdentifier()">Add custom</button>
+      </div>
+    </div>
   </div>
 
   <div class="party-panel-footer">
