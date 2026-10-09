@@ -203,6 +203,16 @@ export class ApiService {
   }
 
   private toFacturXInvoice(document: BusinessDocument): Record<string, unknown> {
+    const paymentMeansCodes: Record<string, string> = {
+      'bank-transfer': '58',
+      'direct-debit': '59',
+      card: '48',
+      cash: '10',
+      other: '1'
+    };
+    const paymentMethod = document.specialFields?.['paymentMethod'];
+    const paymentMeansCode = typeof paymentMethod === 'string' ? paymentMeansCodes[paymentMethod] : undefined;
+
     return {
       id: document.docNumber,
       invoiceNumber: document.docNumber,
@@ -249,9 +259,11 @@ export class ApiService {
       })),
       amountPaid: document.depositPaid,
       transactionNature: document.specialFields?.['transactionNature'],
-      paymentMethod: document.specialFields?.['paymentMethod'],
-      iban: document.specialFields?.['iban'],
-      bic: document.specialFields?.['bic'],
+      payment: paymentMeansCode ? {
+        meansCode: paymentMeansCode,
+        ...(document.specialFields?.['iban'] ? { iban: document.specialFields['iban'] } : {}),
+        ...(document.specialFields?.['bic'] ? { bic: document.specialFields['bic'] } : {})
+      } : undefined,
       buyerReference: document.specialFields?.['buyerReference'],
       sellerSiren: document.specialFields?.['sellerSiren'],
       buyerSiren: document.specialFields?.['buyerSiren'],
