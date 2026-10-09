@@ -160,7 +160,7 @@
       <!-- Document Brand Header Banner (§Factur-X Layout) -->
       <header class="doc-header-block">
         <div class="doc-header-left">
-          <div class="doc-type-badge">{{ document().docTypeLabel || 'INVOICE' }}</div>
+          <div class="doc-type-badge">{{ document().docType === 'xfacture' || document().docType === 'invoices' ? 'INVOICE' : (document().docTypeLabel || 'INVOICE') }}</div>
           <div class="doc-number-display">{{ document().docNumber }}</div>
         </div>
 
@@ -281,40 +281,39 @@
         </div>
       </section>
 
-      <!-- Delivery Card (If Logistics is enabled and details exist) -->
+      <!-- Delivery details are informational, not a bordered two-column card. -->
       @if (document().enableLogistics || document().specialFields?.['enableLogistics']) {
-        @if (document().specialFields?.['deliveryRecipient'] || document().specialFields?.['deliveryAddress'] || document().specialFields?.['carrier'] || document().specialFields?.['trackingNumber']) {
+        @if (document().specialFields?.['deliveryRecipient'] || document().specialFields?.['deliveryAddress'] || document().specialFields?.['deliveryPostalCode'] || document().specialFields?.['deliveryCity'] || document().specialFields?.['deliveryCountry'] || document().specialFields?.['carrier'] || document().specialFields?.['trackingNumber'] || document().specialFields?.['deliveryTerms'] || document().shippingInstructions || document().specialFields?.['shippingInstructions'] || document().specialFields?.['deliveryDate']) {
           <section class="doc-delivery-card">
             <div class="party-role-tag">DELIVERY</div>
             <div class="delivery-card-grid">
-              <div class="delivery-recipient-col">
-                @if (document().specialFields?.['deliveryRecipient']) {
-                  <div class="party-name">{{ document().specialFields?.['deliveryRecipient'] }}</div>
-                }
-                @if (document().specialFields?.['deliveryAddress']) {
-                  <div class="party-line">{{ document().specialFields?.['deliveryAddress'] }}</div>
-                }
-                @if (document().specialFields?.['deliveryPostalCode'] || document().specialFields?.['deliveryCity']) {
-                  <div class="party-line">{{ document().specialFields?.['deliveryPostalCode'] }} {{ document().specialFields?.['deliveryCity'] }}</div>
-                }
-                @if (document().specialFields?.['deliveryCountry']) {
-                  <div class="party-line">{{ document().specialFields?.['deliveryCountry'] }}</div>
-                }
-              </div>
-              <div class="delivery-meta-col">
-                @if (document().specialFields?.['carrier']) {
-                  <div class="party-line"><span class="delivery-lbl">Carrier:</span> {{ document().specialFields?.['carrier'] }}</div>
-                }
-                @if (document().specialFields?.['trackingNumber']) {
-                  <div class="party-line"><span class="delivery-lbl">Tracking:</span> {{ document().specialFields?.['trackingNumber'] }}</div>
-                }
-                @if (document().specialFields?.['deliveryTerms']) {
-                  <div class="party-line"><span class="delivery-lbl">Terms:</span> {{ document().specialFields?.['deliveryTerms'] }}</div>
-                }
-                @if (document().shippingInstructions) {
-                  <div class="party-line">{{ document().shippingInstructions }}</div>
-                }
-              </div>
+              @if (document().specialFields?.['deliveryRecipient']) {
+                <div class="party-name">{{ document().specialFields?.['deliveryRecipient'] }}</div>
+              }
+              @if (document().specialFields?.['deliveryAddress']) {
+                <div class="party-line">{{ document().specialFields?.['deliveryAddress'] }}</div>
+              }
+              @if (document().specialFields?.['deliveryPostalCode'] || document().specialFields?.['deliveryCity']) {
+                <div class="party-line">{{ document().specialFields?.['deliveryPostalCode'] }} {{ document().specialFields?.['deliveryCity'] }}</div>
+              }
+              @if (document().specialFields?.['deliveryCountry']) {
+                <div class="party-line">{{ document().specialFields?.['deliveryCountry'] }}</div>
+              }
+              @if (document().specialFields?.['deliveryDate']) {
+                <div class="party-line"><span class="delivery-lbl">Delivery date:</span> {{ document().specialFields?.['deliveryDate'] }}</div>
+              }
+              @if (document().specialFields?.['carrier']) {
+                <div class="party-line"><span class="delivery-lbl">Carrier:</span> {{ document().specialFields?.['carrier'] }}</div>
+              }
+              @if (document().specialFields?.['trackingNumber']) {
+                <div class="party-line"><span class="delivery-lbl">Tracking:</span> {{ document().specialFields?.['trackingNumber'] }}</div>
+              }
+              @if (document().specialFields?.['deliveryTerms']) {
+                <div class="party-line"><span class="delivery-lbl">Terms:</span> {{ document().specialFields?.['deliveryTerms'] }}</div>
+              }
+              @if (document().shippingInstructions || document().specialFields?.['shippingInstructions']) {
+                <div class="party-line">{{ document().shippingInstructions || document().specialFields?.['shippingInstructions'] }}</div>
+              }
             </div>
           </section>
         }
