@@ -111,13 +111,12 @@ export class ClientPickerComponent {
 
     const found = this.savedClients().find(c => c.id === clientId);
     if (found) {
-      const mergedAddress = this.formatMergedPartyDetails(found);
       this.clientSelected.emit({
         client: {
           ...this.client(),
           ...found,
           name: found.name || '',
-          address: mergedAddress
+          address: found.address || ''
         },
         clientId: found.id
       });
