@@ -174,6 +174,7 @@ export class DocumentPreviewShellComponent implements OnInit {
       if (!response.ok) return '';
       let css = await response.text();
       const fontUrls = [...new Set(Array.from(css.matchAll(/url\((https:\/\/[^)]+\.woff2[^)]*)\)/g), match => match[1]))];
+      if (!fontUrls.length) throw new Error('No downloadable invoice font files were returned.');
       const embedded = await Promise.all(fontUrls.map(async url => {
         try {
           const fontResponse = await fetch(url);
@@ -189,12 +190,15 @@ export class DocumentPreviewShellComponent implements OnInit {
           return null;
         }
       }));
+      if (embedded.some(font => !font)) {
+        throw new Error('One or more invoice font files could not be embedded.');
+      }
       for (const font of embedded) {
         if (font) css = css.split(font.url).join(font.data);
       }
       return css;
     } catch {
-      return '';
+      throw new Error('The invoice fonts could not be prepared for PDF printing. Check your connection and try again.');
     }
   }
 
