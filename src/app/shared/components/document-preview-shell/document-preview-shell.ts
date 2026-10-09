@@ -75,7 +75,7 @@ export class DocumentPreviewShellComponent implements OnInit {
 
       await this.apiService.downloadPdf(
         this.document(),
-        this.createSelfContainedHtml(element),
+        await this.createSelfContainedHtml(element),
         this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
       );
     } catch (error) {
@@ -125,7 +125,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     }
   }
 
-  private createSelfContainedHtml(element: HTMLElement): string {
+  private async createSelfContainedHtml(element: HTMLElement): Promise<string> {
     /*
      * The preview is the source of truth for the PDF. Collect the actual
      * stylesheet rules currently applied to the document instead of only
@@ -143,21 +143,24 @@ export class DocumentPreviewShellComponent implements OnInit {
         }
       })
       .filter(Boolean)
-      .join('\n');
+      .join('\n')
+      .replace(/@import[^;]+;/g, '');
+
+    // Download the exact font faces used by the preview and inline them as data
+    // URLs. The server-side PDF renderer cannot rely on the user's font cache or
+    // external Google Fonts access, so the HTML snapshot carries its own fonts.
+    const embeddedFonts = await this.createEmbeddedFontCss();
 
     const pdfBaseStyles = [
       '* { box-sizing: border-box; }',
-      'html, body { margin: 0; padding: 0; background: #ffffff; }',
-      '*, *::before, *::after { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif !important; -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; }',
+      'html, body { margin: 0; padding: 0; background: #ffffff; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif; }',
+      '*, *::before, *::after { -webkit-font-smoothing: antialiased !important; -moz-osx-font-smoothing: grayscale !important; text-rendering: optimizeLegibility !important; }',
       '.font-mono, code, pre { font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace !important; }',
       '.document-render-sheet { box-sizing: border-box; }'
     ].join('\n');
 
     return '<!doctype html><html><head><meta charset="utf-8">' +
-      '<link rel="preconnect" href="https://fonts.googleapis.com">' +
-      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-      '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">' +
-      '<style>' + pdfBaseStyles + '\n' + styles + '</style>' +
+      '<style>' + embeddedFonts + '\n' + pdfBaseStyles + '\n' + styles + '</style>' +
       '</head><body>' +
       element.outerHTML +
       '</body></html>';
