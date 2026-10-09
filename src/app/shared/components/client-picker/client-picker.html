@@ -87,7 +87,7 @@
             }
           </div>
           <input class="form-input identifier-value" [value]="identifier.value" (input)="updateIdentifier(identifier.id, 'value', $any($event.target).value)" [placeholder]="'Enter ' + (identifier.label || 'identifier') + ' value'" [attr.aria-label]="(identifier.label || 'Identifier') + ' value'" />
-          <button type="button" class="identifier-remove" (click)="removeIdentifier(identifier.id)" [attr.aria-label]="'Remove ' + (identifier.label || 'identifier')">×</button>
+          <button type="button" class="identifier-remove" style="width:30px;height:30px;min-width:30px;padding:0;display:inline-flex;align-items:center;justify-content:center" (click)="removeIdentifier(identifier.id)" [attr.aria-label]="'Remove ' + (identifier.label || 'identifier')">×</button>
         </div>
       }
       <div class="identifier-actions">
