@@ -1157,3 +1157,34 @@
     color: #cbd5e1 !important;
   }
 }
+
+
+/* Keep the legal footer anchored to the physical page edge on every printed
+   page. Puppeteer positions fixed elements inside the @page content area, so
+   compensate for the reserved bottom margin instead of anchoring 25mm too high. */
+@media print {
+  .document-render-sheet.paper-a4 .document-legal-footer {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: -19mm !important;
+    margin: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .document-render-sheet.paper-letter .document-legal-footer {
+    position: fixed !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: -0.65in !important;
+    margin: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .document-render-sheet.paper-a4:has(.document-legal-footer) .formal-document-sheet,
+  .document-render-sheet.paper-letter:has(.document-legal-footer) .formal-document-sheet {
+    padding-bottom: 14mm !important;
+  }
+}
