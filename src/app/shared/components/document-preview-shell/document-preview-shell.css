@@ -147,3 +147,126 @@
   .output-select { max-width: 100%; }
   .preview-stage-container { overflow-x: auto; justify-content: flex-start; padding: 20px 12px 40px; }
 }
+
+/* Refined preview studio toolbar: compact controls, clear hierarchy, no extra
+   frame around the actual paper preview. */
+.preview-toolbar {
+  padding: 12px 20px;
+  gap: 14px;
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.045);
+}
+
+.toolbar-left {
+  min-width: 180px;
+}
+
+.doc-code {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+}
+
+.toolbar-center {
+  gap: 14px;
+}
+
+.control-label {
+  font-size: 10px;
+  letter-spacing: .1em;
+}
+
+.pills-capsule {
+  padding: 3px;
+  border-radius: 11px;
+  background-color: var(--color-canvas);
+  border-color: color-mix(in srgb, var(--color-border) 80%, transparent);
+}
+
+.pill-btn {
+  min-height: 29px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.pill-btn.active {
+  background-color: var(--color-surface);
+  color: var(--color-text-main);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, .12);
+}
+
+.toolbar-right {
+  gap: 7px;
+}
+
+.btn-action {
+  height: 36px;
+  padding-inline: 11px;
+  border-radius: 10px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.download-btn {
+  background-color: var(--color-money-green);
+  color: #ffffff;
+  border-color: var(--color-money-green);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--color-money-green) 18%, transparent);
+}
+
+.download-btn:hover {
+  background-color: var(--color-money-green-dark);
+  border-color: var(--color-money-green-dark);
+  transform: translateY(-1px);
+}
+
+.output-control {
+  border-radius: 10px;
+  background: var(--color-canvas);
+}
+
+.preview-stage-container {
+  padding: 28px 18px 48px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(148, 163, 184, .10), transparent 60%),
+    var(--color-canvas);
+}
+
+@media (max-width: 1024px) {
+  .preview-toolbar {
+    padding: 12px 16px;
+  }
+  .toolbar-left, .toolbar-center, .toolbar-right {
+    width: 100%;
+  }
+  .toolbar-left {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+@media (max-width: 680px) {
+  .toolbar-left {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .toolbar-center {
+    gap: 12px;
+  }
+  .control-group {
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .preview-stage-container {
+    padding: 16px 8px 28px;
+  }
+  .toolbar-right > .btn-action,
+  .toolbar-right > .output-control {
+    flex: 1 1 calc(50% - 8px);
+  }
+}
