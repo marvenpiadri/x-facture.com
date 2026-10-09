@@ -336,12 +336,25 @@
   break-inside: avoid !important;
 }
 
-.col-num { width: 32px; }
-.col-desc { width: 48%; }
-.col-qty { width: 14%; }
-.col-rate { width: 16%; }
+.col-num { width: 4%; }
+.col-desc { width: 40%; }
+.col-qty { width: 13%; }
+.col-rate { width: 17%; }
 .col-tax { width: 8%; }
 .col-total { width: 18%; }
+.col-notes { width: 35%; }
+
+/* Keep quantities and monetary values on one line instead of colliding with
+   adjacent cells when Chromium lays out a fixed-width invoice table. */
+.doc-items-table .col-qty,
+.doc-items-table .col-rate,
+.doc-items-table .col-tax,
+.doc-items-table .col-total,
+.vat-breakdown-table td,
+.vat-breakdown-table th,
+.totals-val {
+  white-space: nowrap;
+}
 
 .font-mono { font-family: var(--font-sans); }
 .font-bold { font-weight: 700; }
