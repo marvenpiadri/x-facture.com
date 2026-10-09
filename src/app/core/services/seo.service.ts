@@ -106,6 +106,104 @@ export class SeoService {
       }
     }
 
+    if (segments[0] === 'tools' && segments[1]) {
+      const toolPages: Record<string, { title: string; description: string; keywords: string; indexable?: boolean }> = {
+        'validate-factur-x': {
+          title: 'Free Factur-X Validator Online',
+          description: 'Check a Factur-X PDF and its embedded CII XML against the selected profile and supported EN 16931 business rules. Review reported issues before sharing the invoice.',
+          keywords: 'free Factur-X validator, validate Factur-X PDF, Factur-X validation online, EN 16931 invoice validator, CII XML validation'
+        },
+        'pdf-to-factur-x': {
+          title: 'PDF to Factur-X Converter Online',
+          description: 'Prepare an existing invoice PDF for Factur-X conversion by supplying or reviewing structured invoice XML. Create a hybrid invoice workflow without installing desktop software.',
+          keywords: 'PDF to Factur-X, convert PDF invoice to Factur-X, Factur-X converter online, hybrid PDF XML invoice'
+        },
+        'cii-to-factur-x': {
+          title: 'CII XML to Factur-X PDF Converter',
+          description: 'Use structured UN/CEFACT CII invoice XML with a PDF to create a Factur-X hybrid document. Review the profile and input data before generating the output.',
+          keywords: 'CII to Factur-X, CII XML to PDF, Factur-X PDF generator, embed CII XML in PDF'
+        },
+        'extract-xml': {
+          title: 'Extract XML from Factur-X PDF Online',
+          description: 'Extract the embedded structured invoice XML from a Factur-X PDF so you can inspect or reuse the machine-readable invoice data.',
+          keywords: 'extract XML from Factur-X, Factur-X XML extractor, extract CII XML from PDF, Factur-X PDF tools'
+        },
+        'validate-cii': {
+          title: 'Free CII XML Invoice Validator',
+          description: 'Inspect a standalone UN/CEFACT Cross Industry Invoice XML file against the selected supported profile and invoice business rules.',
+          keywords: 'CII XML validator, validate CII invoice XML, EN 16931 XML validation'
+        },
+        'validate-order-x': {
+          title: 'Order-X XML Validator Online',
+          description: 'Check an Order-X purchase order XML file for structural issues and review the validation results in the browser.',
+          keywords: 'Order-X validator, validate Order-X XML, electronic purchase order XML'
+        },
+        'edit-factur-x': {
+          title: 'Inspect and Edit Factur-X Invoice Data',
+          description: 'Open a Factur-X PDF workflow to extract structured invoice data and prepare it for review in the shared X-Facture document form.',
+          keywords: 'edit Factur-X invoice, inspect Factur-X PDF, Factur-X invoice data editor'
+        },
+        'edit-cii': {
+          title: 'Inspect and Edit CII Invoice XML',
+          description: 'Open CII invoice XML for inspection and prepare structured invoice data for the shared X-Facture form.',
+          keywords: 'edit CII XML, CII invoice editor, inspect electronic invoice XML'
+        },
+        'convert': {
+          title: 'Free E-Invoice Conversion Tools',
+          description: 'Explore conversion workflows for Factur-X, CII and UBL invoice formats, including hybrid PDF creation and structured XML conversion.',
+          keywords: 'e-invoice converter, Factur-X converter, CII to UBL, UBL to CII, electronic invoice conversion'
+        },
+        'embed': {
+          title: 'Embed XML in PDF for Factur-X',
+          description: 'Prepare a PDF and structured CII XML for a hybrid Factur-X document using the available embedding workflow.',
+          keywords: 'embed XML in PDF, Factur-X XML embedding, hybrid invoice PDF'
+        },
+        'cii-to-ubl': {
+          title: 'Convert CII XML to UBL Online',
+          description: 'Convert structured invoice data from UN/CEFACT CII into UBL 2.1 XML using the X-Facture conversion workspace.',
+          keywords: 'CII to UBL converter, convert CII XML to UBL, electronic invoice format conversion'
+        },
+        'ubl-to-cii': {
+          title: 'Convert UBL XML to CII Online',
+          description: 'Convert structured invoice data from UBL XML into UN/CEFACT CII format using the X-Facture conversion workspace.',
+          keywords: 'UBL to CII converter, convert UBL to CII XML, electronic invoice format conversion'
+        },
+        'cii-to-pdf': {
+          title: 'Convert CII Invoice XML to PDF',
+          description: 'Open a CII invoice XML file in the X-Facture document renderer to create a readable invoice document.',
+          keywords: 'CII to PDF, render CII XML invoice, invoice XML PDF converter'
+        },
+        'ubl-to-pdf': {
+          title: 'Convert UBL Invoice XML to PDF',
+          description: 'Open a UBL invoice XML file in the X-Facture document renderer to create a readable invoice document.',
+          keywords: 'UBL to PDF, render UBL XML invoice, invoice XML PDF converter'
+        },
+        'extract-attachments': {
+          title: 'Extract Attachments from Factur-X PDF',
+          description: 'Inspect and extract embedded files from a hybrid invoice PDF, including the structured invoice data attachment when available.',
+          keywords: 'extract Factur-X attachments, PDF embedded attachments, extract invoice XML attachment'
+        },
+        'cii-viewer': {
+          title: 'CII and UBL XML Invoice Viewer',
+          description: 'Read structured CII or UBL invoice XML in a browser-based viewer to understand the data carried by an electronic invoice.',
+          keywords: 'CII viewer, UBL viewer, electronic invoice XML viewer'
+        }
+      };
+      const tool = toolPages[segments[1]];
+      if (tool) {
+        const url = `${this.siteUrl}/tools/${segments[1]}`;
+        this.updateMetadata({
+          title: `x-facture • ${tool.title}`,
+          description: tool.description,
+          keywords: tool.keywords,
+          url,
+          robots: tool.indexable === false ? 'noindex, follow' : undefined
+        });
+        this.setSiteSchema(url, tool.title);
+        return;
+      }
+    }
+
     const docType = segments[0];
     const docConfig = docType ? DOCUMENT_TYPE_CONFIGS[docType] : undefined;
     if (docConfig && segments.length === 2 && segments[1] === 'create') {
@@ -209,6 +307,16 @@ export class SeoService {
     }
     if (docConfig && segments.length === 1) {
       const url = `${this.siteUrl}/${docConfig.routeSegment}`;
+      if (docConfig.routeSegment === 'xfacture') {
+        this.updateMetadata({
+          title: 'Free Factur-X Generator Online | X-Facture',
+          description: 'Create and manage Factur-X hybrid e-invoices online for free with X-Facture. Start a new invoice or open your saved Factur-X documents, with readable PDF and structured XML in one file.',
+          keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, hybrid e-invoice, Factur-X PDF, embedded CII XML, x-facture',
+          url
+        });
+        this.setSiteSchema(url, 'Free Factur-X Generator Online');
+        return;
+      }
       this.updateMetadata({
         title: `x-facture • ${docConfig.pluralName} | Free Business Documents`,
         description: `${docConfig.description} Create and manage ${docConfig.pluralName.toLowerCase()} with x-facture's free business document tools.`,
