@@ -701,41 +701,9 @@
   font-size: 10px;
 }
 
-.thermal-footer {
-  margin-top: 8px;
-  font-size: 10px;
-}
-
-.thermal-note {
-  font-size: 9.5px;
-  margin-bottom: 4px;
-}
-
 .thermal-greeting {
   font-weight: 700;
   margin: 6px 0;
-}
-
-.thermal-barcode-box {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  margin-top: 6px;
-}
-
-.simulated-barcode {
-  width: 80%;
-  height: 28px;
-  background: repeating-linear-gradient(
-    90deg,
-    #000 0, #000 2px,
-    transparent 2px, transparent 4px,
-    #000 4px, #000 5px,
-    transparent 5px, transparent 8px,
-    #000 8px, #000 11px,
-    transparent 11px, transparent 13px
-  );
 }
 
 .barcode-number {
@@ -880,57 +848,6 @@
 }
 
 
-
-/* Optional legal footer for seller registration details (e.g. Morocco ICE, IF, TP).
-   Fixed positioning is repeated by Chromium at the bottom of every printed page. */
-.document-legal-footer {
-  position: fixed;
-  left: 20mm;
-  right: 20mm;
-  bottom: 6mm;
-  z-index: 10;
-  box-sizing: border-box;
-  padding-top: 2mm;
-  border-top: 0.25mm solid #cbd5e1;
-  color: #475569;
-  background: #fff;
-  font-family: Inter, Arial, sans-serif;
-  font-size: 8pt;
-  line-height: 1.35;
-  text-align: center;
-  white-space: pre-line;
-  overflow-wrap: anywhere;
-}
-
-.document-render-sheet:has(.document-legal-footer) .formal-document-sheet {
-  padding-bottom: 14mm;
-}
-
-.document-render-sheet.paper-letter .document-legal-footer {
-  left: 0.75in;
-  right: 0.75in;
-}
-
-.document-render-sheet.paper-thermal-80 .document-legal-footer,
-.document-render-sheet.paper-thermal-58 .document-legal-footer {
-  left: 3mm;
-  right: 3mm;
-  font-size: 6pt;
-}
-
-@media screen {
-  .document-legal-footer {
-    position: absolute;
-    bottom: 6mm;
-  }
-
-  .document-render-sheet:has(.document-legal-footer) {
-    padding-bottom: 20mm;
-  }
-}
-
-
-.document-custom-footer { white-space: pre-line; }
 
 /* Signature invoice header: the logo is always part of the document masthead,
    never nested inside the buyer's information. */
@@ -1188,28 +1105,7 @@
 }
 
 
-/* Keep the legal footer visible on every printed page. The @page bottom
-   margin reserves its space; never use a negative bottom offset. */
-@media print {
-  .document-render-sheet.paper-a4 .document-legal-footer {
-    position: fixed !important;
-    left: 20mm !important;
-    right: 20mm !important;
-    bottom: 6mm !important;
-    margin: 0 !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
 
-  .document-render-sheet.paper-letter .document-legal-footer {
-    position: fixed !important;
-    left: 0.75in !important;
-    right: 0.75in !important;
-    bottom: 6mm !important;
-    margin: 0 !important;
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-  }
 
   /* Let the item table paginate naturally; repeat its column headings and
      keep each ordinary row together. */
