@@ -155,7 +155,7 @@ export class DocumentPreviewShellComponent implements OnInit {
         }
       })
       .filter(Boolean)
-      .join('\\n')
+      .join('\n')
       .replace(/@import[^;]+;/g, '')
       .replace(/@font-face\\s*\\{[^}]*\\}/gi, '');
 
@@ -177,10 +177,10 @@ export class DocumentPreviewShellComponent implements OnInit {
       '.font-mono, .doc-number-display { font-family: "Inter", Arial, sans-serif !important; font-variant-numeric: tabular-nums; }',
       '*, *::before, *::after { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }',
       '.document-render-sheet { box-sizing: border-box; }'
-    ].join('\\n');
+    ].join('\n');
 
     return '<!doctype html><html><head><meta charset="utf-8">' +
-      '<style>' + styles + '\\n' + embeddedInterCss + '\\n' + forceInterCss + '</style>' +
+      '<style>' + styles + '\n' + embeddedInterCss + '\n' + forceInterCss + '</style>' +
       '</head><body>' +
       element.outerHTML +
       '</body></html>';
