@@ -705,12 +705,12 @@
 @page invoice-a4 {
   size: A4 portrait;
   /* Apply printable margins to every page fragment, not only the first sheet. */
-  margin: 20mm;
+  margin: 20mm 20mm 25mm;
 }
 
 @page invoice-letter {
   size: letter portrait;
-  margin: 0.75in;
+  margin: 0.75in 0.75in 1in;
 }
 
 @page invoice-thermal-80 {
