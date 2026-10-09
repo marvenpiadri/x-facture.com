@@ -136,17 +136,6 @@
       }
 
       <div class="thermal-rule-solid"></div>
-
-      <!-- Receipt Footer Note & Barcode Simulation -->
-      <div class="thermal-footer text-center">
-        @if (document().notes) {
-          <p class="thermal-note">{{ document().notes }}</p>
-        }
-        <div class="thermal-barcode-box">
-          <div class="simulated-barcode"></div>
-          <span class="barcode-number">{{ document().docNumber }}</span>
-        </div>
-      </div>
     </div>
   }
 
@@ -517,14 +506,5 @@
       }
 
     </div>
-  }
-  @if (document().company.legalFooter || (document().specialFields?.['showFooterText'] === true && document().specialFields?.['footerText'])) {
-    <footer class="document-legal-footer">
-      @if (document().company.legalFooter) { <span>{{ document().company.legalFooter }}</span> }
-      @if (document().specialFields?.['showFooterText'] === true && document().specialFields?.['footerText']) {
-        @if (document().company.legalFooter) { <span aria-hidden="true"> · </span> }
-        <span>{{ document().specialFields?.['footerText'] }}</span>
-      }
-    </footer>
   }
 </div>
