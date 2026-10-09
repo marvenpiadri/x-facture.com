@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, computed, inject, input, output } f
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ClientService } from '../../../core/services/client.service';
+import { CountryPickerComponent } from '../country-picker/country-picker';
 import { DocumentParty } from '../../../core/models/document.model';
 
 @Component({
   selector: 'app-client-picker',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, CountryPickerComponent],
   templateUrl: './client-picker.html',
   styleUrl: './client-picker.css',
   changeDetection: ChangeDetectionStrategy.OnPush
