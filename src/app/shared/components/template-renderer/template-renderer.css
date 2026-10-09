@@ -1159,15 +1159,14 @@
 }
 
 
-/* Keep the legal footer anchored to the physical page edge on every printed
-   page. Puppeteer positions fixed elements inside the @page content area, so
-   compensate for the reserved bottom margin instead of anchoring 25mm too high. */
+/* Keep the legal footer visible on every printed page. The @page bottom
+   margin reserves its space; never use a negative bottom offset. */
 @media print {
   .document-render-sheet.paper-a4 .document-legal-footer {
     position: fixed !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: -19mm !important;
+    left: 20mm !important;
+    right: 20mm !important;
+    bottom: 6mm !important;
     margin: 0 !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
@@ -1175,16 +1174,59 @@
 
   .document-render-sheet.paper-letter .document-legal-footer {
     position: fixed !important;
-    left: 0 !important;
-    right: 0 !important;
-    bottom: -0.65in !important;
+    left: 0.75in !important;
+    right: 0.75in !important;
+    bottom: 6mm !important;
     margin: 0 !important;
     break-inside: avoid !important;
     page-break-inside: avoid !important;
   }
 
-  .document-render-sheet.paper-a4:has(.document-legal-footer) .formal-document-sheet,
-  .document-render-sheet.paper-letter:has(.document-legal-footer) .formal-document-sheet {
-    padding-bottom: 14mm !important;
+  /* Let the item table paginate naturally; repeat its column headings and
+     keep each ordinary row together. */
+  .doc-items-table thead {
+    display: table-header-group !important;
+  }
+
+  .doc-items-table tbody {
+    display: table-row-group !important;
+  }
+
+  .doc-items-table tr,
+  .vat-breakdown-table tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Avoid splitting the VAT/total calculations as a two-column grid.
+     Stack them in normal flow so long invoices can continue onto new pages. */
+  .doc-summary-calc-section {
+    display: block !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .doc-vat-breakdown-col {
+    margin-bottom: 18px !important;
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .doc-totals-col,
+  .facturx-totals-ledger {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .doc-terms-payment-section,
+  .doc-payment-card,
+  .doc-notes-card {
+    break-inside: auto !important;
+    page-break-inside: auto !important;
+  }
+
+  .totals-line {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 }
