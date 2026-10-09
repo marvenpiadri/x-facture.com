@@ -200,15 +200,7 @@
             <div class="party-fields-stack">
               <div class="party-field">
                 <label class="field-label">Name / Business name</label>
-                <input
-                  type="text"
-                  class="form-input"
-                  [value]="document().company.name || ''"
-                  (input)="onCompanyFieldChange('name', $any($event.target).value)"
-                  placeholder="Your full name or business name"
-                  autocomplete="organization"
-                  required
-                />
+                <input type="text" class="form-input" [value]="document().company.name || ''" (input)="onCompanyFieldChange('name', $any($event.target).value)" placeholder="Your full name or business name" autocomplete="organization" required />
               </div>
 
               <div class="party-primary-grid">
