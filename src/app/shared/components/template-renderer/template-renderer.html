@@ -31,8 +31,11 @@
         @if (document().company.phone) {
           <div class="thermal-phone">Tel: {{ document().company.phone }}</div>
         }
-        @if (document().company.taxId) {
+        @if (document().company.taxId && !document().company.taxIdentifiers?.length) {
           <div class="thermal-taxid">Tax ID: {{ document().company.taxId }}</div>
+        }
+        @for (identifier of document().company.taxIdentifiers || []; track identifier.id) {
+          @if (identifier.value) { <div class="thermal-taxid">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
         }
       </div>
 
@@ -213,8 +216,11 @@
             @if (document().company.country) {
               <div class="party-line">{{ document().company.country }}</div>
             }
-            @if (document().company.taxId) {
+            @if (document().company.taxId && !document().company.taxIdentifiers?.length) {
               <div class="party-line party-tax-line">Tax ID: {{ document().company.taxId }}</div>
+            }
+            @for (identifier of document().company.taxIdentifiers || []; track identifier.id) {
+              @if (identifier.value) { <div class="party-line party-tax-line">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
             }
             @if (document().specialFields?.['sellerTaxNumber']) {
               <div class="party-line">Tax number: {{ document().specialFields?.['sellerTaxNumber'] }}</div>
@@ -253,8 +259,11 @@
             @if (document().client.country) {
               <div class="party-line">{{ document().client.country }}</div>
             }
-            @if (document().client.taxId) {
+            @if (document().client.taxId && !document().client.taxIdentifiers?.length) {
               <div class="party-line party-tax-line">Tax ID: {{ document().client.taxId }}</div>
+            }
+            @for (identifier of document().client.taxIdentifiers || []; track identifier.id) {
+              @if (identifier.value) { <div class="party-line party-tax-line">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
             }
             @if (document().client.email) {
               <div class="party-line">{{ document().client.email }}</div>

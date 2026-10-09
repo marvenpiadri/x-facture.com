@@ -27,17 +27,24 @@
       />
     </div>
 
-    <div class="party-field">
-      <div class="field-label-row">
-        <label class="field-label">Address, Tax & Contact Details</label>
-        <span class="field-sublabel">Address, city, tax/VAT, email, phone & website</span>
+    <div class="party-field party-primary-grid">
+      <div class="party-field">
+        <label class="field-label">Email</label>
+        <input type="email" class="form-input" [value]="client().email || ''" (input)="onFieldChange('email', $any($event.target).value)" placeholder="billing@client.com" autocomplete="email" />
       </div>
+      <div class="party-field">
+        <label class="field-label">Phone</label>
+        <input type="tel" class="form-input" [value]="client().phone || ''" (input)="onFieldChange('phone', $any($event.target).value)" placeholder="+44 20 7946 0912" autocomplete="tel" />
+      </div>
+    </div>
+    <div class="party-field">
+      <label class="field-label">Address and additional information</label>
       <textarea
         class="form-textarea party-details-textarea"
-        rows="5"
-        [value]="displayDetails()"
+        rows="3"
+        [value]="client().address || ''"
         (input)="onDetailsChange($any($event.target).value)"
-        placeholder="25 City Road&#10;London, EC1Y 1AA&#10;Tax / VAT: GB987654321&#10;Email: finance@client.com · Tel: +44 20 7946 0912&#10;Website: https://client.com"
+        placeholder="Street address, city, postal code, payment or other relevant details"
       ></textarea>
     </div>
   </div>
@@ -45,7 +52,7 @@
   <div class="party-extra-fields">
     <div class="party-field">
       <label class="field-label">Country</label>
-      <app-country-picker [value]="client().country || ''" (valueChange)="onFieldChange('country', $event)" placeholder="Choose country…" ariaLabel="Buyer country"></app-country-picker>
+      <app-country-picker [value]="client().country || ''" (valueChange)="onCountryChange($event)" placeholder="Choose country…" ariaLabel="Buyer country"></app-country-picker>
     </div>
     <div class="party-field">
       <label class="field-label">Electronic address / code</label>
@@ -55,13 +62,43 @@
       <label class="field-label">Electronic address scheme</label>
       <select class="form-input" [value]="client().electronicAddressScheme || ''" (change)="onFieldChange('electronicAddressScheme', $any($event.target).value)">
         <option value="">Select scheme (optional)</option>
-        <option value="0225">0225 — SIREN</option>
-        <option value="0002">0002 — SIRENE</option>
-        <option value="0007">0007 — SIRET</option>
-        <option value="0088">0088 — GLN / EAN</option>
-        <option value="EM">EM — Email</option>
-        <option value="0204">0204 — Leitweg-ID</option>
+        <option value="EM">EM: Email</option>
+        <option value="0204">0204: Leitweg-ID</option>
+        <option value="0225">0225: FRCTC electronic address</option>
+        <option value="0088">0088: GLN</option>
       </select>
+    </div>
+    <div class="party-field identifier-manager">
+      <div class="field-label-row">
+        <label class="field-label">Tax and registration identifiers</label>
+        <span class="field-sublabel">Suggestions adapt to the selected country</span>
+      </div>
+      @for (identifier of taxIdentifiers(); track identifier.id) {
+        <div class="identifier-row">
+          <div class="identifier-label-control">
+            @if (identifier.custom || identifier.type === 'CUSTOM') {
+              <input class="form-input" [value]="identifier.label" (input)="updateIdentifier(identifier.id, 'label', $any($event.target).value)" placeholder="Identifier name (e.g. CNSS)" aria-label="Custom identifier name" />
+            } @else {
+              <select class="form-input" [value]="identifier.type" (change)="updateIdentifier(identifier.id, 'type', $any($event.target).value)" aria-label="Identifier type">
+                @for (option of identifierOptionsFor(identifier.type); track option.type) {
+                  <option [value]="option.type">{{ option.label }}</option>
+                }
+              </select>
+            }
+          </div>
+          <input class="form-input identifier-value" [value]="identifier.value" (input)="updateIdentifier(identifier.id, 'value', $any($event.target).value)" [placeholder]="'Enter ' + (identifier.label || 'identifier') + ' value'" [attr.aria-label]="(identifier.label || 'Identifier') + ' value'" />
+          <button type="button" class="identifier-remove" (click)="removeIdentifier(identifier.id)" [attr.aria-label]="'Remove ' + (identifier.label || 'identifier')">×</button>
+        </div>
+      }
+      <div class="identifier-actions">
+        <select class="form-input identifier-add-select" (change)="addIdentifier($event)" aria-label="Add a predefined identifier">
+          <option value="">Add identifier...</option>
+          @for (option of identifierDefinitions(); track option.type) {
+            <option [value]="option.type">{{ option.label }}</option>
+          }
+        </select>
+        <button type="button" class="identifier-add-custom" (click)="addCustomIdentifier()">Add custom</button>
+      </div>
     </div>
   </div>
 

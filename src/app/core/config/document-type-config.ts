@@ -27,14 +27,14 @@ export const DOCUMENT_TYPE_CONFIGS: Record<string, DocumentTypeConfig> = {
   },
   'invoices': {
     docType: 'invoices',
-    singularName: 'Tax Invoice',
-    pluralName: 'Tax Invoices',
+    singularName: 'Invoice',
+    pluralName: 'Invoices',
     routeSegment: 'invoices',
     defaultPrefix: 'INV',
     defaultLineLayoutMode: 'quantity',
     hasPricing: true,
     defaultTemplateId: 'modern',
-    description: 'Formal legally compliant tax invoice with itemized breakdown, tax rates, and payment remittance instructions.',
+    description: 'Formal invoice with an itemized breakdown, applicable tax details, and payment instructions.',
     icon: 'receipt_long'
   },
   'proforma-invoices': {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BusinessDocument, DocumentLineItem, DocumentParty } from '../models/document.model';
+import { BusinessDocument, DocumentLineItem, DocumentParty, PartyTaxIdentifier } from '../models/document.model';
 
 export type StructuredInvoiceFormat = 'ubl' | 'cii' | 'order-x';
 
@@ -132,17 +132,41 @@ export class StructuredInvoiceService {
     return '<cac:InvoiceLine><cbc:ID>' + index + '</cbc:ID><cbc:InvoicedQuantity unitCode="C62">' + this.number(item.quantity) + '</cbc:InvoicedQuantity><cbc:LineExtensionAmount currencyID="' + currency + '">' + this.money(item.amount) + '</cbc:LineExtensionAmount><cac:Item><cbc:Name>' + this.esc(item.description || 'Item') + '</cbc:Name><cac:ClassifiedTaxCategory><cbc:ID>' + category + '</cbc:ID><cbc:Percent>' + this.number(rate) + '</cbc:Percent><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:ClassifiedTaxCategory></cac:Item><cac:Price><cbc:PriceAmount currencyID="' + currency + '">' + this.money(item.unitCost) + '</cbc:PriceAmount></cac:Price></cac:InvoiceLine>';
   }
 
+  private partyIdentifiers(party: DocumentParty): PartyTaxIdentifier[] {
+    if (party.taxIdentifiers?.length) return party.taxIdentifiers.filter(item => Boolean(item.value?.trim()));
+    return party.taxId?.trim() ? [{ id: 'legacy-tax-id', type: 'VAT', label: 'VAT / Tax ID', value: party.taxId }] : [];
+  }
+
+  private identifierTaxScheme(identifier: PartyTaxIdentifier): 'VAT' | 'FC' | undefined {
+    const type = identifier.type.toUpperCase();
+    if (type === 'VAT') return 'VAT';
+    if (['GST', 'GSTIN', 'TRN', 'INVOICE_REG', 'SALES_TAX', 'SST', 'TAX_ID', 'IF', 'EIN', 'TIN', 'NIF', 'CNPJ', 'CPF', 'PAN', 'UTR', 'NPWP', 'KRA_PIN', 'MAT_FISCAL', 'VKN', 'NTN', 'PATENTE'].includes(type)) return 'FC';
+    return undefined;
+  }
+
+  private legalIdentifier(party: DocumentParty): PartyTaxIdentifier | undefined {
+    const businessTypes = new Set(['ICE', 'SIREN', 'SIRET', 'RC', 'RCS', 'CRN', 'CBE', 'KVK', 'ABN', 'ACN', 'NZBN', 'CIN', 'UEN', 'USCC', 'CR', 'ORG_NO', 'CVR', 'BUSINESS_ID', 'CUI', 'KRS', 'REGON', 'NIB', 'MERSIS', 'EDRPOU', 'HRB']);
+    return this.partyIdentifiers(party).find(item => item.schemeId || businessTypes.has(item.type.toUpperCase()));
+  }
+
   private ublParty(party: DocumentParty): string {
     const name = party.legalName || party.name || 'Unnamed party';
-    return '<cac:Party><cac:PartyName><cbc:Name>' + this.esc(name) + '</cbc:Name></cac:PartyName>' +
-      (party.taxId ? '<cac:PartyTaxScheme><cbc:CompanyID>' + this.esc(party.taxId) + '</cbc:CompanyID><cac:TaxScheme><cbc:ID>VAT</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme>' : '') +
+    const taxSchemes = this.partyIdentifiers(party).flatMap(identifier => {
+      const scheme = this.identifierTaxScheme(identifier);
+      return scheme ? ['<cac:PartyTaxScheme><cbc:CompanyID>' + this.esc(identifier.value) + '</cbc:CompanyID><cac:TaxScheme><cbc:ID>' + scheme + '</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme>'] : [];
+    }).join('');
+    const legalId = this.legalIdentifier(party);
+    const legalEntity = legalId ? '<cac:PartyLegalEntity><cbc:RegistrationName>' + this.esc(party.legalName || party.name || 'Unnamed party') + '</cbc:RegistrationName><cbc:CompanyID' + (legalId.schemeId ? ' schemeID="' + this.esc(legalId.schemeId) + '"' : '') + '>' + this.esc(legalId.value) + '</cbc:CompanyID></cac:PartyLegalEntity>' : '';
+    return '<cac:Party>' +
+      (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
+      '<cac:PartyName><cbc:Name>' + this.esc(name) + '</cbc:Name></cac:PartyName>' +
       '<cac:PostalAddress>' +
       (party.address ? '<cbc:StreetName>' + this.esc(party.address) + '</cbc:StreetName>' : '') +
       (party.city ? '<cbc:CityName>' + this.esc(party.city) + '</cbc:CityName>' : '') +
       (party.postalCode ? '<cbc:PostalZone>' + this.esc(party.postalCode) + '</cbc:PostalZone>' : '') +
       (party.country ? '<cac:Country><cbc:IdentificationCode>' + this.esc(party.country.toUpperCase().slice(0, 2)) + '</cbc:IdentificationCode></cac:Country>' : '') +
       '</cac:PostalAddress>' +
-      (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
+      taxSchemes + legalEntity +
       (party.email ? '<cac:Contact><cbc:ElectronicMail>' + this.esc(party.email) + '</cbc:ElectronicMail></cac:Contact>' : '') +
       '</cac:Party>';
   }
@@ -160,8 +184,16 @@ export class StructuredInvoiceService {
 
   private ciiParty(tag: string, party: DocumentParty): string {
     const name = party.legalName || party.name || 'Unnamed party';
+    const legalId = this.legalIdentifier(party);
+    const legalOrganization = legalId
+      ? '<ram:SpecifiedLegalOrganization><ram:ID' + (legalId.schemeId ? ' schemeID="' + this.esc(legalId.schemeId) + '"' : '') + '>' + this.esc(legalId.value) + '</ram:ID></ram:SpecifiedLegalOrganization>'
+      : '';
+    const taxRegistrations = this.partyIdentifiers(party).flatMap(identifier => {
+      const scheme = this.identifierTaxScheme(identifier);
+      return scheme ? ['<ram:SpecifiedTaxRegistration><ram:ID schemeID="' + scheme + '">' + this.esc(identifier.value) + '</ram:ID></ram:SpecifiedTaxRegistration>'] : [];
+    }).join('');
     return '<ram:' + tag + '><ram:Name>' + this.esc(name) + '</ram:Name>' +
-      (party.taxId ? '<ram:SpecifiedTaxRegistration><ram:ID schemeID="VA">' + this.esc(party.taxId) + '</ram:ID></ram:SpecifiedTaxRegistration>' : '') +
+      legalOrganization +
       (party.address || party.city || party.postalCode || party.country ? '<ram:PostalTradeAddress>' +
         (party.address ? '<ram:LineOne>' + this.esc(party.address) + '</ram:LineOne>' : '') +
         (party.postalCode ? '<ram:PostcodeCode>' + this.esc(party.postalCode) + '</ram:PostcodeCode>' : '') +
@@ -170,6 +202,7 @@ export class StructuredInvoiceService {
         '</ram:PostalTradeAddress>' : '') +
       (party.electronicAddress ? '<ram:URIUniversalCommunication><ram:URIID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</ram:URIID></ram:URIUniversalCommunication>' : '') +
       (party.email ? '<ram:URIUniversalCommunication><ram:URIID>' + this.esc(party.email) + '</ram:URIID></ram:URIUniversalCommunication>' : '') +
+      taxRegistrations +
       '</ram:' + tag + '>';
   }
 

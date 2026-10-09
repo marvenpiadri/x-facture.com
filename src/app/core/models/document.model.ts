@@ -14,6 +14,16 @@ export interface DocumentLineItem {
   taxCategoryCode?: string;
 }
 
+export interface PartyTaxIdentifier {
+  id: string;
+  type: string;
+  label: string;
+  value: string;
+  /** ISO 6523 ICD code only when this identifier is a legal-entity identifier for a supported syntax. */
+  schemeId?: string;
+  custom?: boolean;
+}
+
 export interface DocumentParty {
   name: string;
   legalName?: string;
@@ -26,7 +36,8 @@ export interface DocumentParty {
   city?: string;
   postalCode?: string;
   country?: string;
-  taxId?: string;       // VAT / Tax Reg / Business No.
+  taxId?: string;       // Legacy VAT / Tax Reg / Business No. field, retained for existing documents.
+  taxIdentifiers?: PartyTaxIdentifier[];
   logoUrl?: string;
   bankDetails?: string;
   /** Optional legal footer repeated at the bottom of each PDF page (e.g. ICE, IF, TP). */
