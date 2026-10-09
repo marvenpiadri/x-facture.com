@@ -23,6 +23,7 @@ import { LineItemsTableComponent } from '../line-items-table/line-items-table';
 import { ClientPickerComponent } from '../client-picker/client-picker';
 import { CountryPickerComponent } from '../country-picker/country-picker';
 import { CountryService } from '../../../core/services/country.service';
+import { ApiService } from '../../../core/services/api.service';
 
 @Component({
   selector: 'app-document-form-shell',
@@ -45,6 +46,7 @@ export class DocumentFormShellComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private clientService = inject(ClientService);
   private countryService = inject(CountryService);
+  private apiService = inject(ApiService);
   private clientSaveTimer: ReturnType<typeof setTimeout> | undefined;
   private activeBusinessId: string | undefined;
   private businessSaveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -67,6 +69,9 @@ export class DocumentFormShellComponent implements OnInit {
   });
   readonly deliveryExpanded = signal<boolean>(false);
   readonly notesExpanded = signal<boolean>(false);
+  readonly validatingXml = signal(false);
+  readonly xmlHealthReport = signal<Record<string, any> | null>(null);
+  readonly xmlHealthError = signal('');
 
   readonly isLogisticsEnabled = computed(() => {
     const d = this.document();
@@ -664,6 +669,20 @@ export class DocumentFormShellComponent implements OnInit {
   onTotalsModifierChange(field: 'taxRate' | 'discountAmount' | 'shippingAmount' | 'depositPaid', value: any): void {
     const num = Math.max(0, Number(value) || 0);
     this.save.emit({ ...this.document(), [field]: num });
+  }
+
+  async validateXmlHealth(): Promise<void> {
+    this.validatingXml.set(true);
+    this.xmlHealthError.set('');
+    this.xmlHealthReport.set(null);
+    try {
+      const report = await this.apiService.validateFacturXDocument(this.document());
+      this.xmlHealthReport.set(report);
+    } catch (error) {
+      this.xmlHealthError.set(error instanceof Error ? error.message : 'XML health validation could not complete.');
+    } finally {
+      this.validatingXml.set(false);
+    }
   }
 
   triggerSave(): void {
