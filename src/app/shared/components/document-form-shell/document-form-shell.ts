@@ -24,6 +24,7 @@ import { ClientPickerComponent } from '../client-picker/client-picker';
 import { CountryPickerComponent } from '../country-picker/country-picker';
 import { CountryService } from '../../../core/services/country.service';
 import { ApiService } from '../../../core/services/api.service';
+import { ValidationMessageService } from '../../../core/services/validation-message.service';
 
 @Component({
   selector: 'app-document-form-shell',
@@ -47,6 +48,7 @@ export class DocumentFormShellComponent implements OnInit {
   private clientService = inject(ClientService);
   private countryService = inject(CountryService);
   private apiService = inject(ApiService);
+  readonly validationMessages = inject(ValidationMessageService);
   private clientSaveTimer: ReturnType<typeof setTimeout> | undefined;
   private activeBusinessId: string | undefined;
   private businessSaveTimer: ReturnType<typeof setTimeout> | undefined;
