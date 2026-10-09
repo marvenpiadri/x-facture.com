@@ -866,11 +866,13 @@
               <label class="field-label">Special Notes & Terms (Visible on document)</label>
               <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms: Due within 30 days. Thank you for your business."></textarea>
             </div>
-            <div class="terms-field-item">
-              <label class="field-label">Payment details / instructions</label>
-              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details."></textarea>
-              <span class="field-help">Printed as entered in the PDF. It is not automatically converted into structured bank-account data in the embedded XML.</span>
-            </div>
+            @if (config().routeSegment !== 'xfacture' && config().routeSegment !== 'order-x') {
+              <div class="terms-field-item">
+                <label class="field-label">Payment details / instructions</label>
+                <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details."></textarea>
+                <span class="field-help">Printed as entered in the PDF. It is not automatically converted into structured bank-account data in the embedded XML.</span>
+              </div>
+            }
             <div class="footer-note-field">
               <label class="footer-note-toggle">
                 <input type="checkbox" [checked]="document().specialFields?.['showFooterText'] === true" (change)="onSpecialFieldChange('showFooterText', $any($event.target).checked)" />
