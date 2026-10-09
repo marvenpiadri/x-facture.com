@@ -3,3 +3,14 @@
   width: 100%;
   height: 100%;
 }
+
+
+.party-location-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3, 12px);
+  margin-top: 10px;
+}
+@media (max-width: 640px) {
+  .party-location-grid { grid-template-columns: minmax(0, 1fr); }
+}
