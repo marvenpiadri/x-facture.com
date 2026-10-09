@@ -342,7 +342,7 @@ export class DocumentFormShellComponent {
         paymentMethod: 'bank-transfer',
         iban: 'FR76 3000 6000 0112 3456 7890 189',
         bic: 'BNPAFRPPXXX',
-        outputFormat: current.specialFields?.['outputFormat'] || 'factur-x'
+        outputFormat: current.specialFields?.['outputFormat'] || (['xfacture', 'credit-notes'].includes(this.config().routeSegment) ? 'factur-x' : 'pdf')
       }
     };
     this.save.emit(sample);
