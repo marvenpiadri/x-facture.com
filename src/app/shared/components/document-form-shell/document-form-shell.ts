@@ -515,10 +515,9 @@ export class DocumentFormShellComponent implements OnInit {
     if (!profile) return;
 
     this.activeBusinessId = profile.id;
-    const formattedAddress = this.formatMergedPartyDetails(profile.company);
     this.save.emit({
       ...this.document(),
-      company: { ...profile.company, address: formattedAddress }
+      company: { ...profile.company }
     });
 
     void this.settingsService.selectRegisteredBusiness(profile.id).catch(() => {
@@ -532,10 +531,9 @@ export class DocumentFormShellComponent implements OnInit {
       this.clientSaveTimer = undefined;
     }
 
-    const formattedAddress = this.formatMergedPartyDetails(selection.client);
     this.save.emit({
       ...this.document(),
-      client: { ...selection.client, address: formattedAddress },
+      client: { ...selection.client },
       clientId: selection.clientId
     });
   }
