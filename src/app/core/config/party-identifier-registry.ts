@@ -3,6 +3,8 @@
  * This registry is extensible UI guidance, not legal advice or proof of registration.
  * Tax registration, ISO 6523 legal-entity identifiers, and electronic-address schemes are distinct.
  */
+import { PartyTaxIdentifier } from '../models/document.model';
+
 export interface PartyIdentifierDefinition {
   type: string;
   label: string;
@@ -377,4 +379,55 @@ export function getDefaultPartyIdentifierDefinitions(countryCode?: string): Part
     .map(type => all.find(item => item.type === type))
     .filter((item): item is PartyIdentifierDefinition => Boolean(item))
     .map(item => ({ ...item }));
+}
+
+
+/** Reconcile stored identifiers when a party changes country without losing entered values. */
+export function reconcilePartyIdentifiersForCountryChange(existing: PartyTaxIdentifier[], fromCountry: string | undefined, toCountry: string | undefined, idPrefix: string): PartyTaxIdentifier[] {
+  const targetCountry = (toCountry || '').trim().toUpperCase();
+  const sourceCountry = (fromCountry || '').trim().toUpperCase();
+  const targetByType = new Map(getPartyIdentifierDefinitions(targetCountry).map(definition => [definition.type, definition]));
+  const reconciled: PartyTaxIdentifier[] = [];
+  const countryChanged = sourceCountry !== targetCountry;
+  const globalTypes = new Set(['GLN', 'DUNS']);
+  for (const identifier of existing) {
+    if (identifier.custom || identifier.type === 'CUSTOM') {
+      reconciled.push({ ...identifier, countryCode: identifier.countryCode || sourceCountry || undefined });
+      continue;
+    }
+    const definition = targetByType.get(identifier.type);
+    if (!countryChanged && definition) {
+      reconciled.push({ ...identifier, label: definition.label, schemeId: definition.schemeId, countryCode: targetCountry || identifier.countryCode || undefined, custom: false });
+      continue;
+    }
+    if (countryChanged && definition && globalTypes.has(identifier.type)) {
+      reconciled.push({ ...identifier, label: definition.label, schemeId: definition.schemeId, countryCode: identifier.countryCode || targetCountry || undefined, custom: false });
+      continue;
+    }
+    if (!countryChanged && !definition) {
+      reconciled.push({ ...identifier, countryCode: identifier.countryCode || sourceCountry || undefined });
+      continue;
+    }
+    if ((identifier.value || '').trim()) {
+      const oldLabel = identifier.label || identifier.type;
+      const archivedLabel = sourceCountry && !oldLabel.endsWith(`(${sourceCountry})`) ? `${oldLabel} (${sourceCountry})` : oldLabel;
+      const withoutOldScheme: PartyTaxIdentifier = { ...identifier };
+      delete withoutOldScheme.schemeId;
+      reconciled.push({ ...withoutOldScheme, type: 'CUSTOM', label: archivedLabel, countryCode: identifier.countryCode || sourceCountry || undefined, custom: true });
+    }
+  }
+  const representedTypes = new Set(reconciled.filter(item => !item.custom).map(item => item.type));
+  for (const definition of getDefaultPartyIdentifierDefinitions(targetCountry)) {
+    if (representedTypes.has(definition.type)) continue;
+    reconciled.push({ id: `${idPrefix}-${Date.now()}-${reconciled.length}`, type: definition.type, label: definition.label, value: '', countryCode: targetCountry || undefined, ...(definition.schemeId ? { schemeId: definition.schemeId } : {}) });
+    representedTypes.add(definition.type);
+  }
+  return reconciled;
+}
+
+/** Keep the legacy single taxId in sync with the active country's current identifiers. */
+export function getPrimaryTaxIdentifierValue(identifiers: PartyTaxIdentifier[], countryCode?: string): string {
+  const country = (countryCode || '').trim().toUpperCase();
+  const current = identifiers.filter(item => !item.custom && (!item.countryCode || item.countryCode === country));
+  return current.find(item => item.type === 'VAT' && (item.value || '').trim())?.value || current.find(item => ['TAX_ID', 'IF', 'EIN', 'TIN', 'NIF', 'TRN', 'RFC', 'GSTIN'].includes(item.type) && (item.value || '').trim())?.value || '';
 }
