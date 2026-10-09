@@ -78,7 +78,8 @@ export interface BusinessDocument {
   // Line items
   items: DocumentLineItem[];
 
-  // Document-level discounts & delivery
+  // Document-level discounts & delivery / logistics
+  enableLogistics?: boolean;
   discounts?: DocumentDiscount[];
   deliveryDiscount?: number;
   deliveryTaxRate?: number;

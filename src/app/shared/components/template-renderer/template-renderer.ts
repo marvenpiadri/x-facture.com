@@ -8,6 +8,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { BusinessDocument } from '../../../core/models/document.model';
 import { CurrencyService } from '../../../core/services/currency.service';
+import { CalculationService, DocumentTotalsResult } from '../../../core/services/calculation.service';
 
 @Component({
   selector: 'app-template-renderer',
@@ -19,6 +20,7 @@ import { CurrencyService } from '../../../core/services/currency.service';
 })
 export class TemplateRendererComponent {
   private currencyService = inject(CurrencyService);
+  private calculationService = inject(CalculationService);
 
   document = input.required<BusinessDocument>();
   templateId = input<string>();
@@ -36,6 +38,24 @@ export class TemplateRendererComponent {
 
   currencySymbol = computed(() => {
     return this.currencyService.getSymbol(this.document().currency);
+  });
+
+  calculatedTotals = computed<DocumentTotalsResult>(() => {
+    const doc = this.document();
+    return this.calculationService.calculateDocumentTotals(
+      doc.items || [],
+      doc.taxRate || 0,
+      doc.discountAmount || 0,
+      doc.shippingAmount || 0,
+      doc.depositPaid || 0,
+      doc.discounts || [],
+      doc.deliveryDiscount || 0,
+      doc.deliveryTaxRate || 0
+    );
+  });
+
+  taxBreakdown = computed(() => {
+    return this.calculatedTotals().taxBreakdown || [];
   });
 
   formatCurrency(amount: number | undefined | null): string {

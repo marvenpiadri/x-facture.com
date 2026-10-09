@@ -57,18 +57,19 @@
 
 /* Individual line item card matching getfacturx.com layout */
 .line-item-card {
-  background-color: var(--color-surface-hover);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  border: 1px solid color-mix(in srgb, var(--color-border) 75%, transparent);
   border-radius: 12px;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .line-item-card:hover {
-  border-color: color-mix(in srgb, var(--color-money-green) 40%, var(--color-border));
+  border-color: color-mix(in srgb, var(--color-money-green) 35%, var(--color-border));
 }
 
 /* Top bar: Line badge and delete */

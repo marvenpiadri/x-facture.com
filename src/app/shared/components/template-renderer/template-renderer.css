@@ -71,58 +71,35 @@
   width: 100%;
 }
 
-/* Header */
+/* Header (§Factur-X Clean Layout) */
 .doc-header-block {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 32px;
-  padding-bottom: 20px;
-  border-bottom: 2px solid var(--color-midnight-800);
+  gap: 24px;
+  padding-bottom: 8px;
 }
 
-.doc-brand-side {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  max-width: 60%;
-}
-
-.company-logo {
-  max-height: 50px;
-  max-width: 160px;
-  object-fit: contain;
-}
-
-.company-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--color-midnight-800);
-  line-height: 1.15;
-}
-
-.company-subname {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-}
-
-.company-contact-lines {
+.doc-header-left {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 11.5px;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-  white-space: break-spaces;
-  overflow-wrap: anywhere;
 }
 
-.tax-pill {
-  display: inline-block;
+.doc-type-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-secondary);
+}
+
+.doc-number-display {
   font-family: var(--font-mono);
-  font-weight: 600;
-  color: var(--color-midnight-700);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-midnight-800);
+  letter-spacing: -0.02em;
 }
 
 .doc-meta-side {
@@ -130,23 +107,7 @@
   flex-direction: column;
   align-items: flex-end;
   text-align: right;
-  gap: 8px;
-}
-
-.doc-type-badge {
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--color-midnight-700);
-}
-
-.doc-number-display {
-  font-family: var(--font-mono);
-  font-size: 22px;
-  font-weight: 800;
-  color: var(--color-midnight-800);
-  letter-spacing: -0.02em;
+  gap: 4px;
 }
 
 .meta-dates-grid {
@@ -163,7 +124,10 @@
 }
 
 .meta-date-label {
-  color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.05em;
 }
 
 .meta-date-val {
@@ -171,78 +135,129 @@
   color: var(--color-midnight-800);
 }
 
-/* Status Indicator Badge (§15: Color plus text label) */
-.status-indicator-badge {
-  display: inline-flex;
+/* Reference Sub-header Bar (Order ref, Delivery date) */
+.doc-submeta-bar {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-size: 12px;
+  padding: 4px 0 10px;
+  color: var(--color-midnight-800);
 }
 
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-}
-
-.status-draft { background-color: var(--color-status-draft-bg); color: var(--color-status-draft); border: 1px solid var(--color-status-draft-border); }
-.status-draft .status-dot { background-color: var(--color-status-draft); }
-
-.status-sent { background-color: var(--color-status-sent-bg); color: var(--color-status-sent); border: 1px solid var(--color-status-sent-border); }
-.status-sent .status-dot { background-color: var(--color-status-sent); }
-
-.status-paid, .status-completed { background-color: var(--color-status-paid-bg); color: var(--color-status-paid); border: 1px solid var(--color-status-paid-border); }
-.status-paid .status-dot, .status-completed .status-dot { background-color: var(--color-status-paid); }
-
-.status-overdue { background-color: var(--color-status-overdue-bg); color: var(--color-status-overdue); border: 1px solid var(--color-status-overdue-border); }
-.status-overdue .status-dot { background-color: var(--color-status-overdue); }
-
-.status-void { background-color: var(--color-status-void-bg); color: var(--color-status-void); border: 1px solid var(--color-status-void-border); text-decoration: line-through; }
-.status-void .status-dot { background-color: var(--color-status-void); }
-
-/* Parties section */
-.doc-parties-section {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.party-card {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  max-width: 420px;
-}
-
-.party-role-title {
-  font-size: 10px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+.submeta-label {
   color: var(--color-text-muted);
-  margin-bottom: 2px;
+  margin-right: 6px;
 }
 
-.party-name {
-  font-size: 15px;
+.submeta-val {
   font-weight: 700;
   color: var(--color-midnight-800);
 }
 
-.party-legal {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
+/* Parties Card: Seller & Buyer Inlined with Logo inside Buyer */
+.doc-parties-card {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 18px 22px;
+  gap: 22px;
 }
 
-.party-address, .party-location, .party-tax, .party-contact {
+.party-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.party-col-divider {
+  width: 1px;
+  background-color: #e2e8f0;
+  align-self: stretch;
+}
+
+.party-col-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  min-height: 24px;
+  gap: 12px;
+}
+
+.party-role-tag {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.buyer-logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  max-width: 140px;
+  max-height: 52px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.buyer-logo {
+  max-height: 48px;
+  max-width: 130px;
+  object-fit: contain;
+  display: block;
+}
+
+.party-details-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   font-size: 12px;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
+  line-height: 1.45;
+  color: var(--color-midnight-800);
+}
+
+.party-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-midnight-800);
+  margin-bottom: 2px;
+}
+
+.party-line {
+  color: #334155;
+  white-space: break-spaces;
+  overflow-wrap: anywhere;
+}
+
+.party-tax-line {
+  font-weight: 500;
+  color: #475569;
+}
+
+/* Delivery Note Card */
+.doc-delivery-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px 20px;
+}
+
+.delivery-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  font-size: 12px;
+}
+
+.delivery-lbl {
+  color: var(--color-text-muted);
 }
 
 .party-address {
@@ -293,21 +308,21 @@
 }
 
 .doc-items-table th {
-  background-color: var(--color-midnight-800);
-  color: #ffffff;
+  background-color: transparent;
+  color: var(--color-text-secondary);
   font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 9px 12px;
-  border-top: 1px solid var(--color-midnight-800);
-  border-bottom: 1px solid var(--color-midnight-800);
+  padding: 8px 10px;
+  border-top: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .doc-items-table td {
-  padding: 10px 12px;
+  padding: 9px 10px;
   font-size: 12px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid #f1f5f9;
   color: var(--color-midnight-800);
   vertical-align: top;
 }
@@ -320,8 +335,8 @@
 
 .col-num { width: 32px; }
 .col-desc { width: 48%; }
-.col-qty { width: 12%; }
-.col-rate { width: 18%; }
+.col-qty { width: 14%; }
+.col-rate { width: 16%; }
 .col-tax { width: 8%; }
 .col-total { width: 18%; }
 
@@ -341,120 +356,132 @@
 }
 
 /* ==========================================================================
-   SUMMARY & TOTALS BLOCK (§8 - Must stay with last page)
+   SUMMARY & TOTALS BLOCK: VAT Breakdown on left, Totals on right
    ========================================================================== */
-.doc-summary-footer-block {
+.doc-summary-calc-section {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 36px;
   align-items: start;
+  margin-top: 14px;
   page-break-inside: avoid !important;
   break-inside: avoid !important;
-  margin-top: 8px;
 }
 
-.summary-notes-column {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.info-clause-box {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.clause-heading {
-  font-size: 10px;
+.summary-block-title {
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.vat-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.vat-breakdown-table th {
+  font-size: 10.5px;
+  font-weight: 700;
   color: var(--color-text-secondary);
+  padding: 6px 8px;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.clause-body {
-  font-size: 11.5px;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-  white-space: pre-wrap;
-}
-
-.bank-box {
-  background-color: var(--color-canvas);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-}
-
-.bank-details-pre {
-  font-family: var(--font-mono);
-  font-size: 11px;
+.vat-breakdown-table td {
+  padding: 7px 8px;
   color: var(--color-midnight-800);
-  white-space: pre-wrap;
-  line-height: 1.45;
-  margin: 0;
+  border-bottom: 1px solid #f1f5f9;
 }
 
-.summary-ledger-card {
+.facturx-totals-ledger {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  background-color: var(--color-canvas);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 16px;
-  page-break-inside: avoid !important;
-  break-inside: avoid !important;
-}
-
-.ledger-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 5px;
   font-size: 12.5px;
 }
 
-.ledger-label {
-  color: var(--color-text-secondary);
+.totals-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
 }
 
-.ledger-value {
+.totals-lbl {
+  color: #475569;
+}
+
+.totals-val {
   color: var(--color-midnight-800);
+}
+
+.text-discount {
+  color: #dc2626 !important;
+}
+
+.gross-total-line {
   font-weight: 600;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 4px;
 }
 
-.ledger-row.discount .ledger-value {
-  color: #dc2626;
-}
-
-.ledger-divider {
-  height: 1px;
-  background-color: var(--color-border-dark);
-  margin: 6px 0;
-}
-
-.ledger-row.total-row {
-  font-size: 16px;
-  font-weight: 800;
-  padding-top: 2px;
-}
-
-.total-label {
-  color: var(--color-midnight-800);
-  font-weight: 800;
-}
-
-.total-value {
-  color: var(--color-midnight-800);
-  font-weight: 800;
-}
-
-.ledger-row.balance-row {
-  margin-top: 4px;
-  padding-top: 6px;
-  border-top: 1px dashed var(--color-border-dark);
+.amount-due-line {
   font-size: 15px;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 6px;
+  margin-top: 2px;
+}
+
+.amount-due-line .totals-val {
+  font-size: 16px;
+  color: var(--color-money-green);
+}
+
+.doc-terms-payment-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 14px;
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+.doc-payment-card, .doc-notes-card {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.payment-card-title, .notes-card-title {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+}
+
+.bank-details-clean {
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-midnight-800);
+  white-space: pre-wrap;
+  margin: 0;
+}
+
+.notes-text, .terms-text {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #334155;
+  margin: 0;
 }
 
 /* ==========================================================================

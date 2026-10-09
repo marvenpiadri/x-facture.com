@@ -154,80 +154,155 @@
   @else {
     <div class="formal-document-sheet">
 
-      <!-- Document Brand Header Banner -->
+      <!-- Document Brand Header Banner (§Factur-X Layout) -->
       <header class="doc-header-block">
-        <div class="doc-brand-side">
-          @if (document().company.logoUrl) {
-            <img [src]="document().company.logoUrl" class="company-logo" alt="Company Logo" />
-          }
-          <div class="company-info-stack">
-            @if (document().company.name) {
-              <h1 class="company-title">{{ document().company.name }}</h1>
-            }
-            @if (document().company.address) {
-              <div class="company-contact-lines">{{ document().company.address }}</div>
-            }
-          </div>
+        <div class="doc-header-left">
+          <div class="doc-type-badge">{{ document().docTypeLabel || 'INVOICE' }}</div>
+          <div class="doc-number-display">{{ document().docNumber }}</div>
         </div>
 
         <div class="doc-meta-side">
-          <div class="doc-type-badge">{{ document().docTypeLabel }}</div>
-          <div class="doc-number-display">{{ document().docNumber }}</div>
-          
           <div class="meta-dates-grid">
             <div class="meta-date-item">
-              <span class="meta-date-label">Issue Date:</span>
+              <span class="meta-date-label">ISSUE DATE</span>
               <strong class="meta-date-val">{{ document().issueDate }}</strong>
             </div>
             @if (document().dueDate) {
               <div class="meta-date-item">
-                <span class="meta-date-label">Due Date:</span>
+                <span class="meta-date-label">DUE DATE</span>
                 <strong class="meta-date-val">{{ document().dueDate }}</strong>
               </div>
             }
-            @if (document().purchaseOrderRef) {
-              <div class="meta-date-item">
-                <span class="meta-date-label">P.O. Ref:</span>
-                <strong class="meta-date-val">{{ document().purchaseOrderRef }}</strong>
-              </div>
-            }
           </div>
-          @if (document().specialFields?.['vatPaymentOption'] === 'debits') {
-            <div class="meta-date-item"><span class="meta-date-label">VAT:</span><strong class="meta-date-val">Option for payment on debits</strong></div>
-          }
         </div>
       </header>
 
-      <!-- Parties Block: complete structured seller and buyer details -->
-      <section class="doc-parties-section">
-        <div class="party-card party-from">
-          <div class="party-role-title">FROM / ISSUER</div>
-          @if (document().company.name) { <div class="party-name">{{ document().company.name }}</div> }
-          @if (document().company.address) { <div class="party-address">{{ document().company.address }}</div> }
+      <!-- Reference Sub-header (Order ref, Delivery date, etc.) -->
+      @if (document().purchaseOrderRef || document().specialFields?.['buyerReference'] || document().specialFields?.['deliveryDate']) {
+        <div class="doc-submeta-bar">
+          <div class="submeta-left">
+            @if (document().purchaseOrderRef || document().specialFields?.['buyerReference']) {
+              <span class="submeta-label">Order ref.:</span>
+              <strong class="submeta-val">{{ document().purchaseOrderRef || document().specialFields?.['buyerReference'] }}</strong>
+            }
+          </div>
+          <div class="submeta-right">
+            @if (document().specialFields?.['deliveryDate']) {
+              <span class="submeta-label">Delivered:</span>
+              <strong class="submeta-val">{{ document().specialFields?.['deliveryDate'] }}</strong>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Parties Block: Seller & Buyer Inlined with the logo inside the buyer -->
+      <section class="doc-parties-card">
+        <!-- Seller Column -->
+        <div class="party-col seller-party-col">
+          <div class="party-role-tag">SELLER</div>
+          <div class="party-details-stack">
+            @if (document().company.name) {
+              <div class="party-name">{{ document().company.name }}</div>
+            }
+            @if (document().company.address) {
+              <div class="party-line">{{ document().company.address }}</div>
+            }
+            @if (document().company.postalCode || document().company.city) {
+              <div class="party-line">{{ document().company.postalCode }} {{ document().company.city }}</div>
+            }
+            @if (document().company.country) {
+              <div class="party-line">{{ document().company.country }}</div>
+            }
+            @if (document().company.taxId) {
+              <div class="party-line party-tax-line">Tax ID: {{ document().company.taxId }}</div>
+            }
+            @if (document().specialFields?.['sellerTaxNumber']) {
+              <div class="party-line">Tax number: {{ document().specialFields?.['sellerTaxNumber'] }}</div>
+            }
+            @if (document().company.email) {
+              <div class="party-line">{{ document().company.email }}</div>
+            }
+            @if (document().company.phone) {
+              <div class="party-line">{{ document().company.phone }}</div>
+            }
+          </div>
         </div>
 
-        <div class="party-card party-bill-to">
-          <div class="party-role-title">BILL TO / CLIENT</div>
-          @if (document().client.name) { <div class="party-name">{{ document().client.name }}</div> }
-          @if (document().client.address) { <div class="party-address">{{ document().client.address }}</div> }
+        <div class="party-col-divider"></div>
+
+        <!-- Buyer Column (Inlined with Logo inside the buyer!) -->
+        <div class="party-col buyer-party-col">
+          <div class="party-col-header">
+            <div class="party-role-tag">BUYER</div>
+            @if (document().client.logoUrl || document().company.logoUrl) {
+              <div class="buyer-logo-container">
+                <img [src]="document().client.logoUrl || document().company.logoUrl" class="buyer-logo" alt="Logo" />
+              </div>
+            }
+          </div>
+          <div class="party-details-stack">
+            @if (document().client.name) {
+              <div class="party-name">{{ document().client.name }}</div>
+            }
+            @if (document().client.address) {
+              <div class="party-line">{{ document().client.address }}</div>
+            }
+            @if (document().client.postalCode || document().client.city) {
+              <div class="party-line">{{ document().client.postalCode }} {{ document().client.city }}</div>
+            }
+            @if (document().client.country) {
+              <div class="party-line">{{ document().client.country }}</div>
+            }
+            @if (document().client.taxId) {
+              <div class="party-line party-tax-line">Tax ID: {{ document().client.taxId }}</div>
+            }
+            @if (document().client.email) {
+              <div class="party-line">{{ document().client.email }}</div>
+            }
+            @if (document().client.phone) {
+              <div class="party-line">{{ document().client.phone }}</div>
+            }
+          </div>
         </div>
       </section>
-      @if (document().specialFields?.['deliveryAddress']) {
-        <section class="doc-delivery-note">
-          <strong>Delivery address</strong>
-          <span>{{ document().specialFields?.['deliveryRecipient'] ? document().specialFields?.['deliveryRecipient'] + ' – ' : '' }}{{ document().specialFields?.['deliveryAddress'] }}, {{ document().specialFields?.['deliveryPostalCode'] || '' }} {{ document().specialFields?.['deliveryCity'] || '' }} {{ document().specialFields?.['deliveryCountry'] || '' }}</span>
-        </section>
-      }
-      @if (document().specialFields?.['carrier'] || document().specialFields?.['trackingNumber'] || document().specialFields?.['deliveryTerms'] || document().shippingInstructions) {
-        <section class="doc-delivery-note">
-          <strong>Shipping & Logistics</strong>
-          <span>
-            @if (document().specialFields?.['carrier']) { Carrier: {{ document().specialFields?.['carrier'] }} }
-            @if (document().specialFields?.['trackingNumber']) { · Tracking: {{ document().specialFields?.['trackingNumber'] }} }
-            @if (document().specialFields?.['deliveryTerms']) { · Terms: {{ document().specialFields?.['deliveryTerms'] }} }
-            @if (document().shippingInstructions) { · {{ document().shippingInstructions }} }
-          </span>
-        </section>
+
+      <!-- Delivery Card (If Logistics is enabled and details exist) -->
+      @if (document().enableLogistics || document().specialFields?.['enableLogistics']) {
+        @if (document().specialFields?.['deliveryRecipient'] || document().specialFields?.['deliveryAddress'] || document().specialFields?.['carrier'] || document().specialFields?.['trackingNumber']) {
+          <section class="doc-delivery-card">
+            <div class="party-role-tag">DELIVERY</div>
+            <div class="delivery-card-grid">
+              <div class="delivery-recipient-col">
+                @if (document().specialFields?.['deliveryRecipient']) {
+                  <div class="party-name">{{ document().specialFields?.['deliveryRecipient'] }}</div>
+                }
+                @if (document().specialFields?.['deliveryAddress']) {
+                  <div class="party-line">{{ document().specialFields?.['deliveryAddress'] }}</div>
+                }
+                @if (document().specialFields?.['deliveryPostalCode'] || document().specialFields?.['deliveryCity']) {
+                  <div class="party-line">{{ document().specialFields?.['deliveryPostalCode'] }} {{ document().specialFields?.['deliveryCity'] }}</div>
+                }
+                @if (document().specialFields?.['deliveryCountry']) {
+                  <div class="party-line">{{ document().specialFields?.['deliveryCountry'] }}</div>
+                }
+              </div>
+              <div class="delivery-meta-col">
+                @if (document().specialFields?.['carrier']) {
+                  <div class="party-line"><span class="delivery-lbl">Carrier:</span> {{ document().specialFields?.['carrier'] }}</div>
+                }
+                @if (document().specialFields?.['trackingNumber']) {
+                  <div class="party-line"><span class="delivery-lbl">Tracking:</span> {{ document().specialFields?.['trackingNumber'] }}</div>
+                }
+                @if (document().specialFields?.['deliveryTerms']) {
+                  <div class="party-line"><span class="delivery-lbl">Terms:</span> {{ document().specialFields?.['deliveryTerms'] }}</div>
+                }
+                @if (document().shippingInstructions) {
+                  <div class="party-line">{{ document().shippingInstructions }}</div>
+                }
+              </div>
+            </div>
+          </section>
+        }
       }
 
       <!-- ===================================================================
@@ -240,21 +315,21 @@
           <thead>
             <tr>
               <th class="col-num">#</th>
-              <th class="col-desc">Description</th>
+              <th class="col-desc">Item</th>
               
               @if (document().hasPricing) {
                 @if (document().lineLayoutMode === 'quantity') {
                   <th class="col-qty text-center">Qty</th>
-                  <th class="col-rate text-right">Unit Cost</th>
+                  <th class="col-rate text-right">Unit price</th>
                 } @else if (document().lineLayoutMode === 'hours') {
                   <th class="col-qty text-center">Hours</th>
                   <th class="col-rate text-right">Hourly Rate</th>
                 }
                 
                 @if (document().taxRate > 0) {
-                  <th class="col-tax text-center">Tax</th>
+                  <th class="col-tax text-center">VAT %</th>
                 }
-                <th class="col-total text-right">Amount ({{ currencySymbol() }})</th>
+                <th class="col-total text-right">Net ({{ currencySymbol() }})</th>
               } @else {
                 <th class="col-qty text-center">Quantity / Packages</th>
                 <th class="col-notes">Notes / Cargo Specification</th>
@@ -271,13 +346,13 @@
 
                 @if (document().hasPricing) {
                   @if (document().lineLayoutMode === 'quantity' || document().lineLayoutMode === 'hours') {
-                    <td class="col-qty text-center font-mono">{{ item.quantity }}</td>
+                    <td class="col-qty text-center font-mono">{{ item.quantity }} {{ item.unitCode ? item.unitCode : '' }}</td>
                     <td class="col-rate text-right font-mono">{{ formatCurrency(item.unitCost) }}</td>
                   }
 
                   @if (document().taxRate > 0) {
                     <td class="col-tax text-center font-mono">
-                      {{ item.taxRate ? item.taxRate + '%' : '—' }}
+                      {{ item.taxRate ? item.taxRate + '%' : '0%' }}
                     </td>
                   }
 
@@ -295,90 +370,133 @@
       </section>
 
       <!-- ===================================================================
-           SUMMARY & TOTALS BLOCK (§8)
-           Kept together with last page of line items via break-inside: avoid;
+           SUMMARY & TOTALS BLOCK: VAT Breakdown on left, Totals on right
            =================================================================== -->
-      <section class="doc-summary-footer-block">
-        <!-- Left Column: Bank details, payment terms & notes -->
-        <div class="summary-notes-column">
-          @if (document().notes) {
-            <div class="info-clause-box">
-              <span class="clause-heading">Notes & Instructions</span>
-              <p class="clause-body">{{ document().notes }}</p>
-            </div>
-          }
-
-          @if (document().bankDetails) {
-            <div class="info-clause-box bank-box">
-              <span class="clause-heading">Remittance / Wire Transfer Details</span>
-              <pre class="bank-details-pre">{{ document().bankDetails }}</pre>
-            </div>
-          }
-
-          @if (document().terms) {
-            <div class="info-clause-box">
-              <span class="clause-heading">Terms & Conditions</span>
-              <p class="clause-body text-muted">{{ document().terms }}</p>
-            </div>
-          }
-        </div>
-
-        <!-- Right Column: Ledger Totals Calculation (if pricing enabled) -->
-        @if (document().hasPricing) {
-          <div class="summary-ledger-card">
-            <div class="ledger-row">
-              <span class="ledger-label">Subtotal</span>
-              <span class="ledger-value font-mono">{{ formatCurrency(document().subtotal) }}</span>
-            </div>
-
-            @if (document().taxAmount > 0) {
-              <div class="ledger-row">
-                <span class="ledger-label">Estimated Tax {{ document().taxRate ? '(' + document().taxRate + '%)' : '' }}</span>
-                <span class="ledger-value font-mono">+{{ formatCurrency(document().taxAmount) }}</span>
-              </div>
-            }
-
-            @if (document().discountAmount > 0) {
-              <div class="ledger-row discount">
-                <span class="ledger-label">Discount Applied</span>
-                <span class="ledger-value font-mono">-{{ formatCurrency(document().discountAmount) }}</span>
-              </div>
-            }
-
-            @if (document().shippingAmount > 0) {
-              <div class="ledger-row">
-                <span class="ledger-label">Shipping / Freight</span>
-                <span class="ledger-value font-mono">+{{ formatCurrency(document().shippingAmount) }}</span>
-              </div>
-            }
-
-            @if ((document().deliveryDiscount || 0) > 0) {
-              <div class="ledger-row discount">
-                <span class="ledger-label">Delivery Discount</span>
-                <span class="ledger-value font-mono">-{{ formatCurrency(document().deliveryDiscount || 0) }}</span>
-              </div>
-            }
-
-            <div class="ledger-divider"></div>
-
-            <div class="ledger-row total-row">
-              <span class="ledger-label total-label">TOTAL</span>
-              <span class="ledger-value total-value font-mono">{{ formatCurrency(document().total) }}</span>
-            </div>
-
-            @if (document().depositPaid > 0) {
-              <div class="ledger-row deposit">
-                <span class="ledger-label">Amount Paid / Deposit</span>
-                <span class="ledger-value font-mono">-{{ formatCurrency(document().depositPaid) }}</span>
-              </div>
-              <div class="ledger-row balance-row">
-                <span class="ledger-label font-bold">BALANCE DUE</span>
-                <span class="ledger-value font-bold font-mono text-money">{{ formatCurrency(document().balanceDue) }}</span>
-              </div>
-            }
+      @if (document().hasPricing) {
+        <section class="doc-summary-calc-section">
+          <!-- Left Column: VAT Breakdown -->
+          <div class="doc-vat-breakdown-col">
+            <div class="summary-block-title">VAT BREAKDOWN</div>
+            <table class="vat-breakdown-table">
+              <thead>
+                <tr>
+                  <th class="text-left">Category</th>
+                  <th class="text-center">Rate</th>
+                  <th class="text-right">Taxable amount</th>
+                  <th class="text-right">Tax amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (tb of taxBreakdown(); track tb.taxRate) {
+                  <tr>
+                    <td class="text-left font-mono">{{ tb.category || 'S' }}</td>
+                    <td class="text-center font-mono">{{ tb.taxRate }}%</td>
+                    <td class="text-right font-mono">{{ formatCurrency(tb.netAmount) }}</td>
+                    <td class="text-right font-mono">{{ formatCurrency(tb.taxAmount) }}</td>
+                  </tr>
+                }
+                @if (taxBreakdown().length === 0) {
+                  <tr>
+                    <td class="text-left font-mono">S</td>
+                    <td class="text-center font-mono">{{ document().taxRate || 0 }}%</td>
+                    <td class="text-right font-mono">{{ formatCurrency(document().subtotal) }}</td>
+                    <td class="text-right font-mono">{{ formatCurrency(document().taxAmount) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           </div>
-        }
-      </section>
+
+          <!-- Right Column: Factur-X Totals -->
+          <div class="doc-totals-col">
+            <div class="summary-block-title">TOTALS</div>
+            <div class="facturx-totals-ledger">
+              <div class="totals-line">
+                <span class="totals-lbl">Net total</span>
+                <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().netTotal || document().subtotal) }}</span>
+              </div>
+
+              @if (calculatedTotals().discountAmount > 0) {
+                <div class="totals-line discount-line">
+                  <span class="totals-lbl">Discount</span>
+                  <span class="totals-val font-mono text-discount">-{{ formatCurrency(calculatedTotals().discountAmount) }}</span>
+                </div>
+              }
+
+              @if ((document().enableLogistics || document().specialFields?.['enableLogistics']) && calculatedTotals().shippingAmount > 0) {
+                <div class="totals-line">
+                  <span class="totals-lbl">Shipping / Freight</span>
+                  <span class="totals-val font-mono">+{{ formatCurrency(calculatedTotals().shippingAmount) }}</span>
+                </div>
+              }
+
+              @if ((document().enableLogistics || document().specialFields?.['enableLogistics']) && (calculatedTotals().deliveryDiscount || 0) > 0) {
+                <div class="totals-line discount-line">
+                  <span class="totals-lbl">Delivery Discount</span>
+                  <span class="totals-val font-mono text-discount">-{{ formatCurrency(calculatedTotals().deliveryDiscount) }}</span>
+                </div>
+              }
+
+              <div class="totals-line">
+                <span class="totals-lbl">Tax Basis</span>
+                <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().netTotal || document().subtotal) }}</span>
+              </div>
+
+              <div class="totals-line">
+                <span class="totals-lbl">VAT total</span>
+                <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().taxAmount || document().taxAmount) }}</span>
+              </div>
+
+              <div class="totals-line gross-total-line">
+                <span class="totals-lbl">Gross total</span>
+                <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().total || document().total) }}</span>
+              </div>
+
+              @if (document().depositPaid > 0) {
+                <div class="totals-line paid-line">
+                  <span class="totals-lbl">Paid</span>
+                  <span class="totals-val font-mono text-discount">-{{ formatCurrency(document().depositPaid) }}</span>
+                </div>
+                <div class="totals-line amount-due-line">
+                  <span class="totals-lbl font-bold">Amount due</span>
+                  <span class="totals-val font-bold font-mono text-money">{{ formatCurrency(document().balanceDue) }}</span>
+                </div>
+              } @else {
+                <div class="totals-line amount-due-line">
+                  <span class="totals-lbl font-bold">Amount due</span>
+                  <span class="totals-val font-bold font-mono text-money">{{ formatCurrency(calculatedTotals().total || document().total) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Payment & Notes Section -->
+      @if (document().bankDetails || document().notes || document().terms) {
+        <section class="doc-terms-payment-section">
+          @if (document().bankDetails) {
+            <div class="doc-payment-card">
+              <div class="payment-card-title">PAYMENT</div>
+              <div class="payment-card-body">
+                <pre class="bank-details-clean">{{ document().bankDetails }}</pre>
+              </div>
+            </div>
+          }
+
+          @if (document().notes || document().terms) {
+            <div class="doc-notes-card">
+              <div class="notes-card-title">NOTES</div>
+              @if (document().notes) {
+                <p class="notes-text">{{ document().notes }}</p>
+              }
+              @if (document().terms) {
+                <p class="terms-text">{{ document().terms }}</p>
+              }
+            </div>
+          }
+        </section>
+      }
 
     </div>
   }

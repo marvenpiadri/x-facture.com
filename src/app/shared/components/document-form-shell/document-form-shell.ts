@@ -60,13 +60,45 @@ export class DocumentFormShellComponent implements OnInit {
   readonly deliveryExpanded = signal<boolean>(false);
   readonly notesExpanded = signal<boolean>(false);
 
+  readonly isLogisticsEnabled = computed(() => {
+    const d = this.document();
+    if (d.enableLogistics !== undefined) return Boolean(d.enableLogistics);
+    if (d.specialFields?.['enableLogistics'] !== undefined) return Boolean(d.specialFields?.['enableLogistics']);
+    return false;
+  });
+
   ngOnInit(): void {
     void this.countryService.load();
-    if (this.hasDeliveryData()) {
+    if (this.isLogisticsEnabled()) {
       this.deliveryExpanded.set(true);
     }
     if (this.hasNotesData()) {
       this.notesExpanded.set(true);
+    }
+  }
+
+  toggleLogistics(enabled: boolean): void {
+    const doc = this.document();
+    const updatedSpecialFields = {
+      ...(doc.specialFields || {}),
+      enableLogistics: enabled
+    };
+    if (!enabled) {
+      this.deliveryExpanded.set(false);
+      this.save.emit({
+        ...doc,
+        enableLogistics: false,
+        shippingAmount: 0,
+        deliveryDiscount: 0,
+        specialFields: updatedSpecialFields
+      });
+    } else {
+      this.deliveryExpanded.set(true);
+      this.save.emit({
+        ...doc,
+        enableLogistics: true,
+        specialFields: updatedSpecialFields
+      });
     }
   }
 
@@ -221,15 +253,19 @@ export class DocumentFormShellComponent implements OnInit {
 
   totals = computed(() => {
     const doc = this.document();
+    const hasLogistics = this.isLogisticsEnabled();
+    const shipping = hasLogistics ? (doc.shippingAmount || 0) : 0;
+    const delivDiscount = hasLogistics ? (doc.deliveryDiscount || 0) : 0;
+    const delivTaxRate = hasLogistics ? (doc.deliveryTaxRate || 0) : 0;
     return this.calculationService.calculateDocumentTotals(
       doc.items,
       doc.taxRate,
       doc.discountAmount,
-      doc.shippingAmount,
+      shipping,
       doc.depositPaid,
       doc.discounts,
-      doc.deliveryDiscount,
-      doc.deliveryTaxRate
+      delivDiscount,
+      delivTaxRate
     );
   });
 

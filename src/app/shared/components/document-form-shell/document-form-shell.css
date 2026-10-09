@@ -214,10 +214,10 @@
   flex-direction: column;
   gap: var(--space-5);
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1px solid color-mix(in srgb, var(--color-border) 70%, transparent);
   border-radius: var(--radius-xl);
   padding: var(--space-6);
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.03);
 }
 
 .form-step-card.step-table-card {
@@ -253,7 +253,7 @@
   width: 100%;
   color: var(--color-input-text);
   background-color: var(--color-input-bg);
-  border: 1px solid var(--color-input-border);
+  border: 1px solid color-mix(in srgb, var(--color-input-border) 80%, transparent);
   border-radius: var(--radius-md);
   transition: var(--transition-fast);
 }
@@ -477,6 +477,19 @@
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-subtle);
+}
+
+.buyer-logo-box {
+  margin-top: var(--space-4);
+}
+
+.form-logo-isolated-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
 }
 
 .logo-field-header {
@@ -721,17 +734,154 @@
   color: var(--color-money-green-dark);
 }
 
-/* 2. Delivery / Shipping & Expandable Menus */
+/* 2. Logistics & Notes Cards */
+.logistics-step-card,
 .delivery-charges-card,
 .notes-step-card {
   transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
   overflow: hidden;
 }
 
+.logistics-step-card.is-expanded,
 .delivery-charges-card.is-expanded,
 .notes-step-card.is-expanded {
   border-color: rgba(16, 185, 129, 0.35);
   box-shadow: 0 4px 14px -3px rgba(0, 0, 0, 0.05);
+}
+
+.btn-logistics-toggle-power {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-logistics-toggle-power:hover {
+  border-color: var(--color-border-dark);
+}
+
+.btn-logistics-toggle-power.is-active {
+  background: var(--color-money-green-light);
+  border-color: color-mix(in srgb, var(--color-money-green) 40%, var(--color-border));
+  color: var(--color-money-green-dark);
+}
+
+.toggle-slider-pill {
+  position: relative;
+  display: inline-block;
+  width: 28px;
+  height: 16px;
+  border-radius: 999px;
+  background: #cbd5e1;
+  transition: background var(--transition-fast);
+}
+
+.btn-logistics-toggle-power.is-active .toggle-slider-pill {
+  background: var(--color-money-green);
+}
+
+.toggle-slider-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  transition: transform var(--transition-fast);
+}
+
+.btn-logistics-toggle-power.is-active .toggle-slider-knob {
+  transform: translateX(12px);
+}
+
+.badge-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border-radius: var(--radius-full);
+}
+
+.badge-status-pill.badge-on {
+  background: var(--color-money-green-light);
+  color: var(--color-money-green-dark);
+  border: 1px solid color-mix(in srgb, var(--color-money-green) 35%, transparent);
+}
+
+.badge-status-pill.badge-off {
+  background: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.logistics-disabled-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 16px 18px;
+  background: color-mix(in srgb, var(--color-surface-subtle) 60%, var(--color-surface));
+  border: 1px dashed color-mix(in srgb, var(--color-border) 80%, transparent);
+  border-radius: var(--radius-lg);
+  flex-wrap: wrap;
+}
+
+.disabled-banner-icon .material-icons {
+  font-size: 24px;
+  color: var(--color-text-muted);
+}
+
+.disabled-banner-text {
+  flex: 1;
+  min-width: 200px;
+}
+
+.disabled-banner-text strong {
+  display: block;
+  font-size: 13.5px;
+  color: var(--color-text-main);
+  margin-bottom: 2px;
+}
+
+.disabled-banner-text p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+}
+
+.btn-quick-enable-logistics {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--color-money-green);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-quick-enable-logistics:hover {
+  background: var(--color-money-green-dark);
+  transform: translateY(-1px);
 }
 
 .card-accordion-header {
