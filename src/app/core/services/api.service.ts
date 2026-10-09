@@ -107,23 +107,6 @@ export class ApiService {
     return { blob, filename: match?.[1] || 'factur-x.pdf' };
   }
 
-  async generateQr(
-    text: string,
-    options: { format?: 'svg' | 'png'; margin?: number; ecLevel?: 'L' | 'M' | 'Q' | 'H' } = {}
-  ): Promise<Blob> {
-    const params = new URLSearchParams({ text });
-    if (options.format) params.set('format', options.format);
-    if (options.margin !== undefined) params.set('margin', String(options.margin));
-    if (options.ecLevel) params.set('ecLevel', options.ecLevel);
-
-    const response = await fetch(`${this.baseUrl}/generate-qr?${params.toString()}`, {
-      headers: { Accept: options.format === 'png' ? 'image/png' : 'image/svg+xml' }
-    });
-
-    if (!response.ok) throw await this.toApiError(response);
-    return response.blob();
-  }
-
   async generatePdf(options: GeneratePdfOptions): Promise<{ blob: Blob; filename: string }> {
     const response = await fetch(`${this.baseUrl}/generate-pdf`, {
       method: 'POST',
