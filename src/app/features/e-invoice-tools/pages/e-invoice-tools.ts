@@ -7,6 +7,7 @@ import { StructuredDocumentParserService } from '../../../core/services/structur
 import { StructuredInvoiceService } from '../../../core/services/structured-invoice.service';
 import { DocumentService } from '../../../core/services/document.service';
 import { Router } from '@angular/router';
+import { ValidationMessageService } from '../../../core/services/validation-message.service';
 
 interface ValidationSummary {
   valid: boolean;
@@ -58,6 +59,7 @@ export class EInvoiceToolsPage {
   private structured = inject(StructuredInvoiceService);
   private documentService = inject(DocumentService);
   private router = inject(Router);
+  private validationMessages = inject(ValidationMessageService);
 
   readonly tools = TOOLS;
   readonly activeId = signal('validate-factur-x');
@@ -111,19 +113,7 @@ export class EInvoiceToolsPage {
   }
 
   issueMessage(issue: unknown): string {
-    if (typeof issue === 'string') return issue;
-    if (!issue || typeof issue !== 'object') return 'An unspecified validation issue was reported.';
-    const detail = issue as Record<string, unknown>;
-    const message = ['message', 'text', 'error', 'description', 'title', 'rule']
-      .map(key => detail[key])
-      .find(value => typeof value === 'string' && value.trim());
-    const path = ['path', 'location', 'field']
-      .map(key => detail[key])
-      .find(value => typeof value === 'string' && value.trim());
-    if (typeof message === 'string') return typeof path === 'string' ? `${path}: ${message}` : message;
-    const nested = detail['errors'];
-    if (Array.isArray(nested)) return nested.map(item => this.issueMessage(item)).filter(Boolean).join('; ');
-    return typeof path === 'string' ? `${path}: Validation failed.` : 'A validation issue was reported.';
+    return this.validationMessages.formatIssue(issue);
   }
 
   selectTool(id: string): void {
