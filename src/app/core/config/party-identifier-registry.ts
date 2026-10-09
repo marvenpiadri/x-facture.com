@@ -13,16 +13,16 @@ const definitions: Record<string, PartyIdentifierDefinition[]> = {
   MA: [
     { type: 'ICE', label: 'ICE (Common Enterprise Identifier)', category: 'business' },
     { type: 'IF', label: 'IF (Fiscal Identifier)', category: 'tax' },
-    { type: 'RC', label: 'RC (Commercial Register)', category: 'business' },
-    { type: 'PATENTE', label: 'Patente (Professional Tax)', category: 'tax' },
+    { type: 'RC', label: 'RC (Registre du commerce)', category: 'business' },
+    { type: 'PATENTE', label: 'Patente / Taxe professionnelle (TP)', category: 'tax' },
     { type: 'CNSS', label: 'CNSS (Social Security Registration)', category: 'social' },
     { type: 'VAT', label: 'TVA registration', category: 'vat' }
   ],
   FR: [
     { type: 'VAT', label: 'VAT number (TVA intracommunautaire)', category: 'vat' },
-    { type: 'SIREN', label: 'SIREN / SIRENE (Company registration)', category: 'business', schemeId: '0002' },
+    { type: 'SIREN', label: 'SIREN (French business identifier)', category: 'business', schemeId: '0002' },
     { type: 'SIRET', label: 'SIRET (Establishment registration)', category: 'business', schemeId: '0009' },
-    { type: 'RCS', label: 'RCS (Commercial Register)', category: 'business' }
+    { type: 'RCS', label: 'RCS (Registre du commerce et des sociétés)', category: 'business' }
   ],
   DE: [
     { type: 'VAT', label: 'VAT ID (USt-IdNr.)', category: 'vat' },
@@ -59,12 +59,12 @@ const definitions: Record<string, PartyIdentifierDefinition[]> = {
   ],
   BE: [
     { type: 'VAT', label: 'VAT number', category: 'vat' },
-    { type: 'CBE', label: 'Crossroads Bank for Enterprises (CBE/KBO)', category: 'business' }
+    { type: 'CBE', label: 'Enterprise number (CBE/KBO)', category: 'business', schemeId: '0208' }
   ],
   NL: [
     { type: 'VAT', label: 'VAT identification number (btw-id)', category: 'vat' },
     { type: 'RSIN', label: 'RSIN', category: 'tax' },
-    { type: 'KVK', label: 'Chamber of Commerce number (KvK)', category: 'business' }
+    { type: 'KVK', label: 'Chamber of Commerce number (KvK)', category: 'business', schemeId: '0106' }
   ],
   PT: [
     { type: 'VAT', label: 'VAT number (NIF/NIPC)', category: 'vat' },
@@ -312,7 +312,13 @@ const fallback: PartyIdentifierDefinition[] = [
   { type: 'SOCIAL_REG', label: 'Social security / contribution registration', category: 'social' }
 ];
 export function getPartyIdentifierDefinitions(countryCode?: string): PartyIdentifierDefinition[] {
-  return (definitions[(countryCode || '').trim().toUpperCase()] || fallback).map(item => ({ ...item }));
+  const countryDefinitions = definitions[(countryCode || '').trim().toUpperCase()] || fallback;
+  const globalIdentifiers: PartyIdentifierDefinition[] = [
+    { type: 'GLN', label: 'GLN (Global Location Number)', category: 'business', schemeId: '0088' },
+    { type: 'DUNS', label: 'D-U-N-S Number', category: 'business', schemeId: '0060' }
+  ];
+  return [...countryDefinitions, ...globalIdentifiers.filter(global => !countryDefinitions.some(item => item.type === global.type))]
+    .map(item => ({ ...item }));
 }
 export function getPartyIdentifierDefinition(countryCode: string | undefined, type: string): PartyIdentifierDefinition | undefined {
   return getPartyIdentifierDefinitions(countryCode).find(item => item.type === type);
@@ -327,7 +333,7 @@ export const ISO_6523_LEGAL_SCHEMES = [
 
 
 const defaultIdentifierTypes: Record<string, string[]> = {
-  MA: ['ICE', 'IF', 'RC'],
+  MA: ['ICE', 'IF'],
   FR: ['VAT', 'SIREN'],
   DE: ['VAT', 'TAX_ID'],
   GB: ['VAT', 'CRN'],

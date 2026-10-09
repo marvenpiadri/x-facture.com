@@ -77,6 +77,12 @@ export class DocumentFormShellComponent implements OnInit {
 
   ngOnInit(): void {
     void this.countryService.load();
+
+    // Repair older drafts that were created before issue dates defaulted to today.
+    if (!this.isValidIssueDate(this.document().issueDate)) {
+      this.save.emit({ ...this.document(), issueDate: this.todayLocalDate() });
+    }
+
     if (this.isLogisticsEnabled()) {
       this.deliveryExpanded.set(true);
     }
@@ -453,6 +459,20 @@ export class DocumentFormShellComponent implements OnInit {
 
   onHeaderFieldChange(field: keyof BusinessDocument, value: any): void {
     this.save.emit({ ...this.document(), [field]: value });
+  }
+
+  private todayLocalDate(): string {
+    const now = new Date();
+    return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+  }
+
+  private isValidIssueDate(value: unknown): boolean {
+    if (typeof value !== 'string' || value.length !== 10 || value[4] !== '-' || value[7] !== '-') return false;
+    const digits = value.slice(0, 4) + value.slice(5, 7) + value.slice(8, 10);
+    if (![...digits].every(char => char >= '0' && char <= '9')) return false;
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
   }
 
   onClientChange(client: DocumentParty): void {

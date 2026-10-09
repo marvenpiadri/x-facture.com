@@ -24,8 +24,8 @@ export class StructuredInvoiceService {
       '<cbc:CustomizationID>urn:cen.eu:en16931:2017</cbc:CustomizationID>',
       '<cbc:ProfileID>urn:peppol:bis:billing</cbc:ProfileID>',
       '<cbc:ID>' + this.esc(doc.docNumber) + '</cbc:ID>',
-      '<cbc:IssueDate>' + this.esc(doc.issueDate) + '</cbc:IssueDate>',
-      doc.dueDate ? '<cbc:DueDate>' + this.esc(doc.dueDate) + '</cbc:DueDate>' : '',
+      '<cbc:IssueDate>' + this.dateIso(doc.issueDate) + '</cbc:IssueDate>',
+      doc.dueDate ? '<cbc:DueDate>' + this.dateIso(doc.dueDate) + '</cbc:DueDate>' : '',
       '<cbc:InvoiceTypeCode>' + typeCode + '</cbc:InvoiceTypeCode>',
       doc.notes ? '<cbc:Note>' + this.esc(doc.notes) + '</cbc:Note>' : '',
       '<cbc:DocumentCurrencyCode>' + currency + '</cbc:DocumentCurrencyCode>',
@@ -140,13 +140,38 @@ export class StructuredInvoiceService {
   private identifierTaxScheme(identifier: PartyTaxIdentifier): 'VAT' | 'FC' | undefined {
     const type = identifier.type.toUpperCase();
     if (type === 'VAT') return 'VAT';
-    if (['GST', 'GSTIN', 'TRN', 'INVOICE_REG', 'SALES_TAX', 'SST', 'TAX_ID', 'IF', 'EIN', 'TIN', 'NIF', 'CNPJ', 'CPF', 'PAN', 'UTR', 'NPWP', 'KRA_PIN', 'MAT_FISCAL', 'VKN', 'NTN', 'PATENTE'].includes(type)) return 'FC';
+    if (['GST', 'GSTIN', 'TRN', 'INVOICE_REG', 'SALES_TAX', 'SST', 'TAX_ID', 'CODICE_FISCALE', 'IF', 'EIN', 'TIN', 'NIF', 'CNPJ', 'CPF', 'PAN', 'UTR', 'NPWP', 'KRA_PIN', 'MAT_FISCAL', 'VKN', 'NTN', 'PATENTE'].includes(type)) return 'FC';
     return undefined;
   }
 
   private legalIdentifier(party: DocumentParty): PartyTaxIdentifier | undefined {
-    const businessTypes = new Set(['ICE', 'SIREN', 'SIRET', 'RC', 'RCS', 'CRN', 'CBE', 'KVK', 'ABN', 'ACN', 'NZBN', 'CIN', 'UEN', 'USCC', 'CR', 'ORG_NO', 'CVR', 'BUSINESS_ID', 'CUI', 'KRS', 'REGON', 'NIB', 'MERSIS', 'EDRPOU', 'HRB']);
-    return this.partyIdentifiers(party).find(item => item.schemeId || businessTypes.has(item.type.toUpperCase()));
+    const identifiers = this.partyIdentifiers(party);
+    const businessTypes = new Set(['ICE', 'SIREN', 'RC', 'RCS', 'CRN', 'CBE', 'KVK', 'ABN', 'ACN', 'NZBN', 'CIN', 'UEN', 'USCC', 'CR', 'ORG_NO', 'CVR', 'BUSINESS_ID', 'CUI', 'KRS', 'REGON', 'NIB', 'MERSIS', 'EDRPOU', 'HRB']);
+    // A French SIRET is an establishment/global identifier (0009), not the legal SIREN (0002).
+    return identifiers.find(item => item.type.toUpperCase() === 'SIREN')
+      || identifiers.find(item => item.schemeId === '0002')
+      || identifiers.find(item => item.schemeId && !['0009', '0088'].includes(item.schemeId) && businessTypes.has(item.type.toUpperCase()))
+      || identifiers.find(item => businessTypes.has(item.type.toUpperCase()) && item.type.toUpperCase() !== 'SIRET');
+  }
+
+  private legalSchemeId(identifier: PartyTaxIdentifier): string | undefined {
+    if (identifier.schemeId) return identifier.schemeId;
+    const type = identifier.type.toUpperCase();
+    if (type === 'SIREN') return '0002';
+    if (type === 'SIRET') return '0009';
+    if (type === 'DUNS') return '0060';
+    if (type === 'GLN') return '0088';
+    return undefined;
+  }
+
+  private globalIdentifiers(party: DocumentParty): PartyTaxIdentifier[] {
+    const legalId = this.legalIdentifier(party);
+    return this.partyIdentifiers(party).filter(item => {
+      const scheme = this.legalSchemeId(item);
+      return Boolean(scheme && scheme.length === 4 && [...scheme].every(char => char >= '0' && char <= '9') && item.value?.trim()) &&
+        item.id !== legalId?.id &&
+        ['0009', '0060', '0088'].includes(scheme!);
+    });
   }
 
   private ublParty(party: DocumentParty): string {
@@ -156,7 +181,7 @@ export class StructuredInvoiceService {
       return scheme ? ['<cac:PartyTaxScheme><cbc:CompanyID>' + this.esc(identifier.value) + '</cbc:CompanyID><cac:TaxScheme><cbc:ID>' + scheme + '</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme>'] : [];
     }).join('');
     const legalId = this.legalIdentifier(party);
-    const legalEntity = legalId ? '<cac:PartyLegalEntity><cbc:RegistrationName>' + this.esc(party.legalName || party.name || 'Unnamed party') + '</cbc:RegistrationName><cbc:CompanyID' + (legalId.schemeId ? ' schemeID="' + this.esc(legalId.schemeId) + '"' : '') + '>' + this.esc(legalId.value) + '</cbc:CompanyID></cac:PartyLegalEntity>' : '';
+    const legalEntity = legalId ? '<cac:PartyLegalEntity><cbc:RegistrationName>' + this.esc(party.legalName || party.name || 'Unnamed party') + '</cbc:RegistrationName><cbc:CompanyID' + (this.legalSchemeId(legalId) ? ' schemeID="' + this.esc(this.legalSchemeId(legalId)!) + '"' : '') + '>' + this.esc(legalId.value) + '</cbc:CompanyID></cac:PartyLegalEntity>' : '';
     return '<cac:Party>' +
       (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
       '<cac:PartyName><cbc:Name>' + this.esc(name) + '</cbc:Name></cac:PartyName>' +
@@ -186,13 +211,16 @@ export class StructuredInvoiceService {
     const name = party.legalName || party.name || 'Unnamed party';
     const legalId = this.legalIdentifier(party);
     const legalOrganization = legalId
-      ? '<ram:SpecifiedLegalOrganization><ram:ID' + (legalId.schemeId ? ' schemeID="' + this.esc(legalId.schemeId) + '"' : '') + '>' + this.esc(legalId.value) + '</ram:ID></ram:SpecifiedLegalOrganization>'
+      ? '<ram:SpecifiedLegalOrganization><ram:ID' + (this.legalSchemeId(legalId) ? ' schemeID="' + this.esc(this.legalSchemeId(legalId)!) + '"' : '') + '>' + this.esc(legalId.value) + '</ram:ID></ram:SpecifiedLegalOrganization>'
       : '';
     const taxRegistrations = this.partyIdentifiers(party).flatMap(identifier => {
       const scheme = this.identifierTaxScheme(identifier);
       return scheme ? ['<ram:SpecifiedTaxRegistration><ram:ID schemeID="' + scheme + '">' + this.esc(identifier.value) + '</ram:ID></ram:SpecifiedTaxRegistration>'] : [];
     }).join('');
-    return '<ram:' + tag + '><ram:Name>' + this.esc(name) + '</ram:Name>' +
+    const globalIds = this.globalIdentifiers(party).map(identifier =>
+      '<ram:GlobalID schemeID="' + this.esc(this.legalSchemeId(identifier)!) + '">' + this.esc(identifier.value) + '</ram:GlobalID>'
+    ).join('');
+    return '<ram:' + tag + '>' + globalIds + '<ram:Name>' + this.esc(name) + '</ram:Name>' +
       legalOrganization +
       (party.address || party.city || party.postalCode || party.country ? '<ram:PostalTradeAddress>' +
         (party.address ? '<ram:LineOne>' + this.esc(party.address) + '</ram:LineOne>' : '') +
@@ -223,7 +251,23 @@ export class StructuredInvoiceService {
     return /^[A-Z]{3}$/.test(normalized) ? normalized : 'EUR';
   }
 
-  private dateCompact(value: string): string {
-    return String(value || '').replace(/-/g, '').slice(0, 8);
+  private dateIso(value: string | undefined): string {
+    const candidate = String(value || '');
+    if (this.isValidIsoDate(candidate)) return candidate;
+    const now = new Date();
+    return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+  }
+
+  private dateCompact(value: string | undefined): string {
+    return this.dateIso(value).replace(/-/g, '');
+  }
+
+  private isValidIsoDate(value: string): boolean {
+    if (value.length !== 10 || value[4] !== '-' || value[7] !== '-') return false;
+    const digits = value.slice(0, 4) + value.slice(5, 7) + value.slice(8, 10);
+    if (![...digits].every(char => char >= '0' && char <= '9')) return false;
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
   }
 }

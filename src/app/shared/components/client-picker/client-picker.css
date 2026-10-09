@@ -205,9 +205,14 @@
 }
 .identifier-label-control { min-width: 0; }
 .identifier-value { min-width: 0; }
-.identifier-remove {
+ .identifier-remove {
   width: 30px;
-  height: 34px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);

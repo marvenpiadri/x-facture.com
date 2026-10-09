@@ -69,7 +69,7 @@
         </div>
 
         <div class="form-field-item">
-          <label class="field-label">Payment Due / Expiry Date</label>
+          <label class="field-label">Payment Due / Expiry Date (optional)</label>
           <input type="date" class="form-input" [value]="document().dueDate || ''" (input)="onHeaderFieldChange('dueDate', $any($event.target).value)" />
         </div>
 
@@ -97,7 +97,7 @@
         }
 
         <div class="form-field-item">
-          <label class="field-label">P.O. / Customer Reference</label>
+          <label class="field-label">P.O. / Customer Reference (optional)</label>
           <input type="text" class="form-input" [value]="document().purchaseOrderRef || ''" (input)="onHeaderFieldChange('purchaseOrderRef', $any($event.target).value)" placeholder="e.g. PO-98421" />
         </div>
       </div>
@@ -107,6 +107,60 @@
           <div class="facturx-divider-header">
             <span class="facturx-subheading">Electronic invoice details</span>
             <span class="facturx-hint-text">Optional buyer reference and delivery details for the electronic invoice.</span>
+          </div>
+          <div class="facturx-divider-header">
+            <span class="facturx-subheading">E-invoicing routing addresses (optional)</span>
+            <span class="facturx-hint-text">Only enter an address that is registered for electronic invoice routing. A tax number is not automatically a routing address.</span>
+          </div>
+          <div class="form-meta-grid">
+            <div class="form-field-item">
+              <label class="field-label">Seller routing address (optional)</label>
+              <input type="text" class="form-input" [value]="document().company.electronicAddress || ''" (input)="onCompanyFieldChange('electronicAddress', $any($event.target).value)" placeholder="Registered seller endpoint" autocomplete="off" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Seller address scheme</label>
+              <select class="form-select" [value]="document().company.electronicAddressScheme || ''" (change)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)">
+                <option value="">Choose scheme (optional)</option>
+                <option value="0225">0225: FRCTC electronic address (France)</option>
+                <option value="9957">9957: French VAT number</option>
+                <option value="0088">0088: GLN (GS1)</option>
+                <option value="0204">0204: Peppol-Leitweg-ID (Germany)</option>
+                <option value="9930">9930: German VAT number</option>
+                <option value="0208">0208: Enterprise number (Belgium)</option>
+                <option value="9925">9925: Belgian VAT number</option>
+                <option value="0106">0106: KvK number (Netherlands)</option>
+                <option value="9944">9944: Dutch VAT number</option>
+                <option value="0210">0210: Codice Fiscale (Italy)</option>
+                <option value="0211">0211: Partita IVA (Italy)</option>
+                <option value="9906">9906: Italian VAT-office scheme</option>
+                <option value="9920">9920: Spanish tax-agency scheme</option>
+                <option value="EM">EM: Email address</option>
+              </select>
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Buyer routing address (optional)</label>
+              <input type="text" class="form-input" [value]="document().client.electronicAddress || ''" (input)="onClientChange({...document().client, electronicAddress: $any($event.target).value})" placeholder="Registered buyer endpoint" autocomplete="off" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Buyer address scheme</label>
+              <select class="form-select" [value]="document().client.electronicAddressScheme || ''" (change)="onClientChange({...document().client, electronicAddressScheme: $any($event.target).value})">
+                <option value="">Choose scheme (optional)</option>
+                <option value="0225">0225: FRCTC electronic address (France)</option>
+                <option value="9957">9957: French VAT number</option>
+                <option value="0088">0088: GLN (GS1)</option>
+                <option value="0204">0204: Peppol-Leitweg-ID (Germany)</option>
+                <option value="9930">9930: German VAT number</option>
+                <option value="0208">0208: Enterprise number (Belgium)</option>
+                <option value="9925">9925: Belgian VAT number</option>
+                <option value="0106">0106: KvK number (Netherlands)</option>
+                <option value="9944">9944: Dutch VAT number</option>
+                <option value="0210">0210: Codice Fiscale (Italy)</option>
+                <option value="0211">0211: Partita IVA (Italy)</option>
+                <option value="9906">9906: Italian VAT-office scheme</option>
+                <option value="9920">9920: Spanish tax-agency scheme</option>
+                <option value="EM">EM: Email address</option>
+              </select>
+            </div>
           </div>
           <div class="form-meta-grid">
             <div class="form-field-item">
@@ -199,64 +253,50 @@
 
             <div class="party-fields-stack">
               <div class="party-field">
-                <label class="field-label">Company Name</label>
-                <input
-                  type="text"
-                  class="form-input"
-                  [value]="document().company.name || ''"
-                  (input)="onCompanyFieldChange('name', $any($event.target).value)"
-                  placeholder="e.g. Acme Studio SAS"
-                  autocomplete="organization"
-                  required
-                />
+                <label class="field-label">Name / Business name</label>
+                <input type="text" class="form-input" [value]="document().company.name || ''" (input)="onCompanyFieldChange('name', $any($event.target).value)" placeholder="Your full name or business name" autocomplete="organization" required />
               </div>
 
               <div class="party-primary-grid">
                 <div class="party-field">
-                  <label class="field-label">Email</label>
-                  <input type="email" class="form-input" [value]="document().company.email || ''" (input)="onCompanyFieldChange('email', $any($event.target).value)" placeholder="billing@company.com" autocomplete="email" />
+                  <label class="field-label">Email (optional)</label>
+                  <input type="email" class="form-input" [value]="document().company.email || ''" (input)="onCompanyFieldChange('email', $any($event.target).value)" placeholder="billing@example.com" autocomplete="email" />
                 </div>
                 <div class="party-field">
-                  <label class="field-label">Phone</label>
+                  <label class="field-label">Phone (optional)</label>
                   <input type="tel" class="form-input" [value]="document().company.phone || ''" (input)="onCompanyFieldChange('phone', $any($event.target).value)" placeholder="+212 ..." autocomplete="tel" />
                 </div>
               </div>
               <div class="party-field">
-                <label class="field-label">Address and additional information</label>
-                <textarea
-                  class="form-textarea party-details-textarea"
-                  rows="3"
-                  [value]="document().company.address || ''"
-                  (input)="onSellerDetailsChange($any($event.target).value)"
-                  placeholder="Street address, city, postal code, payment or other relevant details"
-                ></textarea>
+                <label class="field-label">Address (optional)</label>
+                <textarea class="form-textarea party-details-textarea" rows="2" [value]="document().company.address || ''" (input)="onSellerDetailsChange($any($event.target).value)" placeholder="Street address or business address" autocomplete="street-address"></textarea>
+              </div>
+              <div class="party-primary-grid party-location-grid">
+                <div class="party-field">
+                  <label class="field-label">City (optional)</label>
+                  <input type="text" class="form-input" [value]="document().company.city || ''" (input)="onCompanyFieldChange('city', $any($event.target).value)" placeholder="City" autocomplete="address-level2" />
+                </div>
+                <div class="party-field">
+                  <label class="field-label">Postal / ZIP code (optional)</label>
+                  <input type="text" class="form-input" [value]="document().company.postalCode || ''" (input)="onCompanyFieldChange('postalCode', $any($event.target).value)" placeholder="Postal code" autocomplete="postal-code" />
+                </div>
+              </div>
+              <div class="party-field">
+                <label class="field-label">Website (optional)</label>
+                <input type="url" class="form-input" [value]="document().company.website || ''" (input)="onCompanyFieldChange('website', $any($event.target).value)" placeholder="https://example.com" autocomplete="url" />
               </div>
 
               <div class="party-extra-fields">
                 <div class="party-field">
-                  <label class="field-label">Country</label>
+                  <label class="field-label">Country (optional)</label>
                   <app-country-picker [value]="document().company.country || ''" (valueChange)="onSellerCountryChange($event)" placeholder="Choose country…" ariaLabel="Seller country"></app-country-picker>
                 </div>
-                <div class="party-field">
-                  <label class="field-label">Electronic address / code</label>
-                  <input type="text" class="form-input" [value]="document().company.electronicAddress || ''" (input)="onCompanyFieldChange('electronicAddress', $any($event.target).value)" placeholder="e.g. company identifier or network address" autocomplete="off" />
-                </div>
-                <div class="party-field">
-                  <label class="field-label">Electronic address scheme</label>
-                  <select class="form-select" [value]="document().company.electronicAddressScheme || ''" (change)="onCompanyFieldChange('electronicAddressScheme', $any($event.target).value)">
-                    <option value="">Select scheme (optional)</option>
-                    <option value="EM">EM: Email</option>
-                    <option value="0204">0204: Leitweg-ID</option>
-                    <option value="0225">0225: FRCTC electronic address</option>
-                    <option value="0088">0088: GLN</option>
-                  </select>
-                </div>
-              </div>
+               </div>
 
               <div class="party-field identifier-manager">
                 <div class="field-label-row">
                   <label class="field-label">Tax and registration identifiers</label>
-                  <span class="field-sublabel">Suggestions adapt to the selected country</span>
+                  <span class="field-sublabel">Enter identifiers required for your country and business type</span>
                 </div>
                 @for (identifier of sellerTaxIdentifiers(); track identifier.id) {
                   <div class="identifier-row">
@@ -272,7 +312,7 @@
                       }
                     </div>
                     <input class="form-input identifier-value" [value]="identifier.value" (input)="updateSellerIdentifier(identifier.id, 'value', $any($event.target).value)" [placeholder]="'Enter ' + (identifier.label || 'identifier') + ' value'" [attr.aria-label]="(identifier.label || 'Identifier') + ' value'" />
-                    <button type="button" class="identifier-remove" (click)="removeSellerIdentifier(identifier.id)" [attr.aria-label]="'Remove ' + (identifier.label || 'identifier')">×</button>
+                    <button type="button" class="identifier-remove" style="width:30px;height:30px;min-width:30px;padding:0;display:inline-flex;align-items:center;justify-content:center" (click)="removeSellerIdentifier(identifier.id)" [attr.aria-label]="'Remove ' + (identifier.label || 'identifier')">×</button>
                   </div>
                 }
                 <div class="identifier-actions">
@@ -286,6 +326,26 @@
                 </div>
               </div>
 
+              <div class="party-field logo-compact-field seller-logo-box">
+                <div class="logo-field-header">
+                  <div>
+                    <label class="field-label">Seller logo (optional)</label>
+                    <span class="field-sublabel">Shown with seller details on the invoice</span>
+                  </div>
+                  <div class="logo-actions">
+                    @if (document().company.logoUrl) {
+                      <div class="form-logo-isolated-container"><img [src]="document().company.logoUrl" alt="Seller logo preview" class="company-logo-preview" /></div>
+                    }
+                    <label class="logo-upload-button">
+                      {{ document().company.logoUrl ? 'Replace' : 'Upload logo' }}
+                      <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
+                    </label>
+                    @if (document().company.logoUrl) {
+                      <button type="button" class="logo-remove-button" (click)="removeCompanyLogo()">Remove</button>
+                    }
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="party-panel-footer">
@@ -306,29 +366,6 @@
             (clientIdChange)="onClientIdChange($event)"
             (clientSelected)="onSavedClientSelect($event)"
           ></app-client-picker>
-
-          <div class="party-field logo-compact-field buyer-logo-box">
-            <div class="logo-field-header">
-              <div>
-                <label class="field-label">Document Logo (Buyer)</label>
-                <span class="field-sublabel">Embedded in buyer block</span>
-              </div>
-              <div class="logo-actions">
-                @if (document().client.logoUrl || document().company.logoUrl) {
-                  <div class="form-logo-isolated-container">
-                    <img [src]="document().client.logoUrl || document().company.logoUrl" alt="Logo preview" class="company-logo-preview" />
-                  </div>
-                }
-                <label class="logo-upload-button">
-                  {{ (document().client.logoUrl || document().company.logoUrl) ? 'Replace' : 'Upload' }}
-                  <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
-                </label>
-                @if (document().client.logoUrl || document().company.logoUrl) {
-                  <button type="button" class="logo-remove-button" (click)="removeCompanyLogo()">Remove</button>
-                }
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
