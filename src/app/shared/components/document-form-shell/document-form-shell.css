@@ -903,3 +903,5 @@
   .form-footer-action-bar { justify-content: stretch; }
   .form-footer-action-bar button { flex: 1 1 100%; justify-content: center; }
 }
+
+.party-details-textarea { min-height: 132px; }
