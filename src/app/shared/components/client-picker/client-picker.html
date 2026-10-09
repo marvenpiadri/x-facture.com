@@ -27,17 +27,24 @@
       />
     </div>
 
-    <div class="party-field">
-      <div class="field-label-row">
-        <label class="field-label">Address, Tax & Contact Details</label>
-        <span class="field-sublabel">Address, city, tax/VAT, email, phone & website</span>
+    <div class="party-field party-primary-grid">
+      <div class="party-field">
+        <label class="field-label">Email</label>
+        <input type="email" class="form-input" [value]="client().email || ''" (input)="onFieldChange('email', $any($event.target).value)" placeholder="billing@client.com" autocomplete="email" />
       </div>
+      <div class="party-field">
+        <label class="field-label">Phone</label>
+        <input type="tel" class="form-input" [value]="client().phone || ''" (input)="onFieldChange('phone', $any($event.target).value)" placeholder="+44 20 7946 0912" autocomplete="tel" />
+      </div>
+    </div>
+    <div class="party-field">
+      <label class="field-label">Address and additional information</label>
       <textarea
         class="form-textarea party-details-textarea"
-        rows="5"
-        [value]="displayDetails()"
+        rows="3"
+        [value]="client().address || ''"
         (input)="onDetailsChange($any($event.target).value)"
-        placeholder="25 City Road&#10;London, EC1Y 1AA&#10;Tax / VAT: GB987654321&#10;Email: finance@client.com · Tel: +44 20 7946 0912&#10;Website: https://client.com"
+        placeholder="Street address, city, postal code, payment or other relevant details"
       ></textarea>
     </div>
   </div>
@@ -45,7 +52,7 @@
   <div class="party-extra-fields">
     <div class="party-field">
       <label class="field-label">Country</label>
-      <app-country-picker [value]="client().country || ''" (valueChange)="onFieldChange('country', $event)" placeholder="Choose country…" ariaLabel="Buyer country"></app-country-picker>
+      <app-country-picker [value]="client().country || ''" (valueChange)="onCountryChange($event)" placeholder="Choose country…" ariaLabel="Buyer country"></app-country-picker>
     </div>
     <div class="party-field">
       <label class="field-label">Electronic address / code</label>
@@ -55,12 +62,10 @@
       <label class="field-label">Electronic address scheme</label>
       <select class="form-input" [value]="client().electronicAddressScheme || ''" (change)="onFieldChange('electronicAddressScheme', $any($event.target).value)">
         <option value="">Select scheme (optional)</option>
-        <option value="0225">0225 — SIREN</option>
-        <option value="0002">0002 — SIRENE</option>
-        <option value="0007">0007 — SIRET</option>
-        <option value="0088">0088 — GLN / EAN</option>
-        <option value="EM">EM — Email</option>
-        <option value="0204">0204 — Leitweg-ID</option>
+        <option value="EM">EM: Email</option>
+        <option value="0204">0204: Leitweg-ID</option>
+        <option value="0225">0225: FRCTC electronic address</option>
+        <option value="0088">0088: GLN</option>
       </select>
     </div>
   </div>
