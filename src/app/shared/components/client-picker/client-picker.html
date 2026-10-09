@@ -29,11 +29,11 @@
 
     <div class="party-field party-primary-grid">
       <div class="party-field">
-        <label class="field-label">Email</label>
+        <label class="field-label">Email (optional)</label>
         <input type="email" class="form-input" [value]="client().email || ''" (input)="onFieldChange('email', $any($event.target).value)" placeholder="billing@client.com" autocomplete="email" />
       </div>
       <div class="party-field">
-        <label class="field-label">Phone</label>
+        <label class="field-label">Phone (optional)</label>
         <input type="tel" class="form-input" [value]="client().phone || ''" (input)="onFieldChange('phone', $any($event.target).value)" placeholder="+44 20 7946 0912" autocomplete="tel" />
       </div>
     </div>

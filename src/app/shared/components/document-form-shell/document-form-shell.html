@@ -255,11 +255,11 @@
 
               <div class="party-primary-grid">
                 <div class="party-field">
-                  <label class="field-label">Email</label>
+                  <label class="field-label">Email (optional)</label>
                   <input type="email" class="form-input" [value]="document().company.email || ''" (input)="onCompanyFieldChange('email', $any($event.target).value)" placeholder="billing@example.com" autocomplete="email" />
                 </div>
                 <div class="party-field">
-                  <label class="field-label">Phone</label>
+                  <label class="field-label">Phone (optional)</label>
                   <input type="tel" class="form-input" [value]="document().company.phone || ''" (input)="onCompanyFieldChange('phone', $any($event.target).value)" placeholder="+212 ..." autocomplete="tel" />
                 </div>
               </div>
@@ -310,7 +310,7 @@
 
               <div class="party-field logo-compact-field seller-logo-box">
                 <div class="logo-field-header">
-                  <label class="field-label">Seller logo</label>
+                  <label class="field-label">Seller logo (optional)</label>
                   <div class="logo-actions">
                     <label class="logo-upload-button">
                       {{ document().company.logoUrl ? 'Change logo' : 'Choose logo' }}
