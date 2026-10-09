@@ -219,6 +219,7 @@ export class ApiService {
           country: document.company.country
         },
         vatId: document.company.taxId,
+        taxIdentifiers: document.company.taxIdentifiers || [],
         electronicAddress: document.company.electronicAddress,
         electronicAddressScheme: document.company.electronicAddressScheme,
         email: document.company.email,
@@ -234,6 +235,7 @@ export class ApiService {
           country: document.client.country
         },
         vatId: document.client.taxId,
+        taxIdentifiers: document.client.taxIdentifiers || [],
         electronicAddress: document.client.electronicAddress,
         electronicAddressScheme: document.client.electronicAddressScheme,
         email: document.client.email,
