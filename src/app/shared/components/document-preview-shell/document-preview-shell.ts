@@ -82,6 +82,12 @@ export class DocumentPreviewShellComponent implements OnInit {
         this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
       );
     } catch (error) {
+      console.error('[X-Facture PDF] Generation failed', {
+        endpoint: '/api/generate-pdf',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        timestamp: new Date().toISOString()
+      });
       this.previewError.set(error instanceof Error ? error.message : 'Unable to generate the PDF.');
     } finally {
       this.isGeneratingPdf.set(false);
@@ -122,6 +128,12 @@ export class DocumentPreviewShellComponent implements OnInit {
         this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
       );
     } catch (error) {
+      console.error('[X-Facture Factur-X] Generation failed', {
+        endpoint: '/api/generate-invoice',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+        timestamp: new Date().toISOString()
+      });
       this.facturXError.set(error instanceof Error ? error.message : 'Unable to generate the Factur-X PDF.');
     } finally {
       this.isGeneratingFacturX.set(false);
@@ -129,11 +141,9 @@ export class DocumentPreviewShellComponent implements OnInit {
   }
 
   private async createSelfContainedHtml(element: HTMLElement): Promise<string> {
-    /*
-     * Keep the preview's real typography. Capture the CSS currently applied to
-     * the invoice, discover the font families used by its own elements, and
-     * embed those font files. Do not impose a new font on the printed document.
-     */
+    // PDF output uses one predictable font. Remove all template font-face rules
+    // and embed the app's bundled Inter font directly into the HTML payload.
+    // If embedding fails, Chromium can still print using its local sans-serif fallback.
     await document.fonts.ready;
 
     const styles = Array.from(document.styleSheets)
@@ -141,85 +151,67 @@ export class DocumentPreviewShellComponent implements OnInit {
         try {
           return Array.from(sheet.cssRules).map(rule => rule.cssText);
         } catch {
-          // Cross-origin font stylesheets are handled by embedding their assets.
           return [];
         }
       })
       .filter(Boolean)
-      .join('\n')
+      .join('\\n')
       .replace(/@import[^;]+;/g, '')
-      // The app's @font-face rules point to root-relative URLs. In the API's
-      // about:blank document those URLs have no valid origin; retain only the
-      // base64-embedded font faces produced below.
-      .replace(/@font-face\s*\{(?=[^}]*font-family\s*:\s*["']?(?:Inter|JetBrains Mono)["']?)[^}]*\}/gi, '');
+      .replace(/@font-face\\s*\\{[^}]*\\}/gi, '');
 
-    const embeddedFonts = await this.createEmbeddedFontCss(element);
-    const pdfBaseStyles = [
-      '* { box-sizing: border-box; }',
-      ':root { --font-sans: "Inter", sans-serif; --font-mono: "JetBrains Mono", monospace; }',
-      'html, body { margin: 0; padding: 0; background: #ffffff; font-family: "Inter", sans-serif !important; }',
-      '#document-pdf-root { font-family: "Inter", sans-serif !important; }',
-      '.font-mono, .doc-number-display { font-family: "JetBrains Mono", monospace !important; font-variant-numeric: tabular-nums; }',
+    let embeddedInterCss = '';
+    try {
+      embeddedInterCss = await this.createEmbeddedInterFontCss();
+    } catch (error) {
+      console.warn('[X-Facture PDF] Could not embed bundled Inter font; continuing with Chromium sans-serif fallback.', {
+        message: error instanceof Error ? error.message : String(error)
+      });
+    }
+
+    const forceInterCss = [
+      '* { font-family: "Inter", Arial, sans-serif !important; }',
+      '*::before, *::after { font-family: "Inter", Arial, sans-serif !important; }',
+      ':root { --font-sans: "Inter", Arial, sans-serif; --font-mono: "Inter", Arial, sans-serif; }',
+      'html, body, #document-pdf-root { margin: 0; font-family: "Inter", Arial, sans-serif !important; }',
+      'html, body { padding: 0; background: #ffffff; }',
+      '.font-mono, .doc-number-display { font-family: "Inter", Arial, sans-serif !important; font-variant-numeric: tabular-nums; }',
       '*, *::before, *::after { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }',
       '.document-render-sheet { box-sizing: border-box; }'
-    ].join('\n');
+    ].join('\\n');
 
     return '<!doctype html><html><head><meta charset="utf-8">' +
-      '<style>' + pdfBaseStyles + '\n' + styles + '\n' + embeddedFonts + '</style>' +
+      '<style>' + styles + '\\n' + embeddedInterCss + '\\n' + forceInterCss + '</style>' +
       '</head><body>' +
       element.outerHTML +
       '</body></html>';
   }
 
-  private async createEmbeddedFontCss(_element: HTMLElement): Promise<string> {
-    // Fonts are bundled with the app. PDF generation must not depend on Google Fonts,
-    // an external CDN, or the browser's installed fonts.
-    const fontAssets = [
-      {
-        family: 'Inter',
-        url: '/fonts/InterVariable.woff2',
-        weight: '100 900'
-      },
-      {
-        family: 'JetBrains Mono',
-        url: '/fonts/JetBrainsMono[wght].woff2',
-        weight: '100 800'
-      }
-    ];
+  private async createEmbeddedInterFontCss(): Promise<string> {
+    const url = new URL('/fonts/InterVariable.woff2', window.location.origin).toString();
+    const response = await fetch(url);
 
-    const embeddedFonts = await Promise.all(fontAssets.map(async font => {
-      let response: Response;
-      try {
-        response = await fetch(new URL(font.url, window.location.origin).toString());
-      } catch {
-        throw new Error(`The local ${font.family} font could not be reached for PDF generation.`);
-      }
+    if (!response.ok) {
+      throw new Error('Inter font request returned HTTP ' + response.status + '.');
+    }
 
-      if (!response.ok) {
-        throw new Error(`The local ${font.family} font file is missing. Please redeploy X-Facture with its bundled fonts.`);
-      }
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    if (!bytes.length) {
+      throw new Error('Inter font file is empty.');
+    }
 
-      const bytes = new Uint8Array(await response.arrayBuffer());
-      if (!bytes.length) {
-        throw new Error(`The local ${font.family} font file is empty.`);
-      }
+    let binary = '';
+    const chunkSize = 0x8000;
+    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+      binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
+    }
 
-      let binary = '';
-      const chunkSize = 0x8000;
-      for (let offset = 0; offset < bytes.length; offset += chunkSize) {
-        binary += String.fromCharCode(...bytes.subarray(offset, Math.min(offset + chunkSize, bytes.length)));
-      }
-
-      return `@font-face {
-        font-family: "${font.family}";
-        src: url("data:font/woff2;base64,${btoa(binary)}") format("woff2");
-        font-style: normal;
-        font-weight: ${font.weight};
-        font-display: block;
-      }`;
-    }));
-
-    return embeddedFonts.join('\n');
+    return `@font-face {
+      font-family: "Inter";
+      src: url("data:font/woff2;base64,${btoa(binary)}") format("woff2");
+      font-style: normal;
+      font-weight: 100 900;
+      font-display: block;
+    }`;
   }
 
   downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
