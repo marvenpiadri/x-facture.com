@@ -40,15 +40,6 @@
     </div>
   }
 
-  <nav class="form-step-nav" aria-label="Form sections">
-    <a href="#form-step-details"><span class="nav-step-number">1</span><span>Details</span></a>
-    <a href="#form-step-parties"><span class="nav-step-number">2</span><span>Seller & buyer</span></a>
-    @if (document().hasPricing) {
-      <a href="#form-step-items"><span class="nav-step-number">3</span><span>Items & totals</span></a>
-    }
-    <a href="#form-step-notes"><span class="nav-step-number">{{ document().hasPricing ? '4' : '3' }}</span><span>Notes & payment</span></a>
-  </nav>
-
   <!-- Step 1: Document Details -->
   <section class="form-step-section" id="form-step-details">
     <div class="form-section-heading">
@@ -725,77 +716,159 @@
       </div>
 
       <!-- Lightweight final calculation -->
-      <div class="totals-summary" style="padding: 8px 0 4px; border-top: 1px solid var(--border-color, #e5e7eb);">
-        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px;">
-          <div>
-            <h4 style="margin:0; font-size:1.05rem; font-weight:650;">Summary</h4>
-            <p style="margin:4px 0 0; color:var(--text-muted, #6b7280); font-size:.875rem;">Discounts, taxes and final amount</p>
+      <div class="form-step-card totals-summary" id="totals-summary-card">
+        <div class="totals-summary-header">
+          <div class="totals-summary-title-group">
+            <div class="totals-title-row">
+              <span class="totals-icon-badge">
+                <span class="material-icons">calculate</span>
+              </span>
+              <h4 class="totals-summary-title">Calculation Summary</h4>
+              <span class="badge-calculated">Auto-calculated</span>
+            </div>
+            <p class="totals-summary-subtitle">Live financial ledger reflecting line items, shipping, discounts, and taxes.</p>
           </div>
           <button type="button" class="btn-add-discount" (click)="addInvoiceDiscount()">
-            <span class="material-icons btn-icon">add</span><span>Add discount</span>
+            <span class="material-icons btn-icon">add</span>
+            <span>Add discount</span>
           </button>
         </div>
 
-        <div style="display:grid; gap:10px; max-width:760px;">
-          <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
-            <span>Subtotal before discounts</span>
-            <span>{{ totals().subtotal | number:'1.2-2' }} {{ document().currency }}</span>
-          </div>
-          @if ((document().discounts?.length || 0) > 0) {
-            <div style="padding:10px 0; border-top:1px solid var(--border-color, #e5e7eb); border-bottom:1px solid var(--border-color, #e5e7eb);">
-              <div style="font-size:.8rem; font-weight:650; color:var(--text-muted, #6b7280); margin-bottom:8px;">INVOICE DISCOUNTS</div>
+        @if ((document().discounts?.length || 0) > 0) {
+          <div class="discounts-ledger-section">
+            <div class="discounts-section-title">
+              <span class="material-icons discounts-title-icon">sell</span>
+              <span>Invoice Discounts & Rebates</span>
+            </div>
+            <div class="discounts-stack">
               @for (disc of document().discounts; track disc.id; let di = $index) {
-                <div style="display:grid; grid-template-columns:minmax(120px,1fr) minmax(130px,auto) auto; align-items:center; gap:10px; padding:5px 0;">
-                  <input type="text" class="form-input" style="min-width:0; padding:7px 9px;" [value]="disc.reason" (input)="updateInvoiceDiscount(di, 'reason', $any($event.target).value)" placeholder="Discount reason" aria-label="Discount reason" />
-                  <div style="display:flex; align-items:center; gap:6px;">
-                    <input type="number" class="form-input" style="width:88px; padding:7px 9px;" [value]="disc.value" (input)="updateInvoiceDiscount(di, 'value', $any($event.target).value)" min="0" step="any" aria-label="Discount value" />
-                    <select class="form-select" style="width:66px; padding:7px 5px;" [value]="disc.type" (change)="updateInvoiceDiscount(di, 'type', $any($event.target).value)" aria-label="Discount unit">
-                      <option value="percent">%</option>
-                      <option value="fixed">{{ currencySymbol() }}</option>
-                    </select>
-                    <select class="form-select" style="max-width:145px; padding:7px 5px;" [value]="disc.appliesTo" (change)="updateInvoiceDiscount(di, 'appliesTo', $any($event.target).value)" aria-label="Discount applies to">
+                <div class="discount-edit-row">
+                  <input
+                    type="text"
+                    class="form-input discount-reason-input"
+                    [value]="disc.reason"
+                    (input)="updateInvoiceDiscount(di, 'reason', $any($event.target).value)"
+                    placeholder="Discount reason (e.g. Commercial discount, Volume rebate)"
+                    aria-label="Discount reason"
+                  />
+                  <div class="discount-input-group value-group">
+                    <div class="combined-unit-input">
+                      <input
+                        type="number"
+                        class="form-input discount-val-input num-field"
+                        [value]="disc.value"
+                        (input)="updateInvoiceDiscount(di, 'value', $any($event.target).value)"
+                        min="0"
+                        step="any"
+                        aria-label="Discount value"
+                      />
+                      <select
+                        class="form-select discount-unit-select"
+                        [value]="disc.type"
+                        (change)="updateInvoiceDiscount(di, 'type', $any($event.target).value)"
+                        aria-label="Discount unit"
+                      >
+                        <option value="percent">%</option>
+                        <option value="fixed">{{ currencySymbol() }}</option>
+                      </select>
+                    </div>
+                    <select
+                      class="form-select discount-applies-select"
+                      [value]="disc.appliesTo"
+                      (change)="updateInvoiceDiscount(di, 'appliesTo', $any($event.target).value)"
+                      aria-label="Discount applies to"
+                    >
                       <option value="all">All items</option>
                       @for (rate of availableTaxRatesForDiscount(); track rate) {
                         <option [value]="rate">{{ rate }}% VAT</option>
                       }
                     </select>
+                    <div class="discount-computed-tag">−{{ getComputedDiscountAmount(di) }}</div>
+                    <button
+                      type="button"
+                      class="btn-delete-discount"
+                      (click)="removeInvoiceDiscount(di)"
+                      title="Remove discount"
+                      aria-label="Remove discount"
+                    >
+                      <span class="material-icons">close</span>
+                    </button>
                   </div>
-                  <button type="button" class="btn-delete-discount" (click)="removeInvoiceDiscount(di)" title="Remove discount" aria-label="Remove discount"><span class="material-icons">close</span></button>
                 </div>
-                <div style="text-align:right; color:var(--text-muted, #6b7280); font-size:.8rem;">Discount: −{{ getComputedDiscountAmount(di) }}</div>
               }
             </div>
-          }
+          </div>
+        }
+
+        <div class="totals-ledger-panel">
+          <div class="ledger-item-row subtotal-row">
+            <span class="ledger-item-label">
+              <span>Subtotal before discounts</span>
+            </span>
+            <span class="ledger-item-value">{{ totals().subtotal | number:'1.2-2' }} {{ document().currency }}</span>
+          </div>
 
           @if ((document().deliveryDiscount || 0) > 0) {
-            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
-              <span>Delivery discount</span>
-              <span>−{{ document().deliveryDiscount | number:'1.2-2' }} {{ document().currency }}</span>
+            <div class="ledger-item-row discount-row">
+              <span class="ledger-item-label">
+                <span>Delivery discount</span>
+              </span>
+              <span class="ledger-item-value">
+                <span class="discount-val">−{{ document().deliveryDiscount | number:'1.2-2' }}</span>
+                <span class="ledger-item-currency"> {{ document().currency }}</span>
+              </span>
             </div>
           }
 
-          <div style="display:flex; justify-content:space-between; gap:16px; padding-top:10px; border-top:1px solid var(--border-color, #e5e7eb);">
-            <span>Net total</span>
-            <strong>{{ totals().netTotal | number:'1.2-2' }} {{ document().currency }}</strong>
-          </div>
-
-          @for (tb of totals().taxBreakdown; track tb.taxRate) {
-            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280); font-size:.9rem;">
-              <span>VAT {{ tb.taxRate }}% <span style="font-size:.8rem;">({{ tb.netAmount | number:'1.2-2' }} taxable)</span></span>
-              <span>+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
+          @if (totals().discountAmount > 0) {
+            <div class="ledger-item-row discount-row">
+              <span class="ledger-item-label">
+                <span>Invoice discount</span>
+              </span>
+              <span class="ledger-item-value">
+                <span class="discount-val">−{{ totals().discountAmount | number:'1.2-2' }}</span>
+                <span class="ledger-item-currency"> {{ document().currency }}</span>
+              </span>
             </div>
           }
 
           @if (totals().netShipping > 0) {
-            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
-              <span>Shipping (net)</span>
-              <span>{{ totals().netShipping | number:'1.2-2' }} {{ document().currency }}</span>
+            <div class="ledger-item-row shipping-row">
+              <span class="ledger-item-label">
+                <span>Shipping / Freight (net)</span>
+              </span>
+              <span class="ledger-item-value">+{{ totals().netShipping | number:'1.2-2' }} {{ document().currency }}</span>
             </div>
           }
 
-          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin-top:6px; padding-top:15px; border-top:2px solid var(--border-color, #d1d5db);">
-            <span style="font-size:1rem; font-weight:650;">Total due</span>
-            <strong style="font-size:clamp(1.5rem, 3vw, 2rem); line-height:1.15; letter-spacing:-.035em;">{{ totals().total | number:'1.2-2' }} <span style="font-size:.85rem; font-weight:500; letter-spacing:0;">{{ document().currency }}</span></strong>
+          <div class="ledger-item-row net-total-row">
+            <span class="ledger-item-label net-label">
+              <span>Net taxable total</span>
+            </span>
+            <span class="ledger-item-value net-value">{{ totals().netTotal | number:'1.2-2' }} {{ document().currency }}</span>
+          </div>
+
+          @for (tb of totals().taxBreakdown; track tb.taxRate) {
+            <div class="ledger-item-row tax-breakdown-line">
+              <span class="ledger-item-label">
+                <span class="tax-rate-badge">VAT {{ tb.taxRate }}%</span>
+                <span class="tax-base-note">({{ tb.netAmount | number:'1.2-2' }} {{ document().currency }} base)</span>
+              </span>
+              <span class="ledger-item-value tax-val">+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
+            </div>
+          }
+
+          <div class="grand-total-due-row">
+            <div class="total-due-label-group">
+              <div class="total-due-header-line">
+                <span class="total-due-label">Total amount due</span>
+              </div>
+              <span class="total-due-sublabel">Total payable including taxes</span>
+            </div>
+            <div class="total-due-amount-group font-mono">
+              <strong class="total-due-number">{{ totals().total | number:'1.2-2' }}</strong>
+              <span class="total-due-currency">{{ document().currency }}</span>
+            </div>
           </div>
         </div>
       </div>
