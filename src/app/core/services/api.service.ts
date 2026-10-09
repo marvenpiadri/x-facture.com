@@ -206,6 +206,10 @@ export class ApiService {
     window.setTimeout(() => URL.revokeObjectURL(url), 0);
   }
 
+  async validateFacturXDocument(document: BusinessDocument): Promise<Record<string, unknown>> {
+    return this.validateFacturXInvoiceData(this.toFacturXInvoice(document));
+  }
+
   private toFacturXInvoice(document: BusinessDocument): Record<string, unknown> {
     return {
       id: document.docNumber,
