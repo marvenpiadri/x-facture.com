@@ -96,7 +96,7 @@
             <label class="field-label">Output format</label>
             <select class="form-select" [value]="selectedOutputFormat()" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
               @if (config().routeSegment === 'xfacture' || config().routeSegment === 'credit-notes') {
-                <option value="factur-x">Factur-X PDF (PDF/A-3b)</option>
+                <option value="factur-x">Factur-X PDF</option>
               }
               <option value="pdf">Standard PDF</option>
               <option value="cii">CII XML</option>
@@ -956,7 +956,7 @@
             <div class="terms-field-item">
               <label class="field-label">Payment details / instructions</label>
               <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details."></textarea>
-              <span class="field-help">Free-form text: no country-specific bank format is required.</span>
+              <span class="field-help">Printed as entered in the PDF. It is not automatically converted into structured bank-account data in the embedded XML.</span>
             </div>
             <div class="footer-note-field">
               <label class="footer-note-toggle">
