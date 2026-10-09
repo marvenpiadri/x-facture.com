@@ -479,8 +479,8 @@
   background: var(--color-surface-subtle);
 }
 
-.buyer-logo-box {
-  margin-top: var(--space-4);
+.seller-logo-box {
+  margin-top: var(--space-3);
 }
 
 .form-logo-isolated-container {
@@ -2630,9 +2630,14 @@
 }
 .identifier-label-control { min-width: 0; }
 .identifier-value { min-width: 0; }
-.identifier-remove {
+ .identifier-remove {
   width: 30px;
-  height: 36px;
+  height: 30px;
+  min-width: 30px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
@@ -2669,4 +2674,16 @@
   .identifier-value { grid-column: 1; }
   .identifier-remove { grid-column: 2; grid-row: 2; }
   .identifier-actions { align-items: stretch; flex-direction: column; }
+}
+
+
+/* Seller form uses the same compact two-column contact layout as the buyer form. */
+.party-primary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.party-location-grid { margin-top: 2px; }
+@media (max-width: 560px) {
+  .party-primary-grid { grid-template-columns: 1fr; }
 }
