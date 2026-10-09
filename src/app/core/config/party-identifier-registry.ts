@@ -14,7 +14,7 @@ const definitions: Record<string, PartyIdentifierDefinition[]> = {
     { type: 'ICE', label: 'ICE (Common Enterprise Identifier)', category: 'business' },
     { type: 'IF', label: 'IF (Fiscal Identifier)', category: 'tax' },
     { type: 'RC', label: 'RC (Registre du commerce)', category: 'business' },
-    { type: 'PATENTE', label: 'Patente (Professional Tax)', category: 'tax' },
+    { type: 'PATENTE', label: 'Patente / Taxe professionnelle (TP)', category: 'tax' },
     { type: 'CNSS', label: 'CNSS (Social Security Registration)', category: 'social' },
     { type: 'VAT', label: 'TVA registration', category: 'vat' }
   ],
