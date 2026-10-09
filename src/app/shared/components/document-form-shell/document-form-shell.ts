@@ -19,6 +19,7 @@ import { ClientService } from '../../../core/services/client.service';
 import { LineItemsTableComponent } from '../line-items-table/line-items-table';
 import { ClientPickerComponent } from '../client-picker/client-picker';
 import { CountryPickerComponent } from '../country-picker/country-picker';
+import { CountryService } from '../../../core/services/country.service';
 
 @Component({
   selector: 'app-document-form-shell',
@@ -40,6 +41,7 @@ export class DocumentFormShellComponent {
   private calculationService = inject(CalculationService);
   private settingsService = inject(SettingsService);
   private clientService = inject(ClientService);
+  private countryService = inject(CountryService);
   private clientSaveTimer: ReturnType<typeof setTimeout> | undefined;
   private activeBusinessId: string | undefined;
   private businessSaveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -104,7 +106,8 @@ export class DocumentFormShellComponent {
 
     // Keep free-form address/contact text intact, while appending separately stored
     // fields only when the user has not already included them in the textarea.
-    const missingLocation = [party.postalCode, party.city, party.country]
+    const countryName = party.country ? this.countryService.findByCode(party.country)?.name || party.country : undefined;
+    const missingLocation = [party.postalCode, party.city, countryName]
       .filter((part): part is string => Boolean(part?.trim()) && !addressLower.includes(part!.trim().toLowerCase()));
     if (missingLocation.length) lines.push(missingLocation.join(' '));
 
