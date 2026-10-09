@@ -367,7 +367,13 @@
 
     </div>
   }
-  @if (document().company.legalFooter) {
-    <footer class="document-legal-footer">{{ document().company.legalFooter }}</footer>
+  @if (document().company.legalFooter || (document().specialFields?.['showFooterText'] === true && document().specialFields?.['footerText'])) {
+    <footer class="document-legal-footer">
+      @if (document().company.legalFooter) { <span>{{ document().company.legalFooter }}</span> }
+      @if (document().specialFields?.['showFooterText'] === true && document().specialFields?.['footerText']) {
+        @if (document().company.legalFooter) { <span aria-hidden="true"> · </span> }
+        <span>{{ document().specialFields?.['footerText'] }}</span>
+      }
+    </footer>
   }
 </div>
