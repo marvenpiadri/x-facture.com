@@ -1973,26 +1973,6 @@
     border-bottom: 1px solid var(--color-border);
   }
 }
-.footer-note-field {
-  display: grid;
-  gap: 10px;
-  padding-top: 16px;
-  border-top: 1px solid var(--color-border);
-}
-.footer-note-toggle {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--color-text-main);
-  font-size: var(--text-sm);
-  font-weight: 650;
-  cursor: pointer;
-}
-.footer-note-toggle input {
-  width: 16px;
-  height: 16px;
-  accent-color: var(--color-money-green);
-}
 .form-footer-action-bar {
   display: flex;
   align-items: center;
