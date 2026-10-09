@@ -236,20 +236,18 @@
             @if (document().company.phone) {
               <div class="party-line">{{ document().company.phone }}</div>
             }
+            @if (document().company.website) {
+              <div class="party-line">{{ document().company.website }}</div>
+            }
           </div>
         </div>
 
         <div class="party-col-divider"></div>
 
-        <!-- Buyer Column (Inlined with Logo inside the buyer!) -->
+        <!-- Buyer Column -->
         <div class="party-col buyer-party-col">
           <div class="party-col-header">
             <div class="party-role-tag">BUYER</div>
-            @if (document().client.logoUrl || document().company.logoUrl) {
-              <div class="buyer-logo-container">
-                <img [src]="document().client.logoUrl || document().company.logoUrl" class="buyer-logo" alt="Logo" />
-              </div>
-            }
           </div>
           <div class="party-details-stack">
             @if (document().client.name) {
@@ -275,6 +273,9 @@
             }
             @if (document().client.phone) {
               <div class="party-line">{{ document().client.phone }}</div>
+            }
+            @if (document().client.website) {
+              <div class="party-line">{{ document().client.website }}</div>
             }
           </div>
         </div>
