@@ -148,7 +148,7 @@
             </div>
             <div class="form-field-item">
               <label class="field-label">Order-X Output</label>
-              <select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'order-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+              <select class="form-select" [value]="selectedOutputFormat()" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
                 <option value="order-x">Order-X PDF (PDF/A-3b)</option>
                 <option value="pdf">Standard PDF</option>
               </select>
