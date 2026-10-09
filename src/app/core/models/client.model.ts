@@ -1,3 +1,5 @@
+import { PartyTaxIdentifier } from './document.model';
+
 export interface Client {
   id: string;
   slug: string;
@@ -10,6 +12,7 @@ export interface Client {
   postalCode?: string;
   country?: string;
   taxId?: string;
+  taxIdentifiers?: PartyTaxIdentifier[];
   electronicAddress?: string;
   electronicAddressScheme?: string;
   address?: string;
