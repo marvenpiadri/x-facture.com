@@ -40,8 +40,17 @@
     </div>
   }
 
+  <nav class="form-step-nav" aria-label="Form sections">
+    <a href="#form-step-details"><span class="nav-step-number">1</span><span>Details</span></a>
+    <a href="#form-step-parties"><span class="nav-step-number">2</span><span>Seller & buyer</span></a>
+    @if (document().hasPricing) {
+      <a href="#form-step-items"><span class="nav-step-number">3</span><span>Items & totals</span></a>
+    }
+    <a href="#form-step-notes"><span class="nav-step-number">{{ document().hasPricing ? '4' : '3' }}</span><span>Notes & payment</span></a>
+  </nav>
+
   <!-- Step 1: Document Details -->
-  <section class="form-step-section">
+  <section class="form-step-section" id="form-step-details">
     <div class="form-section-heading">
       <div>
         <span class="step-number" aria-hidden="true">1</span>
@@ -91,7 +100,7 @@
               }
               <option value="pdf">Standard PDF</option>
               <option value="cii">CII XML</option>
-              @if (config().routeSegment === 'invoices' || config().routeSegment === 'xfacture') { <option value="ubl">UBL 2.1 XML</option> }
+              @if (config().routeSegment === 'invoices' || config().routeSegment === 'credit-notes' || config().routeSegment === 'xfacture') { <option value="ubl">UBL 2.1 XML</option> }
             </select>
           </div>
         }
@@ -105,19 +114,10 @@
       @if (config().routeSegment === 'xfacture') {
         <div class="facturx-section-divider">
           <div class="facturx-divider-header">
-            <span class="facturx-subheading">Factur-X Electronic Invoicing Attributes</span>
-            <span class="facturx-hint-text">Franco-German hybrid e-invoicing standard (EN 16931)</span>
+            <span class="facturx-subheading">Electronic invoice details</span>
+            <span class="facturx-hint-text">Add only the references and dates that apply to this invoice.</span>
           </div>
           <div class="form-meta-grid">
-            <div class="form-field-item">
-              <label class="field-label">Nature of transaction (BT-23)</label>
-              <select class="form-select" [value]="document().specialFields?.['transactionNature'] || 'services'" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
-                <option value="services">Services (S1)</option>
-                <option value="goods">Goods (B1)</option>
-                <option value="goods-and-services">Goods & Services (M1)</option>
-              </select>
-            </div>
-
             <div class="form-field-item">
               <label class="field-label">Payment method</label>
               <select class="form-select" [value]="document().specialFields?.['paymentMethod'] || 'bank-transfer'" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
@@ -127,16 +127,6 @@
                 <option value="cash">Cash</option>
                 <option value="other">Other</option>
               </select>
-            </div>
-
-            <div class="form-field-item">
-              <label class="field-label">IBAN</label>
-              <input type="text" class="form-input font-mono" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="FR76 3000..." autocomplete="off" />
-            </div>
-
-            <div class="form-field-item">
-              <label class="field-label">BIC / SWIFT</label>
-              <input type="text" class="form-input font-mono" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="BNPAFRPPXXX" autocomplete="off" />
             </div>
 
             <div class="form-field-item">
@@ -181,7 +171,7 @@
   </section>
 
   <!-- Step 2: Seller & Buyer (inline) -->
-  <section class="form-step-section">
+  <section class="form-step-section" id="form-step-parties">
     <div class="form-section-heading">
       <div>
         <span class="step-number" aria-hidden="true">2</span>
@@ -307,7 +297,7 @@
 
   <!-- Step 3: Items & Totals -->
   @if (document().hasPricing) {
-    <section class="form-step-section">
+    <section class="form-step-section" id="form-step-items">
       <div class="form-section-heading">
         <div>
           <span class="step-number" aria-hidden="true">3</span>
@@ -910,13 +900,13 @@
     </section>
   }
 
-  <!-- Step 4: Notes & Payment Information -->
-  <section class="form-step-section">
+  <!-- Final step: Notes & Payment Information -->
+  <section class="form-step-section" id="form-step-notes">
     <div class="form-section-heading">
       <div>
         <span class="step-number" aria-hidden="true">{{ document().hasPricing ? '4' : '3' }}</span>
         <h3>Notes & payment information</h3>
-        <p>Add remittance information, bank details, and customer instructions.</p>
+        <p>Add customer-facing notes, payment instructions, and an optional footer.</p>
       </div>
     </div>
     <div class="form-step-card notes-step-card" [class.is-expanded]="notesExpanded()">
@@ -945,10 +935,10 @@
                   {{ document().notes ? (document().notes!.length > 50 ? (document().notes!.slice(0, 50) + '…') : document().notes) : (document().bankDetails ? 'Bank remittance specified' : 'Custom footer text enabled') }}
                 </span>
               } @else {
-                <span>Public customer notes, payment terms, bank wire remittance (IBAN/BIC), and legal footer text.</span>
+                <span>Customer notes, payment terms, flexible bank or payment instructions, and legal footer text.</span>
               }
             } @else {
-              <span>Public customer notes, payment terms, bank wire remittance (IBAN/BIC), and legal footer text.</span>
+              <span>Customer notes, payment terms, flexible bank or payment instructions, and legal footer text.</span>
             }
           </p>
         </div>
@@ -975,8 +965,9 @@
               <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms: Due within 30 days. Thank you for your business."></textarea>
             </div>
             <div class="terms-field-item">
-              <label class="field-label">Bank & Wire Transfer Remittance</label>
-              <textarea class="form-textarea font-mono" rows="3" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank Name: BNP Paribas&#10;IBAN: FR76 3000 6000 0112 3456 7890 189&#10;BIC: BNPAFRPPXXX"></textarea>
+              <label class="field-label">Payment details / instructions</label>
+              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter any payment instructions that suit your country: bank name, RIB, IBAN, account number, BIC/SWIFT, account holder, payment link, or other details."></textarea>
+              <span class="field-help">Free-form text: no country-specific bank format is required.</span>
             </div>
             <div class="footer-note-field">
               <label class="footer-note-toggle">
