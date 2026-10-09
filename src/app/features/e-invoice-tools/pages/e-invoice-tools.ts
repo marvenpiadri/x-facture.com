@@ -110,6 +110,22 @@ export class EInvoiceToolsPage {
     });
   }
 
+  issueMessage(issue: unknown): string {
+    if (typeof issue === 'string') return issue;
+    if (!issue || typeof issue !== 'object') return 'An unspecified validation issue was reported.';
+    const detail = issue as Record<string, unknown>;
+    const message = ['message', 'text', 'error', 'description', 'title', 'rule']
+      .map(key => detail[key])
+      .find(value => typeof value === 'string' && value.trim());
+    const path = ['path', 'location', 'field']
+      .map(key => detail[key])
+      .find(value => typeof value === 'string' && value.trim());
+    if (typeof message === 'string') return typeof path === 'string' ? `${path}: ${message}` : message;
+    const nested = detail['errors'];
+    if (Array.isArray(nested)) return nested.map(item => this.issueMessage(item)).filter(Boolean).join('; ');
+    return typeof path === 'string' ? `${path}: Validation failed.` : 'A validation issue was reported.';
+  }
+
   selectTool(id: string): void {
     this.activeId.set(id);
     this.result.set(null);
