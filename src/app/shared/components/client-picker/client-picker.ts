@@ -31,7 +31,7 @@ export class ClientPickerComponent {
     const current = this.client().taxIdentifiers || [];
     if (current.length) return current;
     const legacy = this.client().taxId?.trim();
-    return legacy ? [{ id: 'legacy-tax-id', type: 'TAX_ID', label: 'Tax / VAT', value: legacy }] : [];
+    return legacy ? [{ id: 'legacy-tax-id', type: 'VAT', label: 'Tax / VAT', value: legacy }] : [];
   });
 
   displayDetails = computed(() => {
