@@ -13,16 +13,16 @@ const definitions: Record<string, PartyIdentifierDefinition[]> = {
   MA: [
     { type: 'ICE', label: 'ICE (Common Enterprise Identifier)', category: 'business' },
     { type: 'IF', label: 'IF (Fiscal Identifier)', category: 'tax' },
-    { type: 'RC', label: 'RC (Commercial Register)', category: 'business' },
+    { type: 'RC', label: 'RC (Registre du commerce)', category: 'business' },
     { type: 'PATENTE', label: 'Patente (Professional Tax)', category: 'tax' },
     { type: 'CNSS', label: 'CNSS (Social Security Registration)', category: 'social' },
     { type: 'VAT', label: 'TVA registration', category: 'vat' }
   ],
   FR: [
     { type: 'VAT', label: 'VAT number (TVA intracommunautaire)', category: 'vat' },
-    { type: 'SIREN', label: 'SIREN / SIRENE (Company registration)', category: 'business', schemeId: '0002' },
+    { type: 'SIREN', label: 'SIREN (French business identifier)', category: 'business' },
     { type: 'SIRET', label: 'SIRET (Establishment registration)', category: 'business', schemeId: '0009' },
-    { type: 'RCS', label: 'RCS (Commercial Register)', category: 'business' }
+    { type: 'RCS', label: 'RCS (Registre du commerce et des sociétés)', category: 'business' }
   ],
   DE: [
     { type: 'VAT', label: 'VAT ID (USt-IdNr.)', category: 'vat' },
