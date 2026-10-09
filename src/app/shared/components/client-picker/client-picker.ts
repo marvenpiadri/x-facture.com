@@ -78,42 +78,22 @@ export class ClientPickerComponent {
     website?: string;
   }): string {
     if (!party) return '';
-    const addr = (party.address || '').trim();
-    if (addr.includes('\n')) {
-      return addr;
-    }
+    const address = (party.address || '').trim();
+    const addressLower = address.toLowerCase();
+    const lines: string[] = address
+      ? address.split(/\\r?\\n/).map(line => line.trim()).filter(Boolean)
+      : [];
 
-    const lines: string[] = [];
-    if (addr) {
-      lines.push(addr);
-    }
+    const missingLocation = [party.postalCode, party.city, party.country]
+      .filter((part): part is string => Boolean(part?.trim()) && !addressLower.includes(part!.trim().toLowerCase()));
+    if (missingLocation.length) lines.push(missingLocation.join(' '));
 
-    const locParts = [party.postalCode, party.city, party.country].filter(Boolean);
-    if (locParts.length > 0) {
-      const locStr = locParts.join(' ');
-      if (!addr || !addr.toLowerCase().includes((party.city || '').toLowerCase())) {
-        lines.push(locStr);
-      }
-    }
-
-    if (party.taxId?.trim() && (!addr || !addr.includes(party.taxId))) {
-      lines.push(`Tax / VAT: ${party.taxId.trim()}`);
-    }
-
+    if (party.taxId?.trim() && !addressLower.includes(party.taxId.trim().toLowerCase())) lines.push(`Tax / VAT: ${party.taxId.trim()}`);
     const contacts: string[] = [];
-    if (party.phone?.trim() && (!addr || !addr.includes(party.phone))) {
-      contacts.push(`Tel: ${party.phone.trim()}`);
-    }
-    if (party.email?.trim() && (!addr || !addr.includes(party.email))) {
-      contacts.push(`Email: ${party.email.trim()}`);
-    }
-    if (party.website?.trim() && (!addr || !addr.includes(party.website))) {
-      contacts.push(party.website.trim());
-    }
-    if (contacts.length > 0) {
-      lines.push(contacts.join(' · '));
-    }
-
-    return lines.join('\n');
+    if (party.phone?.trim() && !addressLower.includes(party.phone.trim().toLowerCase())) contacts.push(`Tel: ${party.phone.trim()}`);
+    if (party.email?.trim() && !addressLower.includes(party.email.trim().toLowerCase())) contacts.push(`Email: ${party.email.trim()}`);
+    if (party.website?.trim() && !addressLower.includes(party.website.trim().toLowerCase())) contacts.push(party.website.trim());
+    if (contacts.length) lines.push(contacts.join(' · '));
+    return lines.join('\\n');
   }
 }
