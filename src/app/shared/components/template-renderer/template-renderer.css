@@ -394,16 +394,28 @@
   border-bottom: 1px solid #e2e8f0;
 }
 
-.vat-breakdown-table td {
-  padding: 7px 8px;
+ .vat-breakdown-table td {
+  padding: 8px 8px;
   color: var(--color-midnight-800);
   border-bottom: 1px solid #f1f5f9;
+  line-height: 1.4;
 }
 
-.facturx-totals-ledger {
+.vat-breakdown-table tbody tr + tr td {
+  padding-top: 10px;
+}
+
+/* Added to the VAT total row to keep it visually distinct from tax basis. */
+.totals-line.vat-total-line {
+  margin-top: 3px;
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
+}
+
+ .facturx-totals-ledger {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
   font-size: 12.5px;
 }
 
@@ -692,12 +704,13 @@
    preserving the same sheet geometry used by the preview. */
 @page invoice-a4 {
   size: A4 portrait;
-  margin: 0;
+  /* Apply printable margins to every page fragment, not only the first sheet. */
+  margin: 20mm;
 }
 
 @page invoice-letter {
   size: letter portrait;
-  margin: 0;
+  margin: 0.75in;
 }
 
 @page invoice-thermal-80 {
@@ -774,16 +787,17 @@
   }
 
   .document-render-sheet.paper-a4 {
-    width: 210mm !important;
-    min-height: 297mm !important;
-    padding: 20mm !important;
+    /* @page owns the physical size and per-page margins. */
+    width: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
     border: none !important;
   }
 
   .document-render-sheet.paper-letter {
-    width: 8.5in !important;
-    min-height: 11in !important;
-    padding: 0.75in !important;
+    width: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
     border: none !important;
   }
 
