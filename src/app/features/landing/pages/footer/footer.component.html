@@ -8,7 +8,7 @@
       <a routerLink="/" class="footer-logo-anchor">
         <div class="logo-shield-frame">
           <div class="brand-badge mini">
-            <img src="/x-facture-LOGO-PFP.png" alt="x-facture logo" class="brand-logo-img" />
+            <img [src]="isDark() ? '/x-facture-logo-white.png' : '/x-facture-logo-blue.png'" alt="x-facture logo" class="brand-logo-img" />
           </div>
         </div>
         <span class="logo-typography-text">x-facture</span>

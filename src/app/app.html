@@ -5,7 +5,7 @@
       <!-- Brand Logo Lockup -->
       <a routerLink="/" class="brand-logo" (click)="closeMenus()">
         <div class="brand-badge">
-          <img src="/x-facture-LOGO-PFP.png" alt="x-facture logo" class="brand-logo-img" />
+          <img [src]="isDark() ? '/x-facture-logo-white.png' : '/x-facture-logo-blue.png'" alt="x-facture logo" class="brand-logo-img" />
         </div>
         <div class="brand-text">
           <span class="brand-name">x-facture</span>
