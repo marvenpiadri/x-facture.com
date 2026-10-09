@@ -5,7 +5,7 @@ import { ClientService } from '../../../core/services/client.service';
 import { CountryPickerComponent } from '../country-picker/country-picker';
 import { CountryService } from '../../../core/services/country.service';
 import { DocumentParty, PartyTaxIdentifier } from '../../../core/models/document.model';
-import { getDefaultPartyIdentifierDefinitions, getPartyIdentifierDefinitions, PartyIdentifierDefinition } from '../../../core/config/party-identifier-registry';
+import { getPartyIdentifierDefinitions, getPrimaryTaxIdentifierValue, PartyIdentifierDefinition, reconcilePartyIdentifiersForCountryChange } from '../../../core/config/party-identifier-registry';
 
 @Component({
   selector: 'app-client-picker',
@@ -48,20 +48,9 @@ export class ClientPickerComponent {
   }
 
   onCountryChange(country: string): void {
-    const existing = this.taxIdentifiers();
-    const suggested = existing.length ? existing : getDefaultPartyIdentifierDefinitions(country).map((item, index) => ({
-      id: `party-id-${Date.now()}-${index}`,
-      type: item.type,
-      label: item.label,
-      value: '',
-      ...(item.schemeId ? { schemeId: item.schemeId } : {})
-    }));
-    this.clientChange.emit({
-      ...this.client(),
-      country,
-      taxIdentifiers: suggested,
-      taxId: this.client().taxId || ''
-    });
+    const current = this.client();
+    const taxIdentifiers = reconcilePartyIdentifiersForCountryChange(this.taxIdentifiers(), current.country, country, 'party-id');
+    this.clientChange.emit({ ...current, country, taxIdentifiers, taxId: getPrimaryTaxIdentifierValue(taxIdentifiers, country) });
   }
 
   addIdentifier(event: Event): void {
@@ -72,12 +61,12 @@ export class ClientPickerComponent {
     const def = this.identifierDefinitions().find(item => item.type === type);
     const current = [...this.taxIdentifiers()];
     const label = def?.label || type;
-    const next: PartyTaxIdentifier = { id: `party-id-${Date.now()}-${current.length}`, type, label, value: '', ...(def?.schemeId ? { schemeId: def.schemeId } : {}) };
+    const next: PartyTaxIdentifier = { id: `party-id-${Date.now()}-${current.length}`, type, label, value: '', countryCode: this.client().country || undefined, ...(def?.schemeId ? { schemeId: def.schemeId } : {}) };
     this.emitIdentifiers([...current, next]);
   }
 
   addCustomIdentifier(): void {
-    this.emitIdentifiers([...this.taxIdentifiers(), { id: `party-id-${Date.now()}`, type: 'CUSTOM', label: '', value: '', custom: true }]);
+    this.emitIdentifiers([...this.taxIdentifiers(), { id: `party-id-${Date.now()}`, type: 'CUSTOM', label: '', value: '', countryCode: this.client().country || undefined, custom: true }]);
   }
 
   updateIdentifier(id: string, field: 'type' | 'label' | 'value', value: string): void {
@@ -85,7 +74,7 @@ export class ClientPickerComponent {
       if (item.id !== id) return item;
       if (field === 'type' && value !== 'CUSTOM') {
         const def = this.identifierDefinitions().find(option => option.type === value);
-        return { ...item, type: value, label: def?.label || value, custom: false, schemeId: def?.schemeId };
+        return { ...item, type: value, label: def?.label || value, custom: false, countryCode: this.client().country || undefined, schemeId: def?.schemeId };
       }
       return { ...item, [field]: value, ...(field === 'label' ? { custom: true } : {}) };
     });
@@ -97,9 +86,7 @@ export class ClientPickerComponent {
   }
 
   private emitIdentifiers(taxIdentifiers: PartyTaxIdentifier[]): void {
-    const firstVat = taxIdentifiers.find(item => item.type === 'VAT' && item.value.trim());
-    const firstTax = taxIdentifiers.find(item => ['TAX_ID', 'IF', 'EIN', 'TIN', 'NIF'].includes(item.type) && item.value.trim());
-    this.clientChange.emit({ ...this.client(), taxIdentifiers, taxId: firstVat?.value || firstTax?.value || '' });
+    this.clientChange.emit({ ...this.client(), taxIdentifiers, taxId: getPrimaryTaxIdentifierValue(taxIdentifiers, this.client().country) });
   }
 
   identifierOptionsFor(currentType: string): PartyIdentifierDefinition[] {
@@ -110,10 +97,8 @@ export class ClientPickerComponent {
   onDetailsChange(value: string): void {
     this.clientChange.emit({
       ...this.client(),
-      address: value,
-      city: '',
-      postalCode: '',
-      website: ''
+      // Keep structured location and website fields for future reuse of saved clients.
+      address: value
     });
   }
 
