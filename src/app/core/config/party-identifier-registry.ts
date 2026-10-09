@@ -386,7 +386,7 @@ export function getDefaultPartyIdentifierDefinitions(countryCode?: string): Part
 export function reconcilePartyIdentifiersForCountryChange(existing: PartyTaxIdentifier[], fromCountry: string | undefined, toCountry: string | undefined, idPrefix: string): PartyTaxIdentifier[] {
   const targetCountry = (toCountry || '').trim().toUpperCase();
   const sourceCountry = (fromCountry || '').trim().toUpperCase();
-  const targetByType = new Map(getPartyIdentifierDefinitions(targetCountry).map(definition => [definition.type, definition]));
+  const targetByType = new Map<string, PartyIdentifierDefinition>(getPartyIdentifierDefinitions(targetCountry).map(definition => [definition.type, definition] as const));
   const reconciled: PartyTaxIdentifier[] = [];
   const countryChanged = sourceCountry !== targetCountry;
   const globalTypes = new Set(['GLN', 'DUNS']);
