@@ -392,7 +392,24 @@ export function reconcilePartyIdentifiersForCountryChange(existing: PartyTaxIden
   const globalTypes = new Set(['GLN', 'DUNS']);
   for (const identifier of existing) {
     if (identifier.custom || identifier.type === 'CUSTOM') {
-      reconciled.push({ ...identifier, countryCode: identifier.countryCode || sourceCountry || undefined });
+      const archivedCountry = (identifier.countryCode || '').trim().toUpperCase();
+      const originalDefinition = identifier.originalType && archivedCountry === targetCountry
+        ? targetByType.get(identifier.originalType)
+        : undefined;
+      if (originalDefinition) {
+        const restored: PartyTaxIdentifier = {
+          ...identifier,
+          type: originalDefinition.type,
+          label: originalDefinition.label,
+          schemeId: originalDefinition.schemeId,
+          countryCode: targetCountry || undefined,
+          custom: false
+        };
+        delete restored.originalType;
+        reconciled.push(restored);
+      } else {
+        reconciled.push({ ...identifier, countryCode: identifier.countryCode || sourceCountry || undefined });
+      }
       continue;
     }
     const definition = targetByType.get(identifier.type);
@@ -413,7 +430,7 @@ export function reconcilePartyIdentifiersForCountryChange(existing: PartyTaxIden
       const archivedLabel = sourceCountry && !oldLabel.endsWith(`(${sourceCountry})`) ? `${oldLabel} (${sourceCountry})` : oldLabel;
       const withoutOldScheme: PartyTaxIdentifier = { ...identifier };
       delete withoutOldScheme.schemeId;
-      reconciled.push({ ...withoutOldScheme, type: 'CUSTOM', label: archivedLabel, countryCode: identifier.countryCode || sourceCountry || undefined, custom: true });
+      reconciled.push({ ...withoutOldScheme, type: 'CUSTOM', originalType: identifier.type, label: archivedLabel, countryCode: identifier.countryCode || sourceCountry || undefined, custom: true });
     }
   }
   const representedTypes = new Set(reconciled.filter(item => !item.custom).map(item => item.type));
