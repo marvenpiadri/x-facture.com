@@ -237,7 +237,7 @@ export class EInvoiceToolsPage {
         return;
       }
 
-      if (tool.id === 'embed' || tool.id === 'cii-to-factur-x') {
+      if (tool.id === 'embed' || tool.id === 'cii-to-factur-x' || tool.id === 'pdf-to-factur-x') {
         const file = this.selectedFile();
         const xml = this.selectedXml();
         if (!file || !xml.trim()) throw new Error('Upload the PDF and provide the CII XML.');
