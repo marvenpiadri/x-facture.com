@@ -114,17 +114,44 @@
       @if (config().routeSegment === 'xfacture' || (config().routeSegment === 'credit-notes' && selectedOutputFormat() === 'factur-x')) {
         <div class="facturx-section-divider">
           <div class="facturx-divider-header">
-            <span class="facturx-subheading">Electronic invoice details</span>
-            <span class="facturx-hint-text">Optional buyer reference and delivery details for the electronic invoice.</span>
+            <span class="facturx-subheading">Factur-X details</span>
+            <span class="facturx-hint-text">A few structured fields used by the electronic invoice. Leave optional details blank when they do not apply.</span>
           </div>
           <div class="form-meta-grid">
             <div class="form-field-item">
-              <label class="field-label">Buyer Reference / Service Code</label>
-              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Chorus Pro / buyer service" />
+              <label class="field-label">Nature of transaction (BT-23)</label>
+              <select class="form-select" [value]="document().specialFields?.['transactionNature'] || ''" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
+                <option value="">Select nature (if required)</option>
+                <option value="services">Services</option>
+                <option value="goods">Goods</option>
+                <option value="mixed">Goods and services</option>
+              </select>
             </div>
-
             <div class="form-field-item">
-              <label class="field-label">Delivery Date</label>
+              <label class="field-label">Payment method</label>
+              <select class="form-select" [value]="document().specialFields?.['paymentMethod'] === 'bank-transfer' ? '58' : (document().specialFields?.['paymentMethod'] || '58')" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
+                <option value="58">SEPA bank transfer</option>
+                <option value="30">Bank transfer</option>
+                <option value="48">Card</option>
+                <option value="10">Cash</option>
+                <option value="ZZZ">Other</option>
+              </select>
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">IBAN</label>
+              <input type="text" class="form-input" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="Enter account IBAN" autocomplete="off" />
+              <span class="field-help">For bank-transfer payment methods, enter the account used to receive payment.</span>
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">BIC / SWIFT (optional)</label>
+              <input type="text" class="form-input" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="e.g. ABCDMAMR" autocomplete="off" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Buyer Reference / Service Code</label>
+              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer or service reference" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Delivery Date (optional)</label>
               <input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
             </div>
           </div>
