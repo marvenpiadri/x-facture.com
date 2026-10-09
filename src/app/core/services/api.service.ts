@@ -214,8 +214,6 @@ export class ApiService {
         name: document.company.legalName || document.company.name,
         address: {
           line1: document.company.address,
-          city: document.company.city,
-          postalCode: document.company.postalCode,
           country: document.company.country
         },
         vatId: document.company.taxId,
@@ -224,14 +222,11 @@ export class ApiService {
         electronicAddressScheme: document.company.electronicAddressScheme,
         email: document.company.email,
         phone: document.company.phone,
-        website: document.company.website
       },
       buyer: {
         name: document.client.legalName || document.client.name,
         address: {
           line1: document.client.address,
-          city: document.client.city,
-          postalCode: document.client.postalCode,
           country: document.client.country
         },
         vatId: document.client.taxId,
@@ -240,7 +235,6 @@ export class ApiService {
         electronicAddressScheme: document.client.electronicAddressScheme,
         email: document.client.email,
         phone: document.client.phone,
-        website: document.client.website
       },
       items: document.items.map(item => ({
         description: item.description,

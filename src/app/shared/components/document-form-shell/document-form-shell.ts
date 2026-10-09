@@ -253,7 +253,7 @@ export class DocumentFormShellComponent implements OnInit {
     const requested = this.document().specialFields?.['outputFormat'];
     const allowedOutputs: Record<string, string[]> = {
       invoices: ['pdf', 'cii', 'ubl'],
-      xfacture: ['factur-x', 'pdf', 'cii', 'ubl'],
+      xfacture: ['factur-x'],
       'credit-notes': ['factur-x', 'pdf', 'cii', 'ubl'],
       'order-x': ['order-x', 'pdf']
     };
