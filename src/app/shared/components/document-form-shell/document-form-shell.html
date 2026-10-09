@@ -737,6 +737,10 @@
         </div>
 
         <div style="display:grid; gap:10px; max-width:760px;">
+          <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
+            <span>Subtotal before discounts</span>
+            <span>{{ totals().subtotal | number:'1.2-2' }} {{ document().currency }}</span>
+          </div>
           @if ((document().discounts?.length || 0) > 0) {
             <div style="padding:10px 0; border-top:1px solid var(--border-color, #e5e7eb); border-bottom:1px solid var(--border-color, #e5e7eb);">
               <div style="font-size:.8rem; font-weight:650; color:var(--text-muted, #6b7280); margin-bottom:8px;">INVOICE DISCOUNTS</div>
