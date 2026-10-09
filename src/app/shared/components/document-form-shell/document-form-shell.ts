@@ -11,7 +11,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { BusinessDocument, DocumentDiscount, DocumentLineItem, DocumentParty, LineLayoutMode } from '../../../core/models/document.model';
+import { BusinessDocument, DocumentDiscount, DocumentLineItem, DocumentParty, LineLayoutMode, PartyTaxIdentifier } from '../../../core/models/document.model';
+import { getPartyIdentifierDefinitions, PartyIdentifierDefinition } from '../../../core/config/party-identifier-registry';
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { getCreatePageContent } from '../../../core/config/document-create-content';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -57,6 +58,13 @@ export class DocumentFormShellComponent implements OnInit {
 
   readonly availableCurrencies = this.currencyService.CURRENCIES;
   readonly countries = this.countryService.countries;
+  readonly sellerIdentifierDefinitions = computed(() => getPartyIdentifierDefinitions(this.document().company.country));
+  readonly sellerTaxIdentifiers = computed<PartyTaxIdentifier[]>(() => {
+    const current = this.document().company.taxIdentifiers || [];
+    if (current.length) return current;
+    const legacy = this.document().company.taxId?.trim();
+    return legacy ? [{ id: 'legacy-tax-id', type: 'TAX_ID', label: 'Tax / VAT', value: legacy }] : [];
+  });
   readonly deliveryExpanded = signal<boolean>(false);
   readonly notesExpanded = signal<boolean>(false);
 
@@ -334,6 +342,59 @@ export class DocumentFormShellComponent implements OnInit {
     if (!comp) return '';
     return this.formatMergedPartyDetails(comp);
   });
+
+  onSellerCountryChange(country: string): void {
+    this.onCompanyFieldChange('country', country);
+  }
+
+  addSellerIdentifier(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const type = select.value;
+    select.value = '';
+    if (!type) return;
+    const definition = this.sellerIdentifierDefinitions().find(item => item.type === type);
+    const current = [...this.sellerTaxIdentifiers()];
+    this.saveSellerIdentifiers([...current, {
+      id: `seller-id-${Date.now()}-${current.length}`,
+      type,
+      label: definition?.label || type,
+      value: '',
+      ...(definition?.schemeId ? { schemeId: definition.schemeId } : {})
+    }]);
+  }
+
+  addCustomSellerIdentifier(): void {
+    this.saveSellerIdentifiers([...this.sellerTaxIdentifiers(), { id: `seller-id-${Date.now()}`, type: 'CUSTOM', label: '', value: '', custom: true }]);
+  }
+
+  updateSellerIdentifier(id: string, field: 'type' | 'label' | 'value', value: string): void {
+    const identifiers = this.sellerTaxIdentifiers().map(item => {
+      if (item.id !== id) return item;
+      if (field === 'type' && value !== 'CUSTOM') {
+        const definition = this.sellerIdentifierDefinitions().find(option => option.type === value);
+        return { ...item, type: value, label: definition?.label || value, custom: false, schemeId: definition?.schemeId };
+      }
+      return { ...item, [field]: value, ...(field === 'label' ? { custom: true } : {}) };
+    });
+    this.saveSellerIdentifiers(identifiers);
+  }
+
+  removeSellerIdentifier(id: string): void {
+    this.saveSellerIdentifiers(this.sellerTaxIdentifiers().filter(item => item.id !== id));
+  }
+
+  sellerIdentifierOptionsFor(currentType: string): PartyIdentifierDefinition[] {
+    const options = this.sellerIdentifierDefinitions();
+    return options.some(item => item.type === currentType) ? options : [...options, { type: currentType, label: currentType, category: 'other' as const }];
+  }
+
+  private saveSellerIdentifiers(taxIdentifiers: PartyTaxIdentifier[]): void {
+    const company = { ...this.document().company, taxIdentifiers };
+    const vat = taxIdentifiers.find(item => item.type === 'VAT' && item.value.trim());
+    const tax = taxIdentifiers.find(item => ['TAX_ID', 'IF', 'EIN', 'TIN', 'NIF'].includes(item.type) && item.value.trim());
+    company.taxId = vat?.value || tax?.value || '';
+    this.save.emit({ ...this.document(), company });
+  }
 
   onSellerDetailsChange(value: string): void {
     this.onCompanyFieldChange('address', value);
