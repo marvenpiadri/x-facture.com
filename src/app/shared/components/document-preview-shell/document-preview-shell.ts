@@ -169,8 +169,8 @@ export class DocumentPreviewShellComponent implements OnInit {
     }
 
     const forceInterCss = [
-      '* { font-family: "Inter", Arial, sans-serif !important; }',
-      '*::before, *::after { font-family: "Inter", Arial, sans-serif !important; }',
+      'html body #document-pdf-root, html body #document-pdf-root *, html body #document-pdf-root *::before, html body #document-pdf-root *::after { font-family: "Inter", Arial, sans-serif !important; }',
+      'html, body { font-family: "Inter", Arial, sans-serif !important; }',
       ':root { --font-sans: "Inter", Arial, sans-serif; --font-mono: "Inter", Arial, sans-serif; }',
       'html, body, #document-pdf-root { margin: 0; font-family: "Inter", Arial, sans-serif !important; }',
       'html, body { padding: 0; background: #ffffff; }',
