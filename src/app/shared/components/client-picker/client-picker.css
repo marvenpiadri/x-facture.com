@@ -168,3 +168,22 @@
     max-width: none;
   }
 }
+
+
+/* Compact structured identifiers below the free-form contact/address block. */
+.party-extra-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 2px;
+}
+.party-extra-fields .party-field { min-width: 0; }
+.party-extra-fields .form-input,
+.party-extra-fields .form-select {
+  width: 100%;
+  min-width: 0;
+}
+@media (min-width: 560px) {
+  .party-extra-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .party-extra-fields .party-field:last-child { grid-column: 1 / -1; }
+}
