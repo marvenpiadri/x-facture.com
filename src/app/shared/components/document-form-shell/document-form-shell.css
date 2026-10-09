@@ -809,3 +809,97 @@
     flex: 1;
   }
 }
+
+
+/* Minimal, numbered step headings: number first, title beside it, concise help below. */
+.form-section-heading > div {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 10px;
+  row-gap: 3px;
+  align-items: center;
+  padding-left: 0;
+}
+.form-section-heading > div::before { display: none; }
+.step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid color-mix(in srgb, var(--color-money-green) 35%, var(--color-border));
+  border-radius: 50%;
+  background: var(--color-money-green-light);
+  color: var(--color-money-green-dark);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+  grid-row: 1 / span 2;
+}
+.form-section-heading h3 {
+  align-self: end;
+  font-size: 17px;
+  line-height: 1.2;
+}
+.form-section-heading p {
+  grid-column: 2;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  max-width: 720px;
+}
+.workspace-top-actions { display: none; }
+.parties-inline-step-card { padding: 22px; }
+.parties-inline-grid { gap: 22px; }
+@media (min-width: 901px) {
+  .party-inline-col.seller-col {
+    padding-right: 22px;
+    border-right: 1px solid var(--color-border);
+  }
+}
+.party-extra-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.party-extra-fields .party-field { min-width: 0; }
+.party-extra-fields .form-input,
+.party-extra-fields .form-select { width: 100%; min-width: 0; }
+.footer-note-field {
+  display: grid;
+  gap: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+.footer-note-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--color-text-main);
+  font-size: var(--text-sm);
+  font-weight: 650;
+  cursor: pointer;
+}
+.footer-note-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-money-green);
+}
+.form-footer-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px 0 6px;
+  border-top: 1px solid var(--color-border);
+}
+@media (min-width: 560px) {
+  .party-extra-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .party-extra-fields .party-field:last-child { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .doc-edit-workspace { padding-inline: 12px; }
+  .form-step-card { padding: 16px; }
+  .form-footer-action-bar { justify-content: stretch; }
+  .form-footer-action-bar button { flex: 1 1 100%; justify-content: center; }
+}
