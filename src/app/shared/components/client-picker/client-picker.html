@@ -42,7 +42,7 @@
       <textarea
         class="form-textarea party-details-textarea"
         rows="2"
-        [value]="formatAddressDetails(client())"
+        [value]="displayDetails()"
         (input)="onDetailsChange($any($event.target).value)"
         placeholder="Street, postal code, city, website, and other address details"
       ></textarea>
