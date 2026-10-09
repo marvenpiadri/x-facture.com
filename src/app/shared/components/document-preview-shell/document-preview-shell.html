@@ -16,7 +16,7 @@
         <span class="control-label">Template:</span>
         <div class="pills-capsule">
           <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'modern'" (click)="setTemplate('modern')">Modern</button>
-          <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'classic'" (click)="setTemplate('classic')">Classic</button>
+          <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'classic'" (click)="setTemplate('classic')">Minimal</button>
           <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'bold'" (click)="setTemplate('bold')">Bold</button>
           @if (document().docType === 'receipts') {
             <button type="button" class="pill-btn" [class.active]="selectedTemplate() === 'thermal-80mm'" (click)="setTemplate('thermal-80mm')">80mm Thermal</button>
