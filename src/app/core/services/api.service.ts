@@ -322,7 +322,7 @@ export class ApiService {
                 ? detail['text']
                 : typeof detail['error'] === 'string'
                   ? detail['error']
-                  : JSON.stringify(detail);
+                  : 'The request could not be completed.';
             return path ? `${path}: ${message}` : message;
           }).filter(Boolean)
         : [];
