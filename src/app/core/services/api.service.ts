@@ -249,9 +249,13 @@ export class ApiService {
       })),
       amountPaid: document.depositPaid,
       transactionNature: document.specialFields?.['transactionNature'],
-      paymentMethod: document.specialFields?.['paymentMethod'],
-      iban: document.specialFields?.['iban'],
-      bic: document.specialFields?.['bic'],
+      payment: {
+        meansCode: document.specialFields?.['paymentMethod'] === 'bank-transfer'
+          ? '58'
+          : (document.specialFields?.['paymentMethod'] || '58'),
+        iban: document.specialFields?.['iban'] || undefined,
+        bic: document.specialFields?.['bic'] || undefined
+      },
       buyerReference: document.specialFields?.['buyerReference'],
       sellerSiren: document.specialFields?.['sellerSiren'],
       buyerSiren: document.specialFields?.['buyerSiren'],

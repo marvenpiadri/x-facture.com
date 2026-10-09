@@ -35,16 +35,29 @@ export class DocumentPreviewShellComponent implements OnInit {
   isGeneratingPdf = signal<boolean>(false);
   isGeneratingFacturX = signal<boolean>(false);
   facturXError = signal<string | null>(null);
+  previewError = signal<string | null>(null);
 
   ngOnInit(): void {
-    if (this.document().templateId) this.selectedTemplate.set(this.document().templateId);
-    if (this.document().paperSize) this.selectedPaperSize.set(this.document().paperSize);
-    const output = this.document().specialFields?.['outputFormat'];
-    // Ordinary invoices must not silently turn into Factur-X because of an old saved draft.
-    if (this.document().docType === 'invoices' && output === 'factur-x') {
+    const doc = this.document();
+    if (doc.templateId) this.selectedTemplate.set(doc.templateId);
+    if (doc.paperSize) this.selectedPaperSize.set(doc.paperSize);
+
+    const savedOutput = doc.specialFields?.['outputFormat'];
+    const allowedOutputs: Record<string, string[]> = {
+      invoices: ['pdf', 'cii', 'ubl'],
+      xfacture: ['pdf', 'factur-x', 'cii', 'ubl'],
+      'credit-notes': ['pdf', 'factur-x', 'cii', 'ubl'],
+      'order-x': ['pdf', 'order-x']
+    };
+    const allowed = allowedOutputs[doc.docType] || ['pdf'];
+    if (typeof savedOutput === 'string' && allowed.includes(savedOutput)) {
+      this.selectedOutput.set(savedOutput as 'pdf' | 'factur-x' | 'cii' | 'ubl' | 'order-x');
+    } else if (doc.docType === 'xfacture') {
+      this.selectedOutput.set('factur-x');
+    } else if (doc.docType === 'order-x') {
+      this.selectedOutput.set('order-x');
+    } else {
       this.selectedOutput.set('pdf');
-    } else if (output === 'pdf' || output === 'factur-x' || output === 'cii' || output === 'ubl' || output === 'order-x') {
-      this.selectedOutput.set(output);
     }
   }
 
@@ -53,6 +66,8 @@ export class DocumentPreviewShellComponent implements OnInit {
   onPrint(): void { window.print(); }
 
   async onDownloadPdf(): Promise<void> {
+    this.previewError.set(null);
+    this.facturXError.set(null);
     this.isGeneratingPdf.set(true);
     try {
       const element = document.getElementById('document-pdf-root');
@@ -64,7 +79,7 @@ export class DocumentPreviewShellComponent implements OnInit {
         this.selectedPaperSize() === 'letter' ? 'letter' : 'a4'
       );
     } catch (error) {
-      console.error('PDF generation failed:', error);
+      this.previewError.set(error instanceof Error ? error.message : 'Unable to generate the PDF.');
     } finally {
       this.isGeneratingPdf.set(false);
     }
@@ -82,6 +97,7 @@ export class DocumentPreviewShellComponent implements OnInit {
   async onDownloadFacturX(): Promise<void> {
     const doc = this.document();
     this.facturXError.set(null);
+    this.previewError.set(null);
 
     if (!['xfacture', 'invoices', 'credit-notes'].includes(doc.docType)) return;
 
@@ -155,7 +171,7 @@ export class DocumentPreviewShellComponent implements OnInit {
   downloadStructured(format: 'ubl' | 'cii' | 'order-x'): void {
     const doc = this.document();
     if (format === 'order-x' && doc.docType !== 'order-x') return;
-    if (format !== 'order-x' && doc.docType !== 'invoices' && doc.docType !== 'credit-notes') return;
+    if (format !== 'order-x' && !['invoices', 'xfacture', 'credit-notes'].includes(doc.docType)) return;
     this.structuredInvoiceService.download(doc, format);
   }
 

@@ -48,7 +48,9 @@
 .download-btn { background-color: var(--color-money-green); color: #ffffff; border-color: var(--color-money-green); }
 .download-btn:hover { background-color: var(--color-money-green-dark); }
 .facturx-btn { background-color: var(--color-surface); color: var(--color-money-green); border-color: var(--color-money-green-border); }
-.facturx-btn:hover { background-color: var(--color-money-green-light); }\n\n.preview-inline-error { display: flex; align-items: center; gap: 8px; width: min(1100px, calc(100% - 40px)); margin: 14px auto 0; padding: 10px 14px; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); background: rgba(239, 68, 68, 0.08); color: #b91c1c; font-size: var(--text-sm); font-weight: 600; }
+.facturx-btn:hover { background-color: var(--color-money-green-light); }
+
+.preview-inline-error { display: flex; align-items: center; gap: 8px; width: min(1100px, calc(100% - 40px)); margin: 14px auto 0; padding: 10px 14px; border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); background: rgba(239, 68, 68, 0.08); color: #b91c1c; font-size: var(--text-sm); font-weight: 600; }
 
 .download-spinner {
   width: 15px;
@@ -96,4 +98,52 @@
   .download-choice-group .btn-action { flex: 1; min-width: 0; }
 }
 
-.output-control{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border-color);border-radius:9px;padding:0 8px;background:var(--surface-color);height:38px}.output-control>.material-icons{font-size:18px;color:var(--text-secondary)}.output-select{border:0;background:transparent;color:var(--text-primary);font:inherit;font-size:12px;font-weight:600;height:34px;outline:none;cursor:pointer}
+.output-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  height: 38px;
+  padding: 0 8px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+.output-control > .material-icons { font-size: 18px; color: var(--color-text-secondary); }
+.output-select {
+  min-width: 0;
+  max-width: 180px;
+  height: 34px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--color-text-main);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.preview-toolbar button:focus-visible,
+.output-select:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+.doc-title-lockup { min-width: 0; flex-wrap: wrap; }
+.doc-client-tag { overflow-wrap: anywhere; }
+@media (max-width: 1024px) {
+  .preview-toolbar { gap: 12px; padding: 12px 16px; }
+  .toolbar-left, .toolbar-center, .toolbar-right { width: 100%; flex-wrap: wrap; gap: 8px; }
+  .toolbar-center { justify-content: flex-start; }
+  .toolbar-right { justify-content: flex-start; }
+}
+@media (max-width: 680px) {
+  .toolbar-left { align-items: flex-start; flex-direction: column; }
+  .doc-title-lockup { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .control-group { align-items: flex-start; flex-direction: column; }
+  .pills-capsule { max-width: 100%; flex-wrap: wrap; }
+  .toolbar-right > .btn-action,
+  .toolbar-right > .output-control { flex: 1 1 auto; }
+  .output-control { justify-content: center; }
+  .output-select { max-width: 100%; }
+  .preview-stage-container { overflow-x: auto; justify-content: flex-start; padding: 20px 12px 40px; }
+}

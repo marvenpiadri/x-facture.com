@@ -1864,7 +1864,63 @@
 }
 
 
-/* Minimal, numbered step headings: number first, title beside it, concise help below. */
+/* Preserve the intentionally hidden sample-data shortcut in production forms. */
+.workspace-top-actions { display: none; }
+
+/* Step-based form UX: consistent section hierarchy and responsive navigation. */
+.form-step-nav {
+  position: sticky;
+  top: 10px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  overflow-x: auto;
+  padding: 7px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  scrollbar-width: thin;
+}
+.form-step-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 5px 12px 5px 7px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
+}
+.form-step-nav a:hover,
+.form-step-nav a:focus-visible {
+  color: var(--color-text-main);
+  border-color: var(--color-border);
+  background: var(--color-surface-hover);
+  outline: none;
+}
+.nav-step-number {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid color-mix(in srgb, var(--color-money-green) 35%, var(--color-border));
+  border-radius: 50%;
+  background: var(--color-money-green-light);
+  color: var(--color-money-green-dark);
+  font-size: 11px;
+  font-weight: 800;
+}
+.form-step-section { scroll-margin-top: 76px; }
 .form-section-heading > div {
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr);
@@ -1890,6 +1946,7 @@
 }
 .form-section-heading h3 {
   align-self: end;
+  margin: 0;
   font-size: 17px;
   line-height: 1.2;
 }
@@ -1897,16 +1954,35 @@
   grid-column: 2;
   margin: 0;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.45;
   max-width: 720px;
 }
-.workspace-top-actions { display: none; }
-.parties-inline-step-card { padding: 22px; }
-.parties-inline-grid { gap: 22px; }
+.parties-inline-step-card {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.parties-inline-grid { gap: 18px; }
+.party-inline-col {
+  min-width: 0;
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
 @media (min-width: 901px) {
   .party-inline-col.seller-col {
-    padding-right: 22px;
+    padding-right: 20px;
     border-right: 1px solid var(--color-border);
+  }
+}
+@media (max-width: 900px) {
+  .parties-inline-grid { grid-template-columns: minmax(0, 1fr); }
+  .party-inline-col.seller-col {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-border);
   }
 }
 .party-extra-fields {
@@ -1914,9 +1990,14 @@
   grid-template-columns: minmax(0, 1fr);
   gap: 12px;
 }
-.party-extra-fields .party-field { min-width: 0; }
+.party-extra-fields .party-field,
 .party-extra-fields .form-input,
-.party-extra-fields .form-select { width: 100%; min-width: 0; }
+.party-extra-fields .form-select { min-width: 0; width: 100%; }
+@media (min-width: 560px) {
+  .party-extra-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .party-extra-fields .party-field:last-child { grid-column: 1 / -1; }
+}
+.party-details-textarea { min-height: 132px; }
 .footer-note-field {
   display: grid;
   gap: 10px;
@@ -1946,45 +2027,24 @@
   padding: 16px 0 6px;
   border-top: 1px solid var(--color-border);
 }
-@media (min-width: 560px) {
-  .party-extra-fields { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .party-extra-fields .party-field:last-child { grid-column: 1 / -1; }
-}
+.form-footer-action-bar button { min-height: 40px; }
 @media (max-width: 560px) {
   .doc-edit-workspace { padding-inline: 12px; }
-  .form-step-card { padding: 16px; }
-  .form-footer-action-bar { justify-content: stretch; }
+  .form-step-card:not(.parties-inline-step-card) { padding: 16px; }
+  .form-step-nav { top: 6px; }
+  .form-step-nav a { gap: 6px; padding-right: 9px; }
+  .form-footer-action-bar {
+    position: sticky;
+    bottom: 8px;
+    z-index: 6;
+    justify-content: stretch;
+    margin: 0 -4px;
+    padding: 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--color-surface) 94%, transparent);
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-lg);
+  }
   .form-footer-action-bar button { flex: 1 1 100%; justify-content: center; }
-}
-
-.party-details-textarea { min-height: 132px; }
-
-
-/* Seller and buyer remain side by side, but read as two independent cards. */
-.parties-inline-step-card {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.parties-inline-grid { gap: 18px; }
-.party-inline-col {
-  min-width: 0;
-  padding: 20px;
-  border: 1px solid var(--color-border);
-  border-radius: 14px;
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-}
-@media (min-width: 901px) {
-  .party-inline-col.seller-col {
-    padding-right: 20px;
-    border-right: 1px solid var(--color-border);
-  }
-}
-@media (max-width: 900px) {
-  .party-inline-col.seller-col {
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--color-border);
-  }
 }

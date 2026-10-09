@@ -40,8 +40,17 @@
     </div>
   }
 
+  <nav class="form-step-nav" aria-label="Form sections">
+    <a href="#form-step-details"><span class="nav-step-number">1</span><span>Details</span></a>
+    <a href="#form-step-parties"><span class="nav-step-number">2</span><span>Seller & buyer</span></a>
+    @if (document().hasPricing) {
+      <a href="#form-step-items"><span class="nav-step-number">3</span><span>Items & totals</span></a>
+    }
+    <a href="#form-step-notes"><span class="nav-step-number">{{ document().hasPricing ? '4' : '3' }}</span><span>Notes & payment</span></a>
+  </nav>
+
   <!-- Step 1: Document Details -->
-  <section class="form-step-section">
+  <section class="form-step-section" id="form-step-details">
     <div class="form-section-heading">
       <div>
         <span class="step-number" aria-hidden="true">1</span>
@@ -87,11 +96,11 @@
             <label class="field-label">Output format</label>
             <select class="form-select" [value]="selectedOutputFormat()" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
               @if (config().routeSegment === 'xfacture' || config().routeSegment === 'credit-notes') {
-                <option value="factur-x">Factur-X PDF (PDF/A-3b)</option>
+                <option value="factur-x">Factur-X PDF</option>
               }
               <option value="pdf">Standard PDF</option>
               <option value="cii">CII XML</option>
-              @if (config().routeSegment === 'invoices' || config().routeSegment === 'xfacture') { <option value="ubl">UBL 2.1 XML</option> }
+              @if (config().routeSegment === 'invoices' || config().routeSegment === 'credit-notes' || config().routeSegment === 'xfacture') { <option value="ubl">UBL 2.1 XML</option> }
             </select>
           </div>
         }
@@ -102,43 +111,13 @@
         </div>
       </div>
 
-      @if (config().routeSegment === 'xfacture') {
+      @if (config().routeSegment === 'xfacture' || (config().routeSegment === 'credit-notes' && selectedOutputFormat() === 'factur-x')) {
         <div class="facturx-section-divider">
           <div class="facturx-divider-header">
-            <span class="facturx-subheading">Factur-X Electronic Invoicing Attributes</span>
-            <span class="facturx-hint-text">Franco-German hybrid e-invoicing standard (EN 16931)</span>
+            <span class="facturx-subheading">Electronic invoice details</span>
+            <span class="facturx-hint-text">Optional buyer reference and delivery details for the electronic invoice.</span>
           </div>
           <div class="form-meta-grid">
-            <div class="form-field-item">
-              <label class="field-label">Nature of transaction (BT-23)</label>
-              <select class="form-select" [value]="document().specialFields?.['transactionNature'] || 'services'" (change)="onSpecialFieldChange('transactionNature', $any($event.target).value)">
-                <option value="services">Services (S1)</option>
-                <option value="goods">Goods (B1)</option>
-                <option value="goods-and-services">Goods & Services (M1)</option>
-              </select>
-            </div>
-
-            <div class="form-field-item">
-              <label class="field-label">Payment method</label>
-              <select class="form-select" [value]="document().specialFields?.['paymentMethod'] || 'bank-transfer'" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
-                <option value="bank-transfer">Bank transfer (Virement)</option>
-                <option value="direct-debit">SEPA Direct debit</option>
-                <option value="card">Bank card</option>
-                <option value="cash">Cash</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div class="form-field-item">
-              <label class="field-label">IBAN</label>
-              <input type="text" class="form-input font-mono" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="FR76 3000..." autocomplete="off" />
-            </div>
-
-            <div class="form-field-item">
-              <label class="field-label">BIC / SWIFT</label>
-              <input type="text" class="form-input font-mono" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="BNPAFRPPXXX" autocomplete="off" />
-            </div>
-
             <div class="form-field-item">
               <label class="field-label">Buyer Reference / Service Code</label>
               <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Chorus Pro / buyer service" />
@@ -147,6 +126,24 @@
             <div class="form-field-item">
               <label class="field-label">Delivery Date</label>
               <input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">Payment method</label>
+              <select class="form-select" [value]="document().specialFields?.['paymentMethod'] === 'bank-transfer' ? '58' : (document().specialFields?.['paymentMethod'] || '58')" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
+                <option value="58">SEPA bank transfer</option>
+                <option value="30">Bank transfer</option>
+                <option value="48">Card</option>
+                <option value="10">Cash</option>
+                <option value="ZZZ">Other</option>
+              </select>
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">IBAN</label>
+              <input type="text" class="form-input" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="Enter account IBAN" autocomplete="off" />
+            </div>
+            <div class="form-field-item">
+              <label class="field-label">BIC / SWIFT (optional)</label>
+              <input type="text" class="form-input" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="e.g. ABCDMAMR" autocomplete="off" />
             </div>
           </div>
         </div>
@@ -169,7 +166,7 @@
             </div>
             <div class="form-field-item">
               <label class="field-label">Order-X Output</label>
-              <select class="form-select" [value]="document().specialFields?.['outputFormat'] || 'order-x'" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
+              <select class="form-select" [value]="selectedOutputFormat()" (change)="onSpecialFieldChange('outputFormat', $any($event.target).value)">
                 <option value="order-x">Order-X PDF (PDF/A-3b)</option>
                 <option value="pdf">Standard PDF</option>
               </select>
@@ -181,7 +178,7 @@
   </section>
 
   <!-- Step 2: Seller & Buyer (inline) -->
-  <section class="form-step-section">
+  <section class="form-step-section" id="form-step-parties">
     <div class="form-section-heading">
       <div>
         <span class="step-number" aria-hidden="true">2</span>
@@ -264,14 +261,13 @@
                 <div class="logo-field-header">
                   <div>
                     <label class="field-label">Company Logo</label>
-                    <span class="field-sublabel">PNG, JPEG or WebP · embedded in generated PDF</span>
                   </div>
                   <div class="logo-actions">
                     @if (document().company.logoUrl) {
                       <img [src]="document().company.logoUrl" alt="Logo preview" class="company-logo-preview" />
                     }
                     <label class="logo-upload-button">
-                      {{ document().company.logoUrl ? 'Replace Logo' : 'Upload Logo' }}
+                      {{ document().company.logoUrl ? 'Replace' : 'Upload' }}
                       <input type="file" accept="image/png,image/jpeg,image/webp" (change)="onCompanyLogoSelected($event)" hidden />
                     </label>
                     @if (document().company.logoUrl) {
@@ -307,7 +303,7 @@
 
   <!-- Step 3: Items & Totals -->
   @if (document().hasPricing) {
-    <section class="form-step-section">
+    <section class="form-step-section" id="form-step-items">
       <div class="form-section-heading">
         <div>
           <span class="step-number" aria-hidden="true">3</span>
@@ -325,107 +321,6 @@
           (itemsChange)="onItemsChange($event)"
           (lineLayoutModeChange)="onLineLayoutModeChange($event)"
         ></app-line-items-table>
-      </div>
-
-      <!-- 1. Invoice Discounts Card matching getfacturx.com -->
-      <div class="form-step-card invoice-discounts-card">
-        <div class="card-section-header-row">
-          <div>
-            <h4 class="card-subheading">Invoice Discounts</h4>
-            <p class="card-subheading-desc">
-              Discounts on the whole invoice, such as a volume or loyalty rebate. A discount on a single item belongs on that line.
-            </p>
-          </div>
-          <button type="button" class="btn-add-discount" (click)="addInvoiceDiscount()">
-            <span class="material-icons btn-icon">add</span>
-            <span>Add Discount</span>
-          </button>
-        </div>
-
-        @if ((document().discounts?.length || 0) > 0) {
-          <div class="discounts-list-stack">
-            @for (disc of document().discounts; track disc.id; let di = $index) {
-              <div class="discount-row-box">
-                <div class="discount-field-col flex-2">
-                  <label class="field-label">Reason</label>
-                  <input
-                    type="text"
-                    class="form-input"
-                    [value]="disc.reason"
-                    (input)="updateInvoiceDiscount(di, 'reason', $any($event.target).value)"
-                    placeholder="e.g. Loyalty discount"
-                  />
-                </div>
-
-                <div class="discount-field-col flex-1">
-                  <label class="field-label">Discount</label>
-                  <div class="discount-combined-input">
-                    <input
-                      type="number"
-                      class="form-input"
-                      [value]="disc.value"
-                      (input)="updateInvoiceDiscount(di, 'value', $any($event.target).value)"
-                      min="0"
-                      step="any"
-                      placeholder="0"
-                    />
-                    <select
-                      class="form-select discount-unit-select"
-                      [value]="disc.type"
-                      (change)="updateInvoiceDiscount(di, 'type', $any($event.target).value)"
-                    >
-                      <option value="percent">%</option>
-                      <option value="fixed">{{ currencySymbol() }}</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="discount-field-col flex-1-5">
-                  <label class="field-label">Applies to</label>
-                  <select
-                    class="form-select"
-                    [value]="disc.appliesTo"
-                    (change)="updateInvoiceDiscount(di, 'appliesTo', $any($event.target).value)"
-                  >
-                    <option value="all">All items</option>
-                    @for (rate of availableTaxRatesForDiscount(); track rate) {
-                      <option [value]="rate">Standard VAT {{ rate }}%</option>
-                    }
-                  </select>
-                </div>
-
-                <div class="discount-field-col flex-1">
-                  <label class="field-label">Amount</label>
-                  <input
-                    type="text"
-                    class="form-input amount-auto-field"
-                    [value]="getComputedDiscountAmount(di)"
-                    readonly
-                    tabindex="-1"
-                    placeholder="auto"
-                  />
-                </div>
-
-                <div class="discount-action-col">
-                  <button
-                    type="button"
-                    class="btn-delete-discount"
-                    (click)="removeInvoiceDiscount(di)"
-                    title="Remove discount"
-                    aria-label="Remove discount"
-                  >
-                    <span class="material-icons">delete_outline</span>
-                  </button>
-                </div>
-              </div>
-            }
-          </div>
-        } @else {
-          <div class="no-discounts-state">
-            <span class="no-discounts-text">No document-level discounts applied.</span>
-            <button type="button" class="btn-link-action" (click)="addInvoiceDiscount()">+ Add one now</button>
-          </div>
-        }
       </div>
 
       <!-- 2. Delivery / Shipping (Expandable Optional Menu with Arrow) -->
@@ -829,94 +724,91 @@
         }
       </div>
 
-      <!-- 3. Final Calculations & Tax Breakdown (Merged Calculator Card) -->
-      <div class="form-step-card totals-calculator-card">
-        <div class="card-section-header-row">
+      <!-- Lightweight final calculation -->
+      <div class="totals-summary" style="padding: 8px 0 4px; border-top: 1px solid var(--border-color, #e5e7eb);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px;">
           <div>
-            <h4 class="card-subheading">
-              Final Calculations & Tax Breakdown
-              <span class="subheading-muted">(auto-calculated)</span>
-            </h4>
-            <p class="card-subheading-desc">
-              Summary of taxable net amounts, VAT tiers, and final payable total.
-            </p>
+            <h4 style="margin:0; font-size:1.05rem; font-weight:650;">Summary</h4>
+            <p style="margin:4px 0 0; color:var(--text-muted, #6b7280); font-size:.875rem;">Discounts, taxes and final amount</p>
           </div>
-          <div class="calculator-badge">
-            <span class="material-icons calc-badge-icon">calculate</span>
-            <span>Live Calculation</span>
-          </div>
+          <button type="button" class="btn-add-discount" (click)="addInvoiceDiscount()">
+            <span class="material-icons btn-icon">add</span><span>Add discount</span>
+          </button>
         </div>
 
-        <!-- Tax Breakdown Section -->
-        <div class="calc-tax-section">
-          <div class="calc-section-label-row">
-            <span class="calc-section-label">Tax Breakdown</span>
-            <span class="calc-section-hint">Calculated across line items and billable delivery</span>
+        <div style="display:grid; gap:10px; max-width:760px;">
+          <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
+            <span>Subtotal before discounts</span>
+            <span>{{ totals().subtotal | number:'1.2-2' }} {{ document().currency }}</span>
+          </div>
+          @if ((document().discounts?.length || 0) > 0) {
+            <div style="padding:10px 0; border-top:1px solid var(--border-color, #e5e7eb); border-bottom:1px solid var(--border-color, #e5e7eb);">
+              <div style="font-size:.8rem; font-weight:650; color:var(--text-muted, #6b7280); margin-bottom:8px;">INVOICE DISCOUNTS</div>
+              @for (disc of document().discounts; track disc.id; let di = $index) {
+                <div style="display:grid; grid-template-columns:minmax(120px,1fr) minmax(130px,auto) auto; align-items:center; gap:10px; padding:5px 0;">
+                  <input type="text" class="form-input" style="min-width:0; padding:7px 9px;" [value]="disc.reason" (input)="updateInvoiceDiscount(di, 'reason', $any($event.target).value)" placeholder="Discount reason" aria-label="Discount reason" />
+                  <div style="display:flex; align-items:center; gap:6px;">
+                    <input type="number" class="form-input" style="width:88px; padding:7px 9px;" [value]="disc.value" (input)="updateInvoiceDiscount(di, 'value', $any($event.target).value)" min="0" step="any" aria-label="Discount value" />
+                    <select class="form-select" style="width:66px; padding:7px 5px;" [value]="disc.type" (change)="updateInvoiceDiscount(di, 'type', $any($event.target).value)" aria-label="Discount unit">
+                      <option value="percent">%</option>
+                      <option value="fixed">{{ currencySymbol() }}</option>
+                    </select>
+                    <select class="form-select" style="max-width:145px; padding:7px 5px;" [value]="disc.appliesTo" (change)="updateInvoiceDiscount(di, 'appliesTo', $any($event.target).value)" aria-label="Discount applies to">
+                      <option value="all">All items</option>
+                      @for (rate of availableTaxRatesForDiscount(); track rate) {
+                        <option [value]="rate">{{ rate }}% VAT</option>
+                      }
+                    </select>
+                  </div>
+                  <button type="button" class="btn-delete-discount" (click)="removeInvoiceDiscount(di)" title="Remove discount" aria-label="Remove discount"><span class="material-icons">close</span></button>
+                </div>
+                <div style="text-align:right; color:var(--text-muted, #6b7280); font-size:.8rem;">Discount: −{{ getComputedDiscountAmount(di) }}</div>
+              }
+            </div>
+          }
+
+          @if ((document().deliveryDiscount || 0) > 0) {
+            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
+              <span>Delivery discount</span>
+              <span>−{{ document().deliveryDiscount | number:'1.2-2' }} {{ document().currency }}</span>
+            </div>
+          }
+
+          <div style="display:flex; justify-content:space-between; gap:16px; padding-top:10px; border-top:1px solid var(--border-color, #e5e7eb);">
+            <span>Net total</span>
+            <strong>{{ totals().netTotal | number:'1.2-2' }} {{ document().currency }}</strong>
           </div>
 
-          <div class="calc-tax-table">
-            <div class="calc-tax-head-row">
-              <span class="col-tax-cat">Category</span>
-              <span class="col-tax-rate text-center">Tax Rate</span>
-              <span class="col-tax-base text-right">Taxable Net Base</span>
-              <span class="col-tax-amt text-right">Tax Amount</span>
+          @for (tb of totals().taxBreakdown; track tb.taxRate) {
+            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280); font-size:.9rem;">
+              <span>VAT {{ tb.taxRate }}% <span style="font-size:.8rem;">({{ tb.netAmount | number:'1.2-2' }} taxable)</span></span>
+              <span>+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
             </div>
+          }
 
-            @for (tb of totals().taxBreakdown; track tb.taxRate) {
-              <div class="calc-tax-data-row">
-                <span class="col-tax-cat font-medium">{{ tb.category }}</span>
-                <span class="col-tax-rate text-center">
-                  <span class="tax-rate-chip">{{ tb.taxRate }}%</span>
-                </span>
-                <span class="col-tax-base text-right font-mono">{{ tb.netAmount | number:'1.2-2' }} {{ document().currency }}</span>
-                <span class="col-tax-amt text-right font-mono font-semibold tax-color">+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
-              </div>
-            }
-          </div>
-        </div>
-
-        <!-- Calculator Result Screen (Net + VAT = Grand Total) -->
-        <div class="calculator-result-screen">
-          <div class="calc-tape-strip">
-            <!-- Total Net -->
-            <div class="calc-tape-item">
-              <span class="tape-label">Total (Net)</span>
-              <span class="tape-sub-desc">Taxable subtotal</span>
-              <span class="tape-value font-mono">{{ totals().netTotal | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
+          @if (totals().netShipping > 0) {
+            <div style="display:flex; justify-content:space-between; gap:16px; color:var(--text-muted, #6b7280);">
+              <span>Shipping (net)</span>
+              <span>{{ totals().netShipping | number:'1.2-2' }} {{ document().currency }}</span>
             </div>
+          }
 
-            <!-- Operator + -->
-            <div class="calc-tape-operator" aria-hidden="true">+</div>
-
-            <!-- Total VAT -->
-            <div class="calc-tape-item">
-              <span class="tape-label">Total (VAT)</span>
-              <span class="tape-sub-desc">Combined tax amount</span>
-              <span class="tape-value font-mono tax-val">+{{ totals().taxAmount | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
-            </div>
-
-            <!-- Operator = -->
-            <div class="calc-tape-operator" aria-hidden="true">=</div>
-
-            <!-- Grand Total -->
-            <div class="calc-tape-item grand-result-card">
-              <div class="grand-header-tag">Final Total Due</div>
-              <span class="tape-label grand-label">Grand Total</span>
-              <span class="tape-value grand-value font-mono">{{ totals().total | number:'1.2-2' }} <small>{{ document().currency }}</small></span>
-            </div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; gap:16px; margin-top:6px; padding-top:15px; border-top:2px solid var(--border-color, #d1d5db);">
+            <span style="font-size:1rem; font-weight:650;">Total due</span>
+            <strong style="font-size:clamp(1.5rem, 3vw, 2rem); line-height:1.15; letter-spacing:-.035em;">{{ totals().total | number:'1.2-2' }} <span style="font-size:.85rem; font-weight:500; letter-spacing:0;">{{ document().currency }}</span></strong>
           </div>
         </div>
       </div>
     </section>
   }
 
-  <!-- Step 4: Notes & Payment Information -->
-  <section class="form-step-section">
+  <!-- Final step: Notes & Payment Information -->
+  <section class="form-step-section" id="form-step-notes">
     <div class="form-section-heading">
       <div>
         <span class="step-number" aria-hidden="true">{{ document().hasPricing ? '4' : '3' }}</span>
         <h3>Notes & payment information</h3>
-        <p>Add remittance information, bank details, and customer instructions.</p>
+        <p>Add customer-facing notes, payment instructions, and an optional footer.</p>
       </div>
     </div>
     <div class="form-step-card notes-step-card" [class.is-expanded]="notesExpanded()">
@@ -945,10 +837,10 @@
                   {{ document().notes ? (document().notes!.length > 50 ? (document().notes!.slice(0, 50) + '…') : document().notes) : (document().bankDetails ? 'Bank remittance specified' : 'Custom footer text enabled') }}
                 </span>
               } @else {
-                <span>Public customer notes, payment terms, bank wire remittance (IBAN/BIC), and legal footer text.</span>
+                <span>Customer notes, payment terms, flexible bank or payment instructions, and legal footer text.</span>
               }
             } @else {
-              <span>Public customer notes, payment terms, bank wire remittance (IBAN/BIC), and legal footer text.</span>
+              <span>Customer notes, payment terms, flexible bank or payment instructions, and legal footer text.</span>
             }
           </p>
         </div>
@@ -975,8 +867,9 @@
               <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms: Due within 30 days. Thank you for your business."></textarea>
             </div>
             <div class="terms-field-item">
-              <label class="field-label">Bank & Wire Transfer Remittance</label>
-              <textarea class="form-textarea font-mono" rows="3" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank Name: BNP Paribas&#10;IBAN: FR76 3000 6000 0112 3456 7890 189&#10;BIC: BNPAFRPPXXX"></textarea>
+              <label class="field-label">Payment details / instructions</label>
+              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details."></textarea>
+              <span class="field-help">Printed as entered in the PDF. It is not automatically converted into structured bank-account data in the embedded XML.</span>
             </div>
             <div class="footer-note-field">
               <label class="footer-note-toggle">
@@ -997,7 +890,6 @@
   <!-- Sticky / Bottom Action Bar -->
   <div class="form-footer-action-bar">
     <button type="button" class="btn-secondary" (click)="triggerSave()"><span class="material-icons btn-icon">save</span><span>Save Draft</span></button>
-    <button type="button" class="btn-secondary" (click)="triggerSaveAndPreview()"><span class="material-icons btn-icon">print</span><span>Print / PDF</span></button>
     <button type="button" class="btn-primary" (click)="triggerSaveAndPreview()"><span>Continue to Preview</span><span class="material-icons btn-icon">arrow_forward</span></button>
   </div>
 

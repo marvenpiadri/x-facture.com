@@ -205,8 +205,18 @@ export class DocumentFormShellComponent implements OnInit {
   selectedOutputFormat(): string {
     const route = this.config().routeSegment;
     const requested = this.document().specialFields?.['outputFormat'];
-    if (route === 'invoices') return ['pdf', 'cii', 'ubl'].includes(requested) ? requested : 'pdf';
-    return requested || (route === 'xfacture' ? 'factur-x' : route === 'order-x' ? 'order-x' : 'pdf');
+    const allowedOutputs: Record<string, string[]> = {
+      invoices: ['pdf', 'cii', 'ubl'],
+      xfacture: ['factur-x', 'pdf', 'cii', 'ubl'],
+      'credit-notes': ['factur-x', 'pdf', 'cii', 'ubl'],
+      'order-x': ['order-x', 'pdf']
+    };
+    if (typeof requested === 'string' && (allowedOutputs[route] || ['pdf']).includes(requested)) {
+      return requested;
+    }
+    if (route === 'xfacture') return 'factur-x';
+    if (route === 'order-x') return 'order-x';
+    return 'pdf';
   }
 
   totals = computed(() => {
