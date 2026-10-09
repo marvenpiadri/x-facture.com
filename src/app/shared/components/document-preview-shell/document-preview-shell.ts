@@ -174,10 +174,7 @@ export class DocumentPreviewShellComponent implements OnInit {
     // invoice. This keeps the HTML payload small while embedding real font data
     // instead of relying on the PDF server to access the user's font cache.
     const glyphs = Array.from(new Set(
-      (documentText || 'Invoice')
-        .replace(/\s+/g, ' ')
-        .trim()
-        .split('')
+      Array.from((documentText || 'Invoice').replace(/\s+/g, ' ').trim())
     )).join('').slice(0, 1800);
     const families = 'family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600';
     const stylesheetUrl = 'https://fonts.googleapis.com/css2?' + families +
@@ -185,14 +182,9 @@ export class DocumentPreviewShellComponent implements OnInit {
 
     try {
       await document.fonts.ready;
-      const response = await fetch(stylesheetUrl, {
-        headers: {
-          // Google Fonts returns browser-optimized WOFF2 only when given a
-          // modern browser user agent. A default fetch UA can return formats
-          // that the previous WOFF2-only parser silently failed to find.
-          'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
-        }
-      });
+      // Browser fetch automatically sends the browser's real user agent, so
+      // Google Fonts returns the matching WOFF2 assets for this user's browser.
+      const response = await fetch(stylesheetUrl);
       if (!response.ok) throw new Error('Google Fonts stylesheet request failed.');
       let css = await response.text();
       const fontUrls = [...new Set(Array.from(
@@ -203,11 +195,7 @@ export class DocumentPreviewShellComponent implements OnInit {
 
       const embedded = await Promise.all(fontUrls.map(async url => {
         try {
-          const fontResponse = await fetch(url, {
-            headers: {
-              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36'
-            }
-          });
+          const fontResponse = await fetch(url);
           if (!fontResponse.ok) return null;
           const bytes = new Uint8Array(await fontResponse.arrayBuffer());
           let binary = '';
