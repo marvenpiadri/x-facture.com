@@ -392,7 +392,7 @@ export function reconcilePartyIdentifiersForCountryChange(existing: PartyTaxIden
   const globalTypes = new Set(['GLN', 'DUNS']);
   for (const identifier of existing) {
     if (identifier.custom || identifier.type === 'CUSTOM') {
-      const archivedCountry = (identifier.countryCode || '').trim().toUpperCase();
+      const archivedCountry = (identifier.countryCode || sourceCountry).trim().toUpperCase();
       const originalDefinition = identifier.originalType && archivedCountry === targetCountry
         ? targetByType.get(identifier.originalType)
         : undefined;
@@ -407,6 +407,10 @@ export function reconcilePartyIdentifiersForCountryChange(existing: PartyTaxIden
         };
         delete restored.originalType;
         reconciled.push(restored);
+      } else if (countryChanged && archivedCountry && archivedCountry !== targetCountry) {
+        const oldLabel = identifier.label || 'Custom identifier';
+        const archivedLabel = oldLabel.endsWith(`(${archivedCountry})`) ? oldLabel : `${oldLabel} (${archivedCountry})`;
+        reconciled.push({ ...identifier, label: archivedLabel, countryCode: archivedCountry, custom: true });
       } else {
         reconciled.push({ ...identifier, countryCode: identifier.countryCode || sourceCountry || undefined });
       }
