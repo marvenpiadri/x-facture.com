@@ -1013,21 +1013,21 @@
             <span class="material-icons accordion-icon">sticky_note_2</span>
             <h4 class="card-subheading">Payment Details</h4>
             <span class="badge-optional">Optional</span>
-            @if (hasNotesData()) {
+            @if (document().bankDetails) {
               <span class="badge-active-data">Active</span>
             }
           </div>
           <p class="card-subheading-desc">
             @if (!notesExpanded()) {
-              @if (hasNotesData()) {
+              @if (document().bankDetails) {
                 <span class="summary-highlight">
-                  {{ document().notes ? (document().notes!.length > 50 ? (document().notes!.slice(0, 50) + '…') : document().notes) : (document().bankDetails ? 'Bank remittance specified' : 'Payment details specified') }}
+                  {{ document().bankDetails!.length > 50 ? (document().bankDetails!.slice(0, 50) + '…') : document().bankDetails }}
                 </span>
               } @else {
                 <span>Payment method and bank or payment instructions.</span>
               }
             } @else {
-              <span>Customer notes, payment terms, flexible bank or payment instructions, and legal footer text.</span>
+              <span>Bank details and payment instructions, printed as entered.</span>
             }
           </p>
         </div>
@@ -1040,7 +1040,7 @@
             [attr.aria-expanded]="notesExpanded()"
             aria-label="Toggle Payment details"
           >
-            <span class="toggle-cta-text">{{ notesExpanded() ? 'Collapse' : (hasNotesData() ? 'Edit payment details' : 'Add payment details') }}</span>
+            <span class="toggle-cta-text">{{ notesExpanded() ? 'Collapse' : (document().bankDetails ? 'Edit payment details' : 'Add payment details') }}</span>
             <span class="material-icons chevron-icon" [class.rotated]="notesExpanded()">expand_more</span>
           </button>
         </div>
