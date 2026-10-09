@@ -160,23 +160,11 @@
       <!-- Signature header: brand anchored top-left, document identity and dates aligned right. -->
       <header class="doc-header-block">
         <div class="doc-header-left">
-          <div class="brand-lockup">
-            @if (document().company.logoUrl) {
+          @if (document().company.logoUrl) {
+            <div class="brand-lockup">
               <img [src]="document().company.logoUrl" class="document-brand-logo" alt="Company logo" />
-            } @else if (document().company.name) {
-              <div class="document-brand-monogram" aria-hidden="true">{{ document().company.name.substring(0, 1) }}</div>
-            }
-            <div class="document-brand-copy">
-              @if (document().company.name) {
-                <div class="document-brand-name">{{ document().company.name }}</div>
-              }
-              @if (document().company.website) {
-                <div class="document-brand-detail">{{ document().company.website }}</div>
-              } @else if (document().company.email) {
-                <div class="document-brand-detail">{{ document().company.email }}</div>
-              }
             </div>
-          </div>
+          }
         </div>
 
         <div class="doc-meta-side">
