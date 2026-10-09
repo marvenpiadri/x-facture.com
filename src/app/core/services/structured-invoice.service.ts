@@ -157,7 +157,7 @@ export class StructuredInvoiceService {
   private globalIdentifiers(party: DocumentParty): PartyTaxIdentifier[] {
     const legalId = this.legalIdentifier(party);
     return this.partyIdentifiers(party).filter(item =>
-      Boolean(item.schemeId && /^\\d{4}$/.test(item.schemeId) && item.value?.trim()) &&
+      Boolean(item.schemeId && item.schemeId.length === 4 && [...item.schemeId].every(char => char >= '0' && char <= '9') && item.value?.trim()) &&
       item.id !== legalId?.id &&
       ['0009', '0060', '0088'].includes(item.schemeId!)
     );
