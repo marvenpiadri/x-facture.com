@@ -160,7 +160,7 @@ export class StructuredInvoiceService {
     return '<cac:Party>' +
       (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
       '<cac:PartyName><cbc:Name>' + this.esc(name) + '</cbc:Name></cac:PartyName>' +
-      '<cac:PostalAddress>'
+      '<cac:PostalAddress>' +
       (party.address ? '<cbc:StreetName>' + this.esc(party.address) + '</cbc:StreetName>' : '') +
       (party.city ? '<cbc:CityName>' + this.esc(party.city) + '</cbc:CityName>' : '') +
       (party.postalCode ? '<cbc:PostalZone>' + this.esc(party.postalCode) + '</cbc:PostalZone>' : '') +
