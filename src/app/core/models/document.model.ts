@@ -21,6 +21,8 @@ export interface PartyTaxIdentifier {
   value: string;
   /** ISO 6523 ICD code only when this identifier is a legal-entity identifier for a supported syntax. */
   schemeId?: string;
+  /** Country whose registry defines this identifier; retained when switching jurisdictions. */
+  countryCode?: string;
   custom?: boolean;
 }
 
