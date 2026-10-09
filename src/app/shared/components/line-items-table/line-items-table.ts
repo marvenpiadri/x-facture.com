@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { DocumentLineItem, LineLayoutMode } from '../../../core/models/document.model';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService } from '../../../core/services/calculation.service';
@@ -16,7 +17,7 @@ import { ProductService } from '../../../core/services/product.service';
 @Component({
   selector: 'app-line-items-table',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, DragDropModule],
   templateUrl: './line-items-table.html',
   styleUrl: './line-items-table.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -42,6 +43,60 @@ export class LineItemsTableComponent {
 
   currencySymbol = computed(() => this.currencyService.getSymbol(this.currency()));
 
+  readonly unitOptions = [
+    { code: 'C62', label: 'Unit (Piece)' },
+    { code: 'HUR', label: 'Hour' },
+    { code: 'DAY', label: 'Day' },
+    { code: 'WEE', label: 'Week' },
+    { code: 'MON', label: 'Month' },
+    { code: 'ANN', label: 'Year' },
+    { code: 'KGM', label: 'Kilogram' },
+    { code: 'TNE', label: 'Tonne' },
+    { code: 'LTR', label: 'Litre' },
+    { code: 'MTR', label: 'Metre' },
+    { code: 'MTK', label: 'Square metre' },
+    { code: 'MTQ', label: 'Cubic metre' },
+    { code: 'SET', label: 'Set' },
+    { code: 'PK', label: 'Package' },
+    { code: 'ZZ', label: 'Service' }
+  ];
+
+  readonly taxCategoryOptions = [
+    { code: 'S', label: 'Standard' },
+    { code: 'AE', label: 'Reverse Charge' },
+    { code: 'E', label: 'Exempt' },
+    { code: 'Z', label: 'Zero-Rated' }
+  ];
+
+  private activeDiscountItemIds = new Set<string>();
+
+  isDiscountVisible(item: DocumentLineItem): boolean {
+    return (item.discountPercent > 0) || this.activeDiscountItemIds.has(item.id);
+  }
+
+  toggleDiscount(item: DocumentLineItem): void {
+    if (this.activeDiscountItemIds.has(item.id)) {
+      this.activeDiscountItemIds.delete(item.id);
+      if (item.discountPercent > 0) {
+        this.onItemChange(this.items().findIndex(it => it.id === item.id), 'discountPercent', 0);
+      }
+    } else {
+      this.activeDiscountItemIds.add(item.id);
+    }
+  }
+
+  onDrop(event: CdkDragDrop<DocumentLineItem[]>): void {
+    if (event.previousIndex === event.currentIndex) return;
+    const current = [...this.items()];
+    moveItemInArray(current, event.previousIndex, event.currentIndex);
+    this.itemsChange.emit(current);
+  }
+
+  getLineTotalDisplay(item: DocumentLineItem): string {
+    if (!item.quantity && !item.unitCost && !item.amount) return 'auto';
+    return (item.amount).toFixed(2);
+  }
+
   setMode(mode: LineLayoutMode): void {
     if (this.lockLineLayoutMode()) return;
     this.lineLayoutModeChange.emit(mode);
@@ -54,9 +109,11 @@ export class LineItemsTableComponent {
       description: '',
       quantity: 1,
       unitCost: 0,
-      taxRate: 0,
+      taxRate: 20,
       discountPercent: 0,
-      amount: 0
+      amount: 0,
+      unitCode: 'C62',
+      taxCategoryCode: 'S'
     };
     this.itemsChange.emit([...current, newItem]);
   }
@@ -70,9 +127,11 @@ export class LineItemsTableComponent {
         description: '',
         quantity: 1,
         unitCost: 0,
-        taxRate: 0,
+        taxRate: 20,
         discountPercent: 0,
-        amount: 0
+        amount: 0,
+        unitCode: 'C62',
+        taxCategoryCode: 'S'
       };
       this.itemsChange.emit(current);
       return;
@@ -95,6 +154,13 @@ export class LineItemsTableComponent {
       item.taxRate = Math.min(100, Math.max(0, Number(value) || 0));
     } else if (field === 'description') {
       item.description = String(value || '');
+    } else if (field === 'unitCode') {
+      item.unitCode = String(value || 'C62');
+    } else if (field === 'taxCategoryCode') {
+      item.taxCategoryCode = String(value || 'S');
+      if (item.taxCategoryCode === 'Z' || item.taxCategoryCode === 'E' || item.taxCategoryCode === 'AE') {
+        item.taxRate = 0;
+      }
     }
 
     // Recalculate amount

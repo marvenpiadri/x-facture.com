@@ -10,6 +10,8 @@ export interface DocumentLineItem {
   taxRate: number;       // Percentage e.g. 20 for 20%
   discountPercent: number;
   amount: number;        // Computed: quantity * unitCost * (1 - discount/100)
+  unitCode?: string;
+  taxCategoryCode?: string;
 }
 
 export interface DocumentParty {
@@ -32,6 +34,22 @@ export interface DocumentParty {
 }
 
 export type PaperSize = 'a4' | 'letter' | 'thermal-80mm' | 'thermal-58mm';
+
+export interface DocumentDiscount {
+  id: string;
+  reason: string;
+  value: number;
+  type: 'percent' | 'fixed';
+  appliesTo: string;
+  amount: number;
+}
+
+export interface TaxBreakdownItem {
+  category: string;
+  taxRate: number;
+  netAmount: number;
+  taxAmount: number;
+}
 
 export interface BusinessDocument {
   id: string;
@@ -59,6 +77,11 @@ export interface BusinessDocument {
 
   // Line items
   items: DocumentLineItem[];
+
+  // Document-level discounts & delivery
+  discounts?: DocumentDiscount[];
+  deliveryDiscount?: number;
+  deliveryTaxRate?: number;
 
   // Totals (Computed)
   subtotal: number;

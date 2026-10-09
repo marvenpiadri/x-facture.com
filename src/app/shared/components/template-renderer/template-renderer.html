@@ -191,7 +191,28 @@
                 <strong class="meta-date-val">{{ document().purchaseOrderRef }}</strong>
               </div>
             }
+            @if (document().specialFields?.['deliveryDate']) {
+              <div class="meta-date-item">
+                <span class="meta-date-label">Delivery Date:</span>
+                <strong class="meta-date-val">{{ document().specialFields?.['deliveryDate'] }}</strong>
+              </div>
+            }
+            @if (document().specialFields?.['carrier']) {
+              <div class="meta-date-item">
+                <span class="meta-date-label">Carrier:</span>
+                <strong class="meta-date-val">{{ document().specialFields?.['carrier'] }}</strong>
+              </div>
+            }
+            @if (document().specialFields?.['trackingNumber']) {
+              <div class="meta-date-item">
+                <span class="meta-date-label">Tracking #:</span>
+                <strong class="meta-date-val">{{ document().specialFields?.['trackingNumber'] }}</strong>
+              </div>
+            }
           </div>
+          @if (document().specialFields?.['deliveryTerms']) {
+            <div class="meta-date-item"><span class="meta-date-label">Terms:</span><strong class="meta-date-val">{{ document().specialFields?.['deliveryTerms'] }}</strong></div>
+          }
           @if (document().specialFields?.['vatPaymentOption'] === 'debits') {
             <div class="meta-date-item"><span class="meta-date-label">VAT:</span><strong class="meta-date-val">Option for payment on debits</strong></div>
           }
@@ -215,10 +236,17 @@
           @if (document().client.address) { <div class="party-address">{{ document().client.address }}</div> }
         </div>
       </section>
-      @if (document().specialFields?.['deliveryAddress']) {
+      @if (document().specialFields?.['shipToAddress'] || document().specialFields?.['deliveryAddress']) {
         <section class="doc-delivery-note">
-          <strong>Delivery address</strong>
-          <span>{{ document().specialFields?.['deliveryAddress'] }}, {{ document().specialFields?.['deliveryPostalCode'] || '' }} {{ document().specialFields?.['deliveryCity'] || '' }} {{ document().specialFields?.['deliveryCountry'] || '' }}</span>
+          <strong>Delivery destination (Ship-To)</strong>
+          <span>
+            @if (document().specialFields?.['shipToName']) { <strong>{{ document().specialFields?.['shipToName'] }}</strong> — }
+            {{ document().specialFields?.['shipToAddress'] || document().specialFields?.['deliveryAddress'] }}
+            @if (document().specialFields?.['shipToPostalCode'] || document().specialFields?.['shipToCity']) {
+              , {{ document().specialFields?.['shipToPostalCode'] || '' }} {{ document().specialFields?.['shipToCity'] || '' }}
+            }
+            @if (document().specialFields?.['shipToCountry']) { ({{ document().specialFields?.['shipToCountry'] }}) }
+          </span>
         </section>
       }
 
@@ -297,6 +325,13 @@
             <div class="info-clause-box">
               <span class="clause-heading">Notes & Instructions</span>
               <p class="clause-body">{{ document().notes }}</p>
+            </div>
+          }
+
+          @if (document().shippingInstructions) {
+            <div class="info-clause-box">
+              <span class="clause-heading">Shipping & Delivery Instructions</span>
+              <p class="clause-body">{{ document().shippingInstructions }}</p>
             </div>
           }
 

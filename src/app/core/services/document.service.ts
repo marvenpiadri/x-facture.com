@@ -153,7 +153,10 @@ export class DocumentService {
       doc.taxRate,
       doc.discountAmount,
       doc.shippingAmount,
-      doc.depositPaid
+      doc.depositPaid,
+      doc.discounts,
+      doc.deliveryDiscount,
+      doc.deliveryTaxRate
     );
 
     const updatedDoc: BusinessDocument = {
@@ -162,6 +165,7 @@ export class DocumentService {
       taxAmount: totals.taxAmount,
       discountAmount: totals.discountAmount,
       shippingAmount: totals.shippingAmount,
+      deliveryDiscount: totals.deliveryDiscount,
       total: totals.total,
       depositPaid: totals.depositPaid,
       balanceDue: totals.balanceDue,

@@ -4,12 +4,14 @@ import {
   computed,
   inject,
   input,
-  output
+  OnInit,
+  output,
+  signal
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { BusinessDocument, DocumentLineItem, DocumentParty, LineLayoutMode } from '../../../core/models/document.model';
+import { BusinessDocument, DocumentDiscount, DocumentLineItem, DocumentParty, LineLayoutMode } from '../../../core/models/document.model';
 import { DocumentTypeConfig } from '../../../core/models/document-type-config.model';
 import { getCreatePageContent } from '../../../core/config/document-create-content';
 import { CurrencyService } from '../../../core/services/currency.service';
@@ -36,7 +38,7 @@ import { CountryService } from '../../../core/services/country.service';
   styleUrl: './document-form-shell.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DocumentFormShellComponent {
+export class DocumentFormShellComponent implements OnInit {
   private currencyService = inject(CurrencyService);
   private calculationService = inject(CalculationService);
   private settingsService = inject(SettingsService);
@@ -68,6 +70,57 @@ export class DocumentFormShellComponent {
 
   currencySymbol = computed(() => this.currencyService.getSymbol(this.document().currency));
 
+  // Expandable section states (matching getfacturx.com optional menus with arrows)
+  deliveryExpanded = signal<boolean>(false);
+  notesExpanded = signal<boolean>(false);
+  showDifferentShipTo = signal<boolean>(false);
+
+  hasDeliveryData = computed(() => {
+    const d = this.document();
+    return (
+      (d.shippingAmount || 0) > 0 ||
+      (d.deliveryDiscount || 0) > 0 ||
+      (d.deliveryTaxRate || 0) > 0 ||
+      !!d.specialFields?.['deliveryDate'] ||
+      !!d.specialFields?.['trackingNumber'] ||
+      !!d.specialFields?.['carrier'] ||
+      !!d.specialFields?.['deliveryTerms'] ||
+      !!d.shippingInstructions?.trim() ||
+      !!d.specialFields?.['shipToName'] ||
+      !!d.specialFields?.['shipToAddress']
+    );
+  });
+
+  hasNotesData = computed(() => {
+    const d = this.document();
+    return (
+      !!d.notes?.trim() ||
+      !!d.bankDetails?.trim() ||
+      !!d.terms?.trim() ||
+      d.specialFields?.['showFooterText'] === true
+    );
+  });
+
+  ngOnInit(): void {
+    if (this.hasDeliveryData()) {
+      this.deliveryExpanded.set(true);
+    }
+    if (this.hasNotesData()) {
+      this.notesExpanded.set(true);
+    }
+    if (this.document().specialFields?.['shipToAddress'] || this.document().specialFields?.['shipToName']) {
+      this.showDifferentShipTo.set(true);
+    }
+  }
+
+  toggleDelivery(): void {
+    this.deliveryExpanded.update(v => !v);
+  }
+
+  toggleNotes(): void {
+    this.notesExpanded.update(v => !v);
+  }
+
   selectedOutputFormat(): string {
     const route = this.config().routeSegment;
     const requested = this.document().specialFields?.['outputFormat'];
@@ -82,9 +135,72 @@ export class DocumentFormShellComponent {
       doc.taxRate,
       doc.discountAmount,
       doc.shippingAmount,
-      doc.depositPaid
+      doc.depositPaid,
+      doc.discounts,
+      doc.deliveryDiscount,
+      doc.deliveryTaxRate
     );
   });
+
+  availableTaxRatesForDiscount = computed(() => {
+    const rates = new Set<number>();
+    for (const it of this.document().items) {
+      if (Number.isFinite(it.taxRate)) {
+        rates.add(it.taxRate);
+      }
+    }
+    if (rates.size === 0) rates.add(this.document().taxRate || 20);
+    return Array.from(rates).sort((a, b) => b - a);
+  });
+
+  addInvoiceDiscount(): void {
+    const current = [...(this.document().discounts || [])];
+    const newDisc: DocumentDiscount = {
+      id: `disc-${Date.now()}-${current.length + 1}`,
+      reason: '',
+      value: 0,
+      type: 'percent',
+      appliesTo: 'all',
+      amount: 0
+    };
+    this.save.emit({ ...this.document(), discounts: [...current, newDisc] });
+  }
+
+  updateInvoiceDiscount(index: number, field: keyof DocumentDiscount, value: any): void {
+    const current = [...(this.document().discounts || [])];
+    if (!current[index]) return;
+    const updated = { ...current[index] };
+    if (field === 'value') {
+      updated.value = Math.max(0, Number(value) || 0);
+    } else if (field === 'type') {
+      updated.type = value === 'fixed' ? 'fixed' : 'percent';
+    } else if (field === 'appliesTo') {
+      updated.appliesTo = String(value || 'all');
+    } else if (field === 'reason') {
+      updated.reason = String(value || '');
+    }
+    current[index] = updated;
+    this.save.emit({ ...this.document(), discounts: current });
+  }
+
+  removeInvoiceDiscount(index: number): void {
+    const current = [...(this.document().discounts || [])];
+    current.splice(index, 1);
+    this.save.emit({ ...this.document(), discounts: current });
+  }
+
+  getComputedDiscountAmount(index: number): string {
+    const computed = this.totals().computedDiscounts;
+    if (computed && computed[index] && Number.isFinite(computed[index].amount)) {
+      return `${computed[index].amount.toFixed(2)} ${this.document().currency}`;
+    }
+    return 'auto';
+  }
+
+  onDeliveryFieldChange(field: 'shippingAmount' | 'deliveryDiscount' | 'deliveryTaxRate', value: any): void {
+    const num = Math.max(0, Number(value) || 0);
+    this.save.emit({ ...this.document(), [field]: num });
+  }
 
   displaySellerDetails = computed(() => {
     const comp = this.document().company;
@@ -339,8 +455,16 @@ export class DocumentFormShellComponent {
       ],
       notes: current.notes || 'Payment terms: 30 days net from issue date. Thank you for your business.',
       bankDetails: current.bankDetails || 'Bank: BNP Paribas Paris\nIBAN: FR76 3000 6000 0112 3456 7890 189\nBIC: BNPAFRPPXXX\nAccount Name: Factur-X Solutions SAS',
+      shippingAmount: current.shippingAmount || 35,
+      deliveryDiscount: current.deliveryDiscount || 0,
+      deliveryTaxRate: current.deliveryTaxRate || 20,
+      shippingInstructions: current.shippingInstructions || 'Deliver to loading bay B. Gate code #4012.',
       specialFields: {
         ...(current.specialFields || {}),
+        deliveryDate: current.specialFields?.['deliveryDate'] || new Date(Date.now() + 5 * 86400000).toISOString().split('T')[0],
+        carrier: current.specialFields?.['carrier'] || 'DHL Express',
+        trackingNumber: current.specialFields?.['trackingNumber'] || 'DHL-984210984',
+        deliveryTerms: current.specialFields?.['deliveryTerms'] || 'DAP (Delivered at Place)',
         transactionNature: 'services',
         paymentMethod: 'bank-transfer',
         iban: 'FR76 3000 6000 0112 3456 7890 189',
@@ -348,6 +472,8 @@ export class DocumentFormShellComponent {
         outputFormat: current.specialFields?.['outputFormat'] || (['xfacture', 'credit-notes'].includes(this.config().routeSegment) ? 'factur-x' : 'pdf')
       }
     };
+    this.deliveryExpanded.set(true);
+    this.notesExpanded.set(true);
     this.save.emit(sample);
   }
 }

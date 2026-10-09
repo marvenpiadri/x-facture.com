@@ -1,222 +1,203 @@
-<div class="line-items-container">
-  <!-- Capsule Toggle for lineLayoutMode (§5) -->
-  @if (hasPricing() && !lockLineLayoutMode()) {
-    <div class="layout-toggle-header">
-      <span class="toggle-caption">Pricing layout</span>
-      <div class="capsule-toggle" role="tablist" aria-label="Line item layout mode">
-        <button
-          type="button"
-          class="capsule-btn"
-          [class.active]="lineLayoutMode() === 'quantity'"
-          (click)="setMode('quantity')"
-          role="tab"
-          [attr.aria-selected]="lineLayoutMode() === 'quantity'"
-        >
-          <span class="capsule-icon material-icons">inventory_2</span>
-          <span>Quantity & Rate</span>
-        </button>
-        <button
-          type="button"
-          class="capsule-btn"
-          [class.active]="lineLayoutMode() === 'hours'"
-          (click)="setMode('hours')"
-          role="tab"
-          [attr.aria-selected]="lineLayoutMode() === 'hours'"
-        >
-          <span class="capsule-icon material-icons">schedule</span>
-          <span>Hours & Hourly Rate</span>
-        </button>
-        <button
-          type="button"
-          class="capsule-btn"
-          [class.active]="lineLayoutMode() === 'flatRate'"
-          (click)="setMode('flatRate')"
-          role="tab"
-          [attr.aria-selected]="lineLayoutMode() === 'flatRate'"
-        >
-          <span class="capsule-icon material-icons">sell</span>
-          <span>Flat Rate (Amount Only)</span>
-        </button>
-      </div>
-    </div>
-  }
+<div class="line-items-section-panel">
+  <!-- Header with title and "+ Add Line" action -->
+  <div class="line-items-header-bar">
+    <h4 class="line-items-title">Line Items</h4>
+    <button type="button" class="btn-add-line-header" (click)="addItem()">
+      <span class="material-icons add-icon">add</span>
+      <span>Add Line</span>
+    </button>
+  </div>
 
-  <!-- Real Table Structure (§15: Tables look like tables, real rules/borders) -->
-  <div class="table-responsive-wrapper">
-    <table class="line-items-table">
-      <thead>
-        <tr>
-          <th class="col-index">#</th>
-          <th class="col-desc">Item & Description</th>
-          
-          @if (hasPricing()) {
-            @if (lineLayoutMode() === 'quantity') {
-              <th class="col-qty">Quantity</th>
-              <th class="col-rate">Unit Cost ({{ currencySymbol() }})</th>
-            } @else if (lineLayoutMode() === 'hours') {
-              <th class="col-qty">Hours</th>
-              <th class="col-rate">Hourly Rate ({{ currencySymbol() }})</th>
-            }
-            <th class="col-tax">Tax %</th>
-            <th class="col-disc">Disc %</th>
-            <th class="col-amount">Amount ({{ currencySymbol() }})</th>
-          } @else {
-            <th class="col-qty">Quantity / Pkgs</th>
-            <th class="col-notes">Notes / Marks</th>
-          }
-          
-          <th class="col-actions" aria-label="Row Actions"></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of items(); track item.id; let i = $index) {
-          <tr class="item-row">
-            <td class="col-index">
-              <span class="row-number">{{ i + 1 }}</span>
-            </td>
+  <!-- Items list with CDK drag and drop support -->
+  <div class="line-items-stack" cdkDropList (cdkDropListDropped)="onDrop($event)">
+    @for (item of items(); track item.id; let i = $index) {
+      <div class="line-item-card" cdkDrag>
+        <!-- Top bar: Drag handle, Line number & actions -->
+        <div class="line-card-top-row">
+          <div class="line-card-badge-group">
+            <button
+              type="button"
+              class="drag-handle-btn"
+              cdkDragHandle
+              title="Drag to reorder line item"
+              aria-label="Drag to reorder"
+            >
+              <span class="material-icons drag-icon">drag_indicator</span>
+            </button>
+            <span class="line-card-label">Line {{ i + 1 }}</span>
+            <button
+              type="button"
+              class="btn-toggle-discount"
+              (click)="toggleDiscount(item)"
+              title="Add or remove discount for this line"
+            >
+              {{ isDiscountVisible(item) ? '− Remove Discount' : '+ Add Discount' }}
+            </button>
+          </div>
+          <button
+            type="button"
+            class="btn-line-remove"
+            (click)="removeItem(i)"
+            title="Remove line item"
+            aria-label="Remove item"
+          >
+            <span class="material-icons">delete_outline</span>
+          </button>
+        </div>
 
-            <td class="col-desc">
-              <div class="desc-cell-stack">
-                <input
-                  type="text"
-                  class="form-input desc-input"
-                  [value]="item.description"
-                  (input)="onItemChange(i, 'description', $any($event.target).value)"
-                  placeholder="Service description or product specification..."
-                  required
-                />
-                
-                @if (products().length > 0) {
-                  <div class="quick-catalog-picker">
-                    <span class="quick-picker-hint">or autofill:</span>
-                    <select class="quick-select" (change)="selectProductForLine(i, $event)">
-                      <option value="">Choose from product catalog...</option>
-                      @for (p of products(); track p.id) {
-                        <option [value]="p.id">{{ p.name }} ({{ currencySymbol() }}{{ p.unitCost }})</option>
-                      }
-                    </select>
-                  </div>
-                }
-              </div>
-            </td>
-
-            @if (hasPricing()) {
-              @if (lineLayoutMode() === 'quantity' || lineLayoutMode() === 'hours') {
-                <td class="col-qty">
-                  <input
-                    type="number"
-                    class="form-input num-input text-center"
-                    [value]="item.quantity"
-                    (input)="onItemChange(i, 'quantity', $any($event.target).value)"
-                    min="0"
-                    step="any"
-                    placeholder="1"
-                  />
-                </td>
-
-                <td class="col-rate">
-                  <div class="input-with-symbol">
-                    <span class="input-prefix">{{ currencySymbol() }}</span>
-                    <input
-                      type="number"
-                      class="form-input num-input text-right with-prefix"
-                      [value]="item.unitCost"
-                      (input)="onItemChange(i, 'unitCost', $any($event.target).value)"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                    />
-                  </div>
-                </td>
+        <!-- Description taking its own full width line (100% width) -->
+        <div class="line-card-desc-row">
+          <div class="field-item desc-field-full">
+            <div class="desc-label-row">
+              <label class="field-label">Description</label>
+              @if (products().length > 0) {
+                <div class="catalog-autofill-inline">
+                  <span class="catalog-hint">Catalog:</span>
+                  <select class="catalog-select" (change)="selectProductForLine(i, $event)">
+                    <option value="">Choose product...</option>
+                    @for (p of products(); track p.id) {
+                      <option [value]="p.id">{{ p.name }} ({{ currencySymbol() }}{{ p.unitCost }})</option>
+                    }
+                  </select>
+                </div>
               }
+            </div>
+            <input
+              type="text"
+              class="form-input item-desc-input"
+              [value]="item.description"
+              (input)="onItemChange(i, 'description', $any($event.target).value)"
+              placeholder="e.g., Consulting Services"
+              required
+            />
+          </div>
+        </div>
 
-              <td class="col-tax">
+        <!-- The rest at the bottom of it (Qty, Unit Price, Total, Unit, Tax %, optional Discount %) -->
+        @if (hasPricing()) {
+          <div class="line-card-bottom-grid" [class.has-discount]="isDiscountVisible(item)">
+            <!-- Qty -->
+            <div class="field-item">
+              <label class="field-label">Qty</label>
+              <input
+                type="number"
+                class="form-input num-field"
+                [value]="item.quantity"
+                (input)="onItemChange(i, 'quantity', $any($event.target).value)"
+                min="0"
+                step="any"
+                placeholder="1"
+              />
+            </div>
+
+            <!-- Unit Price -->
+            <div class="field-item">
+              <label class="field-label">Unit Price</label>
+              <input
+                type="number"
+                class="form-input num-field"
+                [value]="item.unitCost"
+                (input)="onItemChange(i, 'unitCost', $any($event.target).value)"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+              />
+            </div>
+
+            <!-- Total (renamed from Line Total) -->
+            <div class="field-item">
+              <label class="field-label">Total</label>
+              <input
+                type="text"
+                class="form-input line-total-field"
+                [value]="getLineTotalDisplay(item)"
+                readonly
+                tabindex="-1"
+                placeholder="auto"
+              />
+            </div>
+
+            <!-- Unit -->
+            <div class="field-item">
+              <label class="field-label">Unit</label>
+              <select
+                class="form-select unit-select"
+                [value]="item.unitCode || 'C62'"
+                (change)="onItemChange(i, 'unitCode', $any($event.target).value)"
+              >
+                @for (u of unitOptions; track u.code) {
+                  <option [value]="u.code">{{ u.label }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Tax % -->
+            <div class="field-item">
+              <label class="field-label">Tax %</label>
+              <input
+                type="number"
+                class="form-input num-field"
+                [value]="item.taxRate"
+                (input)="onItemChange(i, 'taxRate', $any($event.target).value)"
+                min="0"
+                max="100"
+                step="0.1"
+                placeholder="20"
+              />
+            </div>
+
+            @if (isDiscountVisible(item)) {
+              <!-- Discount % placed in bottom grid so description retains 100% width -->
+              <div class="field-item discount-item-field">
+                <label class="field-label">Discount %</label>
                 <input
                   type="number"
-                  class="form-input num-input text-center"
-                  [value]="item.taxRate"
-                  (input)="onItemChange(i, 'taxRate', $any($event.target).value)"
-                  min="0"
-                  max="100"
-                  placeholder="0"
-                />
-              </td>
-
-              <td class="col-disc">
-                <input
-                  type="number"
-                  class="form-input num-input text-center"
+                  class="form-input num-field text-center"
                   [value]="item.discountPercent"
                   (input)="onItemChange(i, 'discountPercent', $any($event.target).value)"
                   min="0"
                   max="100"
                   placeholder="0"
                 />
-              </td>
-
-              <td class="col-amount">
-                @if (lineLayoutMode() === 'flatRate') {
-                  <div class="input-with-symbol">
-                    <span class="input-prefix">{{ currencySymbol() }}</span>
-                    <input
-                      type="number"
-                      class="form-input num-input text-right with-prefix amount-highlight"
-                      [value]="item.unitCost"
-                      (input)="onItemChange(i, 'unitCost', $any($event.target).value)"
-                      min="0"
-                      step="0.01"
-                      placeholder="0.00"
-                    />
-                  </div>
-                } @else {
-                  <div class="computed-amount-box">
-                    <span class="amount-val">{{ item.amount | number:'1.2-2' }}</span>
-                  </div>
-                }
-              </td>
-            } @else {
-              <!-- Non-pricing delivery note fields -->
-              <td class="col-qty">
-                <input
-                  type="number"
-                  class="form-input num-input text-center"
-                  [value]="item.quantity"
-                  (input)="onItemChange(i, 'quantity', $any($event.target).value)"
-                  min="1"
-                  placeholder="1"
-                />
-              </td>
-              <td class="col-notes">
-                <input
-                  type="text"
-                  class="form-input"
-                  [value]="item.description ? '' : ''"
-                  placeholder="e.g. 2 Cartons, fragile"
-                />
-              </td>
+              </div>
             }
-
-            <td class="col-actions">
-              <button
-                type="button"
-                class="btn-row-delete"
-                (click)="removeItem(i)"
-                title="Remove line item"
-                aria-label="Remove item"
+          </div>
+        } @else {
+          <!-- Non-pricing delivery note fields -->
+          <div class="line-card-bottom-grid delivery-note-grid">
+            <div class="field-item">
+              <label class="field-label">Qty / Packages</label>
+              <input
+                type="number"
+                class="form-input"
+                [value]="item.quantity"
+                (input)="onItemChange(i, 'quantity', $any($event.target).value)"
+                min="1"
+                placeholder="1"
+              />
+            </div>
+            <div class="field-item">
+              <label class="field-label">Unit</label>
+              <select
+                class="form-select"
+                [value]="item.unitCode || 'C62'"
+                (change)="onItemChange(i, 'unitCode', $any($event.target).value)"
               >
-                <span class="material-icons">delete_outline</span>
-              </button>
-            </td>
-          </tr>
+                @for (u of unitOptions; track u.code) {
+                  <option [value]="u.code">{{ u.label }}</option>
+                }
+              </select>
+            </div>
+          </div>
         }
-      </tbody>
-    </table>
+      </div>
+    }
   </div>
 
-  <!-- Add Item Row Action -->
+  <!-- Keep the Add Items button at the bottom as requested -->
   <div class="table-footer-bar">
     <button type="button" class="btn-add-line" (click)="addItem()">
-      <span class="material-icons btn-icon">add_circle_outline</span>
+      <span class="material-icons btn-icon">add</span>
       <span>Add item</span>
     </button>
   </div>
