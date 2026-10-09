@@ -77,6 +77,7 @@ export class ClientService {
       postalCode: client.postalCode || '',
       country: client.country || '',
       taxId: client.taxId || '',
+      taxIdentifiers: client.taxIdentifiers || [],
       electronicAddress: client.electronicAddress || '',
       electronicAddressScheme: client.electronicAddressScheme || '',
       address: client.address || '',
