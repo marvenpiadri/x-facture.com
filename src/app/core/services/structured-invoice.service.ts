@@ -24,8 +24,8 @@ export class StructuredInvoiceService {
       '<cbc:CustomizationID>urn:cen.eu:en16931:2017</cbc:CustomizationID>',
       '<cbc:ProfileID>urn:peppol:bis:billing</cbc:ProfileID>',
       '<cbc:ID>' + this.esc(doc.docNumber) + '</cbc:ID>',
-      '<cbc:IssueDate>' + this.esc(doc.issueDate) + '</cbc:IssueDate>',
-      doc.dueDate ? '<cbc:DueDate>' + this.esc(doc.dueDate) + '</cbc:DueDate>' : '',
+      '<cbc:IssueDate>' + this.dateIso(doc.issueDate) + '</cbc:IssueDate>',
+      doc.dueDate ? '<cbc:DueDate>' + this.dateIso(doc.dueDate) + '</cbc:DueDate>' : '',
       '<cbc:InvoiceTypeCode>' + typeCode + '</cbc:InvoiceTypeCode>',
       doc.notes ? '<cbc:Note>' + this.esc(doc.notes) + '</cbc:Note>' : '',
       '<cbc:DocumentCurrencyCode>' + currency + '</cbc:DocumentCurrencyCode>',
@@ -223,7 +223,21 @@ export class StructuredInvoiceService {
     return /^[A-Z]{3}$/.test(normalized) ? normalized : 'EUR';
   }
 
-  private dateCompact(value: string): string {
-    return String(value || '').replace(/-/g, '').slice(0, 8);
+  private dateIso(value: string | undefined): string {
+    const candidate = String(value || '');
+    if (this.isValidIsoDate(candidate)) return candidate;
+    const now = new Date();
+    return [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
+  }
+
+  private dateCompact(value: string | undefined): string {
+    return this.dateIso(value).replace(/-/g, '');
+  }
+
+  private isValidIsoDate(value: string): boolean {
+    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(value)) return false;
+    const [year, month, day] = value.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
   }
 }
