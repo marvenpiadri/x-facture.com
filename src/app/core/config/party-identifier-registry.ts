@@ -324,3 +324,51 @@ export const ISO_6523_LEGAL_SCHEMES = [
   { code: '0060', label: 'DUNS' },
   { code: '0088', label: 'GLN' }
 ] as const;
+
+
+const defaultIdentifierTypes: Record<string, string[]> = {
+  MA: ['ICE', 'IF', 'RC'],
+  FR: ['VAT', 'SIREN'],
+  DE: ['VAT', 'TAX_ID'],
+  GB: ['VAT', 'CRN'],
+  US: ['EIN'],
+  CA: ['BN', 'GST_HST'],
+  ES: ['VAT', 'NIF'],
+  IT: ['VAT', 'CODICE_FISCALE'],
+  BE: ['VAT', 'CBE'],
+  NL: ['VAT', 'KVK'],
+  PT: ['VAT', 'CRC'],
+  IE: ['VAT', 'CRO'],
+  PL: ['VAT', 'NIP'],
+  AT: ['VAT', 'FN'],
+  CH: ['VAT', 'UID'],
+  AU: ['ABN', 'GST'],
+  NZ: ['NZBN', 'GST'],
+  IN: ['GSTIN', 'PAN'],
+  BR: ['CNPJ', 'IE'],
+  MX: ['RFC'],
+  ZA: ['VAT', 'INCOME_TAX'],
+  JP: ['CORP_NO', 'INVOICE_REG'],
+  CN: ['USCC', 'TAX_ID'],
+  AE: ['TRN', 'TRADE_LICENSE'],
+  SA: ['VAT', 'CR'],
+  TR: ['VKN', 'MERSIS'],
+  SG: ['UEN', 'GST'],
+  MY: ['TIN', 'BRN'],
+  ID: ['NPWP', 'NIB'],
+  NG: ['TIN', 'RC'],
+  KE: ['KRA_PIN', 'VAT'],
+  EG: ['TAX_REG', 'COMM_REG'],
+  TN: ['MAT_FISCAL', 'RC'],
+  DZ: ['NIF', 'RC']
+};
+
+export function getDefaultPartyIdentifierDefinitions(countryCode?: string): PartyIdentifierDefinition[] {
+  const code = (countryCode || '').trim().toUpperCase();
+  const all = getPartyIdentifierDefinitions(code);
+  const preferred = defaultIdentifierTypes[code] || all.slice(0, 2).map(item => item.type);
+  return preferred
+    .map(type => all.find(item => item.type === type))
+    .filter((item): item is PartyIdentifierDefinition => Boolean(item))
+    .map(item => ({ ...item }));
+}
