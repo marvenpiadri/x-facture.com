@@ -154,10 +154,10 @@ export class DocumentPreviewShellComponent implements OnInit {
           return [];
         }
       })
-      .filter(Boolean)
+      .filter(rule => Boolean(rule) && !rule.trim().toLowerCase().startsWith('@font-face'))
       .join('\n')
       .replace(/@import[^;]+;/g, '')
-      .replace(/@font-face\\s*\\{[^}]*\\}/gi, '');
+      
 
     let embeddedInterCss = '';
     try {
