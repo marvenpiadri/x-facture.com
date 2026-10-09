@@ -154,13 +154,24 @@ export class StructuredInvoiceService {
       || identifiers.find(item => businessTypes.has(item.type.toUpperCase()) && item.type.toUpperCase() !== 'SIRET');
   }
 
+  private legalSchemeId(identifier: PartyTaxIdentifier): string | undefined {
+    if (identifier.schemeId) return identifier.schemeId;
+    const type = identifier.type.toUpperCase();
+    if (type === 'SIREN') return '0002';
+    if (type === 'SIRET') return '0009';
+    if (type === 'DUNS') return '0060';
+    if (type === 'GLN') return '0088';
+    return undefined;
+  }
+
   private globalIdentifiers(party: DocumentParty): PartyTaxIdentifier[] {
     const legalId = this.legalIdentifier(party);
-    return this.partyIdentifiers(party).filter(item =>
-      Boolean(item.schemeId && item.schemeId.length === 4 && [...item.schemeId].every(char => char >= '0' && char <= '9') && item.value?.trim()) &&
-      item.id !== legalId?.id &&
-      ['0009', '0060', '0088'].includes(item.schemeId!)
-    );
+    return this.partyIdentifiers(party).filter(item => {
+      const scheme = this.legalSchemeId(item);
+      return Boolean(scheme && scheme.length === 4 && [...scheme].every(char => char >= '0' && char <= '9') && item.value?.trim()) &&
+        item.id !== legalId?.id &&
+        ['0009', '0060', '0088'].includes(scheme!);
+    });
   }
 
   private ublParty(party: DocumentParty): string {
@@ -170,7 +181,7 @@ export class StructuredInvoiceService {
       return scheme ? ['<cac:PartyTaxScheme><cbc:CompanyID>' + this.esc(identifier.value) + '</cbc:CompanyID><cac:TaxScheme><cbc:ID>' + scheme + '</cbc:ID></cac:TaxScheme></cac:PartyTaxScheme>'] : [];
     }).join('');
     const legalId = this.legalIdentifier(party);
-    const legalEntity = legalId ? '<cac:PartyLegalEntity><cbc:RegistrationName>' + this.esc(party.legalName || party.name || 'Unnamed party') + '</cbc:RegistrationName><cbc:CompanyID' + (legalId.schemeId ? ' schemeID="' + this.esc(legalId.schemeId) + '"' : '') + '>' + this.esc(legalId.value) + '</cbc:CompanyID></cac:PartyLegalEntity>' : '';
+    const legalEntity = legalId ? '<cac:PartyLegalEntity><cbc:RegistrationName>' + this.esc(party.legalName || party.name || 'Unnamed party') + '</cbc:RegistrationName><cbc:CompanyID' + (this.legalSchemeId(legalId) ? ' schemeID="' + this.esc(this.legalSchemeId(legalId)!) + '"' : '') + '>' + this.esc(legalId.value) + '</cbc:CompanyID></cac:PartyLegalEntity>' : '';
     return '<cac:Party>' +
       (party.electronicAddress ? '<cbc:EndpointID' + (party.electronicAddressScheme ? ' schemeID="' + this.esc(party.electronicAddressScheme) + '"' : '') + '>' + this.esc(party.electronicAddress) + '</cbc:EndpointID>' : '') +
       '<cac:PartyName><cbc:Name>' + this.esc(name) + '</cbc:Name></cac:PartyName>' +
@@ -207,7 +218,7 @@ export class StructuredInvoiceService {
       return scheme ? ['<ram:SpecifiedTaxRegistration><ram:ID schemeID="' + scheme + '">' + this.esc(identifier.value) + '</ram:ID></ram:SpecifiedTaxRegistration>'] : [];
     }).join('');
     const globalIds = this.globalIdentifiers(party).map(identifier =>
-      '<ram:GlobalID schemeID="' + this.esc(identifier.schemeId!) + '">' + this.esc(identifier.value) + '</ram:GlobalID>'
+      '<ram:GlobalID schemeID="' + this.esc(this.legalSchemeId(identifier)!) + '">' + this.esc(identifier.value) + '</ram:GlobalID>'
     ).join('');
     return '<ram:' + tag + '>' + globalIds + '<ram:Name>' + this.esc(name) + '</ram:Name>' +
       legalOrganization +
