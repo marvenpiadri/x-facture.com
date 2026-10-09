@@ -5,7 +5,7 @@ import { ClientService } from '../../../core/services/client.service';
 import { CountryPickerComponent } from '../country-picker/country-picker';
 import { CountryService } from '../../../core/services/country.service';
 import { DocumentParty, PartyTaxIdentifier } from '../../../core/models/document.model';
-import { getPartyIdentifierDefinitions, PartyIdentifierDefinition } from '../../../core/config/party-identifier-registry';
+import { getDefaultPartyIdentifierDefinitions, getPartyIdentifierDefinitions, PartyIdentifierDefinition } from '../../../core/config/party-identifier-registry';
 
 @Component({
   selector: 'app-client-picker',
@@ -48,7 +48,20 @@ export class ClientPickerComponent {
   }
 
   onCountryChange(country: string): void {
-    this.clientChange.emit({ ...this.client(), country });
+    const existing = this.taxIdentifiers();
+    const suggested = existing.length ? existing : getDefaultPartyIdentifierDefinitions(country).map((item, index) => ({
+      id: `party-id-${Date.now()}-${index}`,
+      type: item.type,
+      label: item.label,
+      value: '',
+      ...(item.schemeId ? { schemeId: item.schemeId } : {})
+    }));
+    this.clientChange.emit({
+      ...this.client(),
+      country,
+      taxIdentifiers: suggested,
+      taxId: this.client().taxId || ''
+    });
   }
 
   addIdentifier(event: Event): void {
