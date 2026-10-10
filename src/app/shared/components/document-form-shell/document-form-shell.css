@@ -2614,10 +2614,8 @@
 }
 
 
-/* Unified form polish: use the app's design tokens across every document type. */
-.form-step-section {
-  gap: 14px;
-}
+/* Unified form styling: one consistent control system across document types. */
+.form-step-section { gap: 14px; }
 
 .form-section-heading h3 {
   font-size: 19px;
@@ -2638,9 +2636,7 @@
   gap: 24px;
 }
 
-.form-meta-grid {
-  gap: 18px;
-}
+.form-meta-grid { gap: 18px; }
 
 .field-label {
   color: var(--color-text-secondary);
@@ -2649,143 +2645,13 @@
   letter-spacing: .01em;
 }
 
-.form-input,
-.form-select,
-.form-step-card textarea,
-.form-step-card input[type="date"],
-.form-step-card input[type="number"],
-.form-step-card input[type="text"],
-.form-step-card input[type="email"],
-.form-step-card input[type="url"],
-.form-step-card input[type="tel"] {
-  width: 100%;
-  min-width: 0;
-  min-height: 43px;
-  box-sizing: border-box;
-  padding: 10px 12px;
-  border: 1px solid var(--color-input-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-input-bg);
-  color: var(--color-input-text);
-  font: inherit;
-  font-size: 13px;
-  line-height: 1.4;
-  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
-}
-
-.form-input:hover,
-.form-select:hover,
-.form-step-card textarea:hover {
-  border-color: var(--color-text-muted);
-}
-
-.form-input:focus,
-.form-select:focus,
-.form-step-card textarea:focus,
-.form-step-card input:focus-visible {
-  outline: none;
-  border-color: var(--color-money-green);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-money-green) 18%, transparent);
-}
-
-.form-input::placeholder,
-.form-step-card textarea::placeholder {
-  color: var(--color-text-muted);
-  opacity: 1;
-}
-
-.form-select {
-  padding-right: 34px;
-  cursor: pointer;
-}
-
-.form-field-item {
-  min-width: 0;
-  gap: 7px;
-}
-
-.form-field-item.full-width {
-  grid-column: 1 / -1;
-}
-
-.form-step-section + .form-step-section {
-  margin-top: 8px;
-}
-
-.workspace-top-bar {
-  padding-bottom: 14px;
-}
-
-.btn-prefill-sample {
-  min-height: 36px;
-  padding: 7px 13px;
-  border-radius: var(--radius-md);
-  font-size: 11px;
-}
-
-.create-page-intro {
-  padding-block: 8px 2px;
-}
-
-.create-page-intro h1 {
-  letter-spacing: -.045em;
-}
-
-@media (max-width: 860px) {
-  .form-meta-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 15px;
-  }
-}
-
-@media (max-width: 560px) {
-  .doc-edit-workspace {
-    padding-inline: 12px;
-  }
-
-  .form-step-card {
-    padding: 16px;
-    border-radius: var(--radius-lg);
-  }
-
-  .form-meta-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .workspace-top-bar {
-    align-items: flex-start;
-  }
-
-  .breadcrumb-trail {
-    flex-wrap: wrap;
-  }
-}
-
-
-/* Compact structured address fields keep invoice/XML data reusable. */
-.party-location-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3, 12px);
-  margin-top: 10px;
-}
-@media (max-width: 640px) {
-  .party-location-grid { grid-template-columns: minmax(0, 1fr); }
-}
-
-/* Single source of truth for document-form controls across every document type. */
-.doc-edit-workspace .form-field-item,
-.doc-edit-workspace .party-field {
-  min-width: 0;
-}
-
-.doc-edit-workspace .form-field-item > .form-input,
-.doc-edit-workspace .form-field-item > .form-select,
-.doc-edit-workspace .form-field-item > .form-textarea,
-.doc-edit-workspace .party-field > .form-input,
-.doc-edit-workspace .party-field > .form-select,
-.doc-edit-workspace .party-field > .form-textarea,
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input),
+.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select),
+.doc-edit-workspace .form-textarea,
+.doc-edit-workspace .party-dropdown,
+.doc-edit-workspace .form-field-item > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.doc-edit-workspace .form-field-item > select,
+.doc-edit-workspace .form-field-item > textarea,
 .doc-edit-workspace .party-field > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 .doc-edit-workspace .party-field > select,
 .doc-edit-workspace .party-field > textarea {
@@ -2797,27 +2663,49 @@
   padding: 10px 12px;
   border: 1px solid var(--color-input-border);
   border-radius: var(--radius-md);
-  background: var(--color-input-bg);
+  background-color: var(--color-input-bg);
   color: var(--color-input-text);
   font-family: inherit;
   font-size: 13px;
   font-weight: 400;
   line-height: 1.4;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
 }
 
+.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select),
+.doc-edit-workspace .form-field-item > select,
+.doc-edit-workspace .party-field > select {
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+.doc-edit-workspace .form-textarea,
 .doc-edit-workspace .form-field-item > textarea,
-.doc-edit-workspace .party-field > textarea,
-.doc-edit-workspace .party-field > .form-textarea {
+.doc-edit-workspace .party-field > textarea {
   min-height: 76px;
   resize: vertical;
 }
 
-.doc-edit-workspace .form-field-item > .form-input:focus,
-.doc-edit-workspace .form-field-item > .form-select:focus,
-.doc-edit-workspace .form-field-item > .form-textarea:focus,
-.doc-edit-workspace .party-field > .form-input:focus,
-.doc-edit-workspace .party-field > .form-select:focus,
-.doc-edit-workspace .party-field > .form-textarea:focus,
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):hover,
+.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select):hover,
+.doc-edit-workspace .form-textarea:hover,
+.doc-edit-workspace .party-dropdown:hover,
+.doc-edit-workspace .form-field-item > input:hover,
+.doc-edit-workspace .form-field-item > select:hover,
+.doc-edit-workspace .form-field-item > textarea:hover,
+.doc-edit-workspace .party-field > input:hover,
+.doc-edit-workspace .party-field > select:hover,
+.doc-edit-workspace .party-field > textarea:hover {
+  border-color: var(--color-text-muted);
+}
+
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):focus,
+.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select):focus,
+.doc-edit-workspace .form-textarea:focus,
+.doc-edit-workspace .party-dropdown:focus-visible,
+.doc-edit-workspace .form-field-item > input:focus-visible,
+.doc-edit-workspace .form-field-item > select:focus-visible,
+.doc-edit-workspace .form-field-item > textarea:focus-visible,
 .doc-edit-workspace .party-field > input:focus-visible,
 .doc-edit-workspace .party-field > select:focus-visible,
 .doc-edit-workspace .party-field > textarea:focus-visible {
@@ -2826,17 +2714,59 @@
   box-shadow: 0 0 0 3px var(--color-money-green-light);
 }
 
-.doc-edit-workspace .form-field-item > .form-input::placeholder,
-.doc-edit-workspace .form-field-item > .form-textarea::placeholder,
-.doc-edit-workspace .party-field > .form-input::placeholder,
-.doc-edit-workspace .party-field > .form-textarea::placeholder {
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input)::placeholder,
+.doc-edit-workspace .form-textarea::placeholder,
+.doc-edit-workspace .form-field-item > input::placeholder,
+.doc-edit-workspace .form-field-item > textarea::placeholder,
+.doc-edit-workspace .party-field > input::placeholder,
+.doc-edit-workspace .party-field > textarea::placeholder {
   color: var(--color-text-muted);
   opacity: 1;
 }
 
-/* Country controls fill their field and match the shared 43px control height. */
-.doc-edit-workspace .party-field app-country-picker,
+.form-field-item,
+.party-field { min-width: 0; }
+
+.form-field-item.full-width { grid-column: 1 / -1; }
+
+.form-step-section + .form-step-section { margin-top: 8px; }
+
+.workspace-top-bar { padding-bottom: 14px; }
+
+.btn-prefill-sample {
+  min-height: 36px;
+  padding: 7px 13px;
+  border-radius: var(--radius-md);
+  font-size: 11px;
+}
+
+.create-page-intro {
+  width: 100%;
+  max-width: 900px;
+  margin-inline: auto;
+  padding: 12px 0 8px;
+}
+
+.create-page-intro h1 {
+  margin: 0;
+  color: var(--color-text-main);
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -.04em;
+}
+
+.create-page-intro p {
+  max-width: 760px;
+  margin: 12px 0 0;
+  color: var(--color-text-secondary);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* Country selector fills its field at every breakpoint. */
 .doc-edit-workspace app-country-picker,
+.doc-edit-workspace .party-field app-country-picker,
 .doc-edit-workspace .country-picker,
 .doc-edit-workspace .country-trigger {
   display: block;
@@ -2846,97 +2776,43 @@
   min-width: 0;
 }
 
-.doc-edit-workspace .country-trigger {
-  min-height: 43px;
-  font: inherit;
-  font-size: 13px;
-}
-
 .doc-edit-workspace .party-extra-fields > .party-field {
   width: 100%;
   min-width: 0;
 }
 
-.doc-edit-workspace .create-page-intro {
-  width: 100%;
-  max-width: 900px;
-  margin-inline: auto;
-  padding: 12px 0 8px;
+@media (max-width: 860px) {
+  .form-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px;
+  }
 }
 
-.doc-edit-workspace .create-page-intro h1 {
-  margin: 0;
-  color: var(--color-text-main);
-  font-size: clamp(28px, 3.5vw, 40px);
-  font-weight: 800;
-  line-height: 1.12;
-  letter-spacing: -.04em;
-}
-
-.doc-edit-workspace .create-page-intro p {
-  max-width: 760px;
-  margin: 12px 0 0;
-  color: var(--color-text-secondary);
-  font-size: 15px;
-  line-height: 1.65;
+@media (max-width: 640px) {
+  .party-location-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 @media (max-width: 560px) {
-  .doc-edit-workspace .create-page-intro {
-    padding-top: 4px;
+  .doc-edit-workspace { padding-inline: 12px; }
+  .form-step-card {
+    padding: 16px;
+    border-radius: var(--radius-lg);
   }
-
-  .doc-edit-workspace .create-page-intro p {
-    font-size: 14px;
+  .form-meta-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
   }
+  .workspace-top-bar { align-items: flex-start; }
+  .breadcrumb-trail { flex-wrap: wrap; }
+  .create-page-intro { padding-top: 4px; }
+  .create-page-intro p { font-size: 14px; }
 }
 
-/* Normalize ordinary fields regardless of which document section contains them. */
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input),
-.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select),
-.doc-edit-workspace .form-textarea,
-.doc-edit-workspace .party-dropdown {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  min-height: 43px;
-  padding: 10px 12px;
-  border: 1px solid var(--color-input-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-input-bg);
-  color: var(--color-input-text);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):focus,
-.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select):focus,
-.doc-edit-workspace .form-textarea:focus,
-.doc-edit-workspace .party-dropdown:focus-visible {
-  outline: none;
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px var(--color-money-green-light);
-}
-
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input)::placeholder,
-.doc-edit-workspace .form-textarea::placeholder {
-  color: var(--color-text-muted);
-  opacity: 1;
-}
-
-.doc-edit-workspace .party-field > .identifier-value {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  min-height: 43px;
-  padding: 10px 12px;
-  border: 1px solid var(--color-input-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-input-bg);
-  color: var(--color-input-text);
-  font: inherit;
-  font-size: 13px;
+/* Structured address fields use the same responsive grid across document forms. */
+.party-location-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3, 12px);
+  margin-top: 10px;
 }
 
