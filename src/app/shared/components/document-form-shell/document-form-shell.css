@@ -2891,3 +2891,52 @@
   }
 }
 
+/* Normalize ordinary fields regardless of which document section contains them. */
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):not(.identifier-value),
+.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select),
+.doc-edit-workspace .form-textarea,
+.doc-edit-workspace .party-dropdown {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 43px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):not(.identifier-value):focus,
+.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select):focus,
+.doc-edit-workspace .form-textarea:focus,
+.doc-edit-workspace .party-dropdown:focus-visible {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-money-green-light);
+}
+
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):not(.identifier-value)::placeholder,
+.doc-edit-workspace .form-textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
+}
+
+.doc-edit-workspace .party-field > .identifier-value {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 43px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  font: inherit;
+  font-size: 13px;
+}
+
