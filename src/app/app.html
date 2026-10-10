@@ -17,7 +17,7 @@
         <!-- Home Link (Landing Page) -->
         <a routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" class="nav-link" (click)="closeMenus()" id="nav-home-link">
           <span class="material-icons nav-ico">home</span>
-          <span>Home</span>
+          <span> {{ 'Home' | translate }}</span>
         </a>
 
         <!-- Documents Dropdown -->
@@ -30,13 +30,13 @@
             id="nav-docs-dropdown-btn"
           >
             <span class="material-icons nav-ico">description</span>
-            <span>Documents</span>
+            <span> {{ 'Documents' | translate }}</span>
             <span class="material-icons arrow-ico">expand_more</span>
           </button>
 
           @if (showDocsDropdown()) {
             <div class="dropdown-menu-card docs-menu" (click)="$event.stopPropagation()">
-              <div class="dropdown-header">Invoicing & Commercial Documents</div>
+              <div class="dropdown-header"> {{ 'Invoicing & Commercial Documents' | translate }}</div>
               <div class="dropdown-scroll">
                 @for (doc of docConfigs; track doc.docType) {
                   <a
@@ -46,8 +46,8 @@
                   >
                     <span class="material-icons item-icon">{{ doc.icon }}</span>
                     <div class="item-text">
-                      <strong class="item-title">{{ doc.pluralName }}</strong>
-                      <span class="item-desc">{{ doc.singularName }} management</span>
+                      <strong class="item-title">{{ doc.pluralName | translate }}</strong>
+                      <span class="item-desc">{{ doc.singularName | translate }} management</span>
                     </div>
                   </a>
                 }
@@ -60,22 +60,22 @@
         <div class="nav-item-dropdown">
           <button type="button" class="nav-link dropdown-trigger" [class.active]="showToolsDropdown()" (click)="toggleToolsDropdown()" id="nav-tools-dropdown-btn">
             <span class="material-icons nav-ico">verified</span>
-            <span>E-Invoice Tools</span>
+            <span> {{ 'E-Invoice Tools' | translate }}</span>
             <span class="material-icons arrow-ico">expand_more</span>
           </button>
           @if (showToolsDropdown()) {
             <div class="dropdown-menu-card tools-menu" (click)="$event.stopPropagation()">
-              <div class="dropdown-header">Validate, convert, extract & inspect</div>
-              <div class="dropdown-section-label">Validate & fix</div>
-              <a routerLink="/tools/validate-factur-x" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">verified</span><div class="item-text"><strong class="item-title">Validate Factur-X</strong><span class="item-desc">EN 16931 profile and embedded XML checks</span></div></a>
-              <a routerLink="/tools/validate-cii" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">fact_check</span><div class="item-text"><strong class="item-title">Validate CII XML</strong><span class="item-desc">Validate standalone CII against the profile XSD</span></div></a>
-              <a routerLink="/tools/validate-order-x" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">rule</span><div class="item-text"><strong class="item-title">Validate Order-X</strong><span class="item-desc">Check purchase-order XML structure</span></div></a>
-              <div class="dropdown-section-label">Convert</div>
-              <a routerLink="/tools/convert" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">swap_horiz</span><div class="item-text"><strong class="item-title">Conversion Studio</strong><span class="item-desc">PDF, Factur-X, CII and UBL conversion workflows</span></div></a>
-              <div class="dropdown-section-label">Extract & view</div>
-              <a routerLink="/tools/extract-xml" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">data_object</span><div class="item-text"><strong class="item-title">Extract XML</strong><span class="item-desc">Extract embedded invoice XML from Factur-X PDFs</span></div></a>
-              <a routerLink="/tools/extract-attachments" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">attach_file</span><div class="item-text"><strong class="item-title">Extract Attachments</strong><span class="item-desc">Inspect embedded files inside hybrid invoices</span></div></a>
-              <a routerLink="/tools/cii-viewer" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">visibility</span><div class="item-text"><strong class="item-title">CII / UBL Viewer</strong><span class="item-desc">Read structured invoice XML as a human document</span></div></a>
+              <div class="dropdown-header"> {{ 'Validate, convert, extract & inspect' | translate }}</div>
+              <div class="dropdown-section-label"> {{ 'Validate & fix' | translate }}</div>
+              <a routerLink="/tools/validate-factur-x" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">verified</span><div class="item-text"><strong class="item-title"> {{ 'Validate Factur-X' | translate }}</strong><span class="item-desc"> {{ 'EN 16931 profile and embedded XML checks' | translate }}</span></div></a>
+              <a routerLink="/tools/validate-cii" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">fact_check</span><div class="item-text"><strong class="item-title"> {{ 'Validate CII XML' | translate }}</strong><span class="item-desc"> {{ 'Validate standalone CII against the profile XSD' | translate }}</span></div></a>
+              <a routerLink="/tools/validate-order-x" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">rule</span><div class="item-text"><strong class="item-title"> {{ 'Validate Order-X' | translate }}</strong><span class="item-desc"> {{ 'Check purchase-order XML structure' | translate }}</span></div></a>
+              <div class="dropdown-section-label"> {{ 'Convert' | translate }}</div>
+              <a routerLink="/tools/convert" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">swap_horiz</span><div class="item-text"><strong class="item-title"> {{ 'Conversion Studio' | translate }}</strong><span class="item-desc"> {{ 'PDF, Factur-X, CII and UBL conversion workflows' | translate }}</span></div></a>
+              <div class="dropdown-section-label"> {{ 'Extract & view' | translate }}</div>
+              <a routerLink="/tools/extract-xml" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">data_object</span><div class="item-text"><strong class="item-title"> {{ 'Extract XML' | translate }}</strong><span class="item-desc"> {{ 'Extract embedded invoice XML from Factur-X PDFs' | translate }}</span></div></a>
+              <a routerLink="/tools/extract-attachments" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">attach_file</span><div class="item-text"><strong class="item-title"> {{ 'Extract Attachments' | translate }}</strong><span class="item-desc"> {{ 'Inspect embedded files inside hybrid invoices' | translate }}</span></div></a>
+              <a routerLink="/tools/cii-viewer" class="dropdown-item" (click)="closeMenus()"><span class="material-icons item-icon">visibility</span><div class="item-text"><strong class="item-title"> {{ 'CII / UBL Viewer' | translate }}</strong><span class="item-desc"> {{ 'Read structured invoice XML as a human document' | translate }}</span></div></a>
             </div>
           }
         </div>
@@ -90,59 +90,59 @@
             id="nav-ops-dropdown-btn"
           >
             <span class="material-icons nav-ico">business_center</span>
-            <span>Operations</span>
+            <span> {{ 'Operations' | translate }}</span>
             <span class="material-icons arrow-ico">expand_more</span>
           </button>
 
           @if (showOpsDropdown()) {
             <div class="dropdown-menu-card ops-menu" (click)="$event.stopPropagation()">
-              <div class="dropdown-header">Business Operations & Records</div>
+              <div class="dropdown-header"> {{ 'Business Operations & Records' | translate }}</div>
               <div class="dropdown-scroll">
                 <a routerLink="/dashboard" class="dropdown-item" (click)="closeMenus()">
                   <span class="material-icons item-icon">dashboard</span>
                   <div class="item-text">
-                    <strong class="item-title">Business Dashboard</strong>
-                    <span class="item-desc">KPI metrics, revenue graphs, and recent transactions</span>
+                    <strong class="item-title"> {{ 'Business Dashboard' | translate }}</strong>
+                    <span class="item-desc"> {{ 'KPI metrics, revenue graphs, and recent transactions' | translate }}</span>
                   </div>
                 </a>
 
                 <a routerLink="/store/pos" class="dropdown-item" (click)="closeMenus()">
                   <span class="material-icons item-icon">point_of_sale</span>
                   <div class="item-text">
-                    <strong class="item-title">POS Terminal Register</strong>
-                    <span class="item-desc">Live checkout, barcode scanner, till session</span>
+                    <strong class="item-title"> {{ 'POS Terminal Register' | translate }}</strong>
+                    <span class="item-desc"> {{ 'Live checkout, barcode scanner, till session' | translate }}</span>
                   </div>
                 </a>
 
                 <a routerLink="/ledger" class="dropdown-item" (click)="closeMenus()">
                   <span class="material-icons item-icon">account_balance_wallet</span>
                   <div class="item-text">
-                    <strong class="item-title">Smart Financial Ledger</strong>
-                    <span class="item-desc">Real-time revenue, expense & payment log</span>
+                    <strong class="item-title"> {{ 'Smart Financial Ledger' | translate }}</strong>
+                    <span class="item-desc"> {{ 'Real-time revenue, expense & payment log' | translate }}</span>
                   </div>
                 </a>
 
                 <a routerLink="/clients" class="dropdown-item" (click)="closeMenus()">
                   <span class="material-icons item-icon">people</span>
                   <div class="item-text">
-                    <strong class="item-title">Client Directory & CRM</strong>
-                    <span class="item-desc">Accounts, tax IDs, and billing contacts</span>
+                    <strong class="item-title"> {{ 'Client Directory & CRM' | translate }}</strong>
+                    <span class="item-desc"> {{ 'Accounts, tax IDs, and billing contacts' | translate }}</span>
                   </div>
                 </a>
 
                 <a routerLink="/products" class="dropdown-item" (click)="closeMenus()">
                   <span class="material-icons item-icon">inventory_2</span>
                   <div class="item-text">
-                    <strong class="item-title">Product & Services Catalog</strong>
-                    <span class="item-desc">Item pricing, SKU, barcodes, and inventory</span>
+                    <strong class="item-title"> {{ 'Product & Services Catalog' | translate }}</strong>
+                    <span class="item-desc"> {{ 'Item pricing, SKU, barcodes, and inventory' | translate }}</span>
                   </div>
                 </a>
 
                 <a routerLink="/settings" class="dropdown-item" (click)="closeMenus()">
                   <span class="material-icons item-icon">settings</span>
                   <div class="item-text">
-                    <strong class="item-title">System & Company Settings</strong>
-                    <span class="item-desc">Tax rates, currency, company profile, data</span>
+                    <strong class="item-title"> {{ 'System & Company Settings' | translate }}</strong>
+                    <span class="item-desc"> {{ 'Tax rates, currency, company profile, data' | translate }}</span>
                   </div>
                 </a>
               </div>
@@ -162,7 +162,7 @@
           [class.active]="showProfileMenu()"
           (click)="toggleProfileMenu()"
           id="header-preferences-dropdown-btn"
-          title="System Preferences & Settings"
+          [title]="'System Preferences & Settings' | translate
         >
           <span class="material-icons menu-ico">tune</span>
           <span class="lang-tag">{{ currentLang() }}</span>
@@ -172,7 +172,7 @@
 
         @if (showProfileMenu()) {
           <div class="dropdown-menu-card preferences-menu-card" (click)="$event.stopPropagation()">
-            <div class="dropdown-header">System Preferences</div>
+            <div class="dropdown-header"> {{ 'System Preferences' | translate }}</div>
 
             <div class="pref-menu-content">
               <!-- 1. Mode Switcher (Dark / Light) -->
@@ -180,7 +180,7 @@
                 <div class="pref-label-group">
                   <span class="material-icons pref-ico">{{ isDark() ? 'dark_mode' : 'light_mode' }}</span>
                   <div class="pref-text">
-                    <strong class="pref-title">Appearance</strong>
+                    <strong class="pref-title"> {{ 'Appearance' | translate }}</strong>
                     <span class="pref-sub">{{ isDark() ? 'Dark Theme' : 'Light Theme' }}</span>
                   </div>
                 </div>
@@ -202,7 +202,7 @@
               <div class="pref-block">
                 <div class="pref-block-title-row">
                   <span class="material-icons pref-ico">translate</span>
-                  <strong class="pref-title">Language</strong>
+                  <strong class="pref-title"> {{ 'Language' | translate }}</strong>
                 </div>
                 <div class="lang-grid">
                   @for (lang of languages; track lang.code) {
@@ -225,8 +225,8 @@
               <a routerLink="/settings" class="dropdown-item settings-item" (click)="closeMenus()">
                 <span class="material-icons item-icon">settings</span>
                 <div class="item-text">
-                  <strong class="item-title">System & Company Settings</strong>
-                  <span class="item-desc">Taxes, company details, currency & POS</span>
+                  <strong class="item-title"> {{ 'System & Company Settings' | translate }}</strong>
+                  <span class="item-desc"> {{ 'Taxes, company details, currency & POS' | translate }}</span>
                 </div>
                 <span class="material-icons chevron-ico">chevron_right</span>
               </a>
