@@ -3,7 +3,7 @@
     <div class="toolbar-left">
       <a [routerLink]="'/' + config().routeSegment" class="back-link">
         <span class="material-icons">arrow_back</span>
-        <span>{{ config().pluralName }}</span>
+        <span>{{ config().pluralName | translate }}</span>
       </a>
       <div class="doc-title-lockup">
         <span class="doc-code">{{ document().docNumber }}</span>
@@ -34,19 +34,19 @@
     </div>
 
     <div class="toolbar-right">
-      <button type="button" class="btn-action edit-btn" (click)="onEdit()" [title]="Edit document fields | translate">
+      <button type="button" class="btn-action edit-btn" (click)="onEdit()" [title]="'Edit document fields' | translate">
         <span class="material-icons btn-icon">edit</span>
         <span>{{ 'Edit' | translate }}</span>
       </button>
 
-      <button type="button" class="btn-action duplicate-btn" (click)="onDuplicate()" [title]="Duplicate | translate">
+      <button type="button" class="btn-action duplicate-btn" (click)="onDuplicate()" [title]="'Duplicate' | translate">
         <span class="material-icons btn-icon">content_copy</span>
         <span>{{ 'Duplicate' | translate }}</span>
       </button>
 
       <div class="status-action-box">
         @if (document().status !== 'paid' && document().status !== 'completed') {
-          <button type="button" class="btn-action status-btn mark-paid" (click)="updateStatus('paid')" [title]="Mark this document as fully settled | translate">
+          <button type="button" class="btn-action status-btn mark-paid" (click)="updateStatus('paid')" [title]="'Mark this document as fully settled' | translate">
             <span class="material-icons btn-icon">check_circle</span>
             <span>{{ 'Mark Paid' | translate }}</span>
           </button>
@@ -61,7 +61,7 @@
       @if (document().docType === 'xfacture' || document().docType === 'invoices' || document().docType === 'credit-notes' || document().docType === 'order-x') {
         <div class="output-control">
           <span class="material-icons">file_download</span>
-          <select class="output-select" [value]="selectedOutput()" (change)="selectedOutput.set($any($event.target).value)" [attr.aria-label]="Choose document output | translate">
+          <select class="output-select" [value]="selectedOutput()" (change)="selectedOutput.set($any($event.target).value)" [attr.aria-label]="'Choose document output' | translate">
             <option value="pdf">{{ 'Standard PDF' | translate }}</option>
             @if (document().docType === 'xfacture' || document().docType === 'credit-notes') { <option value="factur-x">{{ 'Factur-X PDF' | translate }}</option> }
             @if (document().docType === 'xfacture' || document().docType === 'invoices' || document().docType === 'credit-notes') {
@@ -76,7 +76,7 @@
           class="btn-action download-btn"
           (click)="downloadSelectedOutput()"
           [disabled]="isGeneratingPdf() || isGeneratingFacturX()"
-          [title]="Download | translate"
+          [title]="'Download selected document output' | translate"
         >
           @if (isGeneratingPdf() || isGeneratingFacturX()) {
             <span class="download-spinner" aria-hidden="true"></span>
@@ -92,12 +92,12 @@
         </button>
       }
 
-      <button type="button" class="btn-action print-btn" (click)="onPrint()" [title]="Send to printer | translate">
+      <button type="button" class="btn-action print-btn" (click)="onPrint()" [title]="'Send to printer' | translate">
         <span class="material-icons btn-icon">print</span>
         <span>{{ 'Print' | translate }}</span>
       </button>
 
-      <button type="button" class="btn-action delete-btn" (click)="confirmDelete()" [title]="Delete document | translate" [attr.aria-label]="Delete document | translate">
+      <button type="button" class="btn-action delete-btn" (click)="confirmDelete()" [title]="'Delete document' | translate" [attr.aria-label]="Delete document | translate">
         <span class="material-icons btn-icon">delete_outline</span>
       </button>
     </div>
