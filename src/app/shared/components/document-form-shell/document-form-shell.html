@@ -471,17 +471,7 @@
           </div>
         }
 
-        <div class="totals-financial-layout">
-          <div class="totals-notes-panel">
-            <label class="field-label" for="invoice-summary-notes">Notes</label>
-            <p class="totals-notes-hint">Optional note printed on the document.</p>
-            <textarea id="invoice-summary-notes" class="form-textarea totals-notes-input" rows="5" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms, delivery context, or a short thank-you message."></textarea>
-            <label class="field-label payment-details-label" for="invoice-summary-payment-details">Payment details</label>
-            <p class="totals-notes-hint">Optional bank or payment instructions printed on the document.</p>
-            <textarea id="invoice-summary-payment-details" class="form-textarea totals-notes-input payment-details-input" rows="5" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Bank transfer, IBAN, account holder, BIC/SWIFT, payment link, or other instructions."></textarea>
-            <span class="field-help">Printed as entered. Bank details are not automatically converted into structured bank-account data in embedded XML.</span>
-          </div>
-          <div class="totals-ledger-panel">
+        <div class="totals-ledger-panel">
           <div class="ledger-item-row subtotal-row">
             <span class="ledger-item-label">
               <span>Subtotal before discounts</span>
@@ -529,18 +519,13 @@
             <span class="ledger-item-value net-value">{{ totals().netTotal | number:'1.2-2' }} {{ document().currency }}</span>
           </div>
 
-          @if (totals().taxBreakdown.length > 0) {
-            <div class="vat-breakdown-group">
-              <div class="vat-breakdown-heading">VAT breakdown</div>
-              @for (tb of totals().taxBreakdown; track tb.taxRate) {
-                <div class="ledger-item-row tax-breakdown-line">
-                  <span class="ledger-item-label">
-                    <span class="tax-rate-badge">VAT {{ tb.taxRate }}%</span>
-                    <span class="tax-base-note">({{ tb.netAmount | number:'1.2-2' }} {{ document().currency }} base)</span>
-                  </span>
-                  <span class="ledger-item-value tax-val">+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
-                </div>
-              }
+          @for (tb of totals().taxBreakdown; track tb.taxRate) {
+            <div class="ledger-item-row tax-breakdown-line">
+              <span class="ledger-item-label">
+                <span class="tax-rate-badge">VAT {{ tb.taxRate }}%</span>
+                <span class="tax-base-note">({{ tb.netAmount | number:'1.2-2' }} {{ document().currency }} base)</span>
+              </span>
+              <span class="ledger-item-value tax-val">+{{ tb.taxAmount | number:'1.2-2' }} {{ document().currency }}</span>
             </div>
           }
 
@@ -555,7 +540,6 @@
               <strong class="total-due-number">{{ totals().total | number:'1.2-2' }}</strong>
               <span class="total-due-currency">{{ document().currency }}</span>
             </div>
-          </div>
           </div>
         </div>
       </div>
@@ -993,6 +977,81 @@
             <span class="material-icons">power_settings_new</span>
             <span>Turn ON Logistics</span>
           </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Final step: Notes & Payment Information -->
+  <section class="form-step-section" id="form-step-notes">
+    <div class="form-section-heading">
+      <div>
+        <span class="step-number" aria-hidden="true">{{ document().hasPricing ? '5' : '4' }}</span>
+        <h3>Notes & payment information</h3>
+        <p>Add customer-facing notes, payment instructions, and an optional footer.</p>
+      </div>
+    </div>
+    <div class="form-step-card notes-step-card" [class.is-expanded]="notesExpanded()">
+      <div
+        class="card-accordion-header"
+        (click)="toggleNotes()"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="toggleNotes()"
+        (keydown.space)="$event.preventDefault(); toggleNotes()"
+        [attr.aria-expanded]="notesExpanded()"
+      >
+        <div class="accordion-title-col">
+          <div class="accordion-title-row">
+            <span class="material-icons accordion-icon">sticky_note_2</span>
+            <h4 class="card-subheading">Notes & Payment Details</h4>
+            <span class="badge-optional">Optional</span>
+            @if (hasNotesData()) {
+              <span class="badge-active-data">Active</span>
+            }
+          </div>
+          <p class="card-subheading-desc">
+            @if (!notesExpanded()) {
+              @if (hasNotesData()) {
+                <span class="summary-highlight">
+                  {{ document().notes ? (document().notes!.length > 50 ? (document().notes!.slice(0, 50) + '…') : document().notes) : (document().bankDetails ? 'Bank remittance specified' : 'Custom footer text enabled') }}
+                </span>
+              } @else {
+                <span>Customer notes, payment terms, flexible bank or payment instructions, and legal footer text.</span>
+              }
+            } @else {
+              <span>Customer notes, payment terms, flexible bank or payment instructions, and legal footer text.</span>
+            }
+          </p>
+        </div>
+
+        <div class="accordion-actions-col">
+          <button
+            type="button"
+            class="btn-accordion-toggle"
+            (click)="$event.stopPropagation(); toggleNotes()"
+            [attr.aria-expanded]="notesExpanded()"
+            aria-label="Toggle Notes and Payment details"
+          >
+            <span class="toggle-cta-text">{{ notesExpanded() ? 'Collapse' : (hasNotesData() ? 'Edit notes' : 'Add notes') }}</span>
+            <span class="material-icons chevron-icon" [class.rotated]="notesExpanded()">expand_more</span>
+          </button>
+        </div>
+      </div>
+
+      @if (notesExpanded()) {
+        <div class="card-accordion-body">
+          <div class="form-bottom-terms-grid">
+            <div class="terms-field-item">
+              <label class="field-label">Special Notes & Terms (Visible on document)</label>
+              <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms: Due within 30 days. Thank you for your business."></textarea>
+            </div>
+            <div class="terms-field-item">
+              <label class="field-label">Payment details / instructions</label>
+              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details."></textarea>
+              <span class="field-help">Printed as entered in the PDF. It is not automatically converted into structured bank-account data in the embedded XML.</span>
+            </div>
+          </div>
         </div>
       }
     </div>
