@@ -9,7 +9,7 @@
     </div>
 
     <div class="dash-quick-actions">
-      <a routerLink="/invoices/new" class="dash-cta-btn primary">
+      <a routerLink="/invoices/create" class="dash-cta-btn primary">
         <span class="material-icons">add</span>
         <span>New Invoice</span>
       </a>
@@ -97,7 +97,7 @@
             <a [routerLink]="['/' + doc.routeSegment]" class="btn-launcher-secondary">
               Browse ({{ doc.pluralName }})
             </a>
-            <a [routerLink]="['/' + doc.routeSegment, 'new']" class="btn-launcher-primary">
+            <a [routerLink]="['/' + doc.routeSegment, 'create']" class="btn-launcher-primary">
               <span class="material-icons">add</span>
               <span>New</span>
             </a>
