@@ -127,6 +127,9 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     "Learn before you generate": "À savoir avant de générer",
     "Send to printer": "Envoyer à l’imprimante",
     "Delete document": "Supprimer le document",
+    "+ Added to Total": "+ Ajouté au total",
+    "Remove": "Supprimer",
+    "identifier": "identifiant",
   },
   ES: {
     'Home':'Inicio','Documents':'Documentos','Invoicing & Commercial Documents':'Facturación y documentos comerciales',
@@ -249,6 +252,9 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     "Learn before you generate": "Información antes de generar",
     "Send to printer": "Enviar a la impresora",
     "Delete document": "Eliminar documento",
+    "+ Added to Total": "+ Añadido al total",
+    "Remove": "Eliminar",
+    "identifier": "identificador",
   },
   DE: {
     'Home':'Startseite','Documents':'Dokumente','Invoicing & Commercial Documents':'Rechnungs- und Geschäftsdokumente',
@@ -371,6 +377,9 @@ const TRANSLATIONS: Record<AppLanguage, Record<string, string>> = {
     "Learn before you generate": "Wichtige Hinweise vor der Erstellung",
     "Send to printer": "An Drucker senden",
     "Delete document": "Dokument löschen",
+    "+ Added to Total": "+ Zur Summe hinzugefügt",
+    "Remove": "Entfernen",
+    "identifier": "Kennung",
   }
 };
 
