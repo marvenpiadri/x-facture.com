@@ -27,8 +27,8 @@
       <div class="control-group">
         <span class="control-label">{{ 'Paper:' | translate }}</span>
         <div class="pills-capsule">
-          <button type="button" class="pill-btn" [class.active]="selectedPaperSize() === 'a4'" (click)="setPaperSize('a4')">A4</button>
-          <button type="button" class="pill-btn" [class.active]="selectedPaperSize() === 'letter'" (click)="setPaperSize('letter')">Letter</button>
+          <button type="button" class="pill-btn" [class.active]="selectedPaperSize() === 'a4'" (click)="setPaperSize('a4')">{{ "A4" | translate }}</button>
+          <button type="button" class="pill-btn" [class.active]="selectedPaperSize() === 'letter'" (click)="setPaperSize('letter')">{{ "Letter" | translate }}</button>
         </div>
       </div>
     </div>
@@ -65,10 +65,10 @@
             <option value="pdf">{{ 'Standard PDF' | translate }}</option>
             @if (document().docType === 'xfacture' || document().docType === 'credit-notes') { <option value="factur-x">{{ 'Factur-X PDF' | translate }}</option> }
             @if (document().docType === 'xfacture' || document().docType === 'invoices' || document().docType === 'credit-notes') {
-              <option value="cii">CII XML</option>
-              <option value="ubl">UBL 2.1 XML</option>
+              <option value="cii">{{ "CII XML" | translate }}</option>
+              <option value="ubl">{{ "UBL 2.1 XML" | translate }}</option>
             }
-            @if (document().docType === 'order-x') { <option value="order-x">Order-X XML</option> }
+            @if (document().docType === 'order-x') { <option value="order-x">{{ "Order-X XML" | translate }}</option> }
           </select>
         </div>
         <button
