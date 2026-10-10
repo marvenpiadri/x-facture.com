@@ -381,7 +381,7 @@
            =================================================================== -->
       @if (document().hasPricing) {
         <section class="doc-summary-calc-section">
-          <!-- Left Column: VAT Breakdown -->
+          <!-- Full-width VAT breakdown above the final calculation -->
           <div class="doc-vat-breakdown-col">
             <div class="summary-block-title">VAT BREAKDOWN</div>
             <table class="vat-breakdown-table">
@@ -414,8 +414,32 @@
             </table>
           </div>
 
-          <!-- Right Column: Factur-X Totals -->
-          <div class="doc-totals-col">
+          <div class="doc-summary-bottom-row">
+            <div class="doc-summary-notes-payment-col">
+              @if (document().bankDetails) {
+                <div class="doc-payment-card">
+                  <div class="payment-card-title">PAYMENT DETAILS</div>
+                  <div class="payment-card-body">
+                    <pre class="bank-details-clean">{{ document().bankDetails }}</pre>
+                  </div>
+                </div>
+              }
+
+              @if (document().notes || document().terms) {
+                <div class="doc-notes-card">
+                  <div class="notes-card-title">NOTES</div>
+                  @if (document().notes) {
+                    <p class="notes-text">{{ document().notes }}</p>
+                  }
+                  @if (document().terms) {
+                    <p class="terms-text">{{ document().terms }}</p>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- Totals on the right, aligned with notes and payment details -->
+            <div class="doc-totals-col">
             <div class="summary-block-title">TOTALS</div>
             <div class="facturx-totals-ledger">
               <div class="totals-line">
@@ -475,33 +499,8 @@
                 </div>
               }
             </div>
+            </div>
           </div>
-        </section>
-      }
-
-      <!-- Payment & Notes Section -->
-      @if (document().bankDetails || document().notes || document().terms) {
-        <section class="doc-terms-payment-section">
-          @if (document().bankDetails) {
-            <div class="doc-payment-card">
-              <div class="payment-card-title">PAYMENT</div>
-              <div class="payment-card-body">
-                <pre class="bank-details-clean">{{ document().bankDetails }}</pre>
-              </div>
-            </div>
-          }
-
-          @if (document().notes || document().terms) {
-            <div class="doc-notes-card">
-              <div class="notes-card-title">NOTES</div>
-              @if (document().notes) {
-                <p class="notes-text">{{ document().notes }}</p>
-              }
-              @if (document().terms) {
-                <p class="terms-text">{{ document().terms }}</p>
-              }
-            </div>
-          }
         </section>
       }
 
