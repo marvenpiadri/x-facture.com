@@ -2,7 +2,7 @@
   @if (loading()) {
     <div class="loading-state-box">
       <div class="spinner"></div>
-      <p>Loading document preview...</p>
+      <p>{{ 'Loading document preview...' | translate }}</p>
     </div>
   } @else if (currentDocument()) {
     <app-document-preview-shell
@@ -14,11 +14,11 @@
   } @else {
     <div class="not-found-box">
       <span class="material-icons not-found-icon">error_outline</span>
-      <h2>Document Not Found</h2>
-      <p>The requested document "{{ docNumber() }}" could not be located in your local database.</p>
+      <h2>{{ 'Document Not Found' | translate }}</h2>
+      <p>{{ "The requested document could not be located in your local database." | translate }}</p>
       <a [routerLink]="['/' + docTypeSlug()]" class="btn-back">
         <span class="material-icons">arrow_back</span>
-        <span>Back to {{ currentConfig().pluralName }}</span>
+        <span>{{ "Back to" | translate }} {{ currentConfig().pluralName | translate }}</span>
       </a>
     </div>
   }
