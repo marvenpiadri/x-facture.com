@@ -2892,7 +2892,7 @@
 }
 
 /* Normalize ordinary fields regardless of which document section contains them. */
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):not(.identifier-value),
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input),
 .doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select),
 .doc-edit-workspace .form-textarea,
 .doc-edit-workspace .party-dropdown {
@@ -2911,7 +2911,7 @@
   line-height: 1.4;
 }
 
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):not(.identifier-value):focus,
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):focus,
 .doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select):focus,
 .doc-edit-workspace .form-textarea:focus,
 .doc-edit-workspace .party-dropdown:focus-visible {
@@ -2920,7 +2920,7 @@
   box-shadow: 0 0 0 3px var(--color-money-green-light);
 }
 
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):not(.identifier-value)::placeholder,
+.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input)::placeholder,
 .doc-edit-workspace .form-textarea::placeholder {
   color: var(--color-text-muted);
   opacity: 1;
