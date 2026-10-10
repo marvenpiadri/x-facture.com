@@ -44,22 +44,22 @@
       <!-- Receipt Metadata -->
       <div class="thermal-meta-block">
         <div class="meta-row">
-          <span>Receipt #:</span>
+          <span>{{ 'Receipt #:' | translate }}</span>
           <strong>{{ document().docNumber }}</strong>
         </div>
         <div class="meta-row">
-          <span>Date:</span>
+          <span>{{ 'Date:' | translate }}</span>
           <span>{{ document().issueDate }}</span>
         </div>
         @if (document().specialFields?.['cashier']) {
           <div class="meta-row">
-            <span>Cashier:</span>
+            <span>{{ 'Cashier:' | translate }}</span>
             <span>{{ document().specialFields?.['cashier'] }}</span>
           </div>
         }
         @if (document().client.name) {
           <div class="meta-row">
-            <span>Customer:</span>
+            <span>{{ 'Customer:' | translate }}</span>
             <span>{{ document().client.name }}</span>
           </div>
         }
@@ -71,10 +71,10 @@
       <table class="thermal-items-table">
         <thead>
           <tr>
-            <th class="text-left">Item</th>
-            <th class="text-center">Qty</th>
-            <th class="text-right">Price</th>
-            <th class="text-right">Total</th>
+            <th class="text-left">{{ 'Item' | translate }}</th>
+            <th class="text-center">{{ 'Qty' | translate }}</th>
+            <th class="text-right">{{ 'Price' | translate }}</th>
+            <th class="text-right">{{ 'Total' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -94,7 +94,7 @@
       <!-- Totals Block -->
       <div class="thermal-totals-block">
         <div class="totals-row">
-          <span>Subtotal</span>
+          <span>{{ 'Subtotal' | translate }}</span>
           <span>{{ formatCurrency(document().subtotal) }}</span>
         </div>
         @if (document().taxAmount > 0) {
@@ -105,13 +105,13 @@
         }
         @if (document().discountAmount > 0) {
           <div class="totals-row discount-row">
-            <span>Discount</span>
+            <span>{{ 'Discount' | translate }}</span>
             <span>-{{ formatCurrency(document().discountAmount) }}</span>
           </div>
         }
         <div class="thermal-rule-dashed"></div>
         <div class="totals-row thermal-grand-total">
-          <span>TOTAL DUE</span>
+          <span>{{ 'TOTAL DUE' | translate }}</span>
           <strong class="thermal-total-amount">{{ formatCurrency(document().total) }}</strong>
         </div>
       </div>
@@ -127,7 +127,7 @@
             </div>
             @if (p.changeDue && p.changeDue > 0) {
               <div class="totals-row font-bold">
-                <span>Change Given</span>
+                <span>{{ 'Change Given' | translate }}</span>
                 <span>{{ formatCurrency(p.changeDue) }}</span>
               </div>
             }
@@ -158,17 +158,17 @@
 
         <div class="doc-meta-side">
           <div class="doc-identity">
-            <div class="doc-type-badge">{{ document().docType === 'xfacture' || document().docType === 'invoices' ? 'INVOICE' : (document().docTypeLabel || 'INVOICE') }}</div>
+            <div class="doc-type-badge">{{ (document().docType === 'xfacture' || document().docType === 'invoices' ? 'INVOICE' : (document().docTypeLabel || 'INVOICE')) | translate }}</div>
             <div class="doc-number-display">{{ document().docNumber }}</div>
           </div>
           <div class="meta-dates-grid">
             <div class="meta-date-item">
-              <span class="meta-date-label">ISSUE DATE</span>
+              <span class="meta-date-label">{{ 'ISSUE DATE' | translate }}</span>
               <strong class="meta-date-val">{{ document().issueDate }}</strong>
             </div>
             @if (document().dueDate) {
               <div class="meta-date-item">
-                <span class="meta-date-label">DUE DATE</span>
+                <span class="meta-date-label">{{ 'DUE DATE' | translate }}</span>
                 <strong class="meta-date-val">{{ document().dueDate }}</strong>
               </div>
             }
@@ -181,13 +181,13 @@
         <div class="doc-submeta-bar">
           <div class="submeta-left">
             @if (document().purchaseOrderRef || document().specialFields?.['buyerReference']) {
-              <span class="submeta-label">Order ref.:</span>
+              <span class="submeta-label">{{ 'Order ref.:' | translate }}</span>
               <strong class="submeta-val">{{ document().purchaseOrderRef || document().specialFields?.['buyerReference'] }}</strong>
             }
           </div>
           <div class="submeta-right">
             @if (document().specialFields?.['deliveryDate']) {
-              <span class="submeta-label">Delivered:</span>
+              <span class="submeta-label">{{ 'Delivered:' | translate }}</span>
               <strong class="submeta-val">{{ document().specialFields?.['deliveryDate'] }}</strong>
             }
           </div>
@@ -199,7 +199,7 @@
         <!-- Seller Column -->
         <div class="party-col seller-party-col">
           <div class="party-col-header">
-            <div class="party-role-tag">FROM</div>
+            <div class="party-role-tag">{{ 'FROM' | translate }}</div>
           </div>
           <div class="party-details-stack">
             @if (document().company.name) {
@@ -240,7 +240,7 @@
         <!-- Buyer Column -->
         <div class="party-col buyer-party-col">
           <div class="party-col-header">
-            <div class="party-role-tag">BILL TO</div>
+            <div class="party-role-tag">{{ 'BILL TO' | translate }}</div>
           </div>
           <div class="party-details-stack">
             @if (document().client.name) {
@@ -278,7 +278,7 @@
       @if (document().enableLogistics || document().specialFields?.['enableLogistics']) {
         @if (document().specialFields?.['deliveryRecipient'] || document().specialFields?.['deliveryAddress'] || document().specialFields?.['deliveryPostalCode'] || document().specialFields?.['deliveryCity'] || document().specialFields?.['deliveryCountry'] || document().specialFields?.['carrier'] || document().specialFields?.['trackingNumber'] || document().specialFields?.['deliveryTerms'] || document().shippingInstructions || document().specialFields?.['shippingInstructions'] || document().specialFields?.['deliveryDate']) {
           <section class="doc-delivery-card">
-            <div class="party-role-tag">DELIVERY</div>
+            <div class="party-role-tag">{{ 'DELIVERY' | translate }}</div>
             <div class="delivery-card-grid">
               @if (document().specialFields?.['deliveryRecipient']) {
                 <div class="party-name">{{ document().specialFields?.['deliveryRecipient'] }}</div>
@@ -293,16 +293,16 @@
                 <div class="party-line">{{ document().specialFields?.['deliveryCountry'] }}</div>
               }
               @if (document().specialFields?.['deliveryDate']) {
-                <div class="party-line"><span class="delivery-lbl">Delivery date:</span> {{ document().specialFields?.['deliveryDate'] }}</div>
+                <div class="party-line"><span class="delivery-lbl">{{ 'Delivery date:' | translate }}</span> {{ document().specialFields?.['deliveryDate'] }}</div>
               }
               @if (document().specialFields?.['carrier']) {
-                <div class="party-line"><span class="delivery-lbl">Carrier:</span> {{ document().specialFields?.['carrier'] }}</div>
+                <div class="party-line"><span class="delivery-lbl">{{ 'Carrier:' | translate }}</span> {{ document().specialFields?.['carrier'] }}</div>
               }
               @if (document().specialFields?.['trackingNumber']) {
-                <div class="party-line"><span class="delivery-lbl">Tracking:</span> {{ document().specialFields?.['trackingNumber'] }}</div>
+                <div class="party-line"><span class="delivery-lbl">{{ 'Tracking:' | translate }}</span> {{ document().specialFields?.['trackingNumber'] }}</div>
               }
               @if (document().specialFields?.['deliveryTerms']) {
-                <div class="party-line"><span class="delivery-lbl">Terms:</span> {{ document().specialFields?.['deliveryTerms'] }}</div>
+                <div class="party-line"><span class="delivery-lbl">{{ 'Terms:' | translate }}</span> {{ document().specialFields?.['deliveryTerms'] }}</div>
               }
               @if (document().shippingInstructions || document().specialFields?.['shippingInstructions']) {
                 <div class="party-line">{{ document().shippingInstructions || document().specialFields?.['shippingInstructions'] }}</div>
@@ -322,24 +322,24 @@
           <thead>
             <tr>
               <th class="col-num">#</th>
-              <th class="col-desc">Item</th>
+              <th class="col-desc">{{ 'Item' | translate }}</th>
               
               @if (document().hasPricing) {
                 @if (document().lineLayoutMode === 'quantity') {
-                  <th class="col-qty text-center">Qty</th>
-                  <th class="col-rate text-right">Unit price</th>
+                  <th class="col-qty text-center">{{ 'Qty' | translate }}</th>
+                  <th class="col-rate text-right">{{ 'Unit price' | translate }}</th>
                 } @else if (document().lineLayoutMode === 'hours') {
-                  <th class="col-qty text-center">Hours</th>
-                  <th class="col-rate text-right">Hourly Rate</th>
+                  <th class="col-qty text-center">{{ 'Hours' | translate }}</th>
+                  <th class="col-rate text-right">{{ 'Hourly Rate' | translate }}</th>
                 }
                 
                 @if (document().taxRate > 0) {
-                  <th class="col-tax text-center">VAT %</th>
+                  <th class="col-tax text-center">{{ 'VAT %' | translate }}</th>
                 }
                 <th class="col-total text-right">Net ({{ currencySymbol() }})</th>
               } @else {
-                <th class="col-qty text-center">Quantity / Packages</th>
-                <th class="col-notes">Notes / Cargo Specification</th>
+                <th class="col-qty text-center">{{ 'Quantity / Packages' | translate }}</th>
+                <th class="col-notes">{{ 'Notes / Cargo Specification' | translate }}</th>
               }
             </tr>
           </thead>
@@ -383,16 +383,16 @@
         <section class="doc-summary-calc-section">
           <!-- Full-width VAT breakdown above the final calculation -->
           <div class="doc-vat-breakdown-col">
-            <div class="summary-block-title">VAT BREAKDOWN</div>
+            <div class="summary-block-title">{{ 'VAT BREAKDOWN' | translate }}</div>
             <table class="vat-breakdown-table">
               <thead>
                 <tr>
                   @if (hasVatCategories()) {
-                    <th class="text-left">VAT category</th>
+                    <th class="text-left">{{ 'VAT category' | translate }}</th>
                   }
-                  <th class="text-center">Rate</th>
-                  <th class="text-right">Taxable amount</th>
-                  <th class="text-right">Tax amount</th>
+                  <th class="text-center">{{ 'Rate' | translate }}</th>
+                  <th class="text-right">{{ 'Taxable amount' | translate }}</th>
+                  <th class="text-right">{{ 'Tax amount' | translate }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -424,7 +424,7 @@
             <div class="doc-summary-notes-payment-col">
               @if (document().bankDetails) {
                 <div class="doc-payment-card">
-                  <div class="payment-card-title">PAYMENT DETAILS</div>
+                  <div class="payment-card-title">{{ 'PAYMENT DETAILS' | translate }}</div>
                   <div class="payment-card-body">
                     <pre class="bank-details-clean">{{ document().bankDetails }}</pre>
                   </div>
@@ -433,7 +433,7 @@
 
               @if (document().notes || document().terms) {
                 <div class="doc-notes-card">
-                  <div class="notes-card-title">NOTES</div>
+                  <div class="notes-card-title">{{ 'NOTES' | translate }}</div>
                   @if (document().notes) {
                     <p class="notes-text">{{ document().notes }}</p>
                   }
@@ -446,61 +446,61 @@
 
             <!-- Totals on the right, aligned with notes and payment details -->
             <div class="doc-totals-col">
-            <div class="summary-block-title">TOTALS</div>
+            <div class="summary-block-title">{{ 'TOTALS' | translate }}</div>
             <div class="facturx-totals-ledger">
               <div class="totals-line">
-                <span class="totals-lbl">Net total</span>
+                <span class="totals-lbl">{{ 'Net total' | translate }}</span>
                 <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().netTotal || document().subtotal) }}</span>
               </div>
 
               @if (calculatedTotals().discountAmount > 0) {
                 <div class="totals-line discount-line">
-                  <span class="totals-lbl">Discount</span>
+                  <span class="totals-lbl">{{ 'Discount' | translate }}</span>
                   <span class="totals-val font-mono text-discount">-{{ formatCurrency(calculatedTotals().discountAmount) }}</span>
                 </div>
               }
 
               @if ((document().enableLogistics || document().specialFields?.['enableLogistics']) && calculatedTotals().shippingAmount > 0) {
                 <div class="totals-line">
-                  <span class="totals-lbl">Shipping / Freight</span>
+                  <span class="totals-lbl">{{ 'Shipping / Freight' | translate }}</span>
                   <span class="totals-val font-mono">+{{ formatCurrency(calculatedTotals().shippingAmount) }}</span>
                 </div>
               }
 
               @if ((document().enableLogistics || document().specialFields?.['enableLogistics']) && (calculatedTotals().deliveryDiscount || 0) > 0) {
                 <div class="totals-line discount-line">
-                  <span class="totals-lbl">Delivery Discount</span>
+                  <span class="totals-lbl">{{ 'Delivery Discount' | translate }}</span>
                   <span class="totals-val font-mono text-discount">-{{ formatCurrency(calculatedTotals().deliveryDiscount) }}</span>
                 </div>
               }
 
               <div class="totals-line">
-                <span class="totals-lbl">Tax Basis</span>
+                <span class="totals-lbl">{{ 'Tax Basis' | translate }}</span>
                 <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().netTotal || document().subtotal) }}</span>
               </div>
 
               <div class="totals-line vat-total-line">
-                <span class="totals-lbl">VAT total</span>
+                <span class="totals-lbl">{{ 'VAT total' | translate }}</span>
                 <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().taxAmount || document().taxAmount) }}</span>
               </div>
 
               <div class="totals-line gross-total-line">
-                <span class="totals-lbl">Gross total</span>
+                <span class="totals-lbl">{{ 'Gross total' | translate }}</span>
                 <span class="totals-val font-mono">{{ formatCurrency(calculatedTotals().total || document().total) }}</span>
               </div>
 
               @if (document().depositPaid > 0) {
                 <div class="totals-line paid-line">
-                  <span class="totals-lbl">Paid</span>
+                  <span class="totals-lbl">{{ 'Paid' | translate }}</span>
                   <span class="totals-val font-mono text-discount">-{{ formatCurrency(document().depositPaid) }}</span>
                 </div>
                 <div class="totals-line amount-due-line">
-                  <span class="totals-lbl font-bold">Amount due</span>
+                  <span class="totals-lbl font-bold">{{ 'Amount due' | translate }}</span>
                   <span class="totals-val font-bold font-mono text-money">{{ formatCurrency(document().balanceDue) }}</span>
                 </div>
               } @else {
                 <div class="totals-line amount-due-line">
-                  <span class="totals-lbl font-bold">Amount due</span>
+                  <span class="totals-lbl font-bold">{{ 'Amount due' | translate }}</span>
                   <span class="totals-val font-bold font-mono text-money">{{ formatCurrency(calculatedTotals().total || document().total) }}</span>
                 </div>
               }
