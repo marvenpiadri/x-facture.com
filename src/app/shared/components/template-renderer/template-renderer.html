@@ -387,7 +387,9 @@
             <table class="vat-breakdown-table">
               <thead>
                 <tr>
-                  <th class="text-left">VAT category</th>
+                  @if (hasVatCategories()) {
+                    <th class="text-left">VAT category</th>
+                  }
                   <th class="text-center">Rate</th>
                   <th class="text-right">Taxable amount</th>
                   <th class="text-right">Tax amount</th>
@@ -396,7 +398,9 @@
               <tbody>
                 @for (tb of taxBreakdown(); track tb.taxRate) {
                   <tr>
-                    <td class="text-left font-mono">{{ taxCategoryLabel(tb.taxRate) }}</td>
+                    @if (hasVatCategories()) {
+                      <td class="text-left font-mono">{{ taxCategoryLabel(tb.taxRate) }}</td>
+                    }
                     <td class="text-center font-mono">{{ tb.taxRate }}%</td>
                     <td class="text-right font-mono">{{ formatCurrency(tb.netAmount) }}</td>
                     <td class="text-right font-mono">{{ formatCurrency(tb.taxAmount) }}</td>
@@ -404,7 +408,9 @@
                 }
                 @if (taxBreakdown().length === 0) {
                   <tr>
-                    <td class="text-left font-mono">{{ taxCategoryLabel(document().taxRate || 0) }}</td>
+                    @if (hasVatCategories()) {
+                      <td class="text-left font-mono">{{ taxCategoryLabel(document().taxRate || 0) }}</td>
+                    }
                     <td class="text-center font-mono">{{ document().taxRate || 0 }}%</td>
                     <td class="text-right font-mono">{{ formatCurrency(document().subtotal) }}</td>
                     <td class="text-right font-mono">{{ formatCurrency(document().taxAmount) }}</td>
