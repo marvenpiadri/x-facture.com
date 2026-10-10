@@ -2,7 +2,7 @@
   <!-- Workspace Header Bar (on top before the title) -->
   <div class="workspace-top-bar">
     <div class="breadcrumb-trail">
-      <a routerLink="/dashboard" class="bc-link">Dashboard</a>
+      <a routerLink="/dashboard" class="bc-link">{{ "Dashboard" | translate }}</a>
       <span class="bc-sep">/</span>
       <a [routerLink]="'/' + config().routeSegment" class="bc-link">{{ config().pluralName }}</a>
       <span class="bc-sep">/</span>
@@ -14,7 +14,7 @@
         type="button"
         class="btn-prefill-sample"
         (click)="fillSampleData()"
-        title="Autofill sample data for quick preview & testing"
+        title="{{ 'Autofill sample data for quick preview & testing' | translate }}"
       >
         <span class="material-icons sample-icon">auto_fix_high</span>
         <span>{{ 'Fill Sample Data' | translate }}</span>
@@ -58,7 +58,7 @@
             class="form-input serial-input"
             [value]="document().docNumber"
             (input)="onHeaderFieldChange('docNumber', $any($event.target).value)"
-            placeholder="e.g. INV-2026-0001"
+            placeholder="{{ 'e.g. INV-2026-0001' | translate }}"
             required
           />
         </div>
@@ -98,7 +98,7 @@
 
         <div class="form-field-item">
           <label class="field-label">{{ 'P.O. / Customer Reference' | translate }}</label>
-          <input type="text" class="form-input" [value]="document().purchaseOrderRef || ''" (input)="onHeaderFieldChange('purchaseOrderRef', $any($event.target).value)" placeholder="e.g. PO-98421" />
+          <input type="text" class="form-input" [value]="document().purchaseOrderRef || ''" (input)="onHeaderFieldChange('purchaseOrderRef', $any($event.target).value)" placeholder="{{ 'e.g. PO-98421' | translate }}" />
         </div>
       </div>
 
@@ -111,7 +111,7 @@
           <div class="form-meta-grid">
             <div class="form-field-item">
               <label class="field-label">{{ 'Seller routing address' | translate }}</label>
-              <input type="text" class="form-input" [value]="document().company.electronicAddress || ''" (input)="onCompanyFieldChange('electronicAddress', $any($event.target).value)" placeholder="Registered seller endpoint" autocomplete="off" />
+              <input type="text" class="form-input" [value]="document().company.electronicAddress || ''" (input)="onCompanyFieldChange('electronicAddress', $any($event.target).value)" placeholder="{{ 'Registered seller endpoint' | translate }}" autocomplete="off" />
             </div>
             <div class="form-field-item">
               <label class="field-label">{{ 'Seller address scheme' | translate }}</label>
@@ -135,7 +135,7 @@
             </div>
             <div class="form-field-item">
               <label class="field-label">{{ 'Buyer routing address' | translate }}</label>
-              <input type="text" class="form-input" [value]="document().client.electronicAddress || ''" (input)="onClientChange({...document().client, electronicAddress: $any($event.target).value})" placeholder="Registered buyer endpoint" autocomplete="off" />
+              <input type="text" class="form-input" [value]="document().client.electronicAddress || ''" (input)="onClientChange({...document().client, electronicAddress: $any($event.target).value})" placeholder="{{ 'Registered buyer endpoint' | translate }}" autocomplete="off" />
             </div>
             <div class="form-field-item">
               <label class="field-label">{{ 'Buyer address scheme' | translate }}</label>
@@ -161,7 +161,7 @@
           <div class="form-meta-grid">
             <div class="form-field-item">
               <label class="field-label">{{ 'Buyer Reference / Service Code' | translate }}</label>
-              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Chorus Pro / buyer service" />
+              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="{{ 'Chorus Pro / buyer service' | translate }}" />
             </div>
 
             <div class="form-field-item">
@@ -180,11 +180,11 @@
             </div>
             <div class="form-field-item">
               <label class="field-label">{{ 'IBAN' | translate }}</label>
-              <input type="text" class="form-input" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="Enter account IBAN" autocomplete="off" />
+              <input type="text" class="form-input" [value]="document().specialFields?.['iban'] || ''" (input)="onSpecialFieldChange('iban', $any($event.target).value)" placeholder="{{ 'Enter account IBAN' | translate }}" autocomplete="off" />
             </div>
             <div class="form-field-item">
               <label class="field-label">{{ 'BIC / SWIFT' | translate }}</label>
-              <input type="text" class="form-input" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="e.g. ABCDMAMR" autocomplete="off" />
+              <input type="text" class="form-input" [value]="document().specialFields?.['bic'] || ''" (input)="onSpecialFieldChange('bic', $any($event.target).value)" placeholder="{{ 'e.g. ABCDMAMR' | translate }}" autocomplete="off" />
             </div>
           </div>
         </div>
@@ -199,7 +199,7 @@
           <div class="form-meta-grid">
             <div class="form-field-item">
               <label class="field-label">{{ 'Buyer Reference' | translate }}</label>
-              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="Buyer reference" />
+              <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="{{ 'Buyer reference' | translate }}" />
             </div>
             <div class="form-field-item">
               <label class="field-label">{{ 'Requested Delivery Date' | translate }}</label>
@@ -238,7 +238,7 @@
                 <span>{{ 'Seller (From)' | translate }}</span>
               </label>
               <div class="quick-party-select">
-                <select class="party-dropdown" [value]="selectedBusinessId()" (change)="onBusinessSelect($event)" aria-label="Select registered business">
+                <select class="party-dropdown" [value]="selectedBusinessId()" (change)="onBusinessSelect($event)" aria-label="{{ 'Select registered business' | translate }}">
                   <option value="">{{ 'Choose saved business...' | translate }}</option>
                   @for (business of registeredBusinesses(); track business.id) {
                     <option [value]="business.id">{{ business.company.name || 'Unnamed business' }}</option>
@@ -250,34 +250,34 @@
             <div class="party-fields-stack">
               <div class="party-field">
                 <label class="field-label">{{ 'Name / Business name' | translate }}</label>
-                <input type="text" class="form-input" [value]="document().company.name || ''" (input)="onCompanyFieldChange('name', $any($event.target).value)" placeholder="Your full name or business name" autocomplete="organization" required />
+                <input type="text" class="form-input" [value]="document().company.name || ''" (input)="onCompanyFieldChange('name', $any($event.target).value)" placeholder="{{ 'Your full name or business name' | translate }}" autocomplete="organization" required />
               </div>
 
               <div class="party-primary-grid">
                 <div class="party-field">
                   <label class="field-label">{{ 'Email (optional)' | translate }}</label>
-                  <input type="email" class="form-input" [value]="document().company.email || ''" (input)="onCompanyFieldChange('email', $any($event.target).value)" placeholder="billing@example.com" autocomplete="email" />
+                  <input type="email" class="form-input" [value]="document().company.email || ''" (input)="onCompanyFieldChange('email', $any($event.target).value)" placeholder="{{ 'billing@example.com' | translate }}" autocomplete="email" />
                 </div>
                 <div class="party-field">
                   <label class="field-label">{{ 'Phone (optional)' | translate }}</label>
-                  <input type="tel" class="form-input" [value]="document().company.phone || ''" (input)="onCompanyFieldChange('phone', $any($event.target).value)" placeholder="+212 ..." autocomplete="tel" />
+                  <input type="tel" class="form-input" [value]="document().company.phone || ''" (input)="onCompanyFieldChange('phone', $any($event.target).value)" placeholder="{{ '+212 ...' | translate }}" autocomplete="tel" />
                 </div>
               </div>
               <div class="party-field">
                 <label class="field-label">{{ 'Address details' | translate }}</label>
-                <textarea class="form-textarea party-details-textarea" rows="2" [value]="document().company.address || ''" (input)="onSellerDetailsChange($any($event.target).value)" placeholder="Street address, building, suite, etc." autocomplete="street-address"></textarea>
+                <textarea class="form-textarea party-details-textarea" rows="2" [value]="document().company.address || ''" (input)="onSellerDetailsChange($any($event.target).value)" placeholder="{{ 'Street address, building, suite, etc.' | translate }}" autocomplete="street-address"></textarea>
                 <div class="party-location-grid">
                   <div class="party-field">
                     <label class="field-label">{{ 'City (optional)' | translate }}</label>
-                    <input class="form-input" [value]="document().company.city || ''" (input)="onCompanyFieldChange('city', $any($event.target).value)" autocomplete="address-level2" placeholder="City" />
+                    <input class="form-input" [value]="document().company.city || ''" (input)="onCompanyFieldChange('city', $any($event.target).value)" autocomplete="address-level2" placeholder="{{ 'City' | translate }}" />
                   </div>
                   <div class="party-field">
                     <label class="field-label">{{ 'Postal code (optional)' | translate }}</label>
-                    <input class="form-input" [value]="document().company.postalCode || ''" (input)="onCompanyFieldChange('postalCode', $any($event.target).value)" autocomplete="postal-code" placeholder="Postal code" />
+                    <input class="form-input" [value]="document().company.postalCode || ''" (input)="onCompanyFieldChange('postalCode', $any($event.target).value)" autocomplete="postal-code" placeholder="{{ 'Postal code' | translate }}" />
                   </div>
                   <div class="party-field">
                     <label class="field-label">{{ 'Website (optional)' | translate }}</label>
-                    <input class="form-input" [value]="document().company.website || ''" (input)="onCompanyFieldChange('website', $any($event.target).value)" autocomplete="url" placeholder="https://…" />
+                    <input class="form-input" [value]="document().company.website || ''" (input)="onCompanyFieldChange('website', $any($event.target).value)" autocomplete="url" placeholder="{{ 'https://…' | translate }}" />
                   </div>
                 </div>
               </div>
@@ -285,7 +285,7 @@
               <div class="party-extra-fields">
                 <div class="party-field country-field">
                   <label class="field-label">{{ 'Country' | translate }}</label>
-                  <app-country-picker [value]="document().company.country || ''" (valueChange)="onSellerCountryChange($event)" placeholder="Choose country…" ariaLabel="Seller country" aria-required="true"></app-country-picker>
+                  <app-country-picker [value]="document().company.country || ''" (valueChange)="onSellerCountryChange($event)" placeholder="{{ 'Choose country…' | translate }}" ariaLabel="Seller country" aria-required="true"></app-country-picker>
                 </div>
 
               <div class="party-field identifier-manager">
@@ -297,9 +297,9 @@
                   <div class="identifier-row">
                     <div class="identifier-label-control">
                       @if (identifier.custom || identifier.type === 'CUSTOM') {
-                        <input class="form-input" [value]="identifier.label" (input)="updateSellerIdentifier(identifier.id, 'label', $any($event.target).value)" placeholder="Identifier name (e.g. CNSS)" aria-label="Custom identifier name" />
+                        <input class="form-input" [value]="identifier.label" (input)="updateSellerIdentifier(identifier.id, 'label', $any($event.target).value)" placeholder="{{ 'Identifier name (e.g. CNSS)' | translate }}" aria-label="{{ 'Custom identifier name' | translate }}" />
                       } @else {
-                        <select class="form-input" [value]="identifier.type" (change)="updateSellerIdentifier(identifier.id, 'type', $any($event.target).value)" aria-label="Identifier type">
+                        <select class="form-input" [value]="identifier.type" (change)="updateSellerIdentifier(identifier.id, 'type', $any($event.target).value)" aria-label="{{ 'Identifier type' | translate }}">
                           @for (option of sellerIdentifierOptionsFor(identifier.type); track option.type) {
                             <option [value]="option.type">{{ option.label }}</option>
                           }
@@ -311,7 +311,7 @@
                   </div>
                 }
                 <div class="identifier-actions">
-                  <select class="form-select identifier-add-select" (change)="addSellerIdentifier($event)" aria-label="Add a predefined identifier">
+                  <select class="form-select identifier-add-select" (change)="addSellerIdentifier($event)" aria-label="{{ 'Add a predefined identifier' | translate }}">
                     <option value="">{{ 'Add identifier...' | translate }}</option>
                     @for (option of sellerIdentifierDefinitions(); track option.type) {
                       <option [value]="option.type">{{ option.label }}</option>
@@ -419,8 +419,8 @@
                     class="form-input discount-reason-input"
                     [value]="disc.reason"
                     (input)="updateInvoiceDiscount(di, 'reason', $any($event.target).value)"
-                    placeholder="Discount reason (e.g. Commercial discount, Volume rebate)"
-                    aria-label="Discount reason"
+                    placeholder="{{ 'Discount reason (e.g. Commercial discount, Volume rebate)' | translate }}"
+                    aria-label="{{ 'Discount reason' | translate }}"
                   />
                   <div class="discount-input-group value-group">
                     <div class="combined-unit-input">
@@ -431,13 +431,13 @@
                         (input)="updateInvoiceDiscount(di, 'value', $any($event.target).value)"
                         min="0"
                         step="any"
-                        aria-label="Discount value"
+                        aria-label="{{ 'Discount value' | translate }}"
                       />
                       <select
                         class="form-select discount-unit-select"
                         [value]="disc.type"
                         (change)="updateInvoiceDiscount(di, 'type', $any($event.target).value)"
-                        aria-label="Discount unit"
+                        aria-label="{{ 'Discount unit' | translate }}"
                       >
                         <option value="percent">%</option>
                         <option value="fixed">{{ currencySymbol() }}</option>
@@ -447,7 +447,7 @@
                       class="form-select discount-applies-select"
                       [value]="disc.appliesTo"
                       (change)="updateInvoiceDiscount(di, 'appliesTo', $any($event.target).value)"
-                      aria-label="Discount applies to"
+                      aria-label="{{ 'Discount applies to' | translate }}"
                     >
                       <option value="all">{{ 'All items' | translate }}</option>
                       @for (rate of availableTaxRatesForDiscount(); track rate) {
@@ -459,8 +459,8 @@
                       type="button"
                       class="btn-delete-discount"
                       (click)="removeInvoiceDiscount(di)"
-                      title="Remove discount"
-                      aria-label="Remove discount"
+                      title="{{ 'Remove discount' | translate }}"
+                      aria-label="{{ 'Remove discount' | translate }}"
                     >
                       <span class="material-icons">close</span>
                     </button>
@@ -616,7 +616,7 @@
               class="btn-accordion-toggle"
               (click)="$event.stopPropagation(); toggleDelivery()"
               [attr.aria-expanded]="deliveryExpanded()"
-              aria-label="Toggle Logistics details"
+              aria-label="{{ 'Toggle Logistics details' | translate }}"
             >
               <span class="toggle-cta-text">{{ deliveryExpanded() ? 'Collapse' : 'Edit details' }}</span>
               <span class="material-icons chevron-icon" [class.rotated]="deliveryExpanded()">expand_more</span>
@@ -653,7 +653,7 @@
                     class="form-input"
                     [value]="document().specialFields?.['carrier'] || ''"
                     (input)="onSpecialFieldChange('carrier', $any($event.target).value)"
-                    placeholder="e.g. DHL Express, FedEx, UPS, Chronopost"
+                    placeholder="{{ 'e.g. DHL Express, FedEx, UPS, Chronopost' | translate }}"
                   />
                 </div>
 
@@ -664,7 +664,7 @@
                     class="form-input font-mono"
                     [value]="document().specialFields?.['trackingNumber'] || ''"
                     (input)="onSpecialFieldChange('trackingNumber', $any($event.target).value)"
-                    placeholder="e.g. 1Z9999999999999999"
+                    placeholder="{{ 'e.g. 1Z9999999999999999' | translate }}"
                   />
                 </div>
 
@@ -695,7 +695,7 @@
                   class="form-input"
                   [value]="document().shippingInstructions || document().specialFields?.['shippingInstructions'] || ''"
                   (input)="onShippingInstructionsChange($any($event.target).value)"
-                  placeholder="e.g. Fragile goods. Deliver to loading bay 3; gate access code: 4921."
+                  placeholder="{{ 'e.g. Fragile goods. Deliver to loading bay 3; gate access code: 4921.' | translate }}"
                 />
               </div>
 
@@ -719,7 +719,7 @@
                         class="form-input"
                         [value]="document().specialFields?.['deliveryRecipient'] || ''"
                         (input)="onSpecialFieldChange('deliveryRecipient', $any($event.target).value)"
-                        placeholder="e.g. Acme Logistics Center – Dock 2"
+                        placeholder="{{ 'e.g. Acme Logistics Center – Dock 2' | translate }}"
                       />
                     </div>
                     <div class="field-item full-width-field">
@@ -729,7 +729,7 @@
                         class="form-input"
                         [value]="document().specialFields?.['deliveryAddress'] || ''"
                         (input)="onSpecialFieldChange('deliveryAddress', $any($event.target).value)"
-                        placeholder="e.g. 742 Evergreen Terrace, Suite 100"
+                        placeholder="{{ 'e.g. 742 Evergreen Terrace, Suite 100' | translate }}"
                       />
                     </div>
                     <div class="field-item">
@@ -739,7 +739,7 @@
                         class="form-input"
                         [value]="document().specialFields?.['deliveryCity'] || ''"
                         (input)="onSpecialFieldChange('deliveryCity', $any($event.target).value)"
-                        placeholder="City"
+                        placeholder="{{ 'City' | translate }}"
                       />
                     </div>
                     <div class="field-item">
@@ -749,7 +749,7 @@
                         class="form-input"
                         [value]="document().specialFields?.['deliveryPostalCode'] || ''"
                         (input)="onSpecialFieldChange('deliveryPostalCode', $any($event.target).value)"
-                        placeholder="Postal code"
+                        placeholder="{{ 'Postal code' | translate }}"
                       />
                     </div>
                     <div class="field-item">
@@ -845,7 +845,7 @@
                           (input)="onDeliveryFieldChange('shippingAmount', $any($event.target).value)"
                           min="0"
                           step="any"
-                          placeholder="0.00"
+                          placeholder="{{ '0.00' | translate }}"
                         />
                         <span class="input-affix">{{ document().currency }}</span>
                       </div>
@@ -900,7 +900,7 @@
                           (input)="onDeliveryFieldChange('deliveryDiscount', $any($event.target).value)"
                           min="0"
                           step="any"
-                          placeholder="0.00"
+                          placeholder="{{ '0.00' | translate }}"
                         />
                         <span class="input-affix">{{ document().currency }}</span>
                       </div>
@@ -1031,7 +1031,7 @@
             class="btn-accordion-toggle"
             (click)="$event.stopPropagation(); toggleNotes()"
             [attr.aria-expanded]="notesExpanded()"
-            aria-label="Toggle Notes and Payment details"
+            aria-label="{{ 'Toggle Notes and Payment details' | translate }}"
           >
             <span class="toggle-cta-text">{{ notesExpanded() ? 'Collapse' : (hasNotesData() ? 'Edit notes' : 'Add notes') }}</span>
             <span class="material-icons chevron-icon" [class.rotated]="notesExpanded()">expand_more</span>
@@ -1044,11 +1044,11 @@
           <div class="form-bottom-terms-grid">
             <div class="terms-field-item">
               <label class="field-label">{{ 'Special Notes & Terms (Visible on document)' | translate }}</label>
-              <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="Payment terms: Due within 30 days. Thank you for your business."></textarea>
+              <textarea class="form-textarea" rows="3" [value]="document().notes || ''" (input)="onHeaderFieldChange('notes', $any($event.target).value)" placeholder="{{ 'Payment terms: Due within 30 days. Thank you for your business.' | translate }}"></textarea>
             </div>
             <div class="terms-field-item">
               <label class="field-label">{{ 'Payment details / instructions' | translate }}</label>
-              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details."></textarea>
+              <textarea class="form-textarea" rows="4" [value]="document().bankDetails || ''" (input)="onHeaderFieldChange('bankDetails', $any($event.target).value)" placeholder="{{ 'Enter payment method and instructions in the format you use: bank transfer, RIB, IBAN, local account number, BIC/SWIFT, account holder, card payment link, cash, or other details.' | translate }}"></textarea>
               <span class="field-help">{{ 'Printed as entered in the PDF. It is not automatically converted into structured bank-account data in the embedded XML.' | translate }}</span>
             </div>
           </div>
