@@ -9,11 +9,12 @@ import { TemplateRendererComponent } from '../template-renderer/template-rendere
 import { DocumentService } from '../../../core/services/document.service';
 import { StructuredInvoiceService } from '../../../core/services/structured-invoice.service';
 import { ApiService } from '../../../core/services/api.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
 @Component({
   selector: 'app-document-preview-shell',
   standalone: true,
-  imports: [CommonModule, RouterModule, TemplateRendererComponent],
+  imports: [CommonModule, RouterModule, TemplateRendererComponent, TranslatePipe],
   templateUrl: './document-preview-shell.html',
   styleUrl: './document-preview-shell.css',
   changeDetection: ChangeDetectionStrategy.OnPush
