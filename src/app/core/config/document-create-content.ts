@@ -218,8 +218,8 @@ export const DOCUMENT_CREATE_CONTENT: Record<string, CreatePageContent> = {
     ]
   }, 'Business Document'),
   'xfacture': enrichContent({
-    title: 'Generate Free Factur-X E-Invoices Online',
-    description: 'Generate a Factur-X hybrid electronic invoice online for free. Enter seller, buyer, tax, line-item and payment data, then download a human-readable PDF or a Factur-X PDF containing structured XML invoice data.',
+    title: 'Create Free Factur-X Invoices Online',
+    description: 'Create a Factur-X invoice online for free with seller and buyer details, tax categories, line items and payment information. Review your invoice and download a readable PDF with structured XML invoice data embedded in the Factur-X file.',
     keywords: 'free Factur-X generator, Factur-X invoice generator, create Factur-X online, electronic invoice, hybrid e-invoice, EN 16931, ZUGFeRD',
     faqs: [
       { question: 'What is Factur-X?', answer: 'Factur-X is a Franco-German standard for hybrid electronic invoicing that combines a human-readable PDF with structured XML invoice data for automated processing. The current official release is Factur-X 1.09.2 / ZUGFeRD 2.5.2.' },
