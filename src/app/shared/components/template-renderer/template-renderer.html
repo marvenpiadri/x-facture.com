@@ -215,7 +215,7 @@
               <div class="party-line">{{ document().company.country }}</div>
             }
             @if (document().company.taxId && !document().company.taxIdentifiers?.length) {
-              <div class="party-line party-tax-line">Tax ID: {{ document().company.taxId }}</div>
+              <div class="party-line party-tax-line">{{ "Tax ID:" | translate }} {{ document().company.taxId }}</div>
             }
             @for (identifier of document().company.taxIdentifiers || []; track identifier.id) {
               @if (identifier.value) { <div class="party-line party-tax-line">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
@@ -336,7 +336,7 @@
                 @if (document().taxRate > 0) {
                   <th class="col-tax text-center">{{ 'VAT %' | translate }}</th>
                 }
-                <th class="col-total text-right">Net ({{ currencySymbol() }})</th>
+                <th class="col-total text-right">{{ "Net" | translate }} ({{ currencySymbol() }})</th>
               } @else {
                 <th class="col-qty text-center">{{ 'Quantity / Packages' | translate }}</th>
                 <th class="col-notes">{{ 'Notes / Cargo Specification' | translate }}</th>
