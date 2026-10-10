@@ -6,6 +6,8 @@ import { PosService } from './core/services/pos.service';
 import { ThemeService } from './core/services/theme.service';
 import { DOCUMENT_TYPE_CONFIGS } from './core/config/document-type-config';
 import { DocumentTypeConfig } from './core/models/document-type-config.model';
+import { LanguageService } from './core/services/language.service';
+import { TranslatePipe } from './core/pipes/translate.pipe';
 
 interface AppBreadcrumb {
   label: string;
@@ -17,7 +19,7 @@ interface AppBreadcrumb {
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
@@ -25,6 +27,7 @@ export class App {
   private posService = inject(PosService);
   private themeService = inject(ThemeService);
   private router = inject(Router);
+  private languageService = inject(LanguageService);
 
   readonly currentSession = this.posService.currentSession;
   readonly docConfigs: DocumentTypeConfig[] = Object.values(DOCUMENT_TYPE_CONFIGS);
@@ -37,7 +40,7 @@ export class App {
   showToolsDropdown = signal<boolean>(false);
   showProfileMenu = signal<boolean>(false);
 
-  currentLang = signal<string>('EN');
+  readonly currentLang = this.languageService.language;
   readonly languages = [
     { code: 'EN', name: 'English', flag: '🇺🇸' },
     { code: 'FR', name: 'Français', flag: '🇫🇷' },
@@ -119,7 +122,7 @@ export class App {
   }
 
   setLanguage(langCode: string): void {
-    this.currentLang.set(langCode);
+    this.languageService.setLanguage(langCode);
   }
 
   toggleDocsDropdown(): void {
