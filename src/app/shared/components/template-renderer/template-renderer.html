@@ -32,7 +32,7 @@
           <div class="thermal-phone">Tel: {{ document().company.phone }}</div>
         }
         @if (document().company.taxId && !document().company.taxIdentifiers?.length) {
-          <div class="thermal-taxid">Tax ID: {{ document().company.taxId }}</div>
+          <div class="thermal-taxid">{{ 'Tax ID:' | translate }} {{ document().company.taxId }}</div>
         }
         @for (identifier of document().company.taxIdentifiers || []; track identifier.id) {
           @if (identifier.value) { <div class="thermal-taxid">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
@@ -99,7 +99,7 @@
         </div>
         @if (document().taxAmount > 0) {
           <div class="totals-row">
-            <span>Tax {{ document().taxRate ? '(' + document().taxRate + '%)' : '' }}</span>
+            <span>{{ 'Tax' | translate }} {{ document().taxRate ? '(' + document().taxRate + '%)' : '' }}</span>
             <span>{{ formatCurrency(document().taxAmount) }}</span>
           </div>
         }
@@ -122,7 +122,7 @@
         <div class="thermal-payments">
           @for (p of document().specialFields?.['payments']; track $index) {
             <div class="totals-row">
-              <span class="text-uppercase">{{ p.method }} Paid</span>
+              <span class="text-uppercase">{{ p.method }} {{ 'Paid' | translate }}</span>
               <span>{{ formatCurrency(p.amount) }}</span>
             </div>
             @if (p.changeDue && p.changeDue > 0) {
@@ -221,7 +221,7 @@
               @if (identifier.value) { <div class="party-line party-tax-line">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
             }
             @if (document().specialFields?.['sellerTaxNumber']) {
-              <div class="party-line">Tax number: {{ document().specialFields?.['sellerTaxNumber'] }}</div>
+              <div class="party-line">{{ 'Tax number:' | translate }} {{ document().specialFields?.['sellerTaxNumber'] }}</div>
             }
             @if (document().company.email) {
               <div class="party-line">{{ document().company.email }}</div>
@@ -256,7 +256,7 @@
               <div class="party-line">{{ document().client.country }}</div>
             }
             @if (document().client.taxId && !document().client.taxIdentifiers?.length) {
-              <div class="party-line party-tax-line">Tax ID: {{ document().client.taxId }}</div>
+              <div class="party-line party-tax-line">{{ 'Tax ID:' | translate }} {{ document().client.taxId }}</div>
             }
             @for (identifier of document().client.taxIdentifiers || []; track identifier.id) {
               @if (identifier.value) { <div class="party-line party-tax-line">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
