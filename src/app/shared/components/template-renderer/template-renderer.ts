@@ -58,6 +58,19 @@ export class TemplateRendererComponent {
     return this.calculatedTotals().taxBreakdown || [];
   });
 
+  /**
+   * Prefer the invoice line's explicit VAT category code when one is available.
+   * The descriptive calculation category remains the fallback for older documents.
+   */
+  taxCategoryLabel(rate: number, fallback?: string): string {
+    const matchingItem = (this.document().items || []).find(item =>
+      Math.abs(Number(item.taxRate) - Number(rate)) < 0.01 &&
+      Boolean(item.taxCategoryCode?.trim())
+    );
+
+    return matchingItem?.taxCategoryCode?.trim() || fallback || 'S';
+  }
+
   formatCurrency(amount: number | undefined | null): string {
     return this.currencyService.format(amount, this.document().currency);
   }
