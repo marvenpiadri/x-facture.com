@@ -12,11 +12,12 @@ import { DocumentTypeConfig } from '../../../../core/models/document-type-config
 import { DocumentService } from '../../../../core/services/document.service';
 import { BusinessDocument, DocumentStatus } from '../../../../core/models/document.model';
 import { DocumentPreviewShellComponent } from '../../../../shared/components/document-preview-shell/document-preview-shell';
+import { TranslatePipe } from '../../../../core/pipes/translate.pipe';
 
 @Component({
   selector: 'app-document-preview',
   standalone: true,
-  imports: [CommonModule, RouterModule, DocumentPreviewShellComponent],
+  imports: [CommonModule, RouterModule, DocumentPreviewShellComponent, TranslatePipe],
   templateUrl: './document-preview.html',
   styleUrl: './document-preview.css',
   changeDetection: ChangeDetectionStrategy.OnPush
