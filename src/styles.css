@@ -830,3 +830,87 @@ select option {
   .identifier-remove { grid-column: 2; grid-row: 2; }
   .identifier-actions { align-items: stretch; flex-direction: column; }
 }
+
+/* Shared document-form controls. Kept global so the seller form, buyer picker,
+   identifier rows and every document type use the same dimensions and states. */
+.doc-edit-workspace .form-input,
+.doc-edit-workspace .form-select,
+.doc-edit-workspace .form-textarea,
+.doc-edit-workspace .party-dropdown,
+.doc-edit-workspace .party-details-textarea {
+  box-sizing: border-box;
+  min-height: 43px;
+  border: 1px solid var(--color-input-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
+}
+
+.doc-edit-workspace .form-input,
+.doc-edit-workspace .form-select,
+.doc-edit-workspace .party-dropdown {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+}
+
+.doc-edit-workspace .form-select,
+.doc-edit-workspace .party-dropdown {
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+.doc-edit-workspace .form-textarea,
+.doc-edit-workspace .party-details-textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 76px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.doc-edit-workspace .form-input:hover,
+.doc-edit-workspace .form-select:hover,
+.doc-edit-workspace .form-textarea:hover,
+.doc-edit-workspace .party-dropdown:hover,
+.doc-edit-workspace .party-details-textarea:hover {
+  border-color: var(--color-text-muted);
+}
+
+.doc-edit-workspace .form-input:focus,
+.doc-edit-workspace .form-select:focus,
+.doc-edit-workspace .form-textarea:focus,
+.doc-edit-workspace .party-dropdown:focus-visible,
+.doc-edit-workspace .party-details-textarea:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-money-green-light);
+}
+
+.doc-edit-workspace .form-input::placeholder,
+.doc-edit-workspace .form-textarea::placeholder,
+.doc-edit-workspace .party-details-textarea::placeholder {
+  color: var(--color-input-placeholder, var(--color-text-muted));
+  opacity: 1;
+}
+
+.doc-edit-workspace app-country-picker,
+.doc-edit-workspace app-country-picker .country-picker,
+.doc-edit-workspace app-country-picker .country-trigger {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.doc-edit-workspace .party-field app-country-picker {
+  display: block;
+  align-self: stretch;
+}
+
