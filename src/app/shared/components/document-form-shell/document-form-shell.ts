@@ -25,12 +25,14 @@ import { CountryPickerComponent } from '../country-picker/country-picker';
 import { CountryService } from '../../../core/services/country.service';
 import { ApiService } from '../../../core/services/api.service';
 import { ValidationMessageService } from '../../../core/services/validation-message.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
 @Component({
   selector: 'app-document-form-shell',
   standalone: true,
   imports: [
     CommonModule,
+    TranslatePipe,
     FormsModule,
     RouterModule,
     LineItemsTableComponent,
