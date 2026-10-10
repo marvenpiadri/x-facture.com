@@ -58,7 +58,9 @@ export class TemplateRendererComponent {
     return this.calculatedTotals().taxBreakdown || [];
   });
 
-  /** Return the explicitly selected VAT category code for this tax rate. */
+  /** VAT categories are shown only when the invoice contains an explicit code. */
+  hasVatCategories = computed(() => this.taxBreakdown().some(row => this.taxCategoryLabel(row.taxRate)));
+
   taxCategoryLabel(rate: number): string {
     const matchingItem = (this.document().items || []).find(item =>
       Math.abs(Number(item.taxRate) - Number(rate)) < 0.01
