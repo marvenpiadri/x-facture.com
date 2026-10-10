@@ -914,3 +914,16 @@ select option {
   align-self: stretch;
 }
 
+/* Country is a full-row field in both seller and buyer panels. */
+.doc-edit-workspace .party-extra-fields > .country-field {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+}
+
+.doc-edit-workspace .party-extra-fields > .country-field app-country-picker {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}
+
