@@ -9,11 +9,12 @@ import { CommonModule } from '@angular/common';
 import { BusinessDocument } from '../../../core/models/document.model';
 import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService, DocumentTotalsResult } from '../../../core/services/calculation.service';
+import { TranslatePipe } from '../../../core/pipes/translate.pipe';
 
 @Component({
   selector: 'app-template-renderer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './template-renderer.html',
   styleUrl: './template-renderer.css',
   changeDetection: ChangeDetectionStrategy.OnPush
