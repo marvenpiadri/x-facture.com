@@ -2614,7 +2614,7 @@
 }
 
 
-/* Unified form styling: one consistent control system across document types. */
+/* Shared form layout. Control appearance is centralized in src/styles.css. */
 .form-step-section { gap: 14px; }
 
 .form-section-heading h3 {
@@ -2637,100 +2637,10 @@
 }
 
 .form-meta-grid { gap: 18px; }
-
-.field-label {
-  color: var(--color-text-secondary);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: .01em;
-}
-
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input),
-.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select),
-.doc-edit-workspace .form-textarea,
-.doc-edit-workspace .party-dropdown,
-.doc-edit-workspace .form-field-item > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-.doc-edit-workspace .form-field-item > select,
-.doc-edit-workspace .form-field-item > textarea,
-.doc-edit-workspace .party-field > input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
-.doc-edit-workspace .party-field > select,
-.doc-edit-workspace .party-field > textarea {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  min-height: 43px;
-  padding: 10px 12px;
-  border: 1px solid var(--color-input-border);
-  border-radius: var(--radius-md);
-  background-color: var(--color-input-bg);
-  color: var(--color-input-text);
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 1.4;
-  transition: border-color .16s ease, box-shadow .16s ease, background-color .16s ease;
-}
-
-.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select),
-.doc-edit-workspace .form-field-item > select,
-.doc-edit-workspace .party-field > select {
-  padding-right: 34px;
-  cursor: pointer;
-}
-
-.doc-edit-workspace .form-textarea,
-.doc-edit-workspace .form-field-item > textarea,
-.doc-edit-workspace .party-field > textarea {
-  min-height: 76px;
-  resize: vertical;
-}
-
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):hover,
-.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select):hover,
-.doc-edit-workspace .form-textarea:hover,
-.doc-edit-workspace .party-dropdown:hover,
-.doc-edit-workspace .form-field-item > input:hover,
-.doc-edit-workspace .form-field-item > select:hover,
-.doc-edit-workspace .form-field-item > textarea:hover,
-.doc-edit-workspace .party-field > input:hover,
-.doc-edit-workspace .party-field > select:hover,
-.doc-edit-workspace .party-field > textarea:hover {
-  border-color: var(--color-text-muted);
-}
-
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input):focus,
-.doc-edit-workspace .form-select:not(.discount-unit-select):not(.discount-applies-select):focus,
-.doc-edit-workspace .form-textarea:focus,
-.doc-edit-workspace .party-dropdown:focus-visible,
-.doc-edit-workspace .form-field-item > input:focus-visible,
-.doc-edit-workspace .form-field-item > select:focus-visible,
-.doc-edit-workspace .form-field-item > textarea:focus-visible,
-.doc-edit-workspace .party-field > input:focus-visible,
-.doc-edit-workspace .party-field > select:focus-visible,
-.doc-edit-workspace .party-field > textarea:focus-visible {
-  outline: none;
-  border-color: var(--color-border-focus);
-  box-shadow: 0 0 0 3px var(--color-money-green-light);
-}
-
-.doc-edit-workspace .form-input:not(.num-field):not(.discount-val-input)::placeholder,
-.doc-edit-workspace .form-textarea::placeholder,
-.doc-edit-workspace .form-field-item > input::placeholder,
-.doc-edit-workspace .form-field-item > textarea::placeholder,
-.doc-edit-workspace .party-field > input::placeholder,
-.doc-edit-workspace .party-field > textarea::placeholder {
-  color: var(--color-text-muted);
-  opacity: 1;
-}
-
 .form-field-item,
 .party-field { min-width: 0; }
-
 .form-field-item.full-width { grid-column: 1 / -1; }
-
 .form-step-section + .form-step-section { margin-top: 8px; }
-
 .workspace-top-bar { padding-bottom: 14px; }
 
 .btn-prefill-sample {
@@ -2764,20 +2674,12 @@
   line-height: 1.65;
 }
 
-/* Country selector fills its field at every breakpoint. */
 .doc-edit-workspace app-country-picker,
 .doc-edit-workspace .party-field app-country-picker,
-.doc-edit-workspace .country-picker,
-.doc-edit-workspace .country-trigger {
+.doc-edit-workspace .party-extra-fields > .party-field {
   display: block;
-  box-sizing: border-box;
   width: 100%;
   max-width: 100%;
-  min-width: 0;
-}
-
-.doc-edit-workspace .party-extra-fields > .party-field {
-  width: 100%;
   min-width: 0;
 }
 
@@ -2808,7 +2710,6 @@
   .create-page-intro p { font-size: 14px; }
 }
 
-/* Structured address fields use the same responsive grid across document forms. */
 .party-location-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
