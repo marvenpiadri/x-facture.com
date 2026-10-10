@@ -142,7 +142,7 @@ export class ApiService {
       paperSize,
       filename: document.docNumber || 'document'
     });
-    this.downloadBlob(result.blob, result.filename);
+    this.downloadBlob(result.blob, this.pdfFilename(document.docNumber));
   }
 
   async generateFacturX(options: GenerateFacturXOptions): Promise<{ blob: Blob; filename: string }> {
@@ -177,7 +177,12 @@ export class ApiService {
       paperSize,
       rawInvoiceData: this.toFacturXInvoice(document)
     });
-    this.downloadBlob(result.blob, result.filename);
+    this.downloadBlob(result.blob, this.pdfFilename(document.docNumber));
+  }
+
+  private pdfFilename(documentNumber: string): string {
+    const safeNumber = documentNumber.trim().replace(/[<>:"/\\|?*\u0000-\u001F]/g, '-');
+    return `${safeNumber || 'document'}.pdf`;
   }
 
   private downloadBlob(blob: Blob, filename: string): void {
