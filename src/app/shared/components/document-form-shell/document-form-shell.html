@@ -307,7 +307,7 @@
                       }
                     </div>
                     <input class="form-input identifier-value" [value]="identifier.value" (input)="updateSellerIdentifier(identifier.id, 'value', $any($event.target).value)" [placeholder]="'Enter ' + (identifier.label || 'identifier') + ' value'" [attr.aria-label]="(identifier.label || 'Identifier') + ' value'" />
-                    <button type="button" class="identifier-remove" style="width:30px;height:30px;min-width:30px;padding:0;display:inline-flex;align-items:center;justify-content:center" (click)="removeSellerIdentifier(identifier.id)" [attr.aria-label]="'Remove ' + (identifier.label || 'identifier')">×</button>
+                    <button type="button" class="identifier-remove" style="width:30px;height:30px;min-width:30px;padding:0;display:inline-flex;align-items:center;justify-content:center" (click)="removeSellerIdentifier(identifier.id)" [attr.aria-label]="('Remove' | translate) + ' ' + (identifier.label || ('identifier' | translate))">×</button>
                   </div>
                 }
                 <div class="identifier-actions">
@@ -573,7 +573,7 @@
               {{ isLogisticsEnabled() ? 'ON' : 'OFF' }}
             </span>
             @if (isLogisticsEnabled() && hasDeliveryData()) {
-              <span class="badge-active-data">Active</span>
+              <span class="badge-active-data">{{ "Active" | translate }}</span>
             }
           </div>
           <p class="card-subheading-desc">
@@ -818,7 +818,7 @@
                     <div class="choice-title-row">
                       <span class="material-icons choice-icon">receipt_long</span>
                       <strong class="choice-title">{{ 'Bill Delivery Charge' | translate }}</strong>
-                      <span class="choice-badge-chargeable">+ Added to Total</span>
+                      <span class="choice-badge-chargeable">{{ "+ Added to Total" | translate }}</span>
                     </div>
                     <p class="choice-desc">
                       {{ 'Charge transport/freight fees to the client. Added to the net subtotal and calculated in the tax breakdown.' | translate }}
