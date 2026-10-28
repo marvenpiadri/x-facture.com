@@ -2717,3 +2717,20 @@
   margin-top: 10px;
 }
 
+
+.form-issues {
+  margin: 0 0 var(--space-4, 16px);
+  padding: 12px 16px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  border-radius: var(--radius-md, 10px);
+  color: #78350f;
+}
+.form-issues h2 { margin: 0 0 6px; font-size: var(--text-sm, 14px); font-weight: 700; }
+.form-issues ul { margin: 0; padding-left: 18px; }
+.form-issues button {
+  background: none; border: 0; padding: 2px 0; font: inherit; font-size: 13px;
+  color: inherit; text-decoration: underline; cursor: pointer; text-align: left;
+}
+.form-issues button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+:root[data-theme="dark"] .form-issues { background: #422006; border-color: #854d0e; color: #fde68a; }

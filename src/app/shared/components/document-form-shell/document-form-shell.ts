@@ -71,6 +71,24 @@ export class DocumentFormShellComponent implements OnInit {
     const legacy = this.document().company.taxId?.trim();
     return legacy ? [{ id: 'legacy-tax-id', type: 'VAT', label: 'Tax / VAT', value: legacy }] : [];
   });
+  /** Non-blocking checklist of what is still missing; each entry links to its section. */
+  readonly formIssues = computed(() => {
+    const d = this.document();
+    const issues: { label: string; target: string }[] = [];
+    if (!d.docNumber?.trim()) issues.push({ label: 'Document number is missing', target: 'form-step-details' });
+    if (!d.issueDate) issues.push({ label: 'Issue date is missing', target: 'form-step-details' });
+    if (!d.company.name?.trim()) issues.push({ label: 'Seller name is missing', target: 'form-step-parties' });
+    if (!d.client.name?.trim()) issues.push({ label: 'Buyer name is missing', target: 'form-step-parties' });
+    if (!d.items.some(i => i.description?.trim() && i.unitCost > 0)) {
+      issues.push({ label: 'Add at least one line item with a description and a price', target: 'form-step-items' });
+    }
+    return issues;
+  });
+
+  scrollToSection(id: string): void {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   readonly deliveryExpanded = signal<boolean>(false);
   readonly notesExpanded = signal<boolean>(false);
   readonly validatingXml = signal(false);

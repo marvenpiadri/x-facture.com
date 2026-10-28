@@ -127,22 +127,23 @@
   <!-- ADD / EDIT CLIENT MODAL -->
   @if (showModal()) {
     <div class="modal-backdrop" (click)="showModal.set(false)">
-      <div class="modal-card modal-client" (click)="$event.stopPropagation()">
+      <div class="modal-card modal-client" role="dialog" aria-modal="true" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" aria-labelledby="client-modal-title" (click)="$event.stopPropagation()" (keydown.escape)="showModal.set(false)">
         <div class="modal-header">
           <div class="modal-title-lockup">
             <span class="material-icons modal-icon">person</span>
-            <h3>{{ isEditing() ? 'Edit Client' : 'Add Client' }}</h3>
+            <h3 id="client-modal-title">{{ isEditing() ? 'Edit Client' : 'Add Client' }}</h3>
           </div>
-          <button type="button" class="btn-close-modal" (click)="showModal.set(false)">&times;</button>
+          <button type="button" class="btn-close-modal" aria-label="Close" (click)="showModal.set(false)">&times;</button>
         </div>
         <div class="modal-body">
           <div class="form-field">
-            <label class="field-label">Client Name *</label>
-            <input type="text" class="form-input" [(ngModel)]="activeClient.name" placeholder="Client name" required />
+            <label class="field-label" for="client-name-input">Client Name *</label>
+            <input id="client-name-input" cdkFocusInitial type="text" class="form-input" [(ngModel)]="activeClient.name" placeholder="Client name" required />
           </div>
           <div class="form-field">
-            <label class="field-label">Client Information</label>
+            <label class="field-label" for="client-info-input">Client Information</label>
             <textarea
+              id="client-info-input"
               class="form-input"
               rows="8"
               [(ngModel)]="activeClient.address"
