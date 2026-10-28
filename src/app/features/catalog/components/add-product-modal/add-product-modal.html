@@ -294,6 +294,71 @@
           </div>
         </div>
 
+        <!-- Section: Barcode, stock & POS -->
+        <div class="form-section">
+          <div class="section-label">
+            <span class="material-icons section-ico">qr_code_scanner</span>
+            <span>Barcode, Stock & POS</span>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label class="field-label" for="product-barcode-input">Barcode (EAN / UPC / QR)</label>
+              <input
+                type="text"
+                id="product-barcode-input"
+                class="form-input font-mono"
+                placeholder="Scan or type the code"
+                autocomplete="off"
+                [value]="barcode()"
+                (input)="barcode.set($any($event.target).value)"
+                (keydown.enter)="$event.preventDefault()"
+              />
+              <span class="field-hint">Scanning this code at the POS adds the item to the sale.</span>
+            </div>
+
+            <div class="form-field">
+              <span class="field-label">POS shortcuts</span>
+              <label class="check-row">
+                <input type="checkbox" [checked]="isFavorite()" (change)="isFavorite.set($any($event.target).checked)" />
+                <span>Pin to POS Favorites</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" [checked]="trackStock()" (change)="trackStock.set($any($event.target).checked)" />
+                <span>Track stock quantity</span>
+              </label>
+            </div>
+
+            @if (trackStock()) {
+              <div class="form-field">
+                <label class="field-label" for="product-stock-input">In stock</label>
+                <input
+                  type="number"
+                  id="product-stock-input"
+                  class="form-input font-mono text-right"
+                  step="1"
+                  [value]="stockQty()"
+                  (input)="stockQty.set(+$any($event.target).value || 0)"
+                />
+                <span class="field-hint">Sales lower it, refunds restore it. It may go negative if you oversell.</span>
+              </div>
+
+              <div class="form-field">
+                <label class="field-label" for="product-low-input">Low-stock warning at</label>
+                <input
+                  type="number"
+                  id="product-low-input"
+                  class="form-input font-mono text-right"
+                  min="0"
+                  step="1"
+                  [value]="lowStockThreshold()"
+                  (input)="lowStockThreshold.set(+$any($event.target).value || 0)"
+                />
+              </div>
+            }
+          </div>
+        </div>
+
         <!-- Section: Invoice Description -->
         <div class="form-section">
           <div class="section-label">

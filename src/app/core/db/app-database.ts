@@ -2,7 +2,7 @@ import Dexie, { Table } from 'dexie';
 import { BusinessDocument } from '../models/document.model';
 import { Client } from '../models/client.model';
 import { Product } from '../models/product.model';
-import { RegisterSession, PosSale } from '../models/pos.model';
+import { RegisterSession, PosSale, HeldOrder } from '../models/pos.model';
 import { LedgerEntry } from '../models/ledger.model';
 import { BusinessProfileSettings } from '../models/settings.model';
 
@@ -12,6 +12,7 @@ export class AppDatabase extends Dexie {
   products!: Table<Product, string>;
   posSessions!: Table<RegisterSession, string>;
   posSales!: Table<PosSale, string>;
+  posHeldOrders!: Table<HeldOrder, string>;
   ledgerEntries!: Table<LedgerEntry, string>;
   settings!: Table<BusinessProfileSettings, string>;
 
@@ -36,6 +37,18 @@ export class AppDatabase extends Dexie {
       products: 'id, slug, sku, name, category, isArchived, createdAt',
       posSessions: 'id, sessionNumber, status, openedAt, closedAt',
       posSales: 'id, receiptNumber, sessionId, date, docId',
+      ledgerEntries: 'id, date, type, category, docId, docNumber, status, createdAt',
+      settings: 'id'
+    });
+
+    // Version 3 adds barcode lookup for POS scanning and parked (held) orders.
+    this.version(3).stores({
+      documents: 'id, docNumber, slug, docType, status, issueDate, dueDate, clientId, createdAt, updatedAt',
+      clients: 'id, slug, name, createdAt',
+      products: 'id, slug, sku, barcode, name, category, isArchived, createdAt',
+      posSessions: 'id, sessionNumber, status, openedAt, closedAt',
+      posSales: 'id, receiptNumber, sessionId, date, docId',
+      posHeldOrders: 'id, createdAt',
       ledgerEntries: 'id, date, type, category, docId, docNumber, status, createdAt',
       settings: 'id'
     });
@@ -92,7 +105,14 @@ export const DEFAULT_BUSINESS_SETTINGS: BusinessProfileSettings = {
  * Initialize local storage without creating fictional business, client, product,
  * document, or ledger data. Users must enter their own information.
  */
-export async function seedInitialDataIfNeeded(): Promise<void> {
+let seedRun: Promise<void> | null = null;
+
+/** Runs once per page load; every service calls this on startup and it used to rewrite all clients each time. */
+export function seedInitialDataIfNeeded(): Promise<void> {
+  return (seedRun ??= runSeed());
+}
+
+async function runSeed(): Promise<void> {
   if (typeof window === 'undefined' || typeof indexedDB === 'undefined') return;
 
   try {

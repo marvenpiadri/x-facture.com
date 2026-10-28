@@ -64,6 +64,7 @@ export class ProductService {
       id: product.id || `prod-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
       slug,
       sku: product.sku || '',
+      barcode: product.barcode?.trim() || undefined,
       name,
       description: product.description || '',
       unitCost: Number.isFinite(product.unitCost) ? Number(product.unitCost) : 0,
@@ -71,6 +72,11 @@ export class ProductService {
       category: product.category || 'General',
       icon: product.icon || 'inventory_2',
       imageUrl: product.imageUrl || undefined,
+      isFavorite: !!product.isFavorite,
+      trackStock: !!product.trackStock,
+      stockQty: product.trackStock && Number.isFinite(product.stockQty) ? Number(product.stockQty) : undefined,
+      lowStockThreshold:
+        product.trackStock && Number.isFinite(product.lowStockThreshold) ? Number(product.lowStockThreshold) : undefined,
       isArchived: !!product.isArchived,
       createdAt: product.createdAt || now,
       updatedAt: now

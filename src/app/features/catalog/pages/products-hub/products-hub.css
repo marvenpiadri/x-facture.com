@@ -276,3 +276,29 @@
 .font-mono { font-family: var(--font-mono); }
 .font-bold { font-weight: 700; }
 .text-right { text-align: right; }
+
+.fav-star {
+  margin-left: var(--space-1);
+  font-size: 15px;
+  vertical-align: text-bottom;
+  color: #f59e0b;
+}
+
+.stock-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.stock-tag {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  border: 1px solid;
+  font-size: 11px;
+  font-weight: 700;
+}
+.stock-tag.low { background: var(--color-status-draft-bg); border-color: #f59e0b; color: #b45309; }
+.stock-tag.out { background: var(--color-status-overdue-bg); border-color: var(--color-status-overdue-border); color: var(--color-status-overdue); }
+
+.untracked { color: var(--color-text-muted); }

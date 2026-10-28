@@ -1,501 +1,513 @@
-<div class="pos-workspace">
-  <!-- Top Session Bar -->
-  <header class="pos-session-bar">
-    <div class="session-left">
-      <div class="register-brand">
-        <span class="material-icons register-icon">point_of_sale</span>
-        <div class="register-titles">
-          <span class="register-label">Store POS Register</span>
-          @if (currentSession(); as sess) {
-            <span class="session-meta-tag">
-              Session <strong>{{ sess.sessionNumber }}</strong> • Cashier: <strong>{{ sess.cashierName }}</strong>
-            </span>
-          } @else {
-            <span class="session-closed-tag">Register Drawer Closed</span>
-          }
-        </div>
+<div class="pos">
+  <!-- ===== Session bar ===== -->
+  <header class="bar">
+    <div class="bar-id">
+      <span class="material-icons bar-icon" aria-hidden="true">point_of_sale</span>
+      <div class="bar-titles">
+        <strong>{{ 'POS Register' | translate }}</strong>
+        @if (session(); as s) {
+          <span class="bar-sub">{{ s.sessionNumber }} · {{ s.cashierName }}</span>
+        } @else {
+          <span class="bar-sub closed">{{ 'Register closed' | translate }}</span>
+        }
       </div>
     </div>
 
-    <div class="session-right">
-      @if (currentSession(); as sess) {
-        <div class="drawer-stats">
-          <span class="drawer-stat-item">
-            Sales: <strong>{{ sess.salesCount }}</strong>
-          </span>
-          <span class="drawer-stat-item">
-            Drawer Cash: <strong>{{ formatCurrency(expectedDrawerCash()) }}</strong>
-          </span>
-        </div>
+    @if (session(); as s) {
+      <dl class="stats">
+        <div class="stat"><dt>{{ 'Sales' | translate }}</dt><dd class="num">{{ s.salesCount }}</dd></div>
+        <div class="stat"><dt>{{ 'Net sales' | translate }}</dt><dd class="num">{{ fmt(netSales()) }}</dd></div>
+        <div class="stat"><dt>{{ 'Drawer' | translate }}</dt><dd class="num">{{ fmt(drawerCash()) }}</dd></div>
+      </dl>
+    }
 
-        <button type="button" class="btn-session x-report-btn" (click)="openXReport()" title="Generate mid-shift X-Report">
-          <span class="material-icons btn-icon">receipt_long</span>
-          <span>X-Report</span>
+    <div class="bar-actions">
+      @if (session()) {
+        <button type="button" class="btn-secondary btn-sm" (click)="openSales()">
+          <span class="material-icons" aria-hidden="true">history</span><span class="lbl">{{ 'Sales' | translate }}</span>
         </button>
-
-        <button type="button" class="btn-session close-drawer-btn" (click)="openCloseRegisterModal()" title="Close Register & Reconcile Cash">
-          <span class="material-icons btn-icon">lock</span>
-          <span>Close Register (Z)</span>
+        <button type="button" class="btn-secondary btn-sm held-btn" (click)="modal.set('held')" [attr.aria-label]="'Held orders' | translate">
+          <span class="material-icons" aria-hidden="true">pause_circle</span><span class="lbl">{{ 'Held' | translate }}</span>
+          @if (heldOrders().length) { <span class="count num">{{ heldOrders().length }}</span> }
+          <span class="kbd lbl">F8</span>
+        </button>
+        <button type="button" class="btn-secondary btn-sm" (click)="openReport()">
+          <span class="material-icons" aria-hidden="true">receipt_long</span><span class="lbl">X</span>
+        </button>
+        <button type="button" class="btn-secondary btn-sm" (click)="openClose()">
+          <span class="material-icons" aria-hidden="true">lock</span><span class="lbl">{{ 'Close register' | translate }}</span>
         </button>
       } @else {
-        <button type="button" class="btn-session open-drawer-btn" (click)="openRegisterModal()">
-          <span class="material-icons btn-icon">lock_open</span>
-          <span>Open Register Till</span>
+        <button type="button" class="btn-primary btn-sm" (click)="modal.set('open')">
+          <span class="material-icons" aria-hidden="true">lock_open</span>{{ 'Open register' | translate }}
         </button>
       }
     </div>
   </header>
 
-  <!-- POS Split Screen: Catalog & Active Cart -->
-  <main class="pos-split-grid">
-    <!-- Left Column: Product Selection Catalog -->
-    <section class="catalog-panel">
-      <app-product-picker
-        (productSelected)="onProductSelected($event)"
-      ></app-product-picker>
+  @if (!session()) {
+    <div class="banner" role="status">
+      <span class="material-icons" aria-hidden="true">info</span>
+      <span>{{ 'Open the register to start selling. Browsing the catalog is fine in the meantime.' | translate }}</span>
+    </div>
+  }
+
+  <!-- ===== Main: catalog | cart ===== -->
+  <main class="main">
+    <section class="catalog-col" [attr.aria-label]="'Catalog' | translate">
+      <app-pos-catalog
+        (productPicked)="onPick($event)"
+        (scanMissed)="onScanMissed($event)"
+        (customItemRequested)="openCustom()"
+      />
     </section>
 
-    <!-- Right Column: Active Cart & Checkout Rail -->
-    <section class="cart-rail-panel">
-      <div class="cart-header">
-        <div class="cart-title-group">
-          <span class="material-icons cart-icon">shopping_cart</span>
-          <h3>Current Sale</h3>
-          <span class="cart-count-badge">{{ cart().length }}</span>
-        </div>
-        @if (cart().length > 0) {
-          <button type="button" class="btn-clear-cart" (click)="clearCart()" title="Clear cart">
-            Clear
+    <aside class="cart" [class.open]="cartOpen()" [attr.aria-label]="'Current sale' | translate">
+      <div class="cart-head">
+        <button type="button" class="icon-btn back-btn" (click)="cartOpen.set(false)" [attr.aria-label]="'Back to catalog' | translate">
+          <span class="material-icons">arrow_back</span>
+        </button>
+        <h2 class="cart-title">
+          {{ 'Current sale' | translate }}
+          @if (totals().itemCount) { <span class="pill num">{{ totals().itemCount }}</span> }
+        </h2>
+        @if (cart().length) {
+          <button type="button" class="btn-ghost btn-sm" (click)="clearCart()">
+            <span class="material-icons" aria-hidden="true">delete_sweep</span>{{ 'Clear' | translate }}
           </button>
         }
       </div>
 
-      <!-- Cart Items List -->
-      <div class="cart-items-scroll">
-        @for (item of cart(); track item.productId; let i = $index) {
-          <div class="cart-item-row">
-            <div class="item-primary-info">
-              <span class="item-title">{{ item.name }}</span>
-              <span class="item-unit-price font-mono">{{ formatCurrency(item.unitCost) }} each</span>
+      <button type="button" class="customer" (click)="openCustomerPicker()">
+        <span class="material-icons" aria-hidden="true">{{ customer() ? 'person' : 'person_outline' }}</span>
+        <span class="customer-name">{{ customer()?.name || ('Walk-in customer' | translate) }}</span>
+        <span class="customer-act">{{ customer() ? ('Change' | translate) : ('Add customer' | translate) }}</span>
+      </button>
+
+      <ul class="lines">
+        @for (line of cart(); track line.productId; let i = $index) {
+          <li class="line" [class.expanded]="expandedLine() === line.productId">
+            <div class="line-main">
+              <button type="button" class="line-info" (click)="toggleLine(line.productId)" [attr.aria-expanded]="expandedLine() === line.productId">
+                <span class="line-name">{{ line.name }}</span>
+                <span class="line-meta num">
+                  {{ fmt(line.unitCost) }}
+                  @if (line.discountPercent > 0) { · −{{ line.discountPercent }}% }
+                  @if (line.note) { · <span class="material-icons note-ico" aria-hidden="true">sticky_note_2</span> }
+                </span>
+              </button>
+              <div class="stepper" role="group" [attr.aria-label]="'Quantity' | translate">
+                <button type="button" (click)="setQty(i, line.quantity - 1)" [attr.aria-label]="'Decrease quantity' | translate">−</button>
+                <span class="qty num">{{ line.quantity }}</span>
+                <button type="button" (click)="setQty(i, line.quantity + 1)" [attr.aria-label]="'Increase quantity' | translate">+</button>
+              </div>
+              <span class="line-amount num">{{ fmt(line.amount) }}</span>
             </div>
 
-            <!-- Stepper Controls -->
-            <div class="qty-stepper">
-              <button type="button" class="stepper-btn" (click)="decrementQty(i)">-</button>
-              <span class="qty-display font-mono">{{ item.quantity }}</span>
-              <button type="button" class="stepper-btn" (click)="incrementQty(i)">+</button>
-            </div>
-
-            <!-- Line Total & Delete -->
-            <div class="item-amount-group">
-              <span class="item-total-val font-mono font-bold">{{ formatCurrency(item.amount) }}</span>
-              <button type="button" class="item-remove-btn" (click)="removeItem(i)">&times;</button>
-            </div>
-          </div>
+            @if (expandedLine() === line.productId) {
+              <div class="line-edit">
+                <div class="field">
+                  <label class="field-label" [for]="'q' + i">{{ 'Qty' | translate }}</label>
+                  <input [id]="'q' + i" class="form-input num" type="number" min="0" step="any" [value]="line.quantity" (change)="setQty(i, +$any($event.target).value)" />
+                </div>
+                <div class="field">
+                  <label class="field-label" [for]="'d' + i">{{ 'Discount %' | translate }}</label>
+                  <input [id]="'d' + i" class="form-input num" type="number" min="0" max="100" step="any" [value]="line.discountPercent" (change)="onLineDiscount(i, $event)" />
+                </div>
+                <div class="field span-2">
+                  <label class="field-label" [for]="'n' + i">{{ 'Line note' | translate }}</label>
+                  <input [id]="'n' + i" class="form-input" type="text" [value]="line.note || ''" (change)="onLineNote(i, $event)" [placeholder]="'e.g. no sugar, gift wrap…' | translate" />
+                </div>
+                <button type="button" class="btn-ghost btn-sm remove" (click)="setQty(i, 0)">
+                  <span class="material-icons" aria-hidden="true">delete_outline</span>{{ 'Remove item' | translate }}
+                </button>
+              </div>
+            }
+          </li>
         } @empty {
-          <div class="empty-cart-state">
-            <span class="material-icons empty-cart-icon">shopping_bag</span>
-            <p>Cart is empty</p>
-            <span class="empty-subtext">Tap or search products on the left to start sale</span>
-          </div>
+          <li class="cart-empty">
+            <span class="material-icons" aria-hidden="true">shopping_bag</span>
+            <p>{{ 'Cart is empty' | translate }}</p>
+            <small>{{ 'Tap a product or scan a barcode to start.' | translate }}</small>
+          </li>
         }
-      </div>
+      </ul>
 
-      <!-- Cart Modifiers: Discount & Quick Note -->
-      <div class="cart-modifiers-box">
-        <div class="modifier-row">
-          <label class="mod-label">Discount</label>
-          <div class="input-with-symbol">
-            <span class="input-prefix">$</span>
+      <div class="cart-foot">
+        <div class="mods">
+          <div class="mod-row">
+            <span class="field-label">{{ 'Discount' | translate }}</span>
+            <div class="segmented" role="group" [attr.aria-label]="'Discount type' | translate">
+              <button type="button" [class.active]="discount().type === 'percent'" (click)="setDiscountType('percent')">%</button>
+              <button type="button" [class.active]="discount().type === 'amount'" (click)="setDiscountType('amount')">{{ symbol() }}</button>
+            </div>
             <input
+              class="form-input num discount-input"
               type="number"
-              class="mod-input text-right"
-              [value]="currentDiscount()"
-              (input)="onDiscountChange($event)"
               min="0"
-              placeholder="0.00"
+              step="any"
+              inputmode="decimal"
+              placeholder="0"
+              [attr.aria-label]="'Discount value' | translate"
+              [value]="discount().value || ''"
+              (change)="onDiscountValue($event)"
             />
           </div>
-        </div>
-
-        <div class="modifier-row">
-          <label class="mod-label">Sale Note</label>
           <input
+            class="form-input note-input"
             type="text"
-            class="mod-input"
-            [value]="currentNote()"
-            (input)="onNoteChange($event)"
-            placeholder="e.g. Regular customer discount..."
+            [placeholder]="'Sale note (printed on receipt)' | translate"
+            [attr.aria-label]="'Sale note' | translate"
+            [value]="note()"
+            (input)="onNote($event)"
           />
         </div>
-      </div>
 
-      <!-- Running Totals & Checkout -->
-      <div class="cart-footer-block">
-        <div class="summary-line">
-          <span>Subtotal</span>
-          <span class="font-mono">{{ formatCurrency(subtotal()) }}</span>
+        <dl class="totals">
+          <div><dt>{{ 'Subtotal' | translate }}</dt><dd class="num">{{ fmt(totals().subtotal) }}</dd></div>
+          @if (totals().discountAmount > 0) {
+            <div class="neg"><dt>{{ 'Discount' | translate }} <small>({{ discountSummary() }})</small></dt><dd class="num">−{{ fmt(totals().discountAmount) }}</dd></div>
+          }
+          @for (row of totals().taxBreakdown; track row.taxRate) {
+            @if (row.taxRate > 0) {
+              <div><dt>{{ 'Tax' | translate }} {{ row.taxRate }}%</dt><dd class="num">{{ fmt(row.taxAmount) }}</dd></div>
+            }
+          }
+          <div class="grand"><dt>{{ 'Total' | translate }}</dt><dd class="num">{{ fmt(totals().total) }}</dd></div>
+        </dl>
+
+        <div class="cta">
+          <button type="button" class="btn-secondary hold-cta" [disabled]="!cart().length" (click)="hold()" [attr.title]="'Park this sale (F4)' | translate">
+            <span class="material-icons" aria-hidden="true">pause</span>{{ 'Hold' | translate }}
+          </button>
+          <button type="button" class="btn-primary pay-cta" [disabled]="!cart().length" (click)="openCheckout()">
+            <span class="material-icons" aria-hidden="true">payments</span>
+            {{ 'Pay' | translate }} <span class="num">{{ fmt(totals().total) }}</span>
+            <span class="kbd">F9</span>
+          </button>
         </div>
-        @if (taxAmount() > 0) {
-          <div class="summary-line">
-            <span>Estimated Tax</span>
-            <span class="font-mono">+{{ formatCurrency(taxAmount()) }}</span>
-          </div>
-        }
-        @if (currentDiscount() > 0) {
-          <div class="summary-line text-discount">
-            <span>Discount</span>
-            <span class="font-mono">-{{ formatCurrency(currentDiscount()) }}</span>
-          </div>
-        }
-
-        <div class="total-big-line">
-          <span class="total-label">TOTAL</span>
-          <strong class="total-value font-mono">{{ formatCurrency(total()) }}</strong>
-        </div>
-
-        <!-- Touch-friendly large Checkout CTA -->
-        <button
-          type="button"
-          class="btn-checkout-cta"
-          [disabled]="cart().length === 0"
-          (click)="openCheckout()"
-        >
-          <span class="material-icons checkout-icon">payments</span>
-          <span>CHECKOUT ({{ formatCurrency(total()) }})</span>
-        </button>
       </div>
-    </section>
+    </aside>
   </main>
 
-  <!-- =======================================================================
-       MODAL 1: OPEN REGISTER TILL
-       ======================================================================= -->
-  @if (showOpenModal()) {
-    <div class="modal-backdrop" (click)="showOpenModal.set(false)">
-      <div class="modal-card" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div class="modal-title-lockup">
-            <span class="material-icons modal-icon">lock_open</span>
-            <h3>Open Cash Register</h3>
+  <!-- Mobile cart bar -->
+  <div class="mobile-bar">
+    <button type="button" class="btn-primary mobile-bar-btn" [disabled]="!cart().length" (click)="cartOpen.set(true)">
+      <span class="material-icons" aria-hidden="true">shopping_cart</span>
+      <span>{{ totals().itemCount }} {{ 'items' | translate }}</span>
+      <span class="grow"></span>
+      <strong class="num">{{ fmt(totals().total) }}</strong>
+      <span class="material-icons" aria-hidden="true">expand_less</span>
+    </button>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-region" aria-live="polite">
+    @if (toast(); as tst) {
+      <div class="toast" [class.error]="tst.tone === 'error'" [class.success]="tst.tone === 'success'">{{ tst.text }}</div>
+    }
+  </div>
+
+  <!-- ===== Dialogs ===== -->
+  @switch (modal()) {
+    @case ('open') {
+      <div class="modal-backdrop" (click)="closeModal()">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="m-open" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 class="modal-title" id="m-open"><span class="material-icons" aria-hidden="true">lock_open</span>{{ 'Open register' | translate }}</h3>
+            <button type="button" class="icon-btn" (click)="closeModal()" [attr.aria-label]="'Close' | translate"><span class="material-icons">close</span></button>
           </div>
-          <button type="button" class="btn-close-modal" (click)="showOpenModal.set(false)">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <p class="modal-instruction">
-            Enter cashier identity and verify starting cash float before taking sales.
-          </p>
-
-          <div class="modal-field">
-            <label class="field-label">Cashier Name</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="openCashierName()"
-              (input)="openCashierName.set($any($event.target).value)"
-              placeholder="Clerk or Cashier Name"
-            />
-          </div>
-
-          <div class="modal-field">
-            <label class="field-label">Starting Cash Float (In Drawer)</label>
-            <div class="input-with-symbol">
-              <span class="input-prefix">$</span>
-              <input
-                type="number"
-                class="form-input text-right font-mono with-prefix"
-                [value]="openStartingFloat()"
-                (input)="openStartingFloat.set($any($event.target).value)"
-                min="0"
-                step="5"
-                placeholder="150.00"
-              />
+          <div class="modal-body">
+            <p class="modal-lead">{{ 'Enter who is working this till and the cash already in the drawer.' | translate }}</p>
+            <div class="field">
+              <label class="field-label" for="open-cashier">{{ 'Cashier name' | translate }}</label>
+              <input id="open-cashier" class="form-input" cdkFocusInitial type="text" [value]="openCashier()" (input)="openCashier.set($any($event.target).value)" (keydown.enter)="confirmOpen()" />
             </div>
-            <span class="field-hint">Usual morning float for change ($100 - $200).</span>
+            <div class="field">
+              <label class="field-label" for="open-float">{{ 'Starting cash float' | translate }}</label>
+              <div class="input-affix">
+                <span class="affix" aria-hidden="true">{{ symbol() }}</span>
+                <input id="open-float" class="form-input num text-right" type="text" inputmode="decimal" [value]="openFloat()" (input)="openFloat.set($any($event.target).value)" (focus)="$any($event.target).select()" (keydown.enter)="confirmOpen()" />
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="showOpenModal.set(false)">Cancel</button>
-          <button type="button" class="btn-primary" (click)="confirmOpenRegister()">
-            <span class="material-icons">check</span>
-            <span>Open Register & Start Sales</span>
-          </button>
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost" (click)="closeModal()">{{ 'Not now' | translate }}</button>
+            <button type="button" class="btn-primary" (click)="confirmOpen()"><span class="material-icons" aria-hidden="true">check</span>{{ 'Open & start selling' | translate }}</button>
+          </div>
         </div>
       </div>
-    </div>
-  }
+    }
 
-  <!-- =======================================================================
-       MODAL 2: CHECKOUT & PAYMENT PROCESSING
-       ======================================================================= -->
-  @if (showCheckoutModal()) {
-    <div class="modal-backdrop" (click)="showCheckoutModal.set(false)">
-      <div class="modal-card modal-checkout" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div class="modal-title-lockup">
-            <span class="material-icons modal-icon">point_of_sale</span>
-            <h3>Process Payment</h3>
+    @case ('checkout') {
+      <app-pos-checkout
+        [total]="totals().total"
+        [currency]="currency()"
+        [busy]="busy()"
+        [customerName]="customer()?.name ?? null"
+        (confirmed)="onPaid($event)"
+        (cancelled)="closeModal()"
+      />
+    }
+
+    @case ('done') {
+      @if (completed(); as done) {
+        <div class="modal-backdrop">
+          <div class="modal-card done" role="dialog" aria-modal="true" aria-labelledby="m-done" cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
+            <div class="modal-body done-body">
+              <span class="material-icons done-ico" aria-hidden="true">check_circle</span>
+              <h3 id="m-done" class="done-title">{{ 'Sale complete' | translate }}</h3>
+              <div class="done-total num">{{ fmt(done.doc.total) }}</div>
+              <div class="done-meta">{{ done.doc.docNumber }}</div>
+              @if (done.changeDue > 0) {
+                <div class="done-change" role="status">
+                  <span>{{ 'Give change' | translate }}</span>
+                  <strong class="num">{{ fmt(done.changeDue) }}</strong>
+                </div>
+              }
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn-secondary" (click)="viewReceipt(done.doc.docNumber)">
+                <span class="material-icons" aria-hidden="true">receipt</span>{{ 'View / print receipt' | translate }}
+              </button>
+              <button type="button" class="btn-primary" cdkFocusInitial (click)="newSale()">
+                <span class="material-icons" aria-hidden="true">add_shopping_cart</span>{{ 'New sale' | translate }}
+              </button>
+            </div>
           </div>
-          <button type="button" class="btn-close-modal" (click)="showCheckoutModal.set(false)">&times;</button>
         </div>
+      }
+    }
 
-        <div class="modal-body">
-          <!-- Total Callout -->
-          <div class="checkout-amount-hero">
-            <span class="hero-label">Amount Due</span>
-            <span class="hero-val font-mono">{{ formatCurrency(total()) }}</span>
+    @case ('custom') {
+      <div class="modal-backdrop" (click)="closeModal()">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="m-custom" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 class="modal-title" id="m-custom"><span class="material-icons" aria-hidden="true">add_circle_outline</span>{{ 'Custom item' | translate }}</h3>
+            <button type="button" class="icon-btn" (click)="closeModal()" [attr.aria-label]="'Close' | translate"><span class="material-icons">close</span></button>
           </div>
-
-          <!-- Payment Method Selector Tabs -->
-          <div class="payment-method-tabs">
-            <button
-              type="button"
-              class="method-tab"
-              [class.active]="paymentMethod() === 'cash'"
-              (click)="paymentMethod.set('cash')"
-            >
-              <span class="material-icons">payments</span>
-              <span>Cash</span>
-            </button>
-            <button
-              type="button"
-              class="method-tab"
-              [class.active]="paymentMethod() === 'card'"
-              (click)="paymentMethod.set('card')"
-            >
-              <span class="material-icons">credit_card</span>
-              <span>Credit / Debit Card</span>
-            </button>
-            <button
-              type="button"
-              class="method-tab"
-              [class.active]="paymentMethod() === 'other'"
-              (click)="paymentMethod.set('other')"
-            >
-              <span class="material-icons">contactless</span>
-              <span>Other / Mobile</span>
-            </button>
-          </div>
-
-          <!-- Cash payment helper buttons & change calculation -->
-          @if (paymentMethod() === 'cash') {
-            <div class="cash-tendered-panel">
-              <label class="field-label">Cash Tendered</label>
-              <div class="input-with-symbol">
-                <span class="input-prefix">$</span>
-                <input
-                  type="number"
-                  class="form-input text-right font-mono font-bold with-prefix tendered-input"
-                  [value]="tenderedCash()"
-                  (input)="tenderedCash.set($any($event.target).value)"
-                  step="any"
-                />
+          <div class="modal-body">
+            <div class="field">
+              <label class="field-label" for="c-name">{{ 'Description' | translate }}</label>
+              <input id="c-name" class="form-input" type="text" [value]="customName()" (input)="customName.set($any($event.target).value)" [placeholder]="'e.g. Alterations, delivery fee' | translate" />
+            </div>
+            <div class="grid-3">
+              <div class="field">
+                <label class="field-label" for="c-price">{{ 'Price' | translate }}</label>
+                <div class="input-affix">
+                  <span class="affix" aria-hidden="true">{{ symbol() }}</span>
+                  <input id="c-price" class="form-input num text-right" cdkFocusInitial type="text" inputmode="decimal" [value]="customPrice()" (input)="customPrice.set($any($event.target).value)" (keydown.enter)="confirmCustom()" placeholder="0.00" />
+                </div>
               </div>
-
-              <!-- Quick Presets ($20, $50, $100, Exact) -->
-              <div class="cash-presets-row">
-                <button type="button" class="preset-btn" (click)="setTenderedPreset(total())">Exact</button>
-                <button type="button" class="preset-btn" (click)="setTenderedPreset(20)">$20</button>
-                <button type="button" class="preset-btn" (click)="setTenderedPreset(50)">$50</button>
-                <button type="button" class="preset-btn" (click)="setTenderedPreset(100)">$100</button>
+              <div class="field">
+                <label class="field-label" for="c-tax">{{ 'Tax %' | translate }}</label>
+                <input id="c-tax" class="form-input num text-right" type="text" inputmode="decimal" [value]="customTax()" (input)="customTax.set($any($event.target).value)" (keydown.enter)="confirmCustom()" />
               </div>
-
-              <!-- Change calculation callout -->
-              <div class="change-due-box">
-                <span class="change-label">Change Due:</span>
-                <strong class="change-val font-mono">{{ formatCurrency(changeDue()) }}</strong>
+              <div class="field">
+                <label class="field-label" for="c-qty">{{ 'Qty' | translate }}</label>
+                <input id="c-qty" class="form-input num text-right" type="text" inputmode="decimal" [value]="customQty()" (input)="customQty.set($any($event.target).value)" (keydown.enter)="confirmCustom()" />
               </div>
             </div>
-          } @else {
-            <div class="card-instructions-box">
-              <span class="material-icons">touch_app</span>
-              <p>Swipe, insert, or tap customer card on terminal. Press complete once authorization approves.</p>
-            </div>
-          }
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="showCheckoutModal.set(false)">Cancel</button>
-          <button type="button" class="btn-primary btn-complete-sale" (click)="completeCheckout()">
-            <span class="material-icons">receipt</span>
-            <span>Complete Sale & View Receipt</span>
-          </button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+            <button type="button" class="btn-primary" [disabled]="!canAddCustom()" (click)="confirmCustom()">{{ 'Add to sale' | translate }}</button>
+          </div>
         </div>
       </div>
-    </div>
-  }
+    }
 
-  <!-- =======================================================================
-       MODAL 3: CLOSE REGISTER TILL & Z-REPORT
-       ======================================================================= -->
-  @if (showCloseModal()) {
-    <div class="modal-backdrop" (click)="showCloseModal.set(false)">
-      <div class="modal-card" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div class="modal-title-lockup">
-            <span class="material-icons modal-icon text-red">lock</span>
-            <h3>Close Register & End Session</h3>
+    @case ('customer') {
+      <div class="modal-backdrop" (click)="closeModal()">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="m-cust" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 class="modal-title" id="m-cust"><span class="material-icons" aria-hidden="true">person_search</span>{{ 'Customer' | translate }}</h3>
+            <button type="button" class="icon-btn" (click)="closeModal()" [attr.aria-label]="'Close' | translate"><span class="material-icons">close</span></button>
           </div>
-          <button type="button" class="btn-close-modal" (click)="showCloseModal.set(false)">&times;</button>
+          <div class="modal-body">
+            <input class="form-input" cdkFocusInitial type="search" [placeholder]="'Search by name, email or phone' | translate" [attr.aria-label]="'Search customers' | translate" [value]="clientQuery()" (input)="clientQuery.set($any($event.target).value)" />
+            <ul class="pick-list">
+              <li><button type="button" class="pick-row" (click)="pickCustomer(null)"><span class="material-icons" aria-hidden="true">person_outline</span><span class="pick-main">{{ 'Walk-in customer' | translate }}</span></button></li>
+              @for (c of filteredClients(); track c.id) {
+                <li>
+                  <button type="button" class="pick-row" [class.selected]="customer()?.id === c.id" (click)="pickCustomer(c)">
+                    <span class="material-icons" aria-hidden="true">person</span>
+                    <span class="pick-main">{{ c.name }}</span>
+                    <span class="pick-sub">{{ c.email || c.phone || '' }}</span>
+                  </button>
+                </li>
+              } @empty {
+                <li class="pick-empty">{{ 'No customers found. Add customers in Clients & CRM.' | translate }}</li>
+              }
+            </ul>
+          </div>
         </div>
+      </div>
+    }
 
-        <div class="modal-body">
-          <p class="modal-instruction">
-            Count the physical cash in the drawer and enter it below to reconcile discrepancies.
-          </p>
-
-          <div class="reconciliation-summary-box">
-            <div class="recon-row">
-              <span>Starting Float:</span>
-              <span class="font-mono">{{ formatCurrency(currentSession()?.startingFloat || 0) }}</span>
-            </div>
-            <div class="recon-row">
-              <span>Cash Sales:</span>
-              <span class="font-mono">+{{ formatCurrency(currentSession()?.cashSales || 0) }}</span>
-            </div>
-            <div class="recon-row font-bold recon-expected">
-              <span>Expected Cash in Drawer:</span>
-              <span class="font-mono">{{ formatCurrency(expectedDrawerCash()) }}</span>
-            </div>
+    @case ('held') {
+      <div class="modal-backdrop" (click)="closeModal()">
+        <div class="modal-card modal-wide" role="dialog" aria-modal="true" aria-labelledby="m-held" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 class="modal-title" id="m-held"><span class="material-icons" aria-hidden="true">pause_circle</span>{{ 'Held orders' | translate }}</h3>
+            <button type="button" class="icon-btn" cdkFocusInitial (click)="closeModal()" [attr.aria-label]="'Close' | translate"><span class="material-icons">close</span></button>
           </div>
-
-          <div class="modal-field">
-            <label class="field-label">Actual Cash Counted ($)</label>
-            <input
-              type="number"
-              class="form-input text-right font-mono font-bold"
-              [value]="closeActualCash()"
-              (input)="closeActualCash.set($any($event.target).value)"
-              min="0"
-              step="0.01"
-            />
+          <div class="modal-body">
+            @if (cart().length && heldView().length) {
+              <p class="modal-lead">{{ 'Hold or clear the current sale before recalling another.' | translate }}</p>
+            }
+            <ul class="pick-list">
+              @for (h of heldView(); track h.order.id) {
+                <li class="pick-row static">
+                  <span class="material-icons" aria-hidden="true">receipt</span>
+                  <span class="pick-main">
+                    {{ h.order.label }}
+                    <small>{{ h.count }} {{ 'items' | translate }} · {{ h.order.createdAt | date:'shortTime' }}</small>
+                  </span>
+                  <strong class="num">{{ fmt(h.total) }}</strong>
+                  <button type="button" class="btn-primary btn-sm" [disabled]="cart().length > 0" (click)="recall(h.order.id)">{{ 'Recall' | translate }}</button>
+                  <button type="button" class="icon-btn" (click)="discardHeld(h.order.id)" [attr.aria-label]="'Delete held order' | translate"><span class="material-icons">delete_outline</span></button>
+                </li>
+              } @empty {
+                <li class="pick-empty">{{ 'No held orders. Press F4 to park the current sale.' | translate }}</li>
+              }
+            </ul>
           </div>
+        </div>
+      </div>
+    }
 
-          <!-- Discrepancy Alert -->
-          <div
-            class="discrepancy-banner"
-            [class.balanced]="cashDiscrepancy() === 0"
-            [class.shortage]="cashDiscrepancy() < 0"
-            [class.overage]="cashDiscrepancy() > 0"
-          >
-            @if (cashDiscrepancy() === 0) {
-              <span class="material-icons">check_circle</span>
-              <span>Drawer is perfectly balanced ($0.00).</span>
-            } @else if (cashDiscrepancy() < 0) {
-              <span class="material-icons">warning</span>
-              <span>Cash Shortage: {{ formatCurrency(cashDiscrepancy()) }}</span>
-            } @else {
-              <span class="material-icons">add_circle</span>
-              <span>Cash Overage: +{{ formatCurrency(cashDiscrepancy()) }}</span>
+    @case ('sales') {
+      <div class="modal-backdrop" (click)="closeModal()">
+        <div class="modal-card modal-wide" role="dialog" aria-modal="true" aria-labelledby="m-sales" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 class="modal-title" id="m-sales"><span class="material-icons" aria-hidden="true">history</span>{{ 'Recent sales' | translate }}</h3>
+            <button type="button" class="icon-btn" cdkFocusInitial (click)="closeModal()" [attr.aria-label]="'Close' | translate"><span class="material-icons">close</span></button>
+          </div>
+          <div class="modal-body">
+            <ul class="pick-list">
+              @for (sale of recentSales(); track sale.id) {
+                <li class="sale" [class.refunded]="sale.status === 'refunded'">
+                  <div class="sale-row">
+                    <span class="pick-main">
+                      <strong>{{ sale.receiptNumber }}</strong>
+                      @if (sale.status === 'refunded') { <span class="tag">{{ 'Refunded' | translate }}</span> }
+                      <small>{{ sale.date }} {{ sale.time }} · {{ sale.clientName || ('Walk-in customer' | translate) }} · {{ paymentSummary(sale) }}</small>
+                    </span>
+                    <strong class="num sale-total">{{ fmt(sale.total) }}</strong>
+                    @if (sale.docId) {
+                      <button type="button" class="btn-secondary btn-sm" (click)="viewReceipt(sale.receiptNumber)">{{ 'Receipt' | translate }}</button>
+                    }
+                    @if (sale.status !== 'refunded') {
+                      <button type="button" class="btn-ghost btn-sm" [disabled]="!session()" (click)="startRefund(sale.id)">{{ 'Refund' | translate }}</button>
+                    }
+                  </div>
+                  @if (refundingId() === sale.id) {
+                    <div class="refund-box">
+                      <input class="form-input" type="text" [placeholder]="'Reason (optional)' | translate" [value]="refundReason()" (input)="refundReason.set($any($event.target).value)" (keydown.enter)="confirmRefund(sale)" />
+                      <button type="button" class="btn-danger btn-sm" [disabled]="busy()" (click)="confirmRefund(sale)">{{ 'Refund' | translate }} {{ fmt(sale.total) }}</button>
+                      <button type="button" class="btn-ghost btn-sm" (click)="refundingId.set(null)">{{ 'Cancel' | translate }}</button>
+                    </div>
+                  }
+                </li>
+              } @empty {
+                <li class="pick-empty">{{ 'No sales yet.' | translate }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    }
+
+    @case ('close') {
+      <div class="modal-backdrop" (click)="closeModal()">
+        <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="m-close" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3 class="modal-title" id="m-close"><span class="material-icons" aria-hidden="true">lock</span>{{ 'Close register' | translate }}</h3>
+            <button type="button" class="icon-btn" (click)="closeModal()" [attr.aria-label]="'Close' | translate"><span class="material-icons">close</span></button>
+          </div>
+          <div class="modal-body">
+            <p class="modal-lead">{{ 'Count the cash in the drawer and enter it to reconcile the shift.' | translate }}</p>
+            @if (session(); as s) {
+              <dl class="recon">
+                <div><dt>{{ 'Starting float' | translate }}</dt><dd class="num">{{ fmt(s.startingFloat) }}</dd></div>
+                <div><dt>{{ 'Cash sales' | translate }}</dt><dd class="num">+{{ fmt(s.cashSales) }}</dd></div>
+                <div><dt>{{ 'Cash refunds' | translate }}</dt><dd class="num">−{{ fmt(s.cashRefunds) }}</dd></div>
+                <div class="strong"><dt>{{ 'Expected in drawer' | translate }}</dt><dd class="num">{{ fmt(drawerCash()) }}</dd></div>
+              </dl>
+            }
+            <div class="field">
+              <label class="field-label" for="close-counted">{{ 'Cash counted' | translate }}</label>
+              <div class="input-affix">
+                <span class="affix" aria-hidden="true">{{ symbol() }}</span>
+                <input id="close-counted" class="form-input num text-right" cdkFocusInitial type="text" inputmode="decimal" [value]="closeCounted()" (input)="closeCounted.set($any($event.target).value)" (focus)="$any($event.target).select()" />
+              </div>
+            </div>
+            <div class="variance" [class.ok]="discrepancy() === 0" [class.short]="discrepancy() < 0" [class.over]="discrepancy() > 0" role="status">
+              <span class="material-icons" aria-hidden="true">{{ discrepancy() === 0 ? 'check_circle' : discrepancy() < 0 ? 'warning' : 'add_circle' }}</span>
+              @if (discrepancy() === 0) { <span>{{ 'Drawer balances.' | translate }}</span> }
+              @else if (discrepancy() < 0) { <span>{{ 'Short by' | translate }} <strong class="num">{{ fmt(-discrepancy()) }}</strong></span> }
+              @else { <span>{{ 'Over by' | translate }} <strong class="num">{{ fmt(discrepancy()) }}</strong></span> }
+            </div>
+            <div class="field">
+              <label class="field-label" for="close-notes">{{ 'Shift notes (optional)' | translate }}</label>
+              <input id="close-notes" class="form-input" type="text" [value]="closeNotes()" (input)="closeNotes.set($any($event.target).value)" />
+            </div>
+            @if (heldOrders().length) {
+              <p class="modal-lead warn"><span class="material-icons" aria-hidden="true">pause_circle</span>{{ 'You still have held orders. They stay saved for the next shift.' | translate }}</p>
             }
           </div>
-
-          <div class="modal-field">
-            <label class="field-label">End-of-shift notes (Optional)</label>
-            <input
-              type="text"
-              class="form-input"
-              [value]="closeNotes()"
-              (input)="closeNotes.set($any($event.target).value)"
-              placeholder="e.g. Drawer balanced, shift handover to evening clerk"
-            />
+          <div class="modal-footer">
+            <button type="button" class="btn-ghost" (click)="closeModal()">{{ 'Cancel' | translate }}</button>
+            <button type="button" class="btn-danger" (click)="confirmClose()"><span class="material-icons" aria-hidden="true">lock</span>{{ 'Close & print Z-report' | translate }}</button>
           </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="showCloseModal.set(false)">Cancel</button>
-          <button type="button" class="btn-danger" (click)="confirmCloseRegister()">
-            <span class="material-icons">lock</span>
-            <span>Lock Session & Print Z-Report</span>
-          </button>
         </div>
       </div>
-    </div>
-  }
+    }
 
-  <!-- =======================================================================
-       MODAL 4: X-REPORT / Z-REPORT SLIP DISPLAY
-       ======================================================================= -->
-  @if (showXReportModal() && latestReport(); as report) {
-    <div class="modal-backdrop" (click)="showXReportModal.set(false)">
-      <div class="modal-card modal-report" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div class="modal-title-lockup">
-            <span class="material-icons modal-icon">receipt</span>
-            <h3>{{ report.type }} — Register Summary</h3>
-          </div>
-          <button type="button" class="btn-close-modal" (click)="showXReportModal.set(false)">&times;</button>
-        </div>
-
-        <div class="modal-body">
-          <div class="thermal-report-preview">
-            <div class="report-header text-center">
-              <h4>{{ report.type | uppercase }}</h4>
-              <p>{{ report.timestamp | date:'medium' }}</p>
-              <p>Cashier: {{ report.cashierName }}</p>
+    @case ('report') {
+      @if (latestReport(); as r) {
+        <div class="modal-backdrop" (click)="closeModal()">
+          <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="m-report" cdkTrapFocus [cdkTrapFocusAutoCapture]="true" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+              <h3 class="modal-title" id="m-report"><span class="material-icons" aria-hidden="true">receipt_long</span>{{ r.type }}</h3>
+              <button type="button" class="icon-btn" (click)="closeModal()" [attr.aria-label]="'Close' | translate"><span class="material-icons">close</span></button>
             </div>
-
-            <div class="report-divider-dashed"></div>
-
-            <div class="report-stat-row">
-              <span>Transaction Count:</span>
-              <strong>{{ report.salesCount }}</strong>
-            </div>
-            <div class="report-stat-row">
-              <span>Starting Cash Float:</span>
-              <span class="font-mono">{{ formatCurrency(report.startingFloat) }}</span>
-            </div>
-
-            <div class="report-divider-dashed"></div>
-
-            <div class="report-stat-row">
-              <span>Cash Sales:</span>
-              <span class="font-mono">{{ formatCurrency(report.byPaymentMethod.cash) }}</span>
-            </div>
-            <div class="report-stat-row">
-              <span>Card Sales:</span>
-              <span class="font-mono">{{ formatCurrency(report.byPaymentMethod.card) }}</span>
-            </div>
-            <div class="report-stat-row">
-              <span>Other / Mobile:</span>
-              <span class="font-mono">{{ formatCurrency(report.byPaymentMethod.other) }}</span>
-            </div>
-
-            <div class="report-divider-solid"></div>
-
-            <div class="report-stat-row font-bold">
-              <span>TOTAL SESSION SALES:</span>
-              <span class="font-mono">{{ formatCurrency(report.totalSales) }}</span>
-            </div>
-
-            @if (report.actualCash !== undefined) {
-              <div class="report-divider-dashed"></div>
-              <div class="report-stat-row">
-                <span>Expected Drawer Cash:</span>
-                <span class="font-mono">{{ formatCurrency(report.expectedCash) }}</span>
+            <div class="modal-body">
+              <div class="slip">
+                <div class="slip-head">
+                  <strong>{{ r.type }}</strong>
+                  <span>{{ r.timestamp | date:'medium' }}</span>
+                  <span>{{ 'Cashier' | translate }}: {{ r.cashierName }}</span>
+                </div>
+                <div class="slip-rule dashed"></div>
+                <div class="slip-row"><span>{{ 'Transactions' | translate }}</span><span class="num">{{ r.salesCount }}</span></div>
+                <div class="slip-row"><span>{{ 'Starting float' | translate }}</span><span class="num">{{ fmt(r.startingFloat) }}</span></div>
+                <div class="slip-rule dashed"></div>
+                <div class="slip-row"><span>{{ 'Cash' | translate }}</span><span class="num">{{ fmt(r.byPaymentMethod.cash) }}</span></div>
+                <div class="slip-row"><span>{{ 'Card' | translate }}</span><span class="num">{{ fmt(r.byPaymentMethod.card) }}</span></div>
+                <div class="slip-row"><span>{{ 'Mobile / Other' | translate }}</span><span class="num">{{ fmt(r.byPaymentMethod.other) }}</span></div>
+                <div class="slip-rule"></div>
+                <div class="slip-row strong"><span>{{ 'Gross sales' | translate }}</span><span class="num">{{ fmt(r.totalSales) }}</span></div>
+                <div class="slip-row"><span>{{ 'Refunds' | translate }}</span><span class="num">−{{ fmt(r.totalRefunds) }}</span></div>
+                <div class="slip-row strong"><span>{{ 'Net sales' | translate }}</span><span class="num">{{ fmt(r.totalSales - r.totalRefunds) }}</span></div>
+                <div class="slip-row"><span>{{ 'Tax collected' | translate }}</span><span class="num">{{ fmt(r.taxTotal) }}</span></div>
+                <div class="slip-row"><span>{{ 'Discounts given' | translate }}</span><span class="num">{{ fmt(r.discountTotal) }}</span></div>
+                @if (r.actualCash !== undefined) {
+                  <div class="slip-rule dashed"></div>
+                  <div class="slip-row"><span>{{ 'Expected cash' | translate }}</span><span class="num">{{ fmt(r.expectedCash) }}</span></div>
+                  <div class="slip-row"><span>{{ 'Counted cash' | translate }}</span><span class="num">{{ fmt(r.actualCash) }}</span></div>
+                  <div class="slip-row strong"><span>{{ 'Difference' | translate }}</span><span class="num">{{ fmt(r.discrepancy) }}</span></div>
+                }
               </div>
-              <div class="report-stat-row">
-                <span>Counted Cash:</span>
-                <span class="font-mono">{{ formatCurrency(report.actualCash) }}</span>
-              </div>
-              <div class="report-stat-row font-bold">
-                <span>Discrepancy:</span>
-                <span class="font-mono">{{ formatCurrency(report.discrepancy || 0) }}</span>
-              </div>
-            }
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn-secondary" (click)="closeModal()">{{ 'Close' | translate }}</button>
+              <button type="button" class="btn-primary" cdkFocusInitial (click)="printReport()"><span class="material-icons" aria-hidden="true">print</span>{{ 'Print' | translate }}</button>
+            </div>
           </div>
         </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn-secondary" (click)="showXReportModal.set(false)">Close</button>
-          <button type="button" class="btn-primary" onclick="window.print()">
-            <span class="material-icons">print</span>
-            <span>Print Report</span>
-          </button>
-        </div>
-      </div>
-    </div>
+      }
+    }
   }
 </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -39,6 +39,7 @@ export class App {
   showOpsDropdown = signal<boolean>(false);
   showToolsDropdown = signal<boolean>(false);
   showProfileMenu = signal<boolean>(false);
+  readonly mobileNavOpen = signal<boolean>(false);
 
   readonly currentLang = this.languageService.language;
   readonly languages = [
@@ -96,7 +97,7 @@ export class App {
   private humanizeSegment(value: string): string {
     return value
       .replace(/-/g, ' ')
-      .replace(/\\b\\w/g, character => character.toUpperCase());
+      .replace(/\b\w/g, character => character.toUpperCase());
   }
 
   toggleTheme(): void {
@@ -145,7 +146,15 @@ export class App {
 
 
 
+  toggleMobileNav(): void {
+    const next = !this.mobileNavOpen();
+    this.closeMenus();
+    this.mobileNavOpen.set(next);
+  }
+
+  @HostListener('document:keydown.escape')
   closeMenus(): void {
+    this.mobileNavOpen.set(false);
     this.showProfileMenu.set(false);
     this.showDocsDropdown.set(false);
     this.showOpsDropdown.set(false);

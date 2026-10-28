@@ -1,0 +1,133 @@
+<div class="modal-backdrop" (click)="cancelled.emit()">
+  <div
+    class="modal-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="checkout-title"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-header">
+      <h3 class="modal-title" id="checkout-title">
+        <span class="material-icons" aria-hidden="true">point_of_sale</span>
+        {{ 'Payment' | translate }}
+      </h3>
+      <button type="button" class="icon-btn" (click)="cancelled.emit()" [attr.aria-label]="'Close' | translate">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="hero" aria-live="polite">
+        <span class="hero-label">
+          {{ paid().length ? ('Still due' | translate) : ('Amount due' | translate) }}
+          @if (customerName()) { · {{ customerName() }} }
+        </span>
+        <span class="hero-amount num">{{ fmt(remaining()) }}</span>
+        @if (paid().length) {
+          <span class="hero-sub num">{{ 'Total' | translate }} {{ fmt(total()) }}</span>
+        }
+      </div>
+
+      @if (paid().length) {
+        <ul class="paid-list">
+          @for (p of paid(); track $index) {
+            <li class="paid-row">
+              <span class="paid-method">{{ methodLabel(p.method) | translate }}</span>
+              <span class="paid-amount num">{{ fmt(p.amount) }}</span>
+              <button type="button" class="icon-btn" (click)="removePayment($index)" [attr.aria-label]="'Remove payment' | translate">
+                <span class="material-icons">close</span>
+              </button>
+            </li>
+          }
+        </ul>
+      }
+
+      <div class="methods" role="radiogroup" [attr.aria-label]="'Payment method' | translate">
+        @for (m of methods; track m.id) {
+          <button
+            type="button"
+            class="method"
+            role="radio"
+            [class.active]="method() === m.id"
+            [attr.aria-checked]="method() === m.id"
+            (click)="selectMethod(m.id)"
+          >
+            <span class="material-icons" aria-hidden="true">{{ m.icon }}</span>
+            <span>{{ m.label | translate }}</span>
+          </button>
+        }
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="pay-amount">
+          {{ method() === 'cash' ? ('Cash received' | translate) : ('Amount' | translate) }}
+        </label>
+        <div class="input-affix">
+          <span class="affix" aria-hidden="true">{{ symbol() }}</span>
+          <input
+            id="pay-amount"
+            class="form-input text-right num amount-input"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            [value]="inputValue()"
+            (input)="onType($event)"
+            (focus)="$any($event.target).select()"
+            (keydown.enter)="complete()"
+          />
+        </div>
+
+        @if (method() === 'cash') {
+          <div class="presets">
+            <button type="button" class="chip" (click)="setAmount(remaining())">{{ 'Exact' | translate }}</button>
+            @for (preset of presets(); track preset) {
+              <button type="button" class="chip num" (click)="setAmount(preset)">{{ fmt(preset) }}</button>
+            }
+          </div>
+        } @else {
+          <div class="presets">
+            <button type="button" class="chip" (click)="setAmount(remaining())">{{ 'Full amount' | translate }}</button>
+            @if (remaining() > 1) {
+              <button type="button" class="chip" (click)="setAmount(remaining() / 2)">{{ 'Half' | translate }}</button>
+            }
+          </div>
+          <input
+            class="form-input"
+            type="text"
+            [placeholder]="'Reference (optional) — auth code, wallet ID…' | translate"
+            [value]="reference()"
+            (input)="reference.set($any($event.target).value)"
+          />
+        }
+      </div>
+
+      @if (method() === 'cash' && change() > 0) {
+        <div class="change" role="status">
+          <span>{{ 'Change due' | translate }}</span>
+          <strong class="num">{{ fmt(change()) }}</strong>
+        </div>
+      } @else if (shortfall() > 0) {
+        <div class="shortfall" role="status">
+          <span>{{ 'Remaining after this payment' | translate }}</span>
+          <strong class="num">{{ fmt(shortfall()) }}</strong>
+        </div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-ghost" (click)="cancelled.emit()">{{ 'Cancel' | translate }}</button>
+      @if (canAddPartial()) {
+        <button type="button" class="btn-secondary" (click)="addPartial()">
+          <span class="material-icons" aria-hidden="true">call_split</span>
+          {{ 'Add partial payment' | translate }}
+        </button>
+      }
+      <button type="button" class="btn-primary btn-complete" [disabled]="!canComplete()" (click)="complete()">
+        <span class="material-icons" aria-hidden="true">check_circle</span>
+        {{ busy() ? ('Processing…' | translate) : ('Complete sale' | translate) }}
+      </button>
+    </div>
+  </div>
+</div>

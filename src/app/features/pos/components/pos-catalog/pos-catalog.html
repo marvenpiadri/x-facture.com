@@ -1,0 +1,99 @@
+<div class="catalog">
+  <div class="catalog-bar">
+    <div class="search">
+      <span class="material-icons search-icon" aria-hidden="true">search</span>
+      <input
+        #searchInput
+        type="search"
+        class="search-input"
+        [placeholder]="'Search or scan barcode…' | translate"
+        [attr.aria-label]="'Search products or scan a barcode' | translate"
+        autocomplete="off"
+        autocapitalize="off"
+        spellcheck="false"
+        enterkeyhint="search"
+        [value]="query()"
+        (input)="onInput($event)"
+        (keydown.enter)="onEnter()"
+      />
+      @if (query()) {
+        <button type="button" class="icon-btn clear" (click)="clearSearch()" [attr.aria-label]="'Clear search' | translate">
+          <span class="material-icons">close</span>
+        </button>
+      } @else {
+        <span class="kbd search-kbd" aria-hidden="true">F2</span>
+      }
+    </div>
+    <button type="button" class="btn-secondary custom-btn" (click)="customItemRequested.emit()">
+      <span class="material-icons">add_circle_outline</span>
+      <span class="custom-label">{{ 'Custom item' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="pills" role="tablist" [attr.aria-label]="'Categories' | translate">
+    <button type="button" class="chip" role="tab" [class.active]="category() === ALL" [attr.aria-selected]="category() === ALL" (click)="category.set(ALL)">
+      {{ 'All' | translate }}
+    </button>
+    @if (hasFavorites()) {
+      <button type="button" class="chip" role="tab" [class.active]="category() === FAVORITES" [attr.aria-selected]="category() === FAVORITES" (click)="category.set(FAVORITES)">
+        <span class="material-icons star">star</span>{{ 'Favorites' | translate }}
+      </button>
+    }
+    @for (cat of categories(); track cat) {
+      <button type="button" class="chip" role="tab" [class.active]="category() === cat" [attr.aria-selected]="category() === cat" (click)="category.set(cat)">
+        {{ cat }}
+      </button>
+    }
+  </div>
+
+  <div class="grid-scroll">
+    <div class="grid">
+      @for (tile of tiles(); track tile.product.id) {
+        <button
+          type="button"
+          class="tile"
+          [class.is-out]="tile.stock === 'out'"
+          [class.in-cart]="tile.inCart > 0"
+          [title]="tile.product.description || tile.product.name"
+          (click)="pick(tile.product)"
+        >
+          <span class="media">
+            @if (tile.product.imageUrl) {
+              <img [src]="tile.product.imageUrl" [alt]="''" class="media-img" loading="lazy" referrerpolicy="no-referrer" />
+            } @else {
+              <span class="material-icons media-icon" aria-hidden="true">{{ tile.product.icon || 'inventory_2' }}</span>
+            }
+            @if (tile.inCart > 0) {
+              <span class="badge badge-cart num" [attr.aria-label]="tile.inCart + ' in cart'">{{ tile.inCart }}</span>
+            }
+            @if (tile.stock === 'out') {
+              <span class="badge badge-stock out">{{ 'Out of stock' | translate }}</span>
+            } @else if (tile.stock === 'low') {
+              <span class="badge badge-stock low num">{{ 'Low' | translate }} · {{ tile.stockQty }}</span>
+            }
+          </span>
+          <span class="info">
+            <span class="name">{{ tile.product.name }}</span>
+            <span class="price num">
+              {{ tile.price }}
+              @if (tile.product.taxRate > 0) {
+                <small>+{{ tile.product.taxRate }}%</small>
+              }
+            </span>
+          </span>
+        </button>
+      } @empty {
+        <div class="empty">
+          <span class="material-icons" aria-hidden="true">search_off</span>
+          @if (query()) {
+            <p>{{ 'No products match your search.' | translate }}</p>
+            <button type="button" class="btn-secondary btn-sm" (click)="customItemRequested.emit()">{{ 'Add as custom item' | translate }}</button>
+          } @else {
+            <p>{{ 'Your catalog is empty. Add products to start selling.' | translate }}</p>
+            <a class="btn-primary btn-sm empty-link" routerLink="/products">{{ 'Add products' | translate }}</a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
