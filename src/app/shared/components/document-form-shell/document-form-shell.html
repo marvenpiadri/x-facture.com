@@ -120,6 +120,20 @@
 }
       </div>
 
+      @if (isFormalTemplate()) {
+        <div class="template-picker" role="radiogroup" [attr.aria-label]="'Design' | translate">
+          <span class="field-label">{{ 'Design' | translate }}</span>
+          <div class="template-picker-options">
+            @for (t of templates; track t.id) {
+              <button type="button" role="radio" class="template-option" [class.selected]="document().templateId === t.id" [attr.aria-checked]="document().templateId === t.id" (click)="onHeaderFieldChange('templateId', t.id)">
+                <app-template-thumb [docType]="config().docType" [templateId]="t.id" [width]="88" />
+                <span>{{ t.label | translate }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
+
       @if (config().routeSegment === 'xfacture' || (config().routeSegment === 'credit-notes' && selectedOutputFormat() === 'factur-x')) {
         <div class="facturx-section-divider">
           @if (showAdvanced()) {

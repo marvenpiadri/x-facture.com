@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FORMAL_TEMPLATES } from '../../../../core/utils/sample-document';
 import { DOCUMENT_TYPE_CONFIGS } from '../../../../core/config/document-type-config';
 import { getCreatePageContent } from '../../../../core/config/document-create-content';
 import { DocumentTypeConfig } from '../../../../core/models/document-type-config.model';
@@ -61,6 +62,8 @@ export class DocumentEditPage {
       if (typeof output === 'string') {
         newDoc = { ...newDoc, specialFields: { ...(newDoc.specialFields || {}), outputFormat: output } };
       }
+      const template = this.route.snapshot.queryParamMap.get('template');
+      if (template && FORMAL_TEMPLATES.some(t => t.id === template)) newDoc = { ...newDoc, templateId: template };
       this.currentDocument.set(newDoc);
       this.loading.set(false);
     } else {

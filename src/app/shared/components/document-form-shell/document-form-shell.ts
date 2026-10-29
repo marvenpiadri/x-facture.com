@@ -19,6 +19,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService } from '../../../core/services/calculation.service';
 import { SettingsService } from '../../../core/services/settings.service';
 import { ClientService } from '../../../core/services/client.service';
+import { FORMAL_TEMPLATES } from '../../../core/utils/sample-document';
+import { TemplateThumbComponent } from '../template-thumb/template-thumb';
 import { LineItemsTableComponent } from '../line-items-table/line-items-table';
 import { ClientPickerComponent } from '../client-picker/client-picker';
 import { CountryPickerComponent } from '../country-picker/country-picker';
@@ -36,6 +38,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     FormsModule,
     RouterModule,
     LineItemsTableComponent,
+    TemplateThumbComponent,
     ClientPickerComponent,
     CountryPickerComponent
   ],
@@ -62,6 +65,9 @@ export class DocumentFormShellComponent implements OnInit {
   save = output<BusinessDocument>();
   saveAndPreview = output<BusinessDocument>();
 
+  readonly templates = FORMAL_TEMPLATES;
+  /** Thermal receipt layouts have their own picker in the preview step. */
+  readonly isFormalTemplate = computed(() => this.templates.some(t => t.id === this.document().templateId));
   readonly availableCurrencies = this.currencyService.CURRENCIES;
   readonly countries = this.countryService.countries;
   readonly sellerIdentifierDefinitions = computed(() => getPartyIdentifierDefinitions(this.document().company.country));
