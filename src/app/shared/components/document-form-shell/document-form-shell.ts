@@ -82,6 +82,10 @@ export class DocumentFormShellComponent implements OnInit {
     if (!d.items.some(i => i.description?.trim() && i.unitCost > 0)) {
       issues.push({ label: 'Add at least one line item with a description and a price', target: 'form-step-items' });
     }
+    const errors = this.xmlHealthReport()?.['errors'];
+    if (Array.isArray(errors) && errors.length) {
+      issues.push({ label: `XML validation found ${errors.length} issue(s), see the report`, target: 'xml-health-title' });
+    }
     return issues;
   });
 
