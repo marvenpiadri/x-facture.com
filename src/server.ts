@@ -68,7 +68,15 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    if (url.pathname.includes('.')) {
+    // Canonicalize before serving assets so www and HTTP requests redirect too.
+    if (url.hostname === 'www.x-facture.com' || url.protocol === 'http:') {
+      return reqHandler(request);
+    }
+
+    if (
+      (request.method === 'GET' || request.method === 'HEAD') &&
+      url.pathname.includes('.')
+    ) {
       const assetResponse = await env.ASSETS.fetch(request);
       if (assetResponse.status !== 404) {
         return assetResponse;
