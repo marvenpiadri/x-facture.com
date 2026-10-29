@@ -139,19 +139,20 @@ export class SettingsService {
     if (!this.isBrowser || typeof indexedDB === 'undefined') {
       throw new Error('Database export is unavailable outside the browser.');
     }
-    const [settings, documents, clients, products, posSessions, posSales, ledgerEntries] = await Promise.all([
+    const [settings, documents, clients, products, posSessions, posSales, posHeldOrders, ledgerEntries] = await Promise.all([
       db.settings.toArray(),
       db.documents.toArray(),
       db.clients.toArray(),
       db.products.toArray(),
       db.posSessions.toArray(),
       db.posSales.toArray(),
+      db.posHeldOrders.toArray(),
       db.ledgerEntries.toArray()
     ]);
 
     const backup = {
       app: 'x-facture',
-      version: 2,
+      version: 3,
       exportedAt: new Date().toISOString(),
       data: {
         settings,
@@ -160,6 +161,7 @@ export class SettingsService {
         products,
         posSessions,
         posSales,
+        posHeldOrders,
         ledgerEntries
       }
     };
@@ -177,13 +179,14 @@ export class SettingsService {
       const parsed = JSON.parse(jsonString);
       if (!parsed.data) throw new Error('Invalid backup file');
 
-      await db.transaction('rw', [db.settings, db.documents, db.clients, db.products, db.posSessions, db.posSales, db.ledgerEntries], async () => {
+      await db.transaction('rw', [db.settings, db.documents, db.clients, db.products, db.posSessions, db.posSales, db.posHeldOrders, db.ledgerEntries], async () => {
         if (parsed.data.settings?.length) await db.settings.bulkPut(parsed.data.settings);
         if (parsed.data.documents?.length) await db.documents.bulkPut(parsed.data.documents);
         if (parsed.data.clients?.length) await db.clients.bulkPut(parsed.data.clients);
         if (parsed.data.products?.length) await db.products.bulkPut(parsed.data.products);
         if (parsed.data.posSessions?.length) await db.posSessions.bulkPut(parsed.data.posSessions);
         if (parsed.data.posSales?.length) await db.posSales.bulkPut(parsed.data.posSales);
+        if (parsed.data.posHeldOrders?.length) await db.posHeldOrders.bulkPut(parsed.data.posHeldOrders);
         if (parsed.data.ledgerEntries?.length) await db.ledgerEntries.bulkPut(parsed.data.ledgerEntries);
       });
 

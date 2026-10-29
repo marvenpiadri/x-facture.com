@@ -14,6 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { Product } from '../../../../core/models/product.model';
 import { ProductService } from '../../../../core/services/product.service';
 import { CurrencyService } from '../../../../core/services/currency.service';
+import { DEFAULT_LOW_STOCK } from '../../../../core/utils/stock';
 import { compressAndConvertToBase64 } from '../../../../core/utils/image-compression.util';
 
 export const POPULAR_PRODUCT_ICONS = [
@@ -68,6 +69,11 @@ export class AddProductModalComponent implements OnInit {
   // Form State Signals
   name = signal<string>('');
   sku = signal<string>('');
+  barcode = signal<string>('');
+  isFavorite = signal<boolean>(false);
+  trackStock = signal<boolean>(false);
+  stockQty = signal<number>(0);
+  lowStockThreshold = signal<number>(DEFAULT_LOW_STOCK);
   category = signal<string>('General');
   unitCost = signal<number>(0);
   taxRate = signal<number>(0);
@@ -87,6 +93,11 @@ export class AddProductModalComponent implements OnInit {
     if (existing) {
       this.name.set(existing.name || '');
       this.sku.set(existing.sku || '');
+      this.barcode.set(existing.barcode || '');
+      this.isFavorite.set(!!existing.isFavorite);
+      this.trackStock.set(!!existing.trackStock);
+      this.stockQty.set(existing.stockQty ?? 0);
+      this.lowStockThreshold.set(existing.lowStockThreshold ?? DEFAULT_LOW_STOCK);
       this.category.set(existing.category || 'General');
       this.unitCost.set(existing.unitCost || 0);
       this.taxRate.set(existing.taxRate || 0);
@@ -217,6 +228,18 @@ export class AddProductModalComponent implements OnInit {
       return;
     }
 
+    // A scan must resolve to exactly one product, so a barcode (or SKU used as one) cannot repeat.
+    const code = this.barcode().trim().toLowerCase();
+    if (code) {
+      const clash = this.productService
+        .products()
+        .find(p => p.id !== this.product()?.id && !p.isArchived && (p.barcode?.toLowerCase() === code || p.sku?.toLowerCase() === code));
+      if (clash) {
+        this.errorMessage.set(`Barcode already used by "${clash.name}".`);
+        return;
+      }
+    }
+
     this.isSaving.set(true);
     this.errorMessage.set(null);
 
@@ -226,6 +249,12 @@ export class AddProductModalComponent implements OnInit {
         id: existing?.id,
         name: trimmedName,
         sku: this.sku().trim(),
+        barcode: this.barcode().trim(),
+        isFavorite: this.isFavorite(),
+        trackStock: this.trackStock(),
+        stockQty: Math.trunc(Number(this.stockQty()) || 0),
+        lowStockThreshold: Math.max(0, Math.trunc(Number(this.lowStockThreshold()) || 0)),
+        isArchived: existing?.isArchived,
         category: this.category().trim() || 'General',
         unitCost: Number(this.unitCost()) || 0,
         taxRate: Number(this.taxRate()) || 0,

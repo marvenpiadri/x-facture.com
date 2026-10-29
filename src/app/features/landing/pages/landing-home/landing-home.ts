@@ -9,12 +9,13 @@ import { RouterModule } from '@angular/router';
 import { SeoService } from '../../../../core/services/seo.service';
 import { DOCUMENT_TYPE_CONFIGS } from '../../../../core/config/document-type-config';
 import { DocumentTypeConfig } from '../../../../core/models/document-type-config.model';
+import { TemplateThumbComponent } from '../../../../shared/components/template-thumb/template-thumb';
 import { FooterComponent } from '../footer/footer.component';
 
 @Component({
   selector: 'app-landing-home',
   standalone: true,
-  imports: [CommonModule, RouterModule, FooterComponent],
+  imports: [CommonModule, RouterModule, FooterComponent, TemplateThumbComponent],
   templateUrl: './landing-home.html',
   styleUrl: './landing-home.css',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,6 +23,11 @@ import { FooterComponent } from '../footer/footer.component';
 export class LandingHomePage implements OnInit {
   private readonly seoService = inject(SeoService);
 
+  readonly templates = [
+    { id: 'modern', label: 'Modern', blurb: 'Balanced and friendly. A safe choice for most businesses.' },
+    { id: 'classic', label: 'Minimal', blurb: 'Quiet and precise. Thin lines, lots of white space.' },
+    { id: 'bold', label: 'Bold', blurb: 'Strong headings and colour blocks that stand out.' }
+  ];
   readonly docConfigs: DocumentTypeConfig[] = Object.values(DOCUMENT_TYPE_CONFIGS);
 
   ngOnInit(): void {

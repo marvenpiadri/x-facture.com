@@ -1999,7 +1999,8 @@
     backdrop-filter: blur(12px);
     box-shadow: var(--shadow-lg);
   }
-  .form-footer-action-bar button { flex: 1 1 100%; justify-content: center; }
+  .form-footer-action-bar button { flex: 1 1 calc(50% - 6px); justify-content: center; padding-inline: 8px; font-size: 13px; }
+  .form-footer-action-bar .btn-primary { flex-basis: 100%; order: -1; }
 }
 
 /* ==========================================================================
@@ -2717,3 +2718,33 @@
   margin-top: 10px;
 }
 
+
+.form-issues {
+  margin: 0 0 var(--space-4, 16px);
+  padding: 12px 16px;
+  border: 1px solid #fde68a;
+  background: #fffbeb;
+  border-radius: var(--radius-md, 10px);
+  color: #78350f;
+}
+.form-issues h2 { margin: 0 0 6px; font-size: var(--text-sm, 14px); font-weight: 700; }
+.form-issues ul { margin: 0; padding-left: 18px; }
+.form-issues button {
+  background: none; border: 0; padding: 2px 0; font: inherit; font-size: 13px;
+  color: inherit; text-decoration: underline; cursor: pointer; text-align: left;
+}
+.form-issues button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+:root[data-theme="dark"] .form-issues { background: #422006; border-color: #854d0e; color: #fde68a; }
+
+.mode-switch { display: inline-flex; border: 1px solid var(--color-border-dark); border-radius: var(--radius-md, 10px); overflow: hidden; background: var(--color-surface); }
+.mode-switch button { border: 0; background: transparent; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; color: var(--color-text-secondary); cursor: pointer; min-height: 36px; }
+.mode-switch button.active { background: var(--color-btn-dark-bg); color: var(--color-btn-dark-text); }
+.mode-switch button:disabled:not(.active) { opacity: .5; cursor: not-allowed; }
+.mode-switch button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: -2px; }
+
+.template-picker { margin-top: 16px; display: grid; gap: 8px; }
+.template-picker-options { display: flex; gap: 12px; flex-wrap: wrap; }
+.template-option { display: grid; gap: 6px; justify-items: center; padding: 8px; background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-md, 10px); cursor: pointer; font: inherit; font-size: 12px; font-weight: 600; color: var(--color-text-secondary); }
+.template-option:hover { border-color: var(--color-border-dark); }
+.template-option.selected { border-color: var(--color-border-focus); color: var(--color-text-primary, inherit); }
+.template-option:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }

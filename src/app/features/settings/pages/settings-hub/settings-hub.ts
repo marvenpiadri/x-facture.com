@@ -495,12 +495,13 @@ export class SettingsHubPage implements OnInit {
   async resetAllData(): Promise<void> {
     const confirmText = prompt('Type "RESET" in all caps to permanently clear local database:');
     if (confirmText === 'RESET') {
-      await db.transaction('rw', [db.settings, db.documents, db.clients, db.products, db.posSessions, db.posSales, db.ledgerEntries], async () => {
+      await db.transaction('rw', [db.settings, db.documents, db.clients, db.products, db.posSessions, db.posSales, db.posHeldOrders, db.ledgerEntries], async () => {
         await db.documents.clear();
         await db.clients.clear();
         await db.products.clear();
         await db.posSessions.clear();
         await db.posSales.clear();
+        await db.posHeldOrders.clear();
         await db.ledgerEntries.clear();
       });
       alert('Local database has been cleared.');

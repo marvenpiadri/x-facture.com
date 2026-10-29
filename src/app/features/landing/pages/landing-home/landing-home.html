@@ -161,48 +161,48 @@
       </div>
     </section>
 
-    <section class="section invoicing-section">
+    <section class="section templates-section" id="designs">
       <div class="section-container">
         <div class="section-heading">
-          <span class="section-eyebrow">START WITH INVOICING</span>
-          <h2>Everything you need to bill customers.</h2>
-          <p>Choose the document that matches the job. Build it in your browser and keep the workflow simple.</p>
+          <span class="section-eyebrow">CHOOSE A DESIGN</span>
+          <h2>Three clean designs. Pick one, then fill it in.</h2>
+          <p>Every document uses the same data, so you can switch design at any time and download the PDF that suits your brand.</p>
         </div>
-
-        <div class="document-focus-grid">
-          <a routerLink="/invoices/create" class="document-focus-card document-focus-primary">
-            <div class="card-icon"><span class="material-icons">receipt_long</span></div>
-            <div class="card-content">
-              <span class="card-kicker">MOST POPULAR</span>
-              <h3>Invoices</h3>
-              <p>Create a clear, professional invoice with your business, client, items, taxes and payment details.</p>
-              <span class="card-link">Create an invoice <span class="material-icons">arrow_forward</span></span>
-            </div>
-          </a>
-
-          <a routerLink="/quotes/create" class="document-focus-card">
-            <div class="card-icon"><span class="material-icons">request_quote</span></div>
-            <div class="card-content">
-              <span class="card-kicker">BEFORE THE SALE</span>
-              <h3>Quotes & estimates</h3>
-              <p>Present pricing and services clearly before your customer approves the work.</p>
-              <span class="card-link">Create a quote <span class="material-icons">arrow_forward</span></span>
-            </div>
-          </a>
-
-          <a routerLink="/receipts/create" class="document-focus-card">
-            <div class="card-icon"><span class="material-icons">point_of_sale</span></div>
-            <div class="card-content">
-              <span class="card-kicker">AFTER PAYMENT</span>
-              <h3>Receipts</h3>
-              <p>Give customers a clean record of a completed sale or payment.</p>
-              <span class="card-link">Create a receipt <span class="material-icons">arrow_forward</span></span>
-            </div>
-          </a>
+        <div class="template-gallery">
+          @for (t of templates; track t.id) {
+            <a class="template-card" routerLink="/invoices/create" [queryParams]="{ template: t.id }">
+              <app-template-thumb docType="invoices" [templateId]="t.id" [width]="260" />
+              <strong>{{ t.label }}</strong>
+              <span class="template-blurb">{{ t.blurb }}</span>
+              <span class="card-link">Use this design <span class="material-icons">arrow_forward</span></span>
+            </a>
+          }
         </div>
+      </div>
+    </section>
 
-        <div class="section-inline-link">
-          <a routerLink="/invoices">See all invoicing & business document tools <span class="material-icons">arrow_forward</span></a>
+    <section class="section invoicing-section" id="documents">
+      <div class="section-container">
+        <div class="section-heading">
+          <span class="section-eyebrow">EVERY DOCUMENT YOU SEND</span>
+          <h2>Pick the document. See how it looks.</h2>
+          <p>From a simple invoice to a structured Factur-X e-invoice, each document type has its own layout and fields.</p>
+        </div>
+        <div class="doc-type-grid">
+          @for (c of docConfigs; track c.docType) {
+            <a class="doc-type-card" [routerLink]="'/' + c.routeSegment + '/create'">
+              @defer (on viewport) {
+                <app-template-thumb [docType]="c.docType" templateId="modern" [width]="150" />
+              } @placeholder {
+                <div class="thumb-placeholder"></div>
+              }
+              <div class="doc-type-copy">
+                <h3><span class="material-icons" aria-hidden="true">{{ c.icon }}</span>{{ c.singularName }}</h3>
+                <p>{{ c.description }}</p>
+                <span class="card-link">Create <span class="material-icons">arrow_forward</span></span>
+              </div>
+            </a>
+          }
         </div>
       </div>
     </section>

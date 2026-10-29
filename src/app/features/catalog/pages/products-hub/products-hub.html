@@ -66,6 +66,7 @@
             <th>Category</th>
             <th class="text-right">Unit Price</th>
             <th class="text-right">Tax Rate</th>
+            <th class="text-right">Stock</th>
             <th class="text-right">Actions</th>
           </tr>
         </thead>
@@ -87,9 +88,12 @@
                     }
                   </div>
                   <div class="product-title-group">
-                    <strong class="product-name">{{ prod.name }}</strong>
+                    <strong class="product-name">
+                      {{ prod.name }}
+                      @if (prod.isFavorite) { <span class="material-icons fav-star" title="Pinned to POS favorites">star</span> }
+                    </strong>
                     <div class="product-sku-line font-mono">
-                      SKU: {{ prod.sku || '—' }}
+                      SKU: {{ prod.sku || '—' }}@if (prod.barcode) { · {{ prod.barcode }} }
                     </div>
                   </div>
                 </div>
@@ -105,6 +109,18 @@
 
               <td class="text-right font-mono">
                 {{ prod.taxRate }}%
+              </td>
+
+              <td class="text-right font-mono">
+                @if (prod.trackStock) {
+                  <span class="stock-cell">
+                    @if (stockState(prod) === 'out') { <span class="stock-tag out">Out</span> }
+                    @else if (stockState(prod) === 'low') { <span class="stock-tag low">Low</span> }
+                    {{ prod.stockQty ?? 0 }}
+                  </span>
+                } @else {
+                  <span class="untracked">—</span>
+                }
               </td>
 
               <td class="text-right">
@@ -133,7 +149,7 @@
             </tr>
           } @empty {
             <tr>
-              <td colspan="5" class="empty-cell">
+              <td colspan="6" class="empty-cell">
                 <div class="empty-box">
                   <span class="material-icons">inventory_2</span>
                   <h3>No Products Found</h3>

@@ -19,6 +19,8 @@ import { CurrencyService } from '../../../core/services/currency.service';
 import { CalculationService } from '../../../core/services/calculation.service';
 import { SettingsService } from '../../../core/services/settings.service';
 import { ClientService } from '../../../core/services/client.service';
+import { FORMAL_TEMPLATES } from '../../../core/utils/sample-document';
+import { TemplateThumbComponent } from '../template-thumb/template-thumb';
 import { LineItemsTableComponent } from '../line-items-table/line-items-table';
 import { ClientPickerComponent } from '../client-picker/client-picker';
 import { CountryPickerComponent } from '../country-picker/country-picker';
@@ -36,6 +38,7 @@ import { TranslatePipe } from '../../../core/pipes/translate.pipe';
     FormsModule,
     RouterModule,
     LineItemsTableComponent,
+    TemplateThumbComponent,
     ClientPickerComponent,
     CountryPickerComponent
   ],
@@ -62,6 +65,9 @@ export class DocumentFormShellComponent implements OnInit {
   save = output<BusinessDocument>();
   saveAndPreview = output<BusinessDocument>();
 
+  readonly templates = FORMAL_TEMPLATES;
+  /** Thermal receipt layouts have their own picker in the preview step. */
+  readonly isFormalTemplate = computed(() => this.templates.some(t => t.id === this.document().templateId));
   readonly availableCurrencies = this.currencyService.CURRENCIES;
   readonly countries = this.countryService.countries;
   readonly sellerIdentifierDefinitions = computed(() => getPartyIdentifierDefinitions(this.document().company.country));
@@ -71,6 +77,46 @@ export class DocumentFormShellComponent implements OnInit {
     const legacy = this.document().company.taxId?.trim();
     return legacy ? [{ id: 'legacy-tax-id', type: 'VAT', label: 'Tax / VAT', value: legacy }] : [];
   });
+  private readonly advancedMode = signal(this.readMode());
+  /** Fields only experts touch stay hidden in Simple mode, but never while they hold data. */
+  readonly hasAdvancedData = computed(() => {
+    const d = this.document();
+    const sf = d.specialFields ?? {};
+    return !!(d.purchaseOrderRef || d.company.electronicAddress || d.client.electronicAddress || sf['buyerReference'] || sf['deliveryDate'] || this.isLogisticsEnabled());
+  });
+  readonly showAdvanced = computed(() => this.advancedMode() || this.hasAdvancedData());
+
+  private readMode(): boolean {
+    try { return localStorage.getItem('xf-form-mode') === 'advanced'; } catch { return false; }
+  }
+
+  setAdvanced(on: boolean): void {
+    this.advancedMode.set(on);
+    try { localStorage.setItem('xf-form-mode', on ? 'advanced' : 'simple'); } catch { /* private mode: mode just isn't remembered */ }
+  }
+
+  /** Non-blocking checklist of what is still missing; each entry links to its section. */
+  readonly formIssues = computed(() => {
+    const d = this.document();
+    const issues: { label: string; target: string }[] = [];
+    if (!d.docNumber?.trim()) issues.push({ label: 'Document number is missing', target: 'form-step-details' });
+    if (!d.issueDate) issues.push({ label: 'Issue date is missing', target: 'form-step-details' });
+    if (!d.company.name?.trim()) issues.push({ label: 'Seller name is missing', target: 'form-step-parties' });
+    if (!d.client.name?.trim()) issues.push({ label: 'Buyer name is missing', target: 'form-step-parties' });
+    if (!d.items.some(i => i.description?.trim() && i.unitCost > 0)) {
+      issues.push({ label: 'Add at least one line item with a description and a price', target: 'form-step-items' });
+    }
+    const errors = this.xmlHealthReport()?.['errors'];
+    if (Array.isArray(errors) && errors.length) {
+      issues.push({ label: `XML validation found ${errors.length} issue(s), see the report`, target: 'xml-health-title' });
+    }
+    return issues;
+  });
+
+  scrollToSection(id: string): void {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   readonly deliveryExpanded = signal<boolean>(false);
   readonly notesExpanded = signal<boolean>(false);
   readonly validatingXml = signal(false);

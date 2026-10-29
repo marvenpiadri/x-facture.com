@@ -9,6 +9,11 @@
       <span class="bc-current">{{ isNew() ? 'New ' + config().singularName : document().docNumber }}</span>
     </div>
 
+    <div class="mode-switch" role="group" [attr.aria-label]="'Form mode' | translate">
+      <button type="button" [class.active]="!showAdvanced()" [attr.aria-pressed]="!showAdvanced()" [disabled]="hasAdvancedData()" (click)="setAdvanced(false)">{{ 'Simple' | translate }}</button>
+      <button type="button" [class.active]="showAdvanced()" [attr.aria-pressed]="showAdvanced()" (click)="setAdvanced(true)">{{ 'Advanced' | translate }}</button>
+    </div>
+
     <div class="workspace-top-actions">
       <button
         type="button"
@@ -38,6 +43,17 @@
         <h1 class="workspace-doc-title">{{ isNew() ? 'Create ' + config().singularName : document().docNumber }}</h1>
       </div>
     </div>
+  }
+
+  @if (formIssues().length) {
+    <section class="form-issues" aria-labelledby="form-issues-title">
+      <h2 id="form-issues-title">{{ 'Still needed before you generate' | translate }} ({{ formIssues().length }})</h2>
+      <ul>
+        @for (issue of formIssues(); track issue.label) {
+          <li><button type="button" (click)="scrollToSection(issue.target)">{{ issue.label | translate }}</button></li>
+        }
+      </ul>
+    </section>
   }
 
   <!-- Step 1: Document Details -->
@@ -96,15 +112,32 @@
           </div>
         }
 
-        <div class="form-field-item">
+        @if (showAdvanced()) {
+<div class="form-field-item">
           <label class="field-label">{{ 'P.O. / Customer Reference' | translate }}</label>
           <input type="text" class="form-input" [value]="document().purchaseOrderRef || ''" (input)="onHeaderFieldChange('purchaseOrderRef', $any($event.target).value)" placeholder="{{ 'e.g. PO-98421' | translate }}" />
         </div>
+}
       </div>
+
+      @if (isFormalTemplate()) {
+        <div class="template-picker" role="radiogroup" [attr.aria-label]="'Design' | translate">
+          <span class="field-label">{{ 'Design' | translate }}</span>
+          <div class="template-picker-options">
+            @for (t of templates; track t.id) {
+              <button type="button" role="radio" class="template-option" [class.selected]="document().templateId === t.id" [attr.aria-checked]="document().templateId === t.id" (click)="onHeaderFieldChange('templateId', t.id)">
+                <app-template-thumb [docType]="config().docType" [templateId]="t.id" [width]="88" />
+                <span>{{ t.label | translate }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      }
 
       @if (config().routeSegment === 'xfacture' || (config().routeSegment === 'credit-notes' && selectedOutputFormat() === 'factur-x')) {
         <div class="facturx-section-divider">
-          <div class="facturx-divider-header">
+          @if (showAdvanced()) {
+<div class="facturx-divider-header">
             <span class="facturx-subheading">{{ 'E-invoicing routing addresses' | translate }}</span>
             <span class="facturx-hint-text">{{ 'Only enter an address that is registered for electronic invoice routing. A tax number is not automatically a routing address.' | translate }}</span>
           </div>
@@ -158,16 +191,21 @@
               </select>
             </div>
           </div>
+}
           <div class="form-meta-grid">
-            <div class="form-field-item">
+            @if (showAdvanced()) {
+<div class="form-field-item">
               <label class="field-label">{{ 'Buyer Reference / Service Code' | translate }}</label>
               <input type="text" class="form-input" [value]="document().specialFields?.['buyerReference'] || ''" (input)="onSpecialFieldChange('buyerReference', $any($event.target).value)" placeholder="{{ 'Chorus Pro / buyer service' | translate }}" />
             </div>
+}
 
-            <div class="form-field-item">
+            @if (showAdvanced()) {
+<div class="form-field-item">
               <label class="field-label">{{ 'Delivery Date' | translate }}</label>
               <input type="date" class="form-input" [value]="document().specialFields?.['deliveryDate'] || ''" (input)="onSpecialFieldChange('deliveryDate', $any($event.target).value)" />
             </div>
+}
             <div class="form-field-item">
               <label class="field-label">{{ 'Payment method' | translate }}</label>
               <select class="form-select" [value]="document().specialFields?.['paymentMethod'] === 'bank-transfer' ? '58' : (document().specialFields?.['paymentMethod'] || '58')" (change)="onSpecialFieldChange('paymentMethod', $any($event.target).value)">
@@ -546,7 +584,8 @@
     </section>
   }
 
-  <!-- Step 4: Logistics Container (Dedicated Step with ON/OFF Power Toggle) -->
+  @if (showAdvanced()) {
+<!-- Step 4: Logistics Container (Dedicated Step with ON/OFF Power Toggle) -->
   <section class="form-step-section" id="form-step-logistics">
     <div class="form-section-heading">
       <div>
@@ -981,12 +1020,13 @@
       }
     </div>
   </section>
+}
 
   <!-- Final step: Notes & Payment Information -->
   <section class="form-step-section" id="form-step-notes">
     <div class="form-section-heading">
       <div>
-        <span class="step-number" aria-hidden="true">{{ document().hasPricing ? '5' : '4' }}</span>
+        <span class="step-number" aria-hidden="true">{{ (document().hasPricing ? 5 : 4) - (showAdvanced() ? 0 : 1) }}</span>
         <h3>{{ 'Notes & payment information' | translate }}</h3>
         <p>{{ 'Add customer-facing notes, payment instructions, and an optional footer.' | translate }}</p>
       </div>

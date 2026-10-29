@@ -2,6 +2,18 @@
   <!-- Global App Header (Hidden during printing) -->
   <header class="app-header no-print" (click)="$event.stopPropagation()">
     <div class="header-left">
+      <button
+        type="button"
+        class="nav-toggle"
+        id="nav-mobile-toggle"
+        aria-controls="primary-nav"
+        [attr.aria-expanded]="mobileNavOpen()"
+        [attr.aria-label]="'Menu' | translate"
+        (click)="toggleMobileNav()"
+      >
+        <span class="material-icons">{{ mobileNavOpen() ? 'close' : 'menu' }}</span>
+      </button>
+
       <!-- Brand Logo Lockup -->
       <a routerLink="/" class="brand-logo" (click)="closeMenus()">
         <div class="brand-badge">
@@ -13,7 +25,7 @@
       </a>
 
       <!-- Primary Nav Links: Home + Categorized Dropdowns + Direct Settings -->
-      <nav class="primary-nav">
+      <nav class="primary-nav" id="primary-nav" [class.open]="mobileNavOpen()" [attr.aria-label]="'Main navigation' | translate">
         <!-- Home Link (Landing Page) -->
         <a routerLink="/" [routerLinkActiveOptions]="{exact: true}" routerLinkActive="active" class="nav-link" (click)="closeMenus()" id="nav-home-link">
           <span class="material-icons nav-ico">home</span>

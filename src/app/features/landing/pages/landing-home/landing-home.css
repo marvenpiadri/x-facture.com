@@ -1470,3 +1470,20 @@
 @media (max-width: 680px) {
   .facturx-points { grid-template-columns: 1fr; }
 }
+
+.template-gallery { display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.template-card { display: grid; gap: 8px; justify-items: center; width: 280px; text-align: center; text-decoration: none; color: inherit; padding: 16px; border-radius: 16px; border: 1px solid var(--color-border); background: var(--color-surface); transition: transform .15s ease, box-shadow .15s ease; }
+.template-card:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(15, 23, 42, .12); }
+.template-card:focus-visible, .doc-type-card:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 3px; }
+.template-blurb { font-size: 14px; color: var(--color-text-secondary); }
+.doc-type-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.doc-type-card { display: flex; gap: 16px; padding: 16px; border-radius: 16px; border: 1px solid var(--color-border); background: var(--color-surface); text-decoration: none; color: inherit; transition: transform .15s ease, box-shadow .15s ease; }
+.doc-type-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(15, 23, 42, .10); }
+.doc-type-card app-template-thumb, .thumb-placeholder { flex: none; }
+.thumb-placeholder { width: 150px; height: 212px; border-radius: 6px; background: var(--color-surface-subtle); }
+.doc-type-copy { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.doc-type-copy h3 { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 16px; }
+.doc-type-copy h3 .material-icons { font-size: 20px; color: var(--color-money-green); }
+.doc-type-copy p { margin: 0; font-size: 13px; color: var(--color-text-secondary); }
+@media (max-width: 480px) { .doc-type-card { flex-direction: column; align-items: center; text-align: center; } .doc-type-copy h3 { justify-content: center; } }
+@media (prefers-reduced-motion: reduce) { .template-card, .doc-type-card { transition: none; } .template-card:hover, .doc-type-card:hover { transform: none; } }

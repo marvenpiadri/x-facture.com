@@ -5,6 +5,7 @@ import {
   inject,
   signal
 } from '@angular/core';
+import { CdkTrapFocus } from '@angular/cdk/a11y';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -16,7 +17,7 @@ import { Client } from '../../../../core/models/client.model';
 @Component({
   selector: 'app-clients-hub',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, CdkTrapFocus],
   templateUrl: './clients-hub.html',
   styleUrl: './clients-hub.css',
   changeDetection: ChangeDetectionStrategy.OnPush

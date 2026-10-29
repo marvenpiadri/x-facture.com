@@ -11,6 +11,7 @@ import { RouterModule } from '@angular/router';
 import { ProductService } from '../../../../core/services/product.service';
 import { CurrencyService } from '../../../../core/services/currency.service';
 import { Product } from '../../../../core/models/product.model';
+import { stockState } from '../../../../core/utils/stock';
 import { AddProductModalComponent } from '../../components/add-product-modal/add-product-modal';
 
 @Component({
@@ -54,6 +55,8 @@ export class ProductsHubPage {
       return true;
     });
   });
+
+  readonly stockState = stockState;
 
   formatCurrency(val: number): string {
     return this.currencyService.format(val);
