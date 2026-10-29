@@ -155,7 +155,7 @@
   color: var(--color-midnight-800);
 }
 
-/* Parties Card: Seller & Buyer Inlined with Logo inside Buyer */
+/* Customer details below the sender masthead */
 .doc-parties-card {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -1272,5 +1272,81 @@
     white-space: nowrap !important;
     text-align: right !important;
     font-size: 8.5pt !important;
+  }
+}
+
+
+/* Sender masthead: show the business identity, contact details and logo
+   together, while keeping document number and dates in the opposite column. */
+.doc-header-left {
+  flex: 1 1 56%;
+  min-width: 0;
+}
+
+.doc-meta-side {
+  flex: 0 1 44%;
+  min-width: 0;
+}
+
+.brand-lockup {
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+}
+
+.document-brand-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 3px;
+}
+
+.document-brand-detail {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.document-brand-name {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* The seller now lives in the masthead; this section is reserved for the
+   customer and should read as a single, clear Bill To block. */
+.doc-parties-card {
+  display: block;
+  padding: 18px 22px;
+}
+
+.buyer-party-col {
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 720px) {
+  .doc-header-left,
+  .doc-meta-side {
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  .doc-meta-side {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .doc-identity {
+    align-items: flex-start;
+  }
+
+  .meta-date-item {
+    justify-content: flex-start;
+  }
+}
+
+@media print {
+  .doc-header-block,
+  .doc-parties-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
