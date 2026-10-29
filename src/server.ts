@@ -60,6 +60,12 @@ const handleRequest = async (request: Request): Promise<Response> => {
 export const reqHandler = createRequestHandler(handleRequest);
 
 /**
+ * Normalize Angular's nullable request-handler result for the Workers Fetch API.
+ */
+const handleWorkerRequest = async (request: Request): Promise<Response> =>
+  (await reqHandler(request)) ?? new Response('Not Found', { status: 404 });
+
+/**
  * Cloudflare Workers entry point.
  * Static files are served through the Workers Assets binding; extensionless
  * application routes continue through Angular SSR.
@@ -70,7 +76,7 @@ export default {
 
     // Canonicalize before serving assets so www and HTTP requests redirect too.
     if (url.hostname === 'www.x-facture.com' || url.protocol === 'http:') {
-      return reqHandler(request);
+      return handleWorkerRequest(request);
     }
 
     if (
@@ -83,6 +89,6 @@ export default {
       }
     }
 
-    return reqHandler(request);
+    return handleWorkerRequest(request);
   },
 };
