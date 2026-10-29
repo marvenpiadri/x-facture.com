@@ -146,14 +146,48 @@
   @else {
     <div class="formal-document-sheet">
 
-      <!-- Signature header: brand anchored top-left, document identity and dates aligned right. -->
+      <!-- Sender identity and document details share the invoice masthead. -->
       <header class="doc-header-block">
         <div class="doc-header-left">
-          @if (document().company.logoUrl) {
-            <div class="brand-lockup">
+          <div class="brand-lockup">
+            @if (document().company.logoUrl) {
               <img [src]="document().company.logoUrl" class="document-brand-logo" alt="Company logo" />
+            }
+            <div class="document-brand-copy">
+              @if (document().company.legalName || document().company.name) {
+                <div class="document-brand-name">{{ document().company.legalName || document().company.name }}</div>
+              }
+              @if (document().company.address) {
+                <div class="document-brand-detail">{{ document().company.address }}</div>
+              }
+              @if (document().company.postalCode || document().company.city) {
+                <div class="document-brand-detail">{{ document().company.postalCode }} {{ document().company.city }}</div>
+              }
+              @if (document().company.country) {
+                <div class="document-brand-detail">{{ document().company.country }}</div>
+              }
+              @if (document().company.taxId && !document().company.taxIdentifiers?.length) {
+                <div class="document-brand-detail">{{ 'Tax ID:' | translate }} {{ document().company.taxId }}</div>
+              }
+              @for (identifier of document().company.taxIdentifiers || []; track identifier.id) {
+                @if (identifier.value) {
+                  <div class="document-brand-detail">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div>
+                }
+              }
+              @if (document().specialFields?.['sellerTaxNumber']) {
+                <div class="document-brand-detail">{{ 'Tax number:' | translate }} {{ document().specialFields?.['sellerTaxNumber'] }}</div>
+              }
+              @if (document().company.email) {
+                <div class="document-brand-detail">{{ document().company.email }}</div>
+              }
+              @if (document().company.phone) {
+                <div class="document-brand-detail">{{ document().company.phone }}</div>
+              }
+              @if (document().company.website) {
+                <div class="document-brand-detail">{{ document().company.website }}</div>
+              }
             </div>
-          }
+          </div>
         </div>
 
         <div class="doc-meta-side">
@@ -194,50 +228,8 @@
         </div>
       }
 
-      <!-- Parties Block: seller and buyer details, with branding kept in the page header -->
+      <!-- Customer details sit below the sender masthead. -->
       <section class="doc-parties-card">
-        <!-- Seller Column -->
-        <div class="party-col seller-party-col">
-          <div class="party-col-header">
-            <div class="party-role-tag">{{ 'FROM' | translate }}</div>
-          </div>
-          <div class="party-details-stack">
-            @if (document().company.name) {
-              <div class="party-name">{{ document().company.name }}</div>
-            }
-            @if (document().company.address) {
-              <div class="party-line">{{ document().company.address }}</div>
-            }
-            @if (document().company.postalCode || document().company.city) {
-              <div class="party-line">{{ document().company.postalCode }} {{ document().company.city }}</div>
-            }
-            @if (document().company.country) {
-              <div class="party-line">{{ document().company.country }}</div>
-            }
-            @if (document().company.taxId && !document().company.taxIdentifiers?.length) {
-              <div class="party-line party-tax-line">{{ "Tax ID:" | translate }} {{ document().company.taxId }}</div>
-            }
-            @for (identifier of document().company.taxIdentifiers || []; track identifier.id) {
-              @if (identifier.value) { <div class="party-line party-tax-line">{{ identifier.label || identifier.type }}: {{ identifier.value }}</div> }
-            }
-            @if (document().specialFields?.['sellerTaxNumber']) {
-              <div class="party-line">{{ 'Tax number:' | translate }} {{ document().specialFields?.['sellerTaxNumber'] }}</div>
-            }
-            @if (document().company.email) {
-              <div class="party-line">{{ document().company.email }}</div>
-            }
-            @if (document().company.phone) {
-              <div class="party-line">{{ document().company.phone }}</div>
-            }
-            @if (document().company.website) {
-              <div class="party-line">{{ document().company.website }}</div>
-            }
-          </div>
-        </div>
-
-        <div class="party-col-divider"></div>
-
-        <!-- Buyer Column -->
         <div class="party-col buyer-party-col">
           <div class="party-col-header">
             <div class="party-role-tag">{{ 'BILL TO' | translate }}</div>
