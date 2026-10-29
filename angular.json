@@ -31,7 +31,11 @@
             ],
             "security": {
               "allowedHosts": [
-                "x-facture.com"
+                "x-facture.com",
+                "www.x-facture.com",
+                "localhost",
+                "127.0.0.1",
+                "*.workers.dev"
               ]
             },
             "styles": [
@@ -40,7 +44,8 @@
             "server": "src/main.server.ts",
             "outputMode": "server",
             "ssr": {
-              "entry": "src/server.ts"
+              "entry": "src/server.ts",
+              "platform": "neutral"
             },
             "allowedCommonJsDependencies": [
               "pako",
