@@ -71,6 +71,24 @@ export class DocumentFormShellComponent implements OnInit {
     const legacy = this.document().company.taxId?.trim();
     return legacy ? [{ id: 'legacy-tax-id', type: 'VAT', label: 'Tax / VAT', value: legacy }] : [];
   });
+  private readonly advancedMode = signal(this.readMode());
+  /** Fields only experts touch stay hidden in Simple mode, but never while they hold data. */
+  readonly hasAdvancedData = computed(() => {
+    const d = this.document();
+    const sf = d.specialFields ?? {};
+    return !!(d.purchaseOrderRef || d.company.electronicAddress || d.client.electronicAddress || sf['buyerReference'] || sf['deliveryDate'] || this.isLogisticsEnabled());
+  });
+  readonly showAdvanced = computed(() => this.advancedMode() || this.hasAdvancedData());
+
+  private readMode(): boolean {
+    try { return localStorage.getItem('xf-form-mode') === 'advanced'; } catch { return false; }
+  }
+
+  setAdvanced(on: boolean): void {
+    this.advancedMode.set(on);
+    try { localStorage.setItem('xf-form-mode', on ? 'advanced' : 'simple'); } catch { /* private mode: mode just isn't remembered */ }
+  }
+
   /** Non-blocking checklist of what is still missing; each entry links to its section. */
   readonly formIssues = computed(() => {
     const d = this.document();

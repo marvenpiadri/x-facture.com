@@ -1999,7 +1999,8 @@
     backdrop-filter: blur(12px);
     box-shadow: var(--shadow-lg);
   }
-  .form-footer-action-bar button { flex: 1 1 100%; justify-content: center; }
+  .form-footer-action-bar button { flex: 1 1 calc(50% - 6px); justify-content: center; padding-inline: 8px; font-size: 13px; }
+  .form-footer-action-bar .btn-primary { flex-basis: 100%; order: -1; }
 }
 
 /* ==========================================================================
@@ -2734,3 +2735,9 @@
 }
 .form-issues button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
 :root[data-theme="dark"] .form-issues { background: #422006; border-color: #854d0e; color: #fde68a; }
+
+.mode-switch { display: inline-flex; border: 1px solid var(--color-border-dark); border-radius: var(--radius-md, 10px); overflow: hidden; background: var(--color-surface); }
+.mode-switch button { border: 0; background: transparent; padding: 7px 14px; font: inherit; font-size: 13px; font-weight: 600; color: var(--color-text-secondary); cursor: pointer; min-height: 36px; }
+.mode-switch button.active { background: var(--color-btn-dark-bg); color: var(--color-btn-dark-text); }
+.mode-switch button:disabled:not(.active) { opacity: .5; cursor: not-allowed; }
+.mode-switch button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: -2px; }
