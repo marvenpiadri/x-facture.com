@@ -1,79 +1,80 @@
-import {
-  AngularNodeAppEngine,
-  createNodeRequestHandler,
-  isMainModule,
-  writeResponseToNodeResponse,
-} from '@angular/ssr/node';
-import express from 'express';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { AngularAppEngine, createRequestHandler } from '@angular/ssr';
 
-const serverDistFolder = dirname(fileURLToPath(import.meta.url));
-const browserDistFolder = resolve(serverDistFolder, '../browser');
-
-export const app = express();
-app.set('trust proxy', true);
-
-// Enforce the single canonical public URL: https://x-facture.com.
-// Vercel terminates TLS before the function, so inspect the forwarded protocol.
-app.use((req, res, next) => {
-  const host = req.get('host')?.split(':')[0].toLowerCase() ?? '';
-  const forwardedProto = String(req.get('x-forwarded-proto') ?? '')
-    .split(',')[0]
-    .trim()
-    .toLowerCase();
-  const isCanonicalHost = host === 'x-facture.com';
-  const isAliasHost = host === 'www.x-facture.com';
-  const shouldRedirectToHttps = (isCanonicalHost || isAliasHost) && forwardedProto === 'http';
-
-  if (shouldRedirectToHttps || isAliasHost) {
-    const query = req.originalUrl.includes('?')
-      ? req.originalUrl.slice(req.originalUrl.indexOf('?'))
-      : '';
-    return res.redirect(308, `https://x-facture.com${req.path}${query}`);
-  }
-
-  next();
-});
-
-const angularApp = new AngularNodeAppEngine({
-  allowedHosts: ['x-facture.com'],
-});
-
-app.use(
-  express.static(browserDistFolder, {
-    maxAge: '1y',
-    index: false,
-    redirect: false,
-  }),
-);
-
-const publicSeoPagePattern = /^(?:\/(?:calculators(?:\/[^/?#]+)?|pdf(?:\/[^/?#]+)?|invoice\/xfacture|(?:invoices|proforma-invoices|commercial-invoices|quotes|purchase-orders|receipts|credit-notes|delivery-notes|timesheet-invoices|work-orders|statements|service-agreements|retainer-invoices|bills-of-lading|custom-documents)(?:\/create)?|store\/pos|ledger|clients|products)?)$/;
-
-app.use((req, res, next) => {
-  if (req.method === 'GET' && publicSeoPagePattern.test(req.path)) {
-    res.setHeader('Cache-Control', 'public, max-age=0, s-maxage=60, stale-while-revalidate=300');
-  }
-  next();
-});
-
-app.use((req, res, next) => {
-  angularApp
-    .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
-    .catch((error) => {
-      console.error('SSR Error:', error);
-      next(error);
-    });
-});
-
-if (isMainModule(import.meta.url)) {
-  const port = process.env['PORT'] || 3000;
-  app.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
-  });
+interface Env {
+  ASSETS: {
+    fetch(request: Request): Promise<Response>;
+  };
 }
 
-export const reqHandler = createNodeRequestHandler(app);
+const angularApp = new AngularAppEngine({
+  allowedHosts: [
+    'x-facture.com',
+    'www.x-facture.com',
+    'localhost',
+    '127.0.0.1',
+    '*.workers.dev',
+  ],
+});
+
+const publicSeoPagePattern =
+  /^(?:\/(?:calculators(?:\/[^/?#]+)?|pdf(?:\/[^/?#]+)?|invoice\/xfacture|(?:invoices|proforma-invoices|commercial-invoices|quotes|purchase-orders|receipts|credit-notes|delivery-notes|timesheet-invoices|work-orders|statements|service-agreements|retainer-invoices|bills-of-lading|custom-documents)(?:\/create)?|store\/pos|ledger|clients|products)?)$/;
+
+const handleRequest = async (request: Request): Promise<Response> => {
+  const url = new URL(request.url);
+
+  if (url.hostname === 'www.x-facture.com' || url.protocol === 'http:') {
+    url.protocol = 'https:';
+    url.hostname = 'x-facture.com';
+    return Response.redirect(url.toString(), 308);
+  }
+
+  const response = await angularApp.handle(request);
+
+  if (!response) {
+    return new Response('Not Found', { status: 404 });
+  }
+
+  if (
+    request.method === 'GET' &&
+    publicSeoPagePattern.test(url.pathname)
+  ) {
+    const headers = new Headers(response.headers);
+    headers.set(
+      'Cache-Control',
+      'public, max-age=0, s-maxage=60, stale-while-revalidate=300',
+    );
+
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
+  }
+
+  return response;
+};
+
+/**
+ * Angular CLI request handler used during SSR builds and local server integration.
+ */
+export const reqHandler = createRequestHandler(handleRequest);
+
+/**
+ * Cloudflare Workers entry point.
+ * Static files are served through the Workers Assets binding; extensionless
+ * application routes continue through Angular SSR.
+ */
+export default {
+  async fetch(request: Request, env: Env): Promise<Response> {
+    const url = new URL(request.url);
+
+    if (url.pathname.includes('.')) {
+      const assetResponse = await env.ASSETS.fetch(request);
+      if (assetResponse.status !== 404) {
+        return assetResponse;
+      }
+    }
+
+    return reqHandler(request);
+  },
+};
