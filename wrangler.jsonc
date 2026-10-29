@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "x-facture",
+  "main": "./dist/server/server.mjs",
+  "compatibility_date": "2026-10-29",
+  "workers_dev": true,
+  "preview_urls": true,
+  "assets": {
+    "directory": "./dist/browser",
+    "binding": "ASSETS",
+    "run_worker_first": true,
+    "not_found_handling": "none"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
